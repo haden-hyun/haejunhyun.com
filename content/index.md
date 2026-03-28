@@ -1,3 +1,13 @@
+---
+title: "\bHyun's Digtal Garden"
+views:
+  - "14"
+words: "4"
+aliases:
+  - index
+dg-publish: "true"
+dg-home: "true"
+---
 반갑습니다 🙋🏻
 
 Hyun의 **두 번째 뇌**에 오신 것을 진심으로 환영합니다. 
