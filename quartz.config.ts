@@ -8,24 +8,26 @@ import * as Plugin from "./quartz/plugins"
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "Quartz 4",
+    pageTitle: "🧠 디지털 가든",
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
     analytics: {
-      provider: "plausible",
+      provider: "google",
+      tagId: "G-6XY03WD2ST",
     },
-    locale: "en-US",
-    baseUrl: "quartz.jzhao.xyz",
-    ignorePatterns: ["private", "templates", ".obsidian"],
+    locale: "ko-KR",
+    baseUrl: "haejun.pages.dev",
+    // ignorePatterns: 웹에 publish 하지 않는 content 하위 폴더 목록
+    ignorePatterns: ["private", "templates", "inbox",".obsidian"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,
       typography: {
-        header: "Schibsted Grotesk",
-        body: "Source Sans Pro",
-        code: "IBM Plex Mono",
+        header: "Noto Sans KR",
+        body: "Noto Sans KR",
+        code: "JetBrains Mono",
       },
       colors: {
         lightMode: {
