@@ -11,3 +11,7 @@ private/
 replit.nix
 inbox/
 templates/
+
+content/inbox/
+content/templates/
+content/private/
