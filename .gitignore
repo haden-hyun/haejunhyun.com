@@ -7,11 +7,7 @@ tsconfig.tsbuildinfo
 .obsidian
 .quartz-cache
 private/
-.replit
-replit.nix
 inbox/
 templates/
-
-content/inbox/
-content/templates/
-content/private/
+.replit
+replit.nix
