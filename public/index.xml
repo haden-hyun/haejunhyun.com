@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+      <title>🧠 디지털 가든</title>
+      <link>https://haejunhyun.com</link>
+      <description>최근 10 건 on 🧠 디지털 가든</description>
+      <generator>Quartz -- quartz.jzhao.xyz</generator>
+      <item>
+    <title>(Python) argparse 가이드</title>
+    <link>https://haejunhyun.com/Python/etc/(Python)-argparse-%EA%B0%80%EC%9D%B4%EB%93%9C</link>
+    <guid>https://haejunhyun.com/Python/etc/(Python)-argparse-%EA%B0%80%EC%9D%B4%EB%93%9C</guid>
+    <description><![CDATA[  Summary argparse는 Python 표준 라이브러리로 터미널 명령어를 통해 스크립트 내부의 변수 값을 직접 수정하지 않고도 유연하게 제어할 수 있게 해주는 CLI 도구이다. ]]></description>
+    <pubDate>Sat, 21 Mar 2026 07:17:00 GMT</pubDate>
+  </item><item>
+    <title>(Python) Cursor(VS Code) 에디터 세팅</title>
+    <link>https://haejunhyun.com/Python/Settings/(Python)-Cursor(VS-Code)-%EC%97%90%EB%94%94%ED%84%B0-%EC%84%B8%ED%8C%85</link>
+    <guid>https://haejunhyun.com/Python/Settings/(Python)-Cursor(VS-Code)-%EC%97%90%EB%94%94%ED%84%B0-%EC%84%B8%ED%8C%85</guid>
+    <description><![CDATA[  요약 파이썬 패키지 관리자 uv 도입에 맞춰, Cursor(VS Code) 에디터를 가장 가볍고 스마트하게 최적화하는 통합 settings.json 세팅 가이드 에디터 UI 정리 및 Git 작업 자동화는 물론, .venv 완벽 인식, Code Runner 튜닝, 그리고 마우스 드래그 없이 함수를 한 번에 실행하는 매크로(Shift+Enter) 기능까지 적용 0. ]]></description>
+    <pubDate>Sun, 15 Mar 2026 06:14:00 GMT</pubDate>
+  </item><item>
+    <title>(Python) 프로젝트 관리 - uv 가이드</title>
+    <link>https://haejunhyun.com/Python/Settings/(Python)-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B4%80%EB%A6%AC---uv-%EA%B0%80%EC%9D%B4%EB%93%9C</link>
+    <guid>https://haejunhyun.com/Python/Settings/(Python)-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B4%80%EB%A6%AC---uv-%EA%B0%80%EC%9D%B4%EB%93%9C</guid>
+    <description><![CDATA[  요약 uv는 패키지 설치, 가상환경, 파이썬 버전, 의존성 관리를 하나로 통합한 Rust 기반의 초고속 프로젝트 관리 툴 기존의 번거로운 가상환경 수동 켜기와 패키지 의존성 꼬임 문제를 pyproject.toml과 uv.lock 파일을 통해 해결 자주 쓰이던 Poetry보다 작업 속도가 압도적으로 빠르며 파이썬 자체 버전 관리와 기존 pip 생태계 호환까지 지원 가상환경 활성화 없이 바로 코드를 실행할 수 있으며, 협업 시 단순한 명령어 한 줄 (uv sync)로 모든 팀원이 동일한 가상환경 구축이 가능함 0. ]]></description>
+    <pubDate>Sat, 14 Mar 2026 03:57:00 GMT</pubDate>
+  </item><item>
+    <title>(DeepLearning) 기초2 - 신경망</title>
+    <link>https://haejunhyun.com/Deep-Learning/(DeepLearning)-%EA%B8%B0%EC%B4%882---%EC%8B%A0%EA%B2%BD%EB%A7%9D</link>
+    <guid>https://haejunhyun.com/Deep-Learning/(DeepLearning)-%EA%B8%B0%EC%B4%882---%EC%8B%A0%EA%B2%BD%EB%A7%9D</guid>
+    <description><![CDATA[  요약 신경망은 여러 층으로 이루어져 신호를 전달하며 가중치를 자동으로 학습하는 구조이다. 활성화 함수는 입력 신호의 총합을 출력으로 변환하는 함수이다. ]]></description>
+    <pubDate>Sat, 07 Mar 2026 09:39:00 GMT</pubDate>
+  </item><item>
+    <title>(Python) 좌표계 변환 - Transformer</title>
+    <link>https://haejunhyun.com/Python/Spatial/(Python)-%EC%A2%8C%ED%91%9C%EA%B3%84-%EB%B3%80%ED%99%98---pyproj</link>
+    <guid>https://haejunhyun.com/Python/Spatial/(Python)-%EC%A2%8C%ED%91%9C%EA%B3%84-%EB%B3%80%ED%99%98---pyproj</guid>
+    <description><![CDATA[  요약 0. 들어가며 공간 데이터를 다루다 보면 가장 흔하게 마주치는 문제가 ‘좌표계(CRS) 불일치’ 이다. 공공데이터에서 제공하는 좌표계는 일반적으로 대표적인 지리좌표계인 WGS84이다. ]]></description>
+    <pubDate>Sun, 25 Jan 2026 05:10:00 GMT</pubDate>
+  </item><item>
+    <title>(Oracle) Airflow 환경 Github 연동</title>
+    <link>https://haejunhyun.com/Oracle/(Oracle)-Airflow-%ED%99%98%EA%B2%BD-Github-%EC%97%B0%EB%8F%99</link>
+    <guid>https://haejunhyun.com/Oracle/(Oracle)-Airflow-%ED%99%98%EA%B2%BD-Github-%EC%97%B0%EB%8F%99</guid>
+    <description><![CDATA[  요약 0. 들어가며 Oracle Cloud를 통해 서버를 생성하고, Aiflow 및 Postgresql 까지 구축하였다. 이제 서버 내 Airflow 프로젝트를 Github와 연동하여 관리해보자. ]]></description>
+    <pubDate>Thu, 15 Jan 2026 14:30:00 GMT</pubDate>
+  </item><item>
+    <title>(Oracle) Airflow &amp; Postgres 구축</title>
+    <link>https://haejunhyun.com/Oracle/(Oracle)-Airflow--and--Postgres-%EA%B5%AC%EC%B6%95</link>
+    <guid>https://haejunhyun.com/Oracle/(Oracle)-Airflow--and--Postgres-%EA%B5%AC%EC%B6%95</guid>
+    <description><![CDATA[  요약 인프라 환경 구축: 먼저 안정적인 서버 운용을 위해 고정 IP를 확보하고 VCN 보안 목록에서 SSH(22), Airflow(8080), DB(5432) 포트를 개방하여 네트워크 기초를 마련합니다. ]]></description>
+    <pubDate>Wed, 14 Jan 2026 10:32:00 GMT</pubDate>
+  </item><item>
+    <title>(Oracle) 나만의 서버 만들기</title>
+    <link>https://haejunhyun.com/Oracle/(Oracle)-%EB%82%98%EB%A7%8C%EC%9D%98-%EC%84%9C%EB%B2%84-%EB%A7%8C%EB%93%A4%EA%B8%B0</link>
+    <guid>https://haejunhyun.com/Oracle/(Oracle)-%EB%82%98%EB%A7%8C%EC%9D%98-%EC%84%9C%EB%B2%84-%EB%A7%8C%EB%93%A4%EA%B8%B0</guid>
+    <description><![CDATA[  요약 오라클 클라우드에서 제공하는 평생 무료 ARM 인스턴스를 활용하여 개인 프로젝트용 서버를 구축하는 전체 과정을 상세히 설명함. ]]></description>
+    <pubDate>Wed, 14 Jan 2026 10:24:00 GMT</pubDate>
+  </item><item>
+    <title>(DeepLearning) 기초1 - 퍼셉트론</title>
+    <link>https://haejunhyun.com/Deep-Learning/(DeepLearning)-%EA%B8%B0%EC%B4%881---%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0</link>
+    <guid>https://haejunhyun.com/Deep-Learning/(DeepLearning)-%EA%B8%B0%EC%B4%881---%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0</guid>
+    <description><![CDATA[  요약 퍼셉트론(percetron)은 다수의 입력 신호를 받아 하나의 신호를 출력하는 알고리즘으로, 신경망(딥러닝)의 기원 입력 신호에 가중치(w)를 곱하고 편향(b)을 더한 값이 임계값을 넘으면 활성화(1), 넘지 않으면 비활성화(0)되는 구조 가중치(w)는 신호의 중요도(기울기)를 결정하며, 편향(b)은 뉴런이 얼마나 쉽게 활성화되는지(절편)를 조절 단층 퍼셉트론은 AND, NAND, OR 게이트는 구현할 수 있으나, 선형 분리가 불가능한 XOR 게이트는 구현할 수 없음 즉, XOR 문제와 같은 비선형 영역을 표현하기 위해 퍼셉... ]]></description>
+    <pubDate>Mon, 15 Dec 2025 14:57:00 GMT</pubDate>
+  </item><item>
+    <title>Q23~. 확률과 우도</title>
+    <link>https://haejunhyun.com/Statistics/(%EB%8F%84%EC%84%9C)-59%EA%B0%80%EC%A7%80-%ED%86%B5%EA%B3%84%ED%95%99-%EA%B6%81%EA%B8%88%EC%A6%9D-%EC%99%84%EC%A0%95-%EC%A0%95%EB%B3%B5/Q23-24.-%ED%99%95%EB%A5%A0%EA%B3%BC-%EC%9A%B0%EB%8F%84</link>
+    <guid>https://haejunhyun.com/Statistics/(%EB%8F%84%EC%84%9C)-59%EA%B0%80%EC%A7%80-%ED%86%B5%EA%B3%84%ED%95%99-%EA%B6%81%EA%B8%88%EC%A6%9D-%EC%99%84%EC%A0%95-%EC%A0%95%EB%B3%B5/Q23-24.-%ED%99%95%EB%A5%A0%EA%B3%BC-%EC%9A%B0%EB%8F%84</guid>
+    <description><![CDATA[  요약 추론 통계는 빈도주의(최대우도추정)와 베이지안(최대사후확률추정) 관점으로 나뉘며, 우도는 빈도주의의 핵심 개념임. 확률은 특정 사건이 일어날 가능성으로, 데이터 형태에 따라 확률질량함수(이산형)와 확률밀도함수(연속형)로 표현됨. ]]></description>
+    <pubDate>Wed, 03 Dec 2025 11:54:00 GMT</pubDate>
+  </item>
+    </channel>
+  </rss>
