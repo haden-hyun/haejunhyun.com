@@ -6,6 +6,18 @@
       <description>최근 10 건 on 🧠 디지털 가든</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>test</title>
+    <link>https://haejunhyun.com/test</link>
+    <guid>https://haejunhyun.com/test</guid>
+    <description><![CDATA[ 제발 되라. ]]></description>
+    <pubDate>Mon, 30 Mar 2026 13:59:51 GMT</pubDate>
+  </item><item>
+    <title>Hyun&#039;s Digtal Garden</title>
+    <link>https://haejunhyun.com/</link>
+    <guid>https://haejunhyun.com/</guid>
+    <description><![CDATA[ 반갑습니다 🙋🏻 제 두 번째 뇌에 오신 것을 진심으로 환영합니다. 이곳은 옵시디언 이라는 메모앱을 통해 제가 배운 내용을 기록하고 공유하기 위한 장소입니다. ]]></description>
+    <pubDate>Mon, 30 Mar 2026 13:35:49 GMT</pubDate>
+  </item><item>
     <title>(Python) argparse 가이드</title>
     <link>https://haejunhyun.com/Python/etc/(Python)-argparse-%EA%B0%80%EC%9D%B4%EB%93%9C</link>
     <guid>https://haejunhyun.com/Python/etc/(Python)-argparse-%EA%B0%80%EC%9D%B4%EB%93%9C</guid>
@@ -25,8 +37,8 @@
     <pubDate>Sat, 14 Mar 2026 03:57:00 GMT</pubDate>
   </item><item>
     <title>(DeepLearning) 기초2 - 신경망</title>
-    <link>https://haejunhyun.com/Deep-Learning/(DeepLearning)-%EA%B8%B0%EC%B4%882---%EC%8B%A0%EA%B2%BD%EB%A7%9D</link>
-    <guid>https://haejunhyun.com/Deep-Learning/(DeepLearning)-%EA%B8%B0%EC%B4%882---%EC%8B%A0%EA%B2%BD%EB%A7%9D</guid>
+    <link>https://haejunhyun.com/Data-Science/(DeepLearning)-%EA%B8%B0%EC%B4%882---%EC%8B%A0%EA%B2%BD%EB%A7%9D</link>
+    <guid>https://haejunhyun.com/Data-Science/(DeepLearning)-%EA%B8%B0%EC%B4%882---%EC%8B%A0%EA%B2%BD%EB%A7%9D</guid>
     <description><![CDATA[  요약 신경망은 여러 층으로 이루어져 신호를 전달하며 가중치를 자동으로 학습하는 구조이다. 활성화 함수는 입력 신호의 총합을 출력으로 변환하는 함수이다. ]]></description>
     <pubDate>Sat, 07 Mar 2026 09:39:00 GMT</pubDate>
   </item><item>
@@ -53,18 +65,6 @@
     <guid>https://haejunhyun.com/Oracle/(Oracle)-%EB%82%98%EB%A7%8C%EC%9D%98-%EC%84%9C%EB%B2%84-%EB%A7%8C%EB%93%A4%EA%B8%B0</guid>
     <description><![CDATA[  요약 오라클 클라우드에서 제공하는 평생 무료 ARM 인스턴스를 활용하여 개인 프로젝트용 서버를 구축하는 전체 과정을 상세히 설명함. ]]></description>
     <pubDate>Wed, 14 Jan 2026 10:24:00 GMT</pubDate>
-  </item><item>
-    <title>(DeepLearning) 기초1 - 퍼셉트론</title>
-    <link>https://haejunhyun.com/Deep-Learning/(DeepLearning)-%EA%B8%B0%EC%B4%881---%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0</link>
-    <guid>https://haejunhyun.com/Deep-Learning/(DeepLearning)-%EA%B8%B0%EC%B4%881---%ED%8D%BC%EC%85%89%ED%8A%B8%EB%A1%A0</guid>
-    <description><![CDATA[  요약 퍼셉트론(percetron)은 다수의 입력 신호를 받아 하나의 신호를 출력하는 알고리즘으로, 신경망(딥러닝)의 기원 입력 신호에 가중치(w)를 곱하고 편향(b)을 더한 값이 임계값을 넘으면 활성화(1), 넘지 않으면 비활성화(0)되는 구조 가중치(w)는 신호의 중요도(기울기)를 결정하며, 편향(b)은 뉴런이 얼마나 쉽게 활성화되는지(절편)를 조절 단층 퍼셉트론은 AND, NAND, OR 게이트는 구현할 수 있으나, 선형 분리가 불가능한 XOR 게이트는 구현할 수 없음 즉, XOR 문제와 같은 비선형 영역을 표현하기 위해 퍼셉... ]]></description>
-    <pubDate>Mon, 15 Dec 2025 14:57:00 GMT</pubDate>
-  </item><item>
-    <title>Q23~. 확률과 우도</title>
-    <link>https://haejunhyun.com/Statistics/(%EB%8F%84%EC%84%9C)-59%EA%B0%80%EC%A7%80-%ED%86%B5%EA%B3%84%ED%95%99-%EA%B6%81%EA%B8%88%EC%A6%9D-%EC%99%84%EC%A0%95-%EC%A0%95%EB%B3%B5/Q23-24.-%ED%99%95%EB%A5%A0%EA%B3%BC-%EC%9A%B0%EB%8F%84</link>
-    <guid>https://haejunhyun.com/Statistics/(%EB%8F%84%EC%84%9C)-59%EA%B0%80%EC%A7%80-%ED%86%B5%EA%B3%84%ED%95%99-%EA%B6%81%EA%B8%88%EC%A6%9D-%EC%99%84%EC%A0%95-%EC%A0%95%EB%B3%B5/Q23-24.-%ED%99%95%EB%A5%A0%EA%B3%BC-%EC%9A%B0%EB%8F%84</guid>
-    <description><![CDATA[  요약 추론 통계는 빈도주의(최대우도추정)와 베이지안(최대사후확률추정) 관점으로 나뉘며, 우도는 빈도주의의 핵심 개념임. 확률은 특정 사건이 일어날 가능성으로, 데이터 형태에 따라 확률질량함수(이산형)와 확률밀도함수(연속형)로 표현됨. ]]></description>
-    <pubDate>Wed, 03 Dec 2025 11:54:00 GMT</pubDate>
   </item>
     </channel>
   </rss>
