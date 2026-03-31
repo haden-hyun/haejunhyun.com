@@ -16,11 +16,11 @@ const config: QuartzConfig = {
       provider: "google",
       tagId: "G-6XY03WD2ST",
     },
-    locale: "ko-KR",
+    locale: "en-US",
     baseUrl: "haejunhyun.com",
     // ignorePatterns: 웹에 publish 하지 않는 content 하위 폴더 목록
     ignorePatterns: ["private", "templates", "inbox",".obsidian"],
-    defaultDateType: "modified",
+    defaultDateType: "published",
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,
