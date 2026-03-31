@@ -17,10 +17,7 @@ export const sharedPageComponents: SharedLayout = {
     }),
   ],
   footer: Component.Footer({
-    links: {
-      GitHub: "https://github.com/jackyzha0/quartz",
-      "Discord Community": "https://discord.gg/cRFFHYye7t",
-    },
+    links: {},
   }),
 }
 
@@ -37,18 +34,11 @@ export const defaultContentPageLayout: PageLayout = {
   ],
   left: [
     Component.PageTitle(),
+    Component.SocialIcons(),
     Component.MobileOnly(Component.Spacer()),
-    Component.Flex({
-      components: [
-        {
-          Component: Component.Search(),
-          grow: true,
-        },
-        { Component: Component.Darkmode() },
-        { Component: Component.ReaderMode() },
-      ],
-    }),
-    Component.Explorer(),
+    Component.Search(),
+    Component.Darkmode(),
+    Component.Explorer({ enableTagView: true }),
   ],
   right: [
     Component.Graph(),
@@ -62,17 +52,11 @@ export const defaultListPageLayout: PageLayout = {
   beforeBody: [Component.Breadcrumbs(), Component.ArticleTitle(), Component.ContentMeta()],
   left: [
     Component.PageTitle(),
+    Component.SocialIcons(),
     Component.MobileOnly(Component.Spacer()),
-    Component.Flex({
-      components: [
-        {
-          Component: Component.Search(),
-          grow: true,
-        },
-        { Component: Component.Darkmode() },
-      ],
-    }),
-    Component.Explorer(),
+    Component.Search(),
+    Component.Darkmode(),
+    Component.Explorer({ enableTagView: true }),
   ],
   right: [],
 }
