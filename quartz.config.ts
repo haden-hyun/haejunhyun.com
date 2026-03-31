@@ -21,7 +21,6 @@ const config: QuartzConfig = {
     // ignorePatterns: 웹에 publish 하지 않는 content 하위 폴더 목록
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "published",
-    generateSocialImages: false,
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,
