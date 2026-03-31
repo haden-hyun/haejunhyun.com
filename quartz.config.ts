@@ -8,7 +8,7 @@ import * as Plugin from "./quartz/plugins"
  */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "🧠 디지털 가든",
+    pageTitle: "☀️ haejun",
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
@@ -19,8 +19,9 @@ const config: QuartzConfig = {
     locale: "en-US",
     baseUrl: "haejunhyun.com",
     // ignorePatterns: 웹에 publish 하지 않는 content 하위 폴더 목록
-    ignorePatterns: ["private", "templates", "inbox",".obsidian"],
+    ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "published",
+    generateSocialImages: false,
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,
@@ -91,7 +92,7 @@ const config: QuartzConfig = {
       Plugin.Favicon(),
       Plugin.NotFoundPage(),
       // Comment out CustomOgImages to speed up build time
-      Plugin.CustomOgImages(),
+      // Plugin.CustomOgImages(),
     ],
   },
 }
