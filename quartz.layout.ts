@@ -9,10 +9,10 @@ export const sharedPageComponents: SharedLayout = {
     Component.Comments({
       provider: 'giscus',
       options: {
-        repo: 'khy07181/khy07181.github.io',
-        repoId: 'R_kgDON9-dEA',
+        repo: 'haden-hyun/haejunhyun.com',
+        repoId: 'R_kgDORzKN1A',
         category: 'Announcements',
-        categoryId: 'DIC_kwDON9-dEM4CnOik',
+        categoryId: 'DIC_kwDORzKN1M4C5qFR',
       }
     }),
   ],
