@@ -6,65 +6,65 @@
       <description>Last 10 notes on ☀️ haejun</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
-    <title>Haejun Second Brain</title>
-    <link>https://haejunhyun.com/</link>
-    <guid>https://haejunhyun.com/</guid>
-    <description><![CDATA[ 반갑습니다 🙋🏻 배운 것을 기록하고, 기록한 것을 연결하는 Haejun의 두 번째 뇌입니다. ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:10:45 GMT</pubDate>
-  </item><item>
     <title>Obsidian으로 블로그 만들기</title>
     <link>https://haejunhyun.com/tools/obsidian/quartz-blog</link>
     <guid>https://haejunhyun.com/tools/obsidian/quartz-blog</guid>
     <description><![CDATA[  요약 Obsidian의 Quartz 플러그인과 Cloudflare를 이용하여 Obsidian 노트를 웹에 게시한다. 우선, Github와 Cloudflare 계정 생성하기 Github 계정 생성 Cloudflare 계정 생성 1. ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:00:26 GMT</pubDate>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
   </item><item>
     <title>PARA 노트 체계화</title>
     <link>https://haejunhyun.com/tools/obsidian/para</link>
     <guid>https://haejunhyun.com/tools/obsidian/para</guid>
     <description><![CDATA[  작성 내용 및 요약 PARA 노트 체계화: 분류 기준은 주제가 아닌 행동 PARA 구조: Project, Area, Resource, Archive Project: 목표와 데드라인이 명확! Area: 책임의 영역으로 꾸준히 신경써야 하는 내용(목표 및 데드라인 X) Resource: 주제별로 자료나 관심사를 정리(목표, 데드라인, 책임 X) Archive: 더 이상 필요없는 노트 1. ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:00:26 GMT</pubDate>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
   </item><item>
     <title>이미지 자동 업로드</title>
     <link>https://haejunhyun.com/tools/obsidian/image-upload</link>
     <guid>https://haejunhyun.com/tools/obsidian/image-upload</guid>
     <description><![CDATA[  요약 image auto uploader 플러그인과 Picgo를 통해 github에 사진을 자동 업로드하고 해당 사진의 raw 파일 url 경로를 가져오기 1. ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:00:26 GMT</pubDate>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
   </item><item>
     <title>파일 연결 방법</title>
     <link>https://haejunhyun.com/tools/obsidian/file-linking</link>
     <guid>https://haejunhyun.com/tools/obsidian/file-linking</guid>
     <description><![CDATA[  요약 Obsidian에서 내부 노트를 연결하는 방법과 외부 파일 링크를 통해 연결하는 방법이 있다. 내부 노트를 연결하는 방법은 노트의 백링크만 포함하는 연결 방법과 내용까지 표기되는 직접 연결 방법이 있다. 외부 파일은 하이퍼링크 연결 문법에 맞게 연결된다. ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:00:26 GMT</pubDate>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
   </item><item>
     <title>콜아웃 문법 가이드</title>
     <link>https://haejunhyun.com/tools/obsidian/callout</link>
     <guid>https://haejunhyun.com/tools/obsidian/callout</guid>
     <description><![CDATA[  Obsidian 노트 내 콜아웃 문법 예시로 강조 및 요약 정리 시 활용 주요 내용 요약 note abstract summary tldr todo tip hint important 성공 및 실패 success check done failure fail missing 부가설명 및 참고사항 info question help Faq 주의 및 경고 warning caution attention danger Error Bug 인용 및 목록 example quote cite 참고사이트 매일 찾아보는 옵시디언 마크다운 문법 정리 . ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:00:26 GMT</pubDate>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
+  </item><item>
+    <title>test</title>
+    <link>https://haejunhyun.com/test</link>
+    <guid>https://haejunhyun.com/test</guid>
+    <description><![CDATA[ test. ]]></description>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
   </item><item>
     <title>TRIM 공백 및 문자 제거</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/trim</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/trim</guid>
     <description><![CDATA[  요약 trim은 맨 앞 또는 맨 뒤 연속된 공백/특정 문자를 제거 문자열 중간 제거는 불가 1. ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:00:26 GMT</pubDate>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
   </item><item>
     <title>information_schema 활용법</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/information-schema</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/information-schema</guid>
     <description><![CDATA[  요약 특정 schema에 속한 컬럼, 함수, 시퀀스, 테이블 정보 조회 ROUTINES, TABLES, SEQUENCES, COLUMNS, table_constraints, key_column_usage 1. ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:00:26 GMT</pubDate>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
   </item><item>
     <title>GRANT 권한 부여</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/grant</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/grant</guid>
     <description><![CDATA[  요약 스키마 권한 부여가 최우선, 그 후 스키마 내 테이블 권한 부여 1. 사용자 관련 CREATE USER 사용자명 PASSWORD &#039;비밀번호&#039;; DROP USER 사용자명; 2. ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:00:26 GMT</pubDate>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
   </item><item>
     <title>DROP 테이블 제거</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/drop</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/drop</guid>
     <description><![CDATA[  요약 DROP: 대상 전체를 삭제 — 절대 되돌릴 수 없음 DELETE: 원하는 데이터만 삭제, 되돌릴 수 있음 TRUNCATE: 인덱스 및 데이터 삭제, 테이블은 유지되지만 되돌릴 수 없음 1. ]]></description>
-    <pubDate>Fri, 10 Apr 2026 17:00:26 GMT</pubDate>
+    <pubDate>Fri, 10 Apr 2026 17:32:39 GMT</pubDate>
   </item>
     </channel>
   </rss>
