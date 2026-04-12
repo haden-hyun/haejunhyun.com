@@ -19,7 +19,7 @@ const config: QuartzConfig = {
     locale: "en-US",
     baseUrl: "haejunhyun.com",
     // ignorePatterns: 웹에 publish 하지 않는 content 하위 폴더 목록
-    ignorePatterns: ["private", "templates", ".obsidian"],
+    ignorePatterns: ["private", "templates", ".obsidian", "99. attachments"],
     defaultDateType: "published",
     theme: {
       fontOrigin: "googleFonts",
