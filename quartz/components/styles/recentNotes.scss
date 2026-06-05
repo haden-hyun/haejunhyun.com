@@ -69,12 +69,16 @@
   }
 
   .card-category {
-    font-size: 0.66rem;
-    font-weight: 700;
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
     color: var(--cat-color, var(--secondary));
+    background: color-mix(in srgb, var(--cat-color, var(--secondary)) 12%, transparent);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.1rem;
+    letter-spacing: 0.07em;
+    padding: 0.18rem 0.55rem;
+    border-radius: 4px;
+    margin-bottom: 0.3rem;
   }
 
   .card-meta {
