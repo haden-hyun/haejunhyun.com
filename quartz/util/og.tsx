@@ -202,14 +202,29 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
         height: "100%",
         width: "100%",
         backgroundColor: cfg.theme.colors[colorScheme].light,
-        padding: "2.5rem",
-        fontFamily: bodyFont,
       }}
     >
+      {/* Left accent bar — Slate Blue brand signature */}
+      <div
+        style={{
+          width: "8px",
+          backgroundColor: cfg.theme.colors[colorScheme].secondary,
+          flexShrink: 0,
+        }}
+      />
+      {/* Main content */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          padding: "2.5rem",
+          fontFamily: bodyFont,
+        }}
+      >
       {/* Header Section */}
       <div
         style={{
@@ -255,7 +270,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
             fontSize: useSmallerFont ? 64 : 72,
             fontFamily: headerFont,
             fontWeight: 700,
-            color: cfg.theme.colors[colorScheme].dark,
+            color: cfg.theme.colors[colorScheme].secondary,
             lineHeight: 1.2,
             display: "-webkit-box",
             WebkitBoxOrient: "vertical",
@@ -373,6 +388,7 @@ export const defaultImage: SocialImageOptions["imageStructure"] = ({
           ))}
         </div>
       </div>
+      </div> {/* /main content */}
     </div>
   )
 }

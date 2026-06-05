@@ -1,0 +1,40 @@
+.share-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.8rem;
+
+  .share-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 0.2rem;
+  }
+
+  .share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 6px;
+    border: 1px solid var(--lightgray);
+    color: var(--gray);
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    border-bottom: 1px solid var(--lightgray) !important;
+
+    svg {
+      width: 0.85rem;
+      height: 0.85rem;
+      fill: currentColor;
+    }
+
+    &:hover {
+      border-color: var(--secondary) !important;
+      background: rgba(61, 107, 142, 0.08);
+      color: var(--secondary);
+    }
+  }
+}

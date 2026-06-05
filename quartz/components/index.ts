@@ -23,6 +23,11 @@ import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
 import Flex from "./Flex"
 import ConditionalRender from "./ConditionalRender"
+import ReadingProgress from "./ReadingProgress"
+import BackToTop from "./BackToTop"
+import PrevNext from "./PrevNext"
+import ShareButtons from "./ShareButtons"
+import ImageLightbox from "./ImageLightbox"
 
 export {
   ArticleTitle,
@@ -50,4 +55,9 @@ export {
   Comments,
   Flex,
   ConditionalRender,
+  ReadingProgress,
+  BackToTop,
+  PrevNext,
+  ShareButtons,
+  ImageLightbox,
 }

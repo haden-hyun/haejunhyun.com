@@ -2,31 +2,69 @@ import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
 import RecentNotesForIndex from "./quartz/components/RecentNotesForIndex"
 import SocialLinks from "./quartz/components/SocialLinks"
+import ReadingProgress from "./quartz/components/ReadingProgress"
+import BackToTop from "./quartz/components/BackToTop"
+import PrevNext from "./quartz/components/PrevNext"
+import ImageLightbox from "./quartz/components/ImageLightbox"
 
-// components shared across all pages
+// ── 레이아웃 구조 개요 ────────────────────────────────────────────────────
+//
+//  ┌─────────────────────────────────────────────────────┐
+//  │  head  (HTML <head> — SEO, OG 이미지, 폰트 등)      │
+//  ├──────────────────────────────────────────────────────┤
+//  │  header (페이지 상단 고정 영역 — 현재 비어있음)      │
+//  ├──────────────┬────────────────────┬──────────────────┤
+//  │   left       │   beforeBody       │                  │
+//  │ ─ PageTitle  │ ─ Breadcrumbs      │   right          │
+//  │ ─ SocialLinks│ ─ ArticleTitle     │ ─ Graph          │
+//  │ ─ Search     │ ─ ContentMeta      │ ─ TOC            │
+//  │ ─ Darkmode   │ ─ TagList          │ ─ Backlinks      │
+//  │ ─ Explorer   │                    │                  │
+//  │              │   [본문 content]   │                  │
+//  │              │                    │                  │
+//  │              │   afterBody (shared)                  │
+//  │              │ ─ PrevNext         │                  │
+//  │              │ ─ RecentNotes(idx) │                  │
+//  │              │ ─ Comments(giscus) │                  │
+//  └──────────────┴────────────────────┴──────────────────┘
+//  │  footer                                              │
+//  └──────────────────────────────────────────────────────┘
+//
+// ── 타입 참고 ─────────────────────────────────────────────────────────────
+// PageLayout   = Pick<FullPageLayout, "beforeBody" | "left" | "right">
+// SharedLayout = Pick<FullPageLayout, "head" | "header" | "footer" | "afterBody">
+// → afterBody 는 SharedLayout 전용. PageLayout 에 넣으면 TS 오류 발생.
+// ─────────────────────────────────────────────────────────────────────────
+
+// ── SharedLayout : 모든 페이지 공통 ──────────────────────────────────────
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
   afterBody: [
+    ReadingProgress(),
+    BackToTop(),
+    ImageLightbox(),
+    PrevNext(),
+    RecentNotesForIndex({
+      limit: 6,
+      showTags: true,
+    }),
     Component.Comments({
-      provider: 'giscus',
+      provider: "giscus",
       options: {
-        // giscus 설정 (기존 설정 유지)
-        repo: 'haden-hyun/haejunhyun.com',
-        repoId: 'R_kgDONbw-1g',
-        category: 'Announcements',
-        categoryId: 'DIC_kwDONbw-1s4Cky-B',
-      }
+        repo:       "haden-hyun/haejunhyun.com",
+        repoId:     "R_kgDONbw-1g",
+        category:   "Announcements",
+        categoryId: "DIC_kwDONbw-1s4Cky-B",
+      },
     }),
   ],
   footer: Component.Footer({
-    links: {
-      // 필요시 추가 링크
-    },
+    links: {},
   }),
 }
 
-// components for pages that display a single page (e.g. a single note)
+// ── defaultContentPageLayout : 단일 노트 페이지 ──────────────────────────
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [
     Component.Breadcrumbs(),
@@ -34,9 +72,9 @@ export const defaultContentPageLayout: PageLayout = {
     Component.ContentMeta(),
     Component.TagList(),
   ],
+
   left: [
     Component.PageTitle(),
-    // 소셜 링크를 PageTitle 바로 아래 배치
     SocialLinks({
       links: [
         {
@@ -61,23 +99,21 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Darkmode(),
     Component.DesktopOnly(Component.Explorer()),
   ],
+
   right: [
     Component.Graph(),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
   ],
-  afterBody: [
-    // 최근 작성한 글을 소개글 밑에 표시
-    RecentNotesForIndex({
-      limit: 5,
-      showTags: true,
-    }),
-  ],
 }
 
-// components for pages that display lists of pages  (e.g. tags or folders)
+// ── defaultListPageLayout : 폴더·태그 목록 페이지 ────────────────────────
 export const defaultListPageLayout: PageLayout = {
-  beforeBody: [Component.Breadcrumbs(), Component.ArticleTitle(), Component.ContentMeta()],
+  beforeBody: [
+    Component.Breadcrumbs(),
+    Component.ArticleTitle(),
+    Component.ContentMeta(),
+  ],
   left: [
     Component.PageTitle(),
     Component.MobileOnly(Component.Spacer()),

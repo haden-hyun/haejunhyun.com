@@ -22,27 +22,27 @@ export default {
       quote: "인용",
     },
     backlinks: {
-      title: "백링크",
+      title: "Backlinks",
       noBacklinksFound: "백링크가 없습니다.",
     },
     themeToggle: {
-      lightMode: "라이트 모드",
-      darkMode: "다크 모드",
+      lightMode: "Light mode",
+      darkMode: "Dark mode",
     },
     readerMode: {
-      title: "리더 모드",
+      title: "Reader mode",
     },
     explorer: {
-      title: "탐색기",
+      title: "Explorer",
     },
     footer: {
       createdWith: "Created with",
     },
     graph: {
-      title: "그래프 뷰",
+      title: "Graph View",
     },
     recentNotes: {
-      title: "최근 게시글",
+      title: "Recent Notes",
       seeRemainingMore: ({ remaining }) => `${remaining}건 더보기 →`,
     },
     transcludes: {
@@ -50,11 +50,11 @@ export default {
       linkToOriginal: "원본 링크",
     },
     search: {
-      title: "검색",
-      searchBarPlaceholder: "검색어를 입력하세요",
+      title: "Search",
+      searchBarPlaceholder: "Search...",
     },
     tableOfContents: {
-      title: "목차",
+      title: "Table of Contents",
     },
     contentMeta: {
       readingTime: ({ minutes }) => `${minutes} min read`,
