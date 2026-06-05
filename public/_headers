@@ -1,0 +1,11 @@
+/index.css
+  Cache-Control: no-cache
+
+/postscript.js
+  Cache-Control: no-cache
+
+/prescript.js
+  Cache-Control: no-cache
+
+/static/contentIndex.json
+  Cache-Control: no-cache
