@@ -28,6 +28,7 @@ import BackToTop from "./BackToTop"
 import PrevNext from "./PrevNext"
 import ShareButtons from "./ShareButtons"
 import ImageLightbox from "./ImageLightbox"
+import VisitorCounter from "./VisitorCounter"
 
 export {
   ArticleTitle,
@@ -60,4 +61,5 @@ export {
   PrevNext,
   ShareButtons,
   ImageLightbox,
+  VisitorCounter,
 }

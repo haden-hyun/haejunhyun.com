@@ -6,6 +6,7 @@ import ReadingProgress from "./quartz/components/ReadingProgress"
 import BackToTop from "./quartz/components/BackToTop"
 import PrevNext from "./quartz/components/PrevNext"
 import ImageLightbox from "./quartz/components/ImageLightbox"
+import VisitorCounter from "./quartz/components/VisitorCounter"
 
 // ── 레이아웃 구조 개요 ────────────────────────────────────────────────────
 //
@@ -75,6 +76,7 @@ export const defaultContentPageLayout: PageLayout = {
 
   left: [
     Component.PageTitle(),
+    VisitorCounter(),
     SocialLinks({
       links: [
         {

@@ -88,10 +88,10 @@ const config: QuartzConfig = {
           //                  "catppuccin-mocha", "nord"
           // keepBackground: true → 테마 배경색 그대로 / false → Quartz 배경 따라감
           // ─────────────────────────────────────────────────────────
-          light: "github-light",               // 유지 — 깔끔하고 색상 구분 명확
+          light: "catppuccin-latte",
           dark:  "github-dark",
         },
-        keepBackground: false,                 // false → custom.scss의 코드블록 배경 사용
+        keepBackground: true,
       }),
       Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
       Plugin.GitHubFlavoredMarkdown(),
