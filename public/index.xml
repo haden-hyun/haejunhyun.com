@@ -6,65 +6,65 @@
       <description>Last 10 notes on ☀️ haejun</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
-    <title>Obsidian으로 블로그 만들기</title>
-    <link>https://haejunhyun.com/tools/obsidian/quartz-blog</link>
-    <guid>https://haejunhyun.com/tools/obsidian/quartz-blog</guid>
-    <description><![CDATA[  요약 Obsidian의 Quartz 플러그인과 Cloudflare를 이용하여 Obsidian 노트를 웹에 게시한다. 우선, Github와 Cloudflare 계정 생성하기 Github 계정 생성 Cloudflare 계정 생성 1. ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
-  </item><item>
-    <title>PARA 노트 체계화</title>
-    <link>https://haejunhyun.com/tools/obsidian/para</link>
-    <guid>https://haejunhyun.com/tools/obsidian/para</guid>
-    <description><![CDATA[  작성 내용 및 요약 PARA 노트 체계화: 분류 기준은 주제가 아닌 행동 PARA 구조: Project, Area, Resource, Archive Project: 목표와 데드라인이 명확! Area: 책임의 영역으로 꾸준히 신경써야 하는 내용(목표 및 데드라인 X) Resource: 주제별로 자료나 관심사를 정리(목표, 데드라인, 책임 X) Archive: 더 이상 필요없는 노트 1. ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
-  </item><item>
-    <title>이미지 자동 업로드</title>
-    <link>https://haejunhyun.com/tools/obsidian/image-upload</link>
-    <guid>https://haejunhyun.com/tools/obsidian/image-upload</guid>
-    <description><![CDATA[  요약 image auto uploader 플러그인과 Picgo를 통해 github에 사진을 자동 업로드하고 해당 사진의 raw 파일 url 경로를 가져오기 1. ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
-  </item><item>
-    <title>파일 연결 방법</title>
-    <link>https://haejunhyun.com/tools/obsidian/file-linking</link>
-    <guid>https://haejunhyun.com/tools/obsidian/file-linking</guid>
-    <description><![CDATA[  요약 Obsidian에서 내부 노트를 연결하는 방법과 외부 파일 링크를 통해 연결하는 방법이 있다. 내부 노트를 연결하는 방법은 노트의 백링크만 포함하는 연결 방법과 내용까지 표기되는 직접 연결 방법이 있다. 외부 파일은 하이퍼링크 연결 문법에 맞게 연결된다. ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
-  </item><item>
-    <title>콜아웃 문법 가이드</title>
-    <link>https://haejunhyun.com/tools/obsidian/callout</link>
-    <guid>https://haejunhyun.com/tools/obsidian/callout</guid>
-    <description><![CDATA[  Obsidian 노트 내 콜아웃 문법 예시로 강조 및 요약 정리 시 활용 주요 내용 요약 note abstract summary tldr todo tip hint important 성공 및 실패 success check done failure fail missing 부가설명 및 참고사항 info question help Faq 주의 및 경고 warning caution attention danger Error Bug 인용 및 목록 example quote cite 참고사이트 매일 찾아보는 옵시디언 마크다운 문법 정리 . ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
-  </item><item>
     <title>TRIM 공백 및 문자 제거</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/trim</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/trim</guid>
-    <description><![CDATA[  요약 trim은 맨 앞 또는 맨 뒤 연속된 공백/특정 문자를 제거 문자열 중간 제거는 불가 1. ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
+    <description><![CDATA[  요약 trim은 맨 앞 또는 맨 뒤 연속된 공백/특정 문자를 제거 문자열 중간 제거는 불가 공백 제거 함수기능결과TRIM(&#039; abc &#039;)양쪽 공백 제거&#039;abc&#039;LTRIM(&#039; abc &#039;)왼쪽 공백 제거&#039;abc &#039;RTRIM(&#039; abc &#039;)오른쪽 공백 제거&#039; abc&#039;REPLACE(&#039; a b c &#039;, &#039; &#039;, &#039;&#039;)모든 공백 제거&#039;abc&#039; 특정 문자 제거 -- ... ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
   </item><item>
     <title>information_schema 활용법</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/information-schema</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/information-schema</guid>
-    <description><![CDATA[  요약 특정 schema에 속한 컬럼, 함수, 시퀀스, 테이블 정보 조회 ROUTINES, TABLES, SEQUENCES, COLUMNS, table_constraints, key_column_usage 1. ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
+    <description><![CDATA[  요약 특정 schema에 속한 컬럼, 함수, 시퀀스, 테이블 정보 조회 ROUTINES, TABLES, SEQUENCES, COLUMNS, table_constraints, key_column_usage 함수 목록 SELECT routine_schema, routine_name, routine_type FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_type = &#039;FUNCTION&#039;; -- 또는 &#039;PROCEDURE&#039; 테이블 목록 -- 특정 스키마 내 테이블 목록... ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
   </item><item>
     <title>GRANT 권한 부여</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/grant</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/grant</guid>
-    <description><![CDATA[  요약 스키마 권한 부여가 최우선, 그 후 스키마 내 테이블 권한 부여 1. 사용자 관련 CREATE USER 사용자명 PASSWORD &#039;비밀번호&#039;; DROP USER 사용자명; 2. ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
+    <description><![CDATA[  요약 스키마 권한 부여가 최우선, 그 후 스키마 내 테이블 권한 부여 사용자 관련 CREATE USER 사용자명 PASSWORD &#039;비밀번호&#039;; DROP USER 사용자명; 현재 권한 확인 SELECT * FROM information_schema.role_table_grants; grantor: 권한 부여자 grantee: 권한 대상자 table_schema: 스키마명 privilege_type: 권한 목록 계정 권한 부여 스키마 -- 특정 스키마 권한 부여 GRANT ALL PRIVILEGES ON SCHEMA... ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
   </item><item>
     <title>DROP 테이블 제거</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/drop</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/drop</guid>
-    <description><![CDATA[  요약 DROP: 대상 전체를 삭제 — 절대 되돌릴 수 없음 DELETE: 원하는 데이터만 삭제, 되돌릴 수 있음 TRUNCATE: 인덱스 및 데이터 삭제, 테이블은 유지되지만 되돌릴 수 없음 1. ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
+    <description><![CDATA[  요약 DROP: 대상 전체를 삭제 — 절대 되돌릴 수 없음 DELETE: 원하는 데이터만 삭제, 되돌릴 수 있음 TRUNCATE: 인덱스 및 데이터 삭제, 테이블은 유지되지만 되돌릴 수 없음 대상 제거 -- 테이블 제거 DROP TABLE 스키마명.테이블명; -- 스키마 제거 DROP SCHEMA 스키마명; -- 데이터베이스 제거 DROP DATABASE 데이터베이스명;. ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
   </item><item>
     <title>DML 데이터 조작 언어</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/dml</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/dml</guid>
-    <description><![CDATA[  요약 INSERT: 새로운 행을 테이블에 삽입 DELETE: 테이블의 행을 삭제 UPDATE: 특정 열의 값을 수정 SELECT: 질의어 1. ]]></description>
-    <pubDate>Fri, 26 Jun 2026 08:39:05 GMT</pubDate>
+    <description><![CDATA[  요약 INSERT: 새로운 행을 테이블에 삽입 DELETE: 테이블의 행을 삭제 UPDATE: 특정 열의 값을 수정 SELECT: 질의어 INSERT -- 테이블 생성 CREATE TABLE schema_name.table_name ( col1 VARCHAR(10), col2 NUMERIC(8, 2) ); -- 데이터 삽입 INSERT INTO schema_name.table_name VALUES (&#039;abcd&#039;, 1234), (&#039;hhjj&#039;, 3932); DELETE -- 모든 행 삭제 DELET... ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+  </item><item>
+    <title>pg_database 용량 조회</title>
+    <link>https://haejunhyun.com/programming/sql/postgresql/db-size</link>
+    <guid>https://haejunhyun.com/programming/sql/postgresql/db-size</guid>
+    <description><![CDATA[  요약 pg_database 테이블의 정보를 활용하여 DB/스키마별 용량 조회 데이터베이스별 용량 SELECT datname, pg_size_pretty(pg_database_size(datname)) FROM pg_database; 스키마별 용량 -- 특정 스키마 용량 SELECT pg_size_pretty(pg_schema_size(&#039;schema_name&#039;)); -- 전체 스키마 용량 SELECT pg_size_pretty(pg_database_size(current_database())) AS db_size,... ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+  </item><item>
+    <title>PostgreSQL 데이터 타입</title>
+    <link>https://haejunhyun.com/programming/sql/postgresql/data-types</link>
+    <guid>https://haejunhyun.com/programming/sql/postgresql/data-types</guid>
+    <description><![CDATA[  요약 문자형: 고정/가변 길이에 따라 조절 숫자형: 정수형과 실수형으로 구분 날짜 및 시간 문자형 타입설명CHAR(n)고정 길이 — 짧으면 공백 채움 (고정 코드값에 적합)VARCHAR(n)가변 길이 — 최대 길이 제한 (이름, 주소 등)TEXT제한 없는 가변 길이 (설명글 등) 숫자형 정수형 타입크기범위SMALLINT2 Byte-32,768 ~ 32,767INTEGER4 Byte약 ±21억BIGINT8 Byte약 ±922경 실수형 타입크기정밀도REAL4 Byte소수점 6자리DOUBLE PRECISION8 Byte소수점 15자리 ... ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+  </item><item>
+    <title>CREATE 테이블 생성</title>
+    <link>https://haejunhyun.com/programming/sql/postgresql/create</link>
+    <guid>https://haejunhyun.com/programming/sql/postgresql/create</guid>
+    <description><![CDATA[  요약 새로운 데이터베이스, 스키마, 테이블, 인덱스 생성 테이블 -- 신규 테이블 생성 CREATE TABLE 스키마명.테이블명 ( column1 VARCHAR(20) NOT NULL, column2 NUMERIC(10, 4), column3 TEXT, column4 INTEGER, PRIMARY KEY (column1, column2), FOREIGN KEY (column3) REFERENCES 스키마명.참고테이블명 ); -- SELECT 문으로 테이블 생성 CREATE TABLE 스키마명.테이블명 AS SELECT column... ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+  </item><item>
+    <title>ALTER 테이블 수정</title>
+    <link>https://haejunhyun.com/programming/sql/postgresql/alter</link>
+    <guid>https://haejunhyun.com/programming/sql/postgresql/alter</guid>
+    <description><![CDATA[  요약 테이블 자체 또는 열, 제약조건을 수정하는 경우 활용 테이블 수정 ALTER TABLE old_table_name RENAME TO new_table_name; 열 수정 -- 열 생성 ALTER TABLE 테이블명 ADD COLUMN 컬럼명1 INTEGER, ADD COLUMN 컬럼명2 CHAR(20); -- 열 삭제 ALTER TABLE 테이블명 DROP COLUMN 컬럼명; -- 열 이름 변경 (PostgreSQL은 한 번에 하나만) ALTER TABLE 테이블명 RENAME COLUMN old_컬럼명 TO new_컬럼명... ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+  </item><item>
+    <title>문자열 분리 split &amp; extract</title>
+    <link>https://haejunhyun.com/programming/python/string/str-split</link>
+    <guid>https://haejunhyun.com/programming/python/string/str-split</guid>
+    <description><![CDATA[  요약 특정 문자로 구분: str.split() 활용 정규표현식으로 구분: str.extract() 활용 특정 문자로 구분 # 각 열을 분할하여 list로 반환 df = df.assign( basic=df[&#039;col&#039;].str.split(&#039;,&#039;), ver2=df[&#039;col&#039;].apply(lambda x: x.split(sep=&#039;,&#039;, maxsplit=1)) ) # 분할 결과를 데이터프레임으로 반환 df2 = df[&#039;col&#039;].str.split(&#... ]]></description>
+    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
   </item>
     </channel>
   </rss>
