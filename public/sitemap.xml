@@ -1,250 +1,265 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml"><url>
     <loc>https://haejunhyun.com/computer-science/algorithm/balltree</loc>
-    <lastmod>2026-07-06T15:28:15.421Z</lastmod>
+    <lastmod>2026-07-11T09:35:02.963Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/computer-science/algorithm/dfs-bfs</loc>
-    <lastmod>2026-07-06T15:28:15.438Z</lastmod>
+    <lastmod>2026-07-11T09:35:02.979Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/computer-science/algorithm/kde</loc>
-    <lastmod>2026-07-06T15:28:15.444Z</lastmod>
+    <lastmod>2026-07-11T09:35:02.986Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/computer-science/algorithm/time-complexity</loc>
-    <lastmod>2026-07-06T15:28:15.451Z</lastmod>
+    <lastmod>2026-07-11T09:35:02.994Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/computer-science/data-structure/stack-queue</loc>
-    <lastmod>2026-07-06T15:28:15.458Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.000Z</lastmod>
+  </url><url>
+    <loc>https://haejunhyun.com/computer-science/network/api-http-rest</loc>
+    <lastmod>2026-07-11T09:35:03.010Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/connection-hook/connection-hook</loc>
-    <lastmod>2026-07-06T15:28:15.473Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.027Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/connection-hook/docker-compose-explained</loc>
-    <lastmod>2026-07-06T15:28:15.480Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.030Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/connection-hook/postgres-container</loc>
-    <lastmod>2026-07-06T15:28:15.483Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.034Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/getting-started/concepts</loc>
-    <lastmod>2026-07-06T15:28:15.487Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.037Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/getting-started/installation</loc>
-    <lastmod>2026-07-06T15:28:15.490Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.040Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/getting-started/packages</loc>
-    <lastmod>2026-07-06T15:28:15.492Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.042Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/python-operator/basic</loc>
-    <lastmod>2026-07-06T15:28:15.494Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.044Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/python-operator/external-function</loc>
-    <lastmod>2026-07-06T15:28:15.495Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.047Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/python-operator/op-args-kwargs</loc>
-    <lastmod>2026-07-06T15:28:15.497Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.048Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/python-operator/params</loc>
-    <lastmod>2026-07-06T15:28:15.499Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.050Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/airflow/python-operator/task-decorator</loc>
-    <lastmod>2026-07-06T15:28:15.501Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.052Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/git/git-github</loc>
-    <lastmod>2026-07-06T15:28:15.504Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.054Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/git/workflow</loc>
-    <lastmod>2026-07-06T15:28:15.516Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.063Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/infra/airflow-github</loc>
-    <lastmod>2026-07-06T15:28:15.524Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.070Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/infra/airflow-postgres</loc>
-    <lastmod>2026-07-06T15:28:15.529Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.074Z</lastmod>
+  </url><url>
+    <loc>https://haejunhyun.com/data-engineering/infra/gpu-fundamentals-and-practical-usage</loc>
+    <lastmod>2026-07-11T09:35:03.081Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/infra/oracle-cloud</loc>
-    <lastmod>2026-07-06T15:28:15.533Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.088Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/infra/oracle-server</loc>
-    <lastmod>2026-07-06T15:28:15.542Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.094Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-engineering/linux/commands</loc>
-    <lastmod>2026-07-06T15:28:15.548Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.099Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-science/deep-learning/neural-network-training</loc>
-    <lastmod>2026-07-06T15:28:15.556Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.105Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-science/deep-learning/neural-network</loc>
-    <lastmod>2026-07-06T15:28:15.576Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.121Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/data-science/deep-learning/perceptron</loc>
-    <lastmod>2026-07-06T15:28:15.593Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.130Z</lastmod>
+  </url><url>
+    <loc>https://haejunhyun.com/data-science/statistics/descriptive-statistics-and-scaling</loc>
+    <lastmod>2026-07-11T09:35:03.140Z</lastmod>
+  </url><url>
+    <loc>https://haejunhyun.com/data-science/statistics/distribution-transformation-and-matrix</loc>
+    <lastmod>2026-07-11T09:35:03.154Z</lastmod>
+  </url><url>
+    <loc>https://haejunhyun.com/data-science/statistics/statistics-fundamentals</loc>
+    <lastmod>2026-07-11T09:35:03.165Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/finance/tools/obsidian/callout</loc>
-    <lastmod>2026-07-06T15:28:15.601Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.171Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/finance/tools/obsidian/file-linking</loc>
-    <lastmod>2026-07-06T15:28:15.603Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.173Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/finance/tools/obsidian/image-upload</loc>
-    <lastmod>2026-07-06T15:28:15.606Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.176Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/finance/tools/obsidian/para</loc>
-    <lastmod>2026-07-06T15:28:15.610Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.180Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/finance/tools/obsidian/quartz-blog</loc>
-    <lastmod>2026-07-06T15:28:15.615Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.184Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/finance/%EC%9D%80%ED%96%89-%EA%B8%B0%EC%B4%88-%EC%9A%A9%EC%96%B4</loc>
-    <lastmod>2026-07-06T15:28:15.621Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.189Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/real-estate/%EB%B6%80%EB%8F%99%EC%82%B0-%EA%B0%80%EA%B2%A9-%EC%9A%A9%EC%96%B4</loc>
-    <lastmod>2026-07-06T15:28:15.629Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.197Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/real-estate/%EB%B6%80%EB%8F%99%EC%82%B0-%EA%B1%B4%EC%B6%95-%EC%9A%A9%EC%96%B4</loc>
-    <lastmod>2026-07-06T15:28:15.636Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.204Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/real-estate/%EC%8B%A0%ED%83%81%EC%9B%90%EB%B6%80</loc>
-    <lastmod>2026-07-06T15:28:15.646Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.216Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/real-estate/%EC%A3%BC%EC%86%8C-%EA%B3%A0%EC%9C%A0%EB%B2%88%ED%98%B8</loc>
-    <lastmod>2026-07-06T15:28:15.657Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.226Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/real-estate/%EC%A3%BC%ED%83%9D%EB%8B%B4%EB%B3%B4%EB%8C%80%EC%B6%9C</loc>
-    <lastmod>2026-07-06T15:28:15.668Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.236Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/finance-property/real-estate/%EC%A3%BC%ED%83%9D%EB%A9%B4%EC%A0%81</loc>
-    <lastmod>2026-07-06T15:28:15.674Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.242Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/gis/concept/crs</loc>
-    <lastmod>2026-07-06T15:28:15.679Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.247Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/gis/concept/spatial-data-types</loc>
-    <lastmod>2026-07-06T15:28:15.683Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.252Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/gis/python-gis/geopandas-overlay</loc>
-    <lastmod>2026-07-06T15:28:15.688Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.257Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/gis/python-gis/geopandas-shapely</loc>
-    <lastmod>2026-07-06T15:28:15.692Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.261Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/gis/python-gis/map-visualization</loc>
-    <lastmod>2026-07-06T15:28:15.696Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.265Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/gis/python-gis/pyproj</loc>
-    <lastmod>2026-07-06T15:28:15.698Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.267Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/</loc>
-    <lastmod>2026-07-06T15:28:15.700Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.269Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/advanced/argparse</loc>
-    <lastmod>2026-07-06T15:28:15.702Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.272Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/advanced/async-pipeline</loc>
-    <lastmod>2026-07-06T15:28:15.705Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.275Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/advanced/asyncio</loc>
-    <lastmod>2026-07-06T15:28:15.711Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.282Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/advanced/boto3</loc>
-    <lastmod>2026-07-06T15:28:15.715Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.290Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/advanced/duckdb</loc>
-    <lastmod>2026-07-06T15:28:15.719Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.299Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/advanced/reduce</loc>
-    <lastmod>2026-07-06T15:28:15.721Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.302Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/advanced/selenium</loc>
-    <lastmod>2026-07-06T15:28:15.724Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.305Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/basics/class</loc>
-    <lastmod>2026-07-06T15:28:15.727Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.308Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/basics/control-flow</loc>
-    <lastmod>2026-07-06T15:28:15.730Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.312Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/basics/loop</loc>
-    <lastmod>2026-07-06T15:28:15.734Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.316Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/basics/missing-values</loc>
-    <lastmod>2026-07-06T15:28:15.738Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.320Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/basics/name-main</loc>
-    <lastmod>2026-07-06T15:28:15.740Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.322Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/basics/os-module</loc>
-    <lastmod>2026-07-06T15:28:15.741Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.324Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/basics/pathlib</loc>
-    <lastmod>2026-07-06T15:28:15.743Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.327Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/basics/pprint</loc>
-    <lastmod>2026-07-06T15:28:15.745Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.330Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/basics/tqdm</loc>
-    <lastmod>2026-07-06T15:28:15.746Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.332Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/database/db-connection</loc>
-    <lastmod>2026-07-06T15:28:15.748Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.334Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/datetime/date-range</loc>
-    <lastmod>2026-07-06T15:28:15.750Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.337Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/datetime/date-utils</loc>
-    <lastmod>2026-07-06T15:28:15.751Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.339Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/datetime/datetime</loc>
-    <lastmod>2026-07-06T15:28:15.753Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.343Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/datetime/elapsed-time</loc>
-    <lastmod>2026-07-06T15:28:15.755Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.345Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/datetime/timedelta</loc>
-    <lastmod>2026-07-06T15:28:15.755Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.345Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/settings/cursor-vscode</loc>
-    <lastmod>2026-07-06T15:28:15.758Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.348Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/settings/installation</loc>
-    <lastmod>2026-07-06T15:28:15.760Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.350Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/settings/pydantic-config</loc>
-    <lastmod>2026-07-06T15:28:15.762Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.352Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/settings/uv</loc>
-    <lastmod>2026-07-06T15:28:15.765Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.354Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/string/regex</loc>
-    <lastmod>2026-07-06T15:28:15.769Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.359Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/string/str-filter</loc>
-    <lastmod>2026-07-06T15:28:15.771Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.361Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/python/string/str-split</loc>
-    <lastmod>2026-07-06T15:28:15.772Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.363Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/sql/postgresql/alter</loc>
-    <lastmod>2026-07-06T15:28:15.773Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.365Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/sql/postgresql/create</loc>
-    <lastmod>2026-07-06T15:28:15.774Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.366Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/sql/postgresql/data-types</loc>
-    <lastmod>2026-07-06T15:28:15.776Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.368Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/sql/postgresql/db-size</loc>
-    <lastmod>2026-07-06T15:28:15.778Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.370Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/sql/postgresql/dml</loc>
-    <lastmod>2026-07-06T15:28:15.779Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.372Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/sql/postgresql/drop</loc>
-    <lastmod>2026-07-06T15:28:15.780Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.374Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/sql/postgresql/grant</loc>
-    <lastmod>2026-07-06T15:28:15.781Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.375Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/sql/postgresql/information-schema</loc>
-    <lastmod>2026-07-06T15:28:15.782Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.377Z</lastmod>
   </url><url>
     <loc>https://haejunhyun.com/programming/sql/postgresql/trim</loc>
-    <lastmod>2026-07-06T15:28:15.783Z</lastmod>
+    <lastmod>2026-07-11T09:35:03.379Z</lastmod>
   </url></urlset>

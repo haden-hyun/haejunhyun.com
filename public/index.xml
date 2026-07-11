@@ -10,61 +10,61 @@
     <link>https://haejunhyun.com/programming/sql/postgresql/trim</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/trim</guid>
     <description><![CDATA[  요약 trim은 맨 앞 또는 맨 뒤 연속된 공백/특정 문자를 제거 문자열 중간 제거는 불가 공백 제거 함수기능결과TRIM(&#039; abc &#039;)양쪽 공백 제거&#039;abc&#039;LTRIM(&#039; abc &#039;)왼쪽 공백 제거&#039;abc &#039;RTRIM(&#039; abc &#039;)오른쪽 공백 제거&#039; abc&#039;REPLACE(&#039; a b c &#039;, &#039; &#039;, &#039;&#039;)모든 공백 제거&#039;abc&#039; 특정 문자 제거 -- ... ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item><item>
     <title>information_schema 활용법</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/information-schema</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/information-schema</guid>
     <description><![CDATA[  요약 특정 schema에 속한 컬럼, 함수, 시퀀스, 테이블 정보 조회 ROUTINES, TABLES, SEQUENCES, COLUMNS, table_constraints, key_column_usage 함수 목록 SELECT routine_schema, routine_name, routine_type FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_type = &#039;FUNCTION&#039;; -- 또는 &#039;PROCEDURE&#039; 테이블 목록 -- 특정 스키마 내 테이블 목록... ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item><item>
     <title>GRANT 권한 부여</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/grant</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/grant</guid>
     <description><![CDATA[  요약 스키마 권한 부여가 최우선, 그 후 스키마 내 테이블 권한 부여 사용자 관련 CREATE USER 사용자명 PASSWORD &#039;비밀번호&#039;; DROP USER 사용자명; 현재 권한 확인 SELECT * FROM information_schema.role_table_grants; grantor: 권한 부여자 grantee: 권한 대상자 table_schema: 스키마명 privilege_type: 권한 목록 계정 권한 부여 스키마 -- 특정 스키마 권한 부여 GRANT ALL PRIVILEGES ON SCHEMA... ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item><item>
     <title>DROP 테이블 제거</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/drop</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/drop</guid>
     <description><![CDATA[  요약 DROP: 대상 전체를 삭제 — 절대 되돌릴 수 없음 DELETE: 원하는 데이터만 삭제, 되돌릴 수 있음 TRUNCATE: 인덱스 및 데이터 삭제, 테이블은 유지되지만 되돌릴 수 없음 대상 제거 -- 테이블 제거 DROP TABLE 스키마명.테이블명; -- 스키마 제거 DROP SCHEMA 스키마명; -- 데이터베이스 제거 DROP DATABASE 데이터베이스명;. ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item><item>
     <title>DML 데이터 조작 언어</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/dml</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/dml</guid>
     <description><![CDATA[  요약 INSERT: 새로운 행을 테이블에 삽입 DELETE: 테이블의 행을 삭제 UPDATE: 특정 열의 값을 수정 SELECT: 질의어 INSERT -- 테이블 생성 CREATE TABLE schema_name.table_name ( col1 VARCHAR(10), col2 NUMERIC(8, 2) ); -- 데이터 삽입 INSERT INTO schema_name.table_name VALUES (&#039;abcd&#039;, 1234), (&#039;hhjj&#039;, 3932); DELETE -- 모든 행 삭제 DELET... ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item><item>
     <title>pg_database 용량 조회</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/db-size</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/db-size</guid>
     <description><![CDATA[  요약 pg_database 테이블의 정보를 활용하여 DB/스키마별 용량 조회 데이터베이스별 용량 SELECT datname, pg_size_pretty(pg_database_size(datname)) FROM pg_database; 스키마별 용량 -- 특정 스키마 용량 SELECT pg_size_pretty(pg_schema_size(&#039;schema_name&#039;)); -- 전체 스키마 용량 SELECT pg_size_pretty(pg_database_size(current_database())) AS db_size,... ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item><item>
     <title>PostgreSQL 데이터 타입</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/data-types</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/data-types</guid>
     <description><![CDATA[  요약 문자형: 고정/가변 길이에 따라 조절 숫자형: 정수형과 실수형으로 구분 날짜 및 시간 문자형 타입설명CHAR(n)고정 길이 — 짧으면 공백 채움 (고정 코드값에 적합)VARCHAR(n)가변 길이 — 최대 길이 제한 (이름, 주소 등)TEXT제한 없는 가변 길이 (설명글 등) 숫자형 정수형 타입크기범위SMALLINT2 Byte-32,768 ~ 32,767INTEGER4 Byte약 ±21억BIGINT8 Byte약 ±922경 실수형 타입크기정밀도REAL4 Byte소수점 6자리DOUBLE PRECISION8 Byte소수점 15자리 ... ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item><item>
     <title>CREATE 테이블 생성</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/create</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/create</guid>
     <description><![CDATA[  요약 새로운 데이터베이스, 스키마, 테이블, 인덱스 생성 테이블 -- 신규 테이블 생성 CREATE TABLE 스키마명.테이블명 ( column1 VARCHAR(20) NOT NULL, column2 NUMERIC(10, 4), column3 TEXT, column4 INTEGER, PRIMARY KEY (column1, column2), FOREIGN KEY (column3) REFERENCES 스키마명.참고테이블명 ); -- SELECT 문으로 테이블 생성 CREATE TABLE 스키마명.테이블명 AS SELECT column... ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item><item>
     <title>ALTER 테이블 수정</title>
     <link>https://haejunhyun.com/programming/sql/postgresql/alter</link>
     <guid>https://haejunhyun.com/programming/sql/postgresql/alter</guid>
     <description><![CDATA[  요약 테이블 자체 또는 열, 제약조건을 수정하는 경우 활용 테이블 수정 ALTER TABLE old_table_name RENAME TO new_table_name; 열 수정 -- 열 생성 ALTER TABLE 테이블명 ADD COLUMN 컬럼명1 INTEGER, ADD COLUMN 컬럼명2 CHAR(20); -- 열 삭제 ALTER TABLE 테이블명 DROP COLUMN 컬럼명; -- 열 이름 변경 (PostgreSQL은 한 번에 하나만) ALTER TABLE 테이블명 RENAME COLUMN old_컬럼명 TO new_컬럼명... ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item><item>
     <title>문자열 분리 split &amp; extract</title>
     <link>https://haejunhyun.com/programming/python/string/str-split</link>
     <guid>https://haejunhyun.com/programming/python/string/str-split</guid>
     <description><![CDATA[  요약 특정 문자로 구분: str.split() 활용 정규표현식으로 구분: str.extract() 활용 특정 문자로 구분 # 각 열을 분할하여 list로 반환 df = df.assign( basic=df[&#039;col&#039;].str.split(&#039;,&#039;), ver2=df[&#039;col&#039;].apply(lambda x: x.split(sep=&#039;,&#039;, maxsplit=1)) ) # 분할 결과를 데이터프레임으로 반환 df2 = df[&#039;col&#039;].str.split(&#... ]]></description>
-    <pubDate>Mon, 06 Jul 2026 15:28:15 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 09:35:03 GMT</pubDate>
   </item>
     </channel>
   </rss>
