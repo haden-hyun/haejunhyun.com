@@ -68,8 +68,7 @@
 - 레이아웃 재선언: 좌(PageTitle→VisitorCounter→SocialLinks→Search→Darkmode→Explorer), 우(Graph→TOC→Backlinks), beforeBody(Breadcrumbs→ArticleTitle→ContentMeta→TagList), afterBody(ReadingProgress→BackToTop→ImageLightbox→PrevNext→RecentNotesForIndex→Comments).
 
 ### Phase 3 — 커스텀 컴포넌트 이관 (핵심 작업, 난이도 상)
-- 우선순위 1 (정체성): SocialLinks, RecentNotesForIndex(index 한정은 v5 `condition` 활용 검토), PrevNext.
-- 우선순위 2 (UX 부가): ReadingProgress, BackToTop, ImageLightbox, VisitorCounter.
+- 7종 전체를 우선순위 구분 없이 **동시 진행**: SocialLinks, RecentNotesForIndex(index 한정은 v5 `condition` 활용 검토), PrevNext, ReadingProgress, BackToTop, ImageLightbox, VisitorCounter.
 - ShareButtons: 현재 레이아웃 미사용 → **이관 제외** (필요 시 추후 재구현).
 - 각 컴포넌트는 v5 로컬 플러그인으로 재작성하되, 커뮤니티 레지스트리(`npx quartz tui`)에 동등 기능 플러그인이 있으면 재구현 대신 채택.
 - Explorer/Footer/Head/og.tsx 수정분은 해당 플러그인 옵션·`quartz.ts` 오버라이드로 흡수.
@@ -78,12 +77,8 @@
 - `custom.scss` 319줄을 v5 HTML 구조에 맞춰 선택자 검증 후 이식.
 - 기준: 명조+고딕 타이포그래피, Slate Blue 포인트, 웜톤 배경.
 
-### Phase 5 — 검증 게이트 (전부 통과 전 이관 금지)
-- [ ] 신구 sitemap diff — URL 변화 전수 확인 (giscus 댓글 보존 핵심)
-- [ ] 전 페이지 렌더링 (카테고리 7종 대표 글 포함)
-- [ ] 한글 검색, 그래프, Explorer, 다크모드, 모바일 레이아웃
-- [ ] RSS·OG 이미지 생성
-- [ ] 대표 글에서 giscus 댓글 로딩
+### Phase 5 — 확인 (게이트 아님, 사용자 결정으로 필수 검증 절차 없음)
+- 빌드 성공 + 로컬 프리뷰 육안 확인 수준으로만 진행. sitemap diff 등 전수 검증은 생략.
 
 ### Phase 6 — 본 레포 이관 및 전환
 1. `git remote add upstream https://github.com/jackyzha0/quartz.git` → `git fetch upstream v5` → `v5` 브랜치 생성 후 테스트 폴더의 config/로컬 플러그인/scss 이식.
