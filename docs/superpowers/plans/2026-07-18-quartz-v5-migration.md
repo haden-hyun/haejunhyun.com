@@ -49,9 +49,9 @@ grep -c "<loc>" ~/Developer/quartz-v5-migration-backup/sitemap-v4.xml
 
 Expected: 페이지 수(숫자) 출력. 이 수치를 기록해 둔다.
 
-- [ ] **Step 3: Cloudflare 설정 확인 (사용자 확인 필요)**
+- [x] **Step 3: Cloudflare 설정 확인 — 완료 (2026-07-18 사용자 확인)**
 
-사용자에게 확인 요청: Cloudflare 대시보드에서 해당 프로젝트의 (a) 프로덕션 브랜치가 `v4`인지, (b) 빌드 명령이 없고 출력 디렉토리가 `public`인지 캡처/기록. 이 정보는 Task 14에서 전환할 때 필요하다.
+확인됨: 프로덕션 브랜치 `v4`, 빌드 출력 디렉토리 `public`. Task 16에서 이 설정을 전제로 전환한다.
 
 ---
 
@@ -493,6 +493,16 @@ npx quartz plugin install || return 5
 ```bash
 git push -u origin v5
 ```
+
+- [ ] **Step 1.5: 브랜치 프리뷰 URL에서 실환경 검증 (사용자 승인된 방식)**
+
+push 후 Cloudflare Pages가 자동 생성하는 프리뷰 배포(`v5.<프로젝트명>.pages.dev` — 대시보드의 해당 배포 상세에서 URL 확인)에 접속해 확인:
+1. giscus 댓글 위젯 로딩 (기존 댓글 표시 여부)
+2. VisitorCounter 숫자 로딩 (GoatCounter가 pages.dev 도메인을 거부하면 실전환 후 재확인 항목으로 기록)
+3. OG 이미지 산출물 접근 (`/static/og-images/` 등 실제 경로)
+4. 전반적 렌더링 (폰트/컬러/카드 그리드/다크모드)
+
+주의: `baseUrl`이 haejunhyun.com이므로 프리뷰에서 sitemap/RSS의 절대 URL·SPA 일부 동작은 어긋날 수 있다 — 이는 프리뷰 한계이며 결함 아님. 위 4개 항목만 보고 판단한다.
 
 - [ ] **Step 2: 전환 (사용자 수동 작업 — 안내 후 확인 대기)**
 
