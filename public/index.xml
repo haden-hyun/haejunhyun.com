@@ -6,65 +6,65 @@
       <description>Last 10 notes on ☀️ haejun</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
-    <title>real-estate/면적</title>
-    <link>https://haejunhyun.com/tags/real-estate/%EB%A9%B4%EC%A0%81</link>
-    <guid>https://haejunhyun.com/tags/real-estate/%EB%A9%B4%EC%A0%81</guid>
+    <title>algorithm</title>
+    <link>https://haejunhyun.com/computer-science/algorithm/</link>
+    <guid>https://haejunhyun.com/computer-science/algorithm/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item><item>
-    <title>gis</title>
-    <link>https://haejunhyun.com/tags/gis</link>
-    <guid>https://haejunhyun.com/tags/gis</guid>
+    <title>computer-science</title>
+    <link>https://haejunhyun.com/computer-science/</link>
+    <guid>https://haejunhyun.com/computer-science/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item><item>
-    <title>gis/개념</title>
-    <link>https://haejunhyun.com/tags/gis/%EA%B0%9C%EB%85%90</link>
-    <guid>https://haejunhyun.com/tags/gis/%EA%B0%9C%EB%85%90</guid>
+    <title>data-structure</title>
+    <link>https://haejunhyun.com/computer-science/data-structure/</link>
+    <guid>https://haejunhyun.com/computer-science/data-structure/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item><item>
-    <title>python-gis</title>
-    <link>https://haejunhyun.com/tags/python-gis</link>
-    <guid>https://haejunhyun.com/tags/python-gis</guid>
+    <title>network</title>
+    <link>https://haejunhyun.com/computer-science/network/</link>
+    <guid>https://haejunhyun.com/computer-science/network/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item><item>
-    <title>python-gis/geopandas</title>
-    <link>https://haejunhyun.com/tags/python-gis/geopandas</link>
-    <guid>https://haejunhyun.com/tags/python-gis/geopandas</guid>
+    <title>airflow</title>
+    <link>https://haejunhyun.com/data-engineering/airflow/</link>
+    <guid>https://haejunhyun.com/data-engineering/airflow/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item><item>
-    <title>gis/python</title>
-    <link>https://haejunhyun.com/tags/gis/python</link>
-    <guid>https://haejunhyun.com/tags/gis/python</guid>
+    <title>data-engineering</title>
+    <link>https://haejunhyun.com/data-engineering/</link>
+    <guid>https://haejunhyun.com/data-engineering/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item><item>
-    <title>python</title>
-    <link>https://haejunhyun.com/tags/python</link>
-    <guid>https://haejunhyun.com/tags/python</guid>
+    <title>getting-started</title>
+    <link>https://haejunhyun.com/data-engineering/airflow/getting-started/</link>
+    <guid>https://haejunhyun.com/data-engineering/airflow/getting-started/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item><item>
-    <title>python/advanced</title>
-    <link>https://haejunhyun.com/tags/python/advanced</link>
-    <guid>https://haejunhyun.com/tags/python/advanced</guid>
+    <title>python-operator</title>
+    <link>https://haejunhyun.com/data-engineering/airflow/python-operator/</link>
+    <guid>https://haejunhyun.com/data-engineering/airflow/python-operator/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item><item>
-    <title>python/asyncio</title>
-    <link>https://haejunhyun.com/tags/python/asyncio</link>
-    <guid>https://haejunhyun.com/tags/python/asyncio</guid>
+    <title>git</title>
+    <link>https://haejunhyun.com/data-engineering/git/</link>
+    <guid>https://haejunhyun.com/data-engineering/git/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item><item>
-    <title>python/boto3</title>
-    <link>https://haejunhyun.com/tags/python/boto3</link>
-    <guid>https://haejunhyun.com/tags/python/boto3</guid>
+    <title>infra</title>
+    <link>https://haejunhyun.com/data-engineering/infra/</link>
+    <guid>https://haejunhyun.com/data-engineering/infra/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Sun, 19 Jul 2026 09:52:27 GMT</pubDate>
+    <pubDate>Tue, 21 Jul 2026 14:34:18 GMT</pubDate>
   </item>
     </channel>
   </rss>
