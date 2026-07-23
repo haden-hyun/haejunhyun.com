@@ -362,9 +362,22 @@ tbody td { padding: 0.5rem 0.8rem; color: var(--darkgray); }
 
 hr { border: none; border-top: 1px solid var(--lightgray); margin: 2rem 0; }
 
-img + em, figure figcaption {
+// 이미지 가운데 정렬 — Quartz는 이미지를 <p><img></p>로 감싸므로 img를 block+auto로.
+article img { display: block; margin-inline: auto; }
+
+// 그림 캡션 — Quartz는 이미지와 바로 뒤 *그림.* 을 각각 별개의 <p>로 렌더한다.
+// 그래서 예전 `img + em`은 매칭되지 않았다. :has로 "이미지 단락 다음의 이탤릭 단락"을 잡는다.
+article p:has(> img:only-child) + p:has(> em:only-child) {
+  margin-top: -0.5rem;      // 이미지에 바짝 붙임 (문단 기본 간격 상쇄)
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--gray);
+  em { font-style: normal; }  // 캡션은 회색 작은 글씨로 충분 (이탤릭 해제)
+}
+
+figure figcaption {
   display: block; text-align: center;
-  font-size: 0.75rem; color: var(--gray); margin-top: 0.4rem;
+  font-size: 0.8rem; color: var(--gray); margin-top: 0.4rem;
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
