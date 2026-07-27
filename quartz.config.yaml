@@ -81,6 +81,8 @@ plugins:
   - source: github:quartz-community/table-of-contents
     enabled: true
     order: 50
+    options:
+      maxDepth: 2
     layout:
       position: right
       priority: 30
