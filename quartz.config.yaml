@@ -17,6 +17,9 @@ configuration:
     fontOrigin: googleFonts
     cdnCaching: true
     typography:
+      # Google Fonts URL 구성 + og-image(satori) 폰트 로드에 쓰인다.
+      # 실제 브라우저 표시 폰트(--bodyFont 등)는 아래 `fonts` 플러그인 옵션이
+      # 최종 결정한다(그 CSS가 가장 뒤에 로드됨) — 두 값이 같아야 일관된다.
       header: Nanum Myeongjo
       body: Noto Sans KR
       code: JetBrains Mono
@@ -85,7 +88,12 @@ plugins:
       maxDepth: 2
     layout:
       position: right
-      priority: 30
+      # [리디자인] 30 → 10. 우측 사이드바는 priority 오름차순으로 위→아래 배치된다
+      # (config-loader.ts:910 `entries.sort((a,b) => a.priority - b.priority)`).
+      # 기존엔 graph(10) → toc(30) → backlinks(50) 순이라 그래프가 맨 위였다.
+      # 노트를 읽는 동안 실제로 쓰는 건 목차이므로 toc를 최상단으로 올린다.
+      # 결과 순서: toc(10) → graph(30) → backlinks(50)
+      priority: 10
       display: desktop-only
   - source: github:quartz-community/crawl-links
     enabled: true
@@ -114,6 +122,21 @@ plugins:
     order: 92
   - source: github:quartz-community/fonts
     enabled: true
+    # [2026-08-02 버그픽스, 유지] 옵션 없이 켜두면 이 플러그인이 **자기 기본값**
+    # (Schibsted Grotesk / Source Sans Pro / IBM Plex Mono)으로 CSS를 emit하고,
+    # 그 파일(static/resource-style-*.css)이 코어 테마 CSS보다 **뒤에** 로드되어
+    # `configuration.theme.typography`를 통째로 덮어썼다.
+    # → 그동안 사이트는 Nanum Myeongjo가 아니라 Schibsted Grotesk로 렌더됐고,
+    #   한글은 폴백 스택도 없이 브라우저 기본 폰트로 떨어지고 있었다.
+    # 옵션 없이 되돌리면 이 버그가 재발하므로, 본문 폰트를 Pretendard→Noto Sans KR로
+    # 롤백한 뒤에도 옵션 명시는 그대로 유지한다. fontOrigin: local = 이 플러그인은
+    # 폰트를 로드하지 않는다는 뜻("로컬 폰트"가 아니라 "로딩 안 함"). 실제 로딩은
+    # 코어 theme.fontOrigin(googleFonts)이 담당.
+    options:
+      fontOrigin: local
+      header: '"Nanum Myeongjo", serif'
+      body: '"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif'
+      code: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
   - source: github:quartz-community/remove-draft
     enabled: true
   - source: github:quartz-community/explicit-publish
@@ -168,7 +191,11 @@ plugins:
     enabled: true
     layout:
       position: right
-      priority: 10
+      # [리디자인] 10 → 30. toc 아래로 내린다 (toc 주석 참고).
+      priority: 30
+      # [리디자인 P4] 홈에서 제거. 홈의 그래프는 연결이 없어 노드 1개짜리
+      # 빈 박스로 렌더돼 죽은 UI였다. 노트 상세의 local graph는 그대로 유지.
+      condition: not-index
   - source: github:quartz-community/search
     enabled: true
     layout:
@@ -232,6 +259,9 @@ plugins:
     layout:
       position: afterBody
       priority: 50
+      # [리디자인 P6] 홈에서 댓글 섹션 제거. `0 comments`가 첫인상에 노출되는 것을
+      # 막는다. 노트 상세에서는 그대로 유지.
+      condition: not-index
   - source: github:quartz-community/recent-notes
     enabled: false
   - source: github:quartz-community/spacer
@@ -283,7 +313,8 @@ plugins:
       links:
         - name: GitHub
           url: https://github.com/haden-hyun/haejunhyun.com
-          icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438
+          icon:
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438
             9.8 8.207
             11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729
             1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304
@@ -294,7 +325,8 @@ plugins:
             8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
         - name: LinkedIn
           url: https://www.linkedin.com/in/haejun-hyun-332b76243/
-          icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761
+          icon:
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761
             2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966
             0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5
             12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
@@ -340,12 +372,19 @@ plugins:
       position: afterBody
       priority: 20
   - source: ./plugins/visitor-counter
+    # [2026-08-02] 독립 위치 제거 (삭제 아님, 이력: left/11 → afterBody/60 → 여기).
+    # "Created by haejun" 줄 우측에 나란히 두기로 해서, 이제 이 컴포넌트는
+    # site-wide position이 아니라 `./plugins/footer`의 npm 의존성(file:)으로
+    # 물려 Footer.tsx가 직접 렌더한다 (plugins/footer/src/components/Footer.tsx).
+    #
+    # `layout` 키를 비워두면 config-loader가 이 엔트리를 위치 기반 렌더 대상에서
+    # 건너뛴다(entry.layout이 없으면 continue) — 그래도 dist는 그대로 남아있어
+    # footer가 file: 의존성으로 정상 참조한다. enabled는 true로 유지: 다른
+    # local plugin과 동일하게 install-plugins 파이프라인에서 정상 취급되어야
+    # dist 빌드/심볼릭 링크 관례가 깨지지 않는다.
     enabled: true
     options: {}
     order: 15
-    layout:
-      position: left
-      priority: 11
   - source: ./plugins/goatcounter-tracking
     enabled: true
     options:

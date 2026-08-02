@@ -1,7 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════
 //  quartz/styles/custom.scss — Theme B
 //  Nanum Myeongjo (heading) + Noto Sans KR (body) + Slate Blue
-//
 //  v4 → v5 이관 메모:
 //  v4는 `@use "base";` 로 base.scss(+variables/syntax/callouts)를 이 파일 안에서
 //  직접 끌어왔다 (v4 componentResources.ts가 custom.scss만 import했기 때문).
@@ -19,6 +18,79 @@
 
 // put your custom CSS here!
 
+// ── 0. 리디자인 토큰 ────────────────────────────────────────────────────────
+//
+// [2026-08-02] design-handoff.md §2의 토큰을 이식하되, **값을 새로 정의하지 않고
+// Quartz 변수의 별칭으로 둔다.**
+//
+// 핸드오프는 --accent/--text/--bg를 독립 값으로 정의하고 "신규 컴포넌트는 이 토큰만
+// 참조"하라고 지시했다. 그대로 하면 신규 컴포넌트만 새 색을 쓰고 기존 30여 개
+// 플러그인(explorer/search/backlinks/graph/toc/callouts/syntax…)은 옛 색에 남아
+// 사이트가 두 브랜드로 쪼개진다. 색의 단일 소스는 quartz.config.yaml의
+// theme.colors 하나여야 한다.
+//
+// 액센트 컬러 결정(2026-08-02): 현행 슬레이트 블루 유지.
+//   라이트 #3d6b8e on #fafaf8 = 5.44:1 (AA ✓) / 다크 #7aaed4 on #1a1e24 = 7.04:1 (AA ✓)
+//   핸드오프의 테라코타 #c2703a는 라이트에서 3.58:1로 AA 미달이었고, 채택 근거도
+//   문서에 없었다(핸드오프 스스로 §Q5에서 미결로 남김).
+//
+// 주의: :root 커스텀 프로퍼티는 §1의 @layer 지뢰와 무관하다. 그 문제는 bare
+// h1/p 같은 **요소 선택자**가 non-layered로 나가 플러그인 규칙을 이기는 것이었다.
+
+:root {
+  --accent: var(--secondary);
+  --bg: var(--light);
+  --surface: var(--light);
+  --surface-2: var(--lightgray);
+  --border: var(--lightgray);
+  --text: var(--dark);
+  --text-2: var(--darkgray);
+  --text-3: var(--gray);
+
+  // ── 토픽 컬러 (핸드오프 §2 --c-* 7종) ──
+  //
+  // 2단 구성이다. 핸드오프 원본 7색은 채도가 높아 **텍스트로 쓰면 7개 중 6개가
+  // AA 미달**이다(라이트 배경 #fafaf8 기준: cs 4.14 / de 2.44 / gis 2.91 /
+  // prog 3.43 / fin 2.98 / tool 3.18 — ds만 4.74로 통과).
+  //
+  //   --c-*        원본 값. 3px 컬러바·아이콘 등 **장식 전용** (대비 요구 없음)
+  //   --c-*-text   AA 통과하도록 명도 보정. 카테고리 **라벨 텍스트 전용**
+  //
+  // 이렇게 나누면 핸드오프의 7색을 시각적으로 그대로 유지하면서 라벨 가독성을
+  // 확보한다. 목업의 `<span class="cat c-fin">`처럼 색을 글자에 쓰는 자리에는
+  // 반드시 -text 쪽을 참조할 것.
+  --c-cs: #4c6ef5;
+  --c-de: #12b886;
+  --c-ds: #7950f2;
+  --c-gis: #f76707;
+  --c-prog: #e8590c;
+  --c-fin: #0ca678;
+  --c-tool: #868e96;
+
+  --c-cs-text: #4266f4; // 4.53:1
+  --c-de-text: #0d835f; // 4.54:1
+  --c-ds-text: #7950f2; // 4.74:1 (원본 그대로 통과)
+  --c-gis-text: #c05005; // 4.58:1
+  --c-prog-text: #c64c0a; // 4.53:1
+  --c-fin-text: #09825e; // 4.60:1
+  --c-tool-text: #6c747d; // 4.53:1
+}
+
+// 다크모드. Quartz는 documentElement의 `saved-theme` 속성으로 제어한다
+// (.quartz/plugins/darkmode/dist/index.js — `setAttribute("saved-theme", …)`).
+// 목업은 `data-theme`을 썼으므로 셀렉터를 반드시 치환해야 한다.
+//
+// 핸드오프 §2에는 --c-* 다크값이 아예 없었다. 원본 7색을 다크 배경(#1a1e24)에
+// 그대로 쓰면 cs(4.14→) / ds가 미달이라 해당 2색만 명도를 올려 보정한다.
+:root[saved-theme="dark"] {
+  --c-cs-text: #5d7cf6; // 4.52:1
+  --c-de-text: #12b886; // 6.55:1 (원본 통과)
+  --c-ds-text: #916ff4; // 4.61:1
+  --c-gis-text: #f76707; // 5.50:1 (원본 통과)
+  --c-prog-text: #e8590c; // 4.67:1 (원본 통과)
+  --c-fin-text: #0ca678; // 5.37:1 (원본 통과)
+  --c-tool-text: #868e96; // 5.04:1 (원본 통과)
+}
 
 // ── 1. Typography ──────────────────────────────────────────────────────────
 //
@@ -32,42 +104,67 @@
 // 자기 영역에서 이기고, 경쟁자 없는 본문에는 이 타이포가 그대로 적용됨).
 
 @layer quartz-base {
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--headerFont);
     letter-spacing: -0.02em;
     line-height: 1.3;
   }
 
-  h1 { font-weight: 800; font-size: 1.75rem; color: var(--dark); }
+  h1 {
+    font-weight: 800;
+    font-size: 1.75rem;
+    color: var(--dark);
+  }
 
   h2 {
-    font-weight: 700; font-size: 1.2rem; color: var(--dark);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--dark);
     padding-bottom: 0.35rem;
     border-bottom: 1.5px solid var(--lightgray);
-    margin-top: 2.2rem; margin-bottom: 0.8rem;
+    margin-top: 2.2rem;
+    margin-bottom: 0.8rem;
   }
 
   h3 {
-    font-weight: 700; font-size: 1rem; color: var(--dark);
-    margin-top: 1.5rem; margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--dark);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
   }
 
   p {
     font-family: var(--bodyFont);
-    font-size: 1rem; line-height: 1.9; color: var(--darkgray);
-    word-break: keep-all; overflow-wrap: break-word; margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--darkgray);
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    margin-bottom: 1rem;
   }
 
-  strong { color: var(--dark); font-weight: 700; }
+  strong {
+    color: var(--dark);
+    font-weight: 700;
+  }
 }
 
 // 본문 내부 링크만 하단선 (사이드바 링크 오염 방지)
 article a {
-  color: var(--secondary); text-decoration: none;
-  border-bottom: 1px solid transparent; transition: border-color 0.15s;
-  &:hover { border-bottom-color: var(--secondary); }
+  color: var(--secondary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+  &:hover {
+    border-bottom-color: var(--secondary);
+  }
 }
-
 
 // ── 2. Code Blocks ─────────────────────────────────────────────────────────
 
@@ -98,20 +195,28 @@ pre[data-language] {
 }
 
 code:not(pre code) {
-  font-family: var(--codeFont); font-size: 0.85em;
-  background: rgba(61,107,142,0.08); color: #8b4513;
-  padding: 0.15em 0.4em; border-radius: 4px;
-  border: 1px solid rgba(61,107,142,0.15);
+  font-family: var(--codeFont);
+  font-size: 0.85em;
+  background: rgba(61, 107, 142, 0.08);
+  color: #8b4513;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  border: 1px solid rgba(61, 107, 142, 0.15);
 }
 
 pre {
   border-radius: 8px;
   border: 1px solid var(--lightgray);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  margin: 1.2rem 0; overflow-x: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin: 1.2rem 0;
+  overflow-x: auto;
 }
 
-pre code { font-family: var(--codeFont); font-size: 0.82rem; line-height: 1.65; }
+pre code {
+  font-family: var(--codeFont);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
 
 // 어댑트: v4는 `.code-title` 클래스를 썼지만, v5 syntax-highlighting 플러그인은
 // rehype-pretty-code 표준 구조(`figure[data-rehype-pretty-code-figure] > [data-rehype-pretty-code-title]`)를
@@ -119,38 +224,57 @@ pre code { font-family: var(--codeFont); font-size: 0.82rem; line-height: 1.65; 
 // 현재 테스트 컨텐츠에 코드블록 타이틀(```lang title="..."```) 사용 예가 없어 렌더링 실물 확인은 못했지만,
 // base.scss가 동일 선택자를 이미 스타일링하고 있어 구조 자체는 확인됨 — non-layered 우선순위로 여기 값이 이긴다.
 [data-rehype-pretty-code-title] {
-  font-family: var(--codeFont); font-size: 0.68rem; font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray);
-  background: var(--lightgray); padding: 4px 12px;
-  border-radius: 8px 8px 0 0; border: 1px solid var(--lightgray);
-  border-bottom: none; margin-bottom: -1px;
+  font-family: var(--codeFont);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray);
+  background: var(--lightgray);
+  padding: 4px 12px;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid var(--lightgray);
+  border-bottom: none;
+  margin-bottom: -1px;
 }
-
 
 // ── 3. KaTeX ───────────────────────────────────────────────────────────────
 
 .katex-display {
-  background: rgba(61,107,142,0.04); border: 1px solid rgba(61,107,142,0.15);
-  border-radius: 8px; padding: 1rem 1.5rem;
-  margin: 1.2rem 0; overflow-x: auto; text-align: center;
+  background: rgba(61, 107, 142, 0.04);
+  border: 1px solid rgba(61, 107, 142, 0.15);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin: 1.2rem 0;
+  overflow-x: auto;
+  text-align: center;
 }
-.katex { font-size: 1.05em; }
-
+.katex {
+  font-size: 1.05em;
+}
 
 // ── 4. Callouts ────────────────────────────────────────────────────────────
 
 .callout {
-  border-radius: 6px; margin: 1.2rem 0; line-height: 1.75;
+  border-radius: 6px;
+  margin: 1.2rem 0;
+  line-height: 1.75;
 
   // 상단 여백 균일화: base의 과다 padding-top override
   // v5 callouts.scss의 `.callout-title { padding: 1rem 0; }` 를 상쇄 (검증 완료: base.scss/callouts.scss)
   & > .callout-title {
-    font-family: var(--headerFont); font-weight: 700; font-size: 0.88rem;
-    padding: 0.6rem 0.3rem 0.5rem; margin: 0;
+    font-family: var(--headerFont);
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 0.6rem 0.3rem 0.5rem;
+    margin: 0;
   }
   & > .callout-content {
-    padding: 0.5rem 0.3rem 0.7rem; font-size: 0.9rem;
-    p:last-child { margin-bottom: 0; }
+    padding: 0.5rem 0.3rem 0.7rem;
+    font-size: 0.9rem;
+    p:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -160,12 +284,18 @@ pre code { font-family: var(--codeFont); font-size: 0.82rem; line-height: 1.65; 
 // (빌드된 HTML에서 실측: data-callout="abstract" 로 렌더링됨, "summary" 값은 존재하지 않음).
 .callout[data-callout="abstract"] {
   --callout-color: 61, 107, 142;
-  background: rgba(61,107,142,0.06);
+  background: rgba(61, 107, 142, 0.06);
   border-left: 3px solid var(--secondary);
 }
-.callout[data-callout="note"]    { --callout-color: 61, 107, 142; }
-.callout[data-callout="warning"] { --callout-color: 180, 100, 30; }
-.callout[data-callout="tip"]     { --callout-color: 50, 130, 80; }
+.callout[data-callout="note"] {
+  --callout-color: 61, 107, 142;
+}
+.callout[data-callout="warning"] {
+  --callout-color: 180, 100, 30;
+}
+.callout[data-callout="tip"] {
+  --callout-color: 50, 130, 80;
+}
 
 // Obsidian > 문법 → blockquote
 // 참고: .callout 요소의 실제 루트 태그도 <blockquote> 이므로(v4/v5 동일 — ofm.ts 파서가
@@ -174,40 +304,55 @@ pre code { font-family: var(--codeFont); font-size: 0.82rem; line-height: 1.65; 
 // v4에서도 동일하게 발생하던 동작이라 이관 시 그대로 유지 — 회귀 아님.
 blockquote {
   border-left: 3px solid var(--secondary);
-  background: rgba(61,107,142,0.04);
-  padding: 0.7rem 1.2rem; border-radius: 0 6px 6px 0;
-  margin: 1.2rem 0; color: var(--darkgray); font-style: normal;
-  p:first-child { margin-top: 0; }
-  p:last-child  { margin-bottom: 0; }
+  background: rgba(61, 107, 142, 0.04);
+  padding: 0.7rem 1.2rem;
+  border-radius: 0 6px 6px 0;
+  margin: 1.2rem 0;
+  color: var(--darkgray);
+  font-style: normal;
+  p:first-child {
+    margin-top: 0;
+  }
+  p:last-child {
+    margin-bottom: 0;
+  }
 }
-
 
 // ── 5. Tags ────────────────────────────────────────────────────────────────
 
 a.tag-link {
-  font-size: 0.72rem; font-weight: 500; padding: 3px 10px; border-radius: 5px;
-  background: rgba(61,107,142,0.08); color: var(--secondary);
-  border: 1px solid rgba(61,107,142,0.2); text-decoration: none; letter-spacing: 0.02em;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: rgba(61, 107, 142, 0.08);
+  color: var(--secondary);
+  border: 1px solid rgba(61, 107, 142, 0.2);
+  text-decoration: none;
+  letter-spacing: 0.02em;
   &:hover {
-    background: rgba(61,107,142,0.15); border-color: var(--secondary);
-    border-bottom: 1px solid rgba(61,107,142,0.2);
+    background: rgba(61, 107, 142, 0.15);
+    border-color: var(--secondary);
+    border-bottom: 1px solid rgba(61, 107, 142, 0.2);
   }
 }
-
 
 // ── 6. PageTitle ───────────────────────────────────────────────────────────
 // .page-title = 사이드바 사이트 타이틀(<h2 class="page-title"><a>☀️ haejun</a></h2>).
 // 글 본문 h1(article-title)과는 다른 요소 — v5에서도 동일 구조 확인.
 
 .page-title {
-  font-family: var(--headerFont) !important; font-size: 1.75rem !important;  // 1.5 → 1.75 (2026-07-19 사용자 요청)
-  font-weight: 800 !important; letter-spacing: -0.02em !important;
+  font-family: var(--headerFont) !important;
+  font-size: 1.75rem !important; // 1.5 → 1.75 (2026-07-19 사용자 요청)
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
   color: var(--secondary) !important;
 }
 
 // 좌측 사이드바 섹션 간 상하 간격 (base는 1.2rem — 사용자 요청으로 축소)
-.sidebar.left { gap: 0.8rem; }
-
+.sidebar.left {
+  gap: 0.8rem;
+}
 
 // ── 7. Explorer 폴더 구조 ──────────────────────────────────────────────────
 //
@@ -223,87 +368,151 @@ a.tag-link {
 //            └── ul.content            ← 들여쓰기 + 세로선
 //  .active / .open 클래스는 explorer.inline.ts가 런타임에 부여 (정적 HTML엔 없음, 스크립트로 검증).
 
-.explorer-content { font-size: 1.15rem; }  // 0.82 → 1.15 (2026-07-19 사용자 요청: 디렉토리·파일명 확대)
+.explorer-content {
+  font-size: 1.15rem;
+} // 0.82 → 1.15 (2026-07-19 사용자 요청: 디렉토리·파일명 확대)
 
 // "Explorer" 제목 확대 (base: 1rem)
 button.desktop-explorer h2,
-button.mobile-explorer h2 { font-size: 1.25rem; }
+button.mobile-explorer h2 {
+  font-size: 1.25rem;
+}
 
 .folder-container {
-  display: flex; align-items: center; gap: 4px;
-  padding: 3px 4px; border-radius: 4px; cursor: pointer;
-  transition: background 0.12s; color: var(--darkgray);
-  &:hover { background: rgba(61,107,142,0.08); }
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.12s;
+  color: var(--darkgray);
+  &:hover {
+    background: rgba(61, 107, 142, 0.08);
+  }
 }
 
 // chevron(>) 숨김 — 접기/펼치기는 폴더명 클릭으로 대체 (yaml folderClickBehavior: collapse)
-.folder-icon { display: none; }
+.folder-icon {
+  display: none;
+}
 
 // 📁 닫힌 폴더 / 📂 열린 폴더
 .folder-button .folder-title::before,
-a.folder-title::before { content: "📁 "; }
+a.folder-title::before {
+  content: "📁 ";
+}
 
-.folder-container:has(+ .folder-outer.open) .folder-title::before { content: "📂 "; }
+.folder-container:has(+ .folder-outer.open) .folder-title::before {
+  content: "📂 ";
+}
 
 .folder-button {
-  background: none; border: none; padding: 0; cursor: pointer;
-  font-family: var(--bodyFont); font-size: 0.82rem; font-weight: 500;
-  color: var(--darkgray); text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--bodyFont);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--darkgray);
+  text-align: left;
   border-bottom: none !important;
-  &:hover { border-bottom: none !important; }
+  &:hover {
+    border-bottom: none !important;
+  }
 }
 
 span.folder-title {
-  font-family: var(--bodyFont); font-size: 0.82rem;
-  font-weight: 500; color: var(--darkgray);
+  font-family: var(--bodyFont);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--darkgray);
 }
 
 // 하위 항목 들여쓰기 + 세로선
 .folder-outer > ul.content {
-  margin-left: 0.85rem; padding-left: 0.7rem;
+  margin-left: 0.85rem;
+  padding-left: 0.7rem;
   border-left: 1.5px solid var(--lightgray);
 }
 
 // 파일 링크 — ㄴ 이모지
 .explorer-content li > a {
-  display: block; padding: 2px 4px; border-radius: 4px;
-  font-size: 0.80rem; color: var(--darkgray);
-  transition: background 0.12s, color 0.12s;
+  display: block;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--darkgray);
+  transition:
+    background 0.12s,
+    color 0.12s;
   border-bottom: none !important;
 
-  &::before { content: "ㄴ "; color: var(--gray); font-size: 0.75em; }
+  &::before {
+    content: "ㄴ ";
+    color: var(--gray);
+    font-size: 0.75em;
+  }
   &:hover {
-    background: rgba(61,107,142,0.08); color: var(--secondary);
+    background: rgba(61, 107, 142, 0.08);
+    color: var(--secondary);
     border-bottom: none !important;
   }
 }
 
 .explorer-content li > a.active {
-  color: var(--secondary); font-weight: 600;
-  background: rgba(61,107,142,0.10);
+  color: var(--secondary);
+  font-weight: 600;
+  background: rgba(61, 107, 142, 0.1);
 }
-
 
 // ── 8. TOC / Backlinks ─────────────────────────────────────────────────────
 
-.toc li a, .backlinks ul li a {
+.toc li a,
+.backlinks ul li a {
   border-bottom: none !important;
-  &:hover { border-bottom: none !important; }
+  &:hover {
+    border-bottom: none !important;
+  }
 }
 .toc li a {
-  font-size: 0.78rem; color: var(--gray);
-  &:hover { color: var(--secondary); }
+  font-size: 0.78rem;
+  color: var(--gray);
+  &:hover {
+    color: var(--secondary);
+  }
 }
-
 
 // ── 9. Table ───────────────────────────────────────────────────────────────
 
-table { border-collapse: collapse; width: 100%; margin: 1.2rem 0; font-size: 0.85rem; font-family: var(--bodyFont); }
-thead tr { background: rgba(61,107,142,0.08); border-bottom: 2px solid var(--secondary); }
-thead th { font-weight: 700; color: var(--dark); padding: 0.6rem 0.8rem; text-align: left; }
-tbody tr { border-bottom: 1px solid var(--lightgray); &:hover { background: rgba(61,107,142,0.04); } }
-tbody td { padding: 0.5rem 0.8rem; color: var(--darkgray); }
-
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2rem 0;
+  font-size: 0.85rem;
+  font-family: var(--bodyFont);
+}
+thead tr {
+  background: rgba(61, 107, 142, 0.08);
+  border-bottom: 2px solid var(--secondary);
+}
+thead th {
+  font-weight: 700;
+  color: var(--dark);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+}
+tbody tr {
+  border-bottom: 1px solid var(--lightgray);
+  &:hover {
+    background: rgba(61, 107, 142, 0.04);
+  }
+}
+tbody td {
+  padding: 0.5rem 0.8rem;
+  color: var(--darkgray);
+}
 
 // ── 10. Card List (folder/tag 목록 페이지) ─────────────────────────────────
 // v5 tag/folder-page 플러그인의 listPage.scss 기본값(display:grid, opacity:0.6인 .meta 등)을
@@ -324,7 +533,9 @@ tbody td { padding: 0.5rem 0.8rem; color: var(--darkgray); }
     border: 1px solid var(--lightgray);
     border-radius: 6px;
     gap: 0.2rem;
-    transition: border-color 0.15s, background 0.15s;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
     cursor: pointer;
 
     &:hover {
@@ -342,7 +553,10 @@ tbody td { padding: 0.5rem 0.8rem; color: var(--darkgray); }
 
     .desc {
       order: 2;
-      h3 { margin: 0.1rem 0 0; font-size: 0.95rem; }
+      h3 {
+        margin: 0.1rem 0 0;
+        font-size: 0.95rem;
+      }
     }
 
     .tags {
@@ -357,36 +571,54 @@ tbody td { padding: 0.5rem 0.8rem; color: var(--darkgray); }
   }
 }
 
-
 // ── 11. Utilities ──────────────────────────────────────────────────────────
 
-hr { border: none; border-top: 1px solid var(--lightgray); margin: 2rem 0; }
+hr {
+  border: none;
+  border-top: 1px solid var(--lightgray);
+  margin: 2rem 0;
+}
 
 // 이미지 가운데 정렬 — Quartz는 이미지를 <p><img></p>로 감싸므로 img를 block+auto로.
-article img { display: block; margin-inline: auto; }
+article img {
+  display: block;
+  margin-inline: auto;
+}
 
 // 그림 캡션 — Quartz는 이미지와 바로 뒤 *그림.* 을 각각 별개의 <p>로 렌더한다.
 // 그래서 예전 `img + em`은 매칭되지 않았다. :has로 "이미지 단락 다음의 이탤릭 단락"을 잡는다.
 article p:has(> img:only-child) + p:has(> em:only-child) {
-  margin-top: -0.5rem;      // 이미지에 바짝 붙임 (문단 기본 간격 상쇄)
+  margin-top: -0.5rem; // 이미지에 바짝 붙임 (문단 기본 간격 상쇄)
   text-align: center;
   font-size: 0.8rem;
   color: var(--gray);
-  em { font-style: normal; }  // 캡션은 회색 작은 글씨로 충분 (이탤릭 해제)
+  em {
+    font-style: normal;
+  } // 캡션은 회색 작은 글씨로 충분 (이탤릭 해제)
 }
 
 figure figcaption {
-  display: block; text-align: center;
-  font-size: 0.8rem; color: var(--gray); margin-top: 0.4rem;
+  display: block;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--gray);
+  margin-top: 0.4rem;
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 ::-webkit-scrollbar-thumb {
-  background: var(--lightgray); border-radius: 3px;
-  &:hover { background: var(--gray); }
+  background: var(--lightgray);
+  border-radius: 3px;
+  &:hover {
+    background: var(--gray);
+  }
 }
-
 
 // ── 12. Giscus ─────────────────────────────────────────────────────────────
 // giscus 댓글(반응 포함)과 본문/이전 컴포넌트 사이 여백 (사용자 피드백으로 추가됨, 이관 시 보존)

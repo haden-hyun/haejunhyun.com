@@ -79,6 +79,11 @@ export function customOgImage({
   const readingTimeText = (userOpts.readingTimeText ?? ((m: number) => `${m} min read`))(minutes)
 
   const tags = fileData.frontmatter?.tags ?? []
+  // OG 이미지는 satori가 빌드 타임에 래스터화하며, 어떤 폰트를 로드할지는
+  // og-image 에미터가 `theme.typography`에서 직접 읽는다(dist의 `emit()` →
+  // `getSatoriFonts(theme.typography.header, theme.typography.body)`).
+  // theme.typography.body(Noto Sans KR)는 Google Fonts에 있는 폰트라
+  // 이 값을 그대로 쓰면 폰트 fetch 실패 없이 렌더된다.
   const bodyFont = getFontSpecificationName(theme.typography.body)
   const headerFont = getFontSpecificationName(theme.typography.header)
 
