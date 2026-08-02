@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"><head><title>LATERAL 조인</title><meta charset="utf-8"/><link rel="preload" href="../../index-93dbaebf.css" as="style"/><link rel="preload" href="../../prescript-ef27d968.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum Myeongjo:wght@400;700&amp;family=Noto Sans KR:ital,wght@0,400;0,600;1,400;1,600&amp;family=JetBrains Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="☀️ haejun"/><meta property="og:title" content="LATERAL 조인"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="LATERAL 조인"/><meta name="twitter:description" content="Summary LATERAL은 조인 오른쪽 서브쿼리가 왼쪽 테이블의 값을 참조할 수 있게 해주는 키워드다. 동작은 왼쪽 행마다 오른쪽을 반복 실행하는 FOR 루프이며, 실행계획에서 Nested Loop으로 나타난다."/><meta property="og:description" content="Summary LATERAL은 조인 오른쪽 서브쿼리가 왼쪽 테이블의 값을 참조할 수 있게 해주는 키워드다. 동작은 왼쪽 행마다 오른쪽을 반복 실행하는 FOR 루프이며, 실행계획에서 Nested Loop으로 나타난다."/><meta property="og:image:alt" content="Summary LATERAL은 조인 오른쪽 서브쿼리가 왼쪽 테이블의 값을 참조할 수 있게 해주는 키워드다. 동작은 왼쪽 행마다 오른쪽을 반복 실행하는 FOR 루프이며, 실행계획에서 Nested Loop으로 나타난다."/><meta property="twitter:domain" content="haejunhyun.com"/><meta property="og:url" content="https://haejunhyun.com/programming/postgresql/lateral-join"/><meta property="twitter:url" content="https://haejunhyun.com/programming/postgresql/lateral-join"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="Summary LATERAL은 조인 오른쪽 서브쿼리가 왼쪽 테이블의 값을 참조할 수 있게 해주는 키워드다. 동작은 왼쪽 행마다 오른쪽을 반복 실행하는 FOR 루프이며, 실행계획에서 Nested Loop으로 나타난다."/><meta name="generator" content="Quartz"/><link href="../../index-93dbaebf.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-7f220492.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e427079e.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6cda3949.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-d77fcd96.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9e418520.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-95159d7d.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b6f2ce39.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-87e6535b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8bee7d18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9f9b2774.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-7262b5a7.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-ef27d968.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><script data-goatcounter="https://haejunhyun.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://haejunhyun.com/programming/postgresql/lateral-join-og-image.webp"/><meta property="og:image:url" content="https://haejunhyun.com/programming/postgresql/lateral-join-og-image.webp"/><meta name="twitter:image" content="https://haejunhyun.com/programming/postgresql/lateral-join-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="programming/postgresql/lateral-join" data-basepath><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../..">☀️ haejun</a></h2><div class="visitor-counter"><span class="visitor-item"><span class="visitor-label">Today</span><span id="visitor-today" class="visitor-count">-</span></span><span class="visitor-sep">·</span><span class="visitor-item"><span class="visitor-label">Total</span><span id="visitor-total" class="visitor-count">-</span></span></div><div class=" social-links"><ul><li><a href="https://github.com/haden-hyun/haejunhyun.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub"><span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></span></a></li><li><a href="https://www.linkedin.com/in/haejun-hyun-332b76243/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn"><span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></span></a></li></ul></div><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="Search" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>Search</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="Search for something..." placeholder="Search for something..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="Dark mode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="desktop-only"><div class="explorer nav-files-container" data-behavior="collapse" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-55" aria-label="Explorer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-55" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../programming/">programming</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../programming/postgresql/">postgresql</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>LATERAL 조인</a></div></nav><h1 class="article-title">LATERAL 조인</h1><p show-comma="true" class="content-meta"><time datetime="2026-08-02T11:15:05.552Z">Aug 02, 2026</time><span>22 min read</span></p><ul class="tags"><li><a href="../../tags/postgresql" class="internal tag-link">postgresql</a></li></ul></div></div><article class="popover-hint max"><div class="markdown-preview-view markdown-rendered"><blockquote class="callout abstract" data-callout="abstract">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p>Summary </p></div>
+                  
+                </div>
+<div class="callout-content">
+<ul>
+<li><code>LATERAL</code>은 조인 오른쪽 서브쿼리가 <strong>왼쪽 테이블의 값을 참조</strong>할 수 있게 해주는 키워드다.</li>
+<li>동작은 <strong>왼쪽 행마다 오른쪽을 반복 실행</strong>하는 FOR 루프이며, 실행계획에서 <code>Nested Loop</code>으로 나타난다.</li>
+<li><code>ON true</code>는 <code>LEFT JOIN</code>의 문법 요구사항일 뿐이고, 실제 연결 조건은 서브쿼리 <code>WHERE</code> 안에 있다.</li>
+<li>최대 강점은 <strong>Top-N per group</strong> — 오른쪽에 인덱스가 있으면 <code>LIMIT</code>으로 조기 종료되어 매우 빠르다.</li>
+<li>오른쪽 테이블이 왼쪽보다 훨씬 클 때 유리하고, 반대 상황에서는 윈도우 함수나 <code>DISTINCT ON</code>이 낫다.</li>
+</ul>
+</div>
+</blockquote>
+<hr/>
+<h1 id="들어가며">들어가며<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#들어가며" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p><strong><code>LATERAL</code>은 조인하려는 오른쪽 서브쿼리가 조인 대상인 왼쪽 테이블의 값을 들여다볼 수 있게 해주는 키워드다.</strong></p>
+<p>일반 <code>JOIN</code>에서는 오른쪽 서브쿼리가 왼쪽 테이블 컬럼을 참조하면 <strong>에러</strong>가 나지만, <code>LATERAL</code>을 붙이면 참조가 허용된다. 이게 전부이고, 나머지는 모두 이 한 가지 능력에서 파생된다. 아래에서 다룰 “고객별 최근 주문 1건” 같은 문제도 결국 이 참조 능력 하나로 풀린다.</p>
+<hr/>
+<h1 id="일반-join으로는-풀리지-않는-문제">일반 JOIN으로는 풀리지 않는 문제<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#일반-join으로는-풀리지-않는-문제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p><strong>목적: 온라인 쇼핑몰 데이터에서 고객별 가장 최근 주문 1건의 주문일과 금액을 출력한다.</strong></p>
+<h2 id="예제-데이터">예제 데이터<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#예제-데이터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>우선 온라인 쇼핑몰 샘플 데이터를 생성한다. <code>customer</code>는 고객ID가 담긴 고객 정보 테이블이고, <code>orders</code>는 고객별 주문이력 테이블로 주문 날짜와 총액 정보가 담겨 있다.</p>
+<p><strong>샘플 데이터 생성</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">create</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> table</span><span style="--shiki-light:#1E66F5;--shiki-light-font-style:italic;--shiki-dark:#B392F0;--shiki-dark-font-style:inherit;" data-token-type="function"> customer</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> (</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    id   </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">int</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> primary key</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    name</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> varchar</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">20</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">)</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">);</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">create</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> table</span><span style="--shiki-light:#1E66F5;--shiki-light-font-style:italic;--shiki-dark:#B392F0;--shiki-dark-font-style:inherit;" data-token-type="function"> orders</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> (</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    id          </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">int</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> primary key</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    customer_id </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">int</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    order_date  </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">date</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    amount      </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">int</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">);</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">insert into</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">values</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    (</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">'오타니'</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">), (</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">2</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">'손흥민'</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">), (</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">3</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">'이강인'</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">);</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">insert into</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">values</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    (</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">101</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">'2026-01-15'</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">32000</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">),</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    (</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">102</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">'2026-03-02'</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">15000</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">),</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    (</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">103</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">'2026-05-20'</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">48000</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">),</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    (</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">104</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">2</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">'2026-02-11'</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">,  </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">9000</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">),</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    (</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">105</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">2</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">'2026-06-05'</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">27000</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">);</span></span></code></pre></figure>
+<p><strong><code>customer</code></strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>id</th><th>name</th></tr></thead><tbody><tr><td>1</td><td>오타니</td></tr><tr><td>2</td><td>손흥민</td></tr><tr><td>3</td><td>이강인</td></tr></tbody></table></div>
+<p><strong><code>orders</code></strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>id</th><th>customer_id</th><th>order_date</th><th>amount</th></tr></thead><tbody><tr><td>101</td><td>1</td><td>2026-01-15</td><td>32,000</td></tr><tr><td>102</td><td>1</td><td>2026-03-02</td><td>15,000</td></tr><tr><td>103</td><td>1</td><td>2026-05-20</td><td>48,000</td></tr><tr><td>104</td><td>2</td><td>2026-02-11</td><td>9,000</td></tr><tr><td>105</td><td>2</td><td>2026-06-05</td><td>27,000</td></tr></tbody></table></div>
+<blockquote class="callout note" data-callout="note">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p>이강인(id=3)은 가입만 하고 주문이 없다 </p></div>
+                  
+                </div>
+<div class="callout-content">
+<p><code>LEFT JOIN</code>과 <code>CROSS JOIN</code>의 차이를 보여줄 때 쓰인다.</p>
+</div>
+</blockquote>
+<p>목적에 맞는 정답 테이블은 아래와 같다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>name</th><th>order_date</th><th>amount</th></tr></thead><tbody><tr><td>오타니</td><td>2026-05-20</td><td>48,000</td></tr><tr><td>손흥민</td><td>2026-06-05</td><td>27,000</td></tr><tr><td>이강인</td><td>NULL</td><td>NULL</td></tr></tbody></table></div>
+<p>간단해 보이지만 <strong>일반 JOIN으로는 깔끔하게 안 된다</strong>. <code>LATERAL</code>을 이해하기 위해 일반 JOIN이 왜 안 되는지부터 확인한다.</p>
+<h2 id="일반-join으로-시도">일반 JOIN으로 시도<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#일반-join으로-시도" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>필요한 것은 고객별 가장 <strong>최신 주문 1건</strong>뿐이다. 그러나 단순히 고객ID 기준으로 조인하면 조건에 맞는 짝을 전부 만들어서 행을 늘린다. 즉, <strong>일반 JOIN에는 고객별 1건이라는 개념을 표현할 문법이 없다</strong>.</p>
+<p><strong>일반 JOIN 쿼리</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">name</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer c</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">left join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">on</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">customer_id</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">;</span></span></code></pre></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>name</th><th>order_date</th><th>amount</th></tr></thead><tbody><tr><td>오타니</td><td>2026-01-15</td><td>32,000</td></tr><tr><td>오타니</td><td>2026-03-02</td><td>15,000</td></tr><tr><td>오타니</td><td>2026-05-20</td><td>48,000</td></tr><tr><td>손흥민</td><td>2026-02-11</td><td>9,000</td></tr><tr><td>손흥민</td><td>2026-06-05</td><td>27,000</td></tr><tr><td>이강인</td><td>NULL</td><td>NULL</td></tr></tbody></table></div>
+<blockquote class="callout warning" data-callout="warning">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p> <code>limit 1</code>을 붙이면 되지 않나?</p></div>
+                  
+                </div>
+<div class="callout-content">
+<p>안 된다. 전체 결과에서 1행만 나올 뿐, <strong>고객별로 1행</strong>이 아니다. 완전히 다른 얘기다.</p>
+</div>
+</blockquote>
+<h2 id="상관-서브쿼리로-시도">상관 서브쿼리로 시도<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#상관-서브쿼리로-시도" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>아래 <code>SELECT</code> 절 서브쿼리 안의 <code>c.id</code>는 <strong>바깥 행의 값을 참조</strong>하는데, 이를 <strong>상관 서브쿼리</strong>(correlated subquery)라고 한다. 즉, <span class="text-highlight">고객 1명씩 가져와서 해당 `id`로 서브쿼리를 한 번씩 실행한 것이다</span>.</p>
+<p><strong>상관 서브쿼리 — 컬럼 1개</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">name</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">     , (</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#1E66F5;--shiki-light-font-style:italic;--shiki-dark:#79B8FF;--shiki-dark-font-style:inherit;" data-token-type="function"> max</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">(</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">) </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">customer_id</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">) </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> order_date</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer c;</span></span></code></pre></figure>
+<p>그러나 <strong>상관 서브쿼리의 문제는 컬럼을 하나밖에 못 가져온다는 점이다</strong>.</p>
+<p>고객별 최신 주문건에 대해 필요한 정보는 주문날짜(<code>order_date</code>)와 총액(<code>amount</code>) 2가지다. 즉, 2가지 정보를 가져오려면 아래와 같이 상관 서브쿼리를 2번 수행해야 한다.</p>
+<p><strong>상관 서브쿼리 — 컬럼 2개</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">name</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">     , (</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#1E66F5;--shiki-light-font-style:italic;--shiki-dark:#79B8FF;--shiki-dark-font-style:inherit;" data-token-type="function"> max</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">(</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">) </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">customer_id</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">) </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> order_date</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">     , (</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">        where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">customer_id</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">        order by</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> desc</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> limit</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">) </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> amount   </span><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- 서브쿼리 또 실행</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer c;</span></span></code></pre></figure>
+<p>상관 서브쿼리의 문제점은 다음과 같다.</p>
+<ul>
+<li><strong>같은 테이블을 두 번 훑는다</strong></li>
+<li>컬럼이 5개면 서브쿼리 5개로 관리 효율성과 가독성이 떨어진다.</li>
+<li>“최근 3건”처럼 <strong>여러 행이 필요하면 아예 불가능하다</strong>.
+<ul>
+<li><code>SELECT</code> 절 서브쿼리는 반드시 1행 1열만 반환해야 한다.</li>
+</ul>
+</li>
+</ul>
+<p>상관 서브쿼리는 목적의 일부분은 만족하지만 확장이 불가능하다. 즉, “상관 서브쿼리의 편리함”과 “JOIN의 여러 컬럼·여러 행”을 <strong>동시에 갖기 위해</strong> <code>LATERAL</code>을 사용한다.</p>
+<hr/>
+<h1 id="lateral">LATERAL<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lateral" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="해결-쿼리">해결 쿼리<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#해결-쿼리" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>목적에 맞는 <code>LATERAL</code> 활용 쿼리는 다음과 같다. 서브쿼리 안에서 <code>order by ... limit 1</code> 같은 조건을 추가하고, 원하는 컬럼만큼 가져오고, 테이블 스캔을 한 번만 하는 효율적인 쿼리다.</p>
+<p><strong>LEFT JOIN LATERAL 쿼리</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">name</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">     , </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">recent</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">     , </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">recent</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer c</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">left join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral (</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">         , </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">customer_id</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">      -- 왼쪽 테이블 c를 참조</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    order by</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> desc</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    limit</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">) recent </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">on</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> true;</span></span></code></pre></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>name</th><th>order_date</th><th>amount</th></tr></thead><tbody><tr><td>오타니</td><td>2026-05-20</td><td>48,000</td></tr><tr><td>손흥민</td><td>2026-06-05</td><td>27,000</td></tr><tr><td>이강인</td><td>NULL</td><td>NULL</td></tr></tbody></table></div>
+<blockquote class="callout note" data-callout="note">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p> <code>on true</code>를 쓰는 이유</p></div>
+                  
+                </div>
+<div class="callout-content">
+<ul>
+<li><code>LEFT JOIN</code>은 문법 규칙상 <strong>반드시 <code>ON</code> 절이 있어야</strong> 한다.</li>
+<li>그러나 <code>LATERAL</code>에서는 <strong>연결 조건이 이미 서브쿼리 <code>WHERE</code> 안에 들어가 있어서</strong> <code>ON</code>에 쓸 조건이 남아 있지 않다.</li>
+<li>그래서 “조건 없음 = 항상 참”을 뜻하는 <code>on true</code>를 관용적으로 쓴다. <strong>의미 없는 형식적 장치</strong>로 <code>on 1=1</code>도 같다.</li>
+</ul>
+</div>
+</blockquote>
+<h2 id="작동-방식">작동 방식<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#작동-방식" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>LATERAL</code>의 작동 방식을 <code>FOR</code> 루프 모델로 파이썬에 옮기면 다음과 같다. 앞에서 말한 조인 대상인 왼쪽 테이블(<code>customer</code>)의 값 <code>c.id</code>를 하나씩 가져와 반복한 것이다.</p>
+<p><strong>FOR 루프로 옮긴 동작</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="python" data-theme="catppuccin-latte github-dark"><code data-language="python" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">결과 </span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> []</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">for</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> c </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">in</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">:</span><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">                          # 왼쪽 테이블을 한 행씩</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">    recent </span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#1E66F5;--shiki-dark:#E1E4E8;" data-token-type="function"> SQL실행</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#40A02B;--shiki-light-font-style:italic;--shiki-dark:#F97583;--shiki-dark-font-style:inherit;" data-token-type="keyword">f</span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;&quot;&quot;</span></span>
+<span data-line><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">        select order_date, amount</span></span>
+<span data-line><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">        from orders</span></span>
+<span data-line><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">        where customer_id = </span><span style="--shiki-light:#EA76CB;--shiki-dark:#79B8FF;" data-token-type="value">{</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function">c</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function">id</span><span style="--shiki-light:#EA76CB;--shiki-dark:#79B8FF;" data-token-type="value">}</span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">          # c 값이 여기 꽂힘</span></span>
+<span data-line><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">        order by order_date desc limit 1</span></span>
+<span data-line><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string">    &quot;&quot;&quot;</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    if</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> recent</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">:</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">        결과</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">.</span><span style="--shiki-light:#1E66F5;--shiki-dark:#E1E4E8;" data-token-type="function">append</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function">c</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function">name</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function"> recent</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function">order_date</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function"> recent</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function">amount</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> )</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    else</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">:</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">        결과</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">.</span><span style="--shiki-light:#1E66F5;--shiki-dark:#E1E4E8;" data-token-type="function">append</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function">c</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="function">name</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> None</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> None</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span><span style="--shiki-light:#7C7F93;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> )</span><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">  # LEFT라서 빈 값으로 보존</span></span></code></pre></figure>
+<p><strong>실제로 펼쳐지는 모습</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>왼쪽 행</th><th>서브쿼리가 실제로 실행되는 형태</th><th>결과</th></tr></thead><tbody><tr><td><code>c.id=1</code></td><td><code>where customer_id = 1 order by date desc limit 1</code></td><td><code>(2026-05-20, 48000)</code></td></tr><tr><td><code>c.id=2</code></td><td><code>where customer_id = 2 order by date desc limit 1</code></td><td><code>(2026-06-05, 27000)</code></td></tr><tr><td><code>c.id=3</code></td><td><code>where customer_id = 3 order by date desc limit 1</code></td><td>없음 → NULL</td></tr></tbody></table></div>
+<p><strong>핵심 원리</strong></p>
+<ul>
+<li>일반 JOIN은 양쪽 테이블을 <strong>독립적으로</strong> 평가한 뒤 합친다.</li>
+<li><code>LATERAL</code>은 오른쪽이 왼쪽에 <strong>의존</strong>하므로, 왼쪽 행마다 오른쪽을 <strong>다시 실행</strong>한다.</li>
+<li>이러한 이유로 실행계획에서 <code>Nested Loop</code>로 나타난다.</li>
+</ul>
+<h2 id="lateral을-빠뜨렸을-때">LATERAL을 빠뜨렸을 때<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lateral을-빠뜨렸을-때" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>LATERAL</code>을 빼면 에러 메시지가 나온다. 이 메시지는 기억해둘 만하다. 실무에서 이 에러를 만나면 십중팔구 <code>LATERAL</code>이 빠진 것이다.</p>
+<p><strong>LATERAL 누락 쿼리</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">left join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> (</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> ... </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">customer_id</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">   -- LATERAL 없음</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">) recent </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">on</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> true;</span></span></code></pre></figure>
+<p><strong>에러 메시지</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="text" data-theme="catppuccin-latte github-dark"><code data-language="text" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span>ERROR:  invalid reference to FROM-clause entry for table &quot;c&quot;</span></span>
+<span data-line><span>LINE 5:     where o.customer_id = c.id</span></span>
+<span data-line><span>HINT:  There is an entry for table &quot;c&quot;, but it cannot be referenced</span></span>
+<span data-line><span>       from this part of the query.</span></span></code></pre></figure>
+<h2 id="left와-cross의-차이">LEFT와 CROSS의 차이<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#left와-cross의-차이" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>CROSS JOIN LATERAL</code>은 <code>ON</code> 절이 필요 없어 더 짧지만 <strong>동작이 다르다</strong>. 목적에 맞게 적절한 조인 방법을 이용하면 된다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>왼쪽 행 보존</th><th><code>ON</code> 절</th><th>언제 쓰나</th></tr></thead><tbody><tr><td><code>LEFT JOIN LATERAL … ON true</code></td><td>항상 보존</td><td>필요 (<code>true</code>)</td><td><strong>기본값으로 사용</strong>. 데이터 손실 없음</td></tr><tr><td><code>CROSS JOIN LATERAL</code></td><td>매칭 없으면 탈락</td><td>불필요</td><td>매칭이 반드시 있어야만 유효한 행일 때</td></tr></tbody></table></div>
+<p><strong>CROSS — 매칭 없는 왼쪽 행은 사라진다</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- CROSS: 매칭 없는 왼쪽 행은 사라짐 (INNER JOIN처럼)</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer c</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">cross join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral ( ... ) recent;</span></span></code></pre></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>name</th><th>order_date</th><th>amount</th></tr></thead><tbody><tr><td>오타니</td><td>2026-05-20</td><td>48,000</td></tr><tr><td>손흥민</td><td>2026-06-05</td><td>27,000</td></tr></tbody></table></div>
+<p><strong>이강인이 사라졌다</strong>.</p>
+<p><strong>LEFT — 매칭이 없어도 왼쪽 행을 보존한다</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- LEFT: 매칭 없어도 왼쪽 행 보존, 오른쪽만 NULL</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer c</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">left join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral ( ... ) recent </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">on</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> true;</span></span></code></pre></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>name</th><th>order_date</th><th>amount</th></tr></thead><tbody><tr><td>오타니</td><td>2026-05-20</td><td>48,000</td></tr><tr><td>손흥민</td><td>2026-06-05</td><td>27,000</td></tr><tr><td><strong>이강인</strong></td><td><strong>NULL</strong></td><td><strong>NULL</strong></td></tr></tbody></table></div>
+<hr/>
+<h1 id="활용">활용<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#활용" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="top-n-per-group">Top-N per group<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#top-n-per-group" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>위의 “고객별 최근 1건”이 N=1인 경우다. 최근 2건으로 늘리고 싶으면 <code>limit</code> <strong>숫자만 바꾸면 되는 가장 흔한 활용 방법이다</strong>. 이는 <code>SELECT</code> 절 상관 서브쿼리로는 <strong>절대 불가능하다</strong>. LATERAL의 가장 큰 존재 이유다.</p>
+<p><strong>최근 2건 조회</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">name</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">recent</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">recent</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer c</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">left join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral (</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">customer_id</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    order by</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> desc</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">    limit</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 2</span><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">                          -- 최근 2건</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">) recent </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">on</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> true;</span></span></code></pre></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>name</th><th>order_date</th><th>amount</th></tr></thead><tbody><tr><td>오타니</td><td>2026-05-20</td><td>48,000</td></tr><tr><td>오타니</td><td>2026-03-02</td><td>15,000</td></tr><tr><td>손흥민</td><td>2026-06-05</td><td>27,000</td></tr><tr><td>손흥민</td><td>2026-02-11</td><td>9,000</td></tr><tr><td>이강인</td><td>NULL</td><td>NULL</td></tr></tbody></table></div>
+<h2 id="계산식-재사용">계산식 재사용<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#계산식-재사용" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>LATERAL은 테이블 조회뿐 아니라 <strong>계산식에 이름을 붙이는 용도</strong>로도 쓴다. 같은 수식을 여러 번 반복해서 쓰게 되는 문제(별칭 재활용)와, 계산 결과를 <code>WHERE</code>에서 참조할 수 없는 문제(조건문 활용) 두 가지를 함께 해결한다.</p>
+<h3 id="별칭-재활용">별칭 재활용<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#별칭-재활용" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>하나의 테이블 <code>SELECT</code> 절에서 동일한 수식을 여러 번 사용해야 하는 경우 <code>CROSS JOIN LATERAL</code>을 이용할 수 있다.</p>
+<p><strong>안 좋은 예시 — 같은 식을 3번 반복</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> amount </span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator">*</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 세금포함</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">     , amount </span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator">*</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> -</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> amount </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 세액</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">     , </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">case</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> when</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> amount </span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator">*</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> ></span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 30000</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> then</span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string"> '고액'</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> else</span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string"> '일반'</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> end</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 등급</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders;</span></span></code></pre></figure>
+<p><code>CROSS JOIN LATERAL</code>을 쓰면 계산식에 이름을 붙여 재사용할 수 있다.</p>
+<ul>
+<li>여기서는 <strong>테이블 조회가 아니라 값 하나를 만드는 용도</strong>다. <code>FROM</code>이 없는 <code>select</code>도 LATERAL 서브쿼리가 될 수 있다.</li>
+<li><strong>계산식 전용 LATERAL</strong>은 <code>FROM</code>이 없는 상수 <code>select</code>이므로 <strong>항상 정확히 1행</strong>을 반환한다.</li>
+<li>즉, 매칭 실패라는 개념 자체가 없어 행이 탈락할 수 없으니 <code>LEFT</code>도 <code>ON true</code>도 불필요하다.</li>
+<li>따라서 <code>LEFT JOIN LATERAL</code>이 아닌 <code>CROSS JOIN LATERAL</code>을 이용한다.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>오른쪽이 반환하는 행 수</th><th><code>CROSS</code> 사용 시</th></tr></thead><tbody><tr><td>테이블 조회 LATERAL</td><td>0행일 수 있음</td><td><strong>왼쪽 행 탈락</strong>(위험)</td></tr><tr><td>계산식 LATERAL (<code>FROM</code> 없음)</td><td>항상 1행</td><td>안전, 더 짧다</td></tr></tbody></table></div>
+<p><strong>계산식을 LATERAL로 재사용</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- LATERAL로 이름 붙여 재사용</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> calc</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">세금포함</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">     , </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">calc</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">세금포함</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> -</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 세액</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">     , </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">case</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> when</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> calc</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">세금포함</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> ></span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 30000</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> then</span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string"> '고액'</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> else</span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string"> '일반'</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> end</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 등급</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">cross join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral (</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 세금포함) calc;</span></span></code></pre></figure>
+<blockquote class="callout note" data-callout="note">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p> <code>SELECT</code> 절 안에서 별칭 재활용이 불가능한 이유</p></div>
+                  
+                </div>
+<div class="callout-content">
+<ul>
+<li><code>select amount*1.1 as t, t-amount ...</code>처럼 별칭을 바로 못 쓰는 이유는</li>
+<li>SQL에서 <strong>같은 SELECT 절 안의 별칭은 서로 참조할 수 없기</strong> 때문이다. LATERAL이 이 제약을 우회한다.</li>
+</ul>
+</div>
+</blockquote>
+<p><strong>고급</strong>(2단 계산)</p>
+<p>위 <code>SELECT</code> 절의 별칭 상호참조 제약 때문에, 계산 결과를 다시 재료로 쓰려면 <strong>같은 <code>calc</code> 안에서는 불가능하다</strong>. 이럴 때는 <code>LATERAL</code>을 하나 더 이어 붙이면 된다.</p>
+<p><code>calc2</code>가 <code>calc</code>의 <strong>오른쪽</strong>에 있으므로 참조가 성립한다. 단, <strong>순서를 바꾸면 에러가 발생한다</strong>(아래 주의사항 참고).</p>
+<p><strong>LATERAL 두 번 연결</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> calc2</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">세액</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">calc2</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">등급</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">cross join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral (</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 세금포함) calc</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">cross join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral (</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> calc</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">세금포함</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> -</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 세액</span></span>
+<span data-line><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">                         , </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">case</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> when</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> calc</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">세금포함</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> ></span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 30000</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> then</span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string"> '고액'</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> else</span><span style="--shiki-light:#40A02B;--shiki-dark:#9ECBFF;" data-token-type="string"> '일반'</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> end</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 등급) calc2;</span></span></code></pre></figure>
+<h3 id="조건문-활용">조건문 활용<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#조건문-활용" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>위와 같이 <code>select ... as 세금포함</code>으로 만든 별칭은 같은 쿼리 블록의 <code>WHERE</code>에서 참조할 수 없다. SQL의 작동 방식이 <code>FROM → WHERE → SELECT</code> 순이므로, <code>WHERE</code>가 실행되는 시점에 별칭은 아직 존재하지 않기 때문이다.</p>
+<p>그러나 <strong>LATERAL은 <code>FROM</code> 절의 산출물이므로 <code>WHERE</code>보다 먼저 확정된다</strong>.</p>
+<p><strong>계산 결과를 WHERE에서 참조</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- 에러: 별칭은 WHERE에서 보이지 않는다</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> amount </span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator">*</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 세금포함 </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 세금포함 </span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator">></span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 30000</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">;</span></span>
+<span data-line><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- ERROR: column &quot;세금포함&quot; does not exist</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- 정상: LATERAL 컬럼은 WHERE에서 참조 가능</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> calc</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">세금포함</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">cross join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral (</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> 세금포함) calc</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> calc</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">세금포함</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> ></span><span style="--shiki-light:#FE640B;--shiki-dark:#79B8FF;" data-token-type="value"> 30000</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">;</span></span></code></pre></figure>
+<p><code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>에도 동일하게 쓸 수 있다. <strong>계산식을 필터·정렬 조건으로도 걸어야 할 때</strong> LATERAL의 값어치가 가장 크다.</p>
+<h2 id="배열집합-반환-함수-펼치기">배열·집합 반환 함수 펼치기<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#배열집합-반환-함수-펼치기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>배열 컬럼을 행으로 펼칠 때도 LATERAL을 쓴다. <code>o.tags</code>가 왼쪽 행의 값이므로 LATERAL이 필요하다. PostgreSQL은 <code>FROM unnest(o.tags)</code>처럼 쓰면 <code>LATERAL</code>을 자동으로 붙여주지만, 명시하는 습관이 좋다.</p>
+<p><strong>배열 펼치기</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, tag</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">cross join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value"> lateral unnest(</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">tags</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">) </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">as</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> tag;</span></span></code></pre></figure>
+<hr/>
+<h1 id="주의사항">주의사항<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#주의사항" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="의존성-순서">의존성 순서<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#의존성-순서" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>왼쪽만 참조가 가능하므로 순서가 중요하다.</strong> <code>FROM</code> 절은 <strong>왼쪽에서 오른쪽으로 순서대로</strong> 해석되며, LATERAL은 “이미 지나온 것”만 볼 수 있다.</p>
+<p><strong>참조 방향에 따른 정상·에러</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- 정상: b가 자기 왼쪽 a를 참조</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> a</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">cross join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral (</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> ... </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> x </span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> a</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">) b;</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- 에러: a가 자기 오른쪽 b를 참조</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> (</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> ... </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> y </span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> b</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">) a       </span><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- b는 아직 정의 안 됨</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">cross join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> lateral b;</span></span></code></pre></figure>
+<h2 id="dbms별-문법-차이">DBMS별 문법 차이<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#dbms별-문법-차이" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>개념은 동일하다. SQL Server의 <code>OUTER APPLY</code>가 <code>LEFT JOIN LATERAL ... ON true</code>에 해당한다.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>DBMS</th><th>문법</th></tr></thead><tbody><tr><td>PostgreSQL, MySQL 8.0.14+, Oracle 12c+</td><td><code>CROSS JOIN LATERAL</code> / <code>LEFT JOIN LATERAL</code></td></tr><tr><td>SQL Server</td><td><code>CROSS APPLY</code> / <code>OUTER APPLY</code></td></tr></tbody></table></div>
+<hr/>
+<h1 id="성능과-사용-시기">성능과 사용 시기<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#성능과-사용-시기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="성능-특성">성능 특성<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#성능-특성" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>LATERAL은 <strong>Nested Loop을 강제</strong>한다. 플래너가 Hash Join 같은 다른 전략을 <strong>선택할 수 없게</strong> 된다. 이는 곧 장점이자 단점이다.</p>
+<p><strong>비용 모델</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="text" data-theme="catppuccin-latte github-dark"><code data-language="text" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span>비용 ≈ 왼쪽 행 수 × (오른쪽 1회 조회 비용)</span></span></code></pre></figure>
+<p>이 공식에서 계산식 LATERAL은 <strong>테이블을 읽지 않는다</strong>. 오른쪽 비용이 순수 CPU 연산뿐이기 때문이다. 즉 “계산식 재사용” 목적의 LATERAL은 <strong>성능 부담을 걱정할 필요가 없다</strong>. 이는 조회용 LATERAL과 결정적으로 다른 점이다.</p>
+<h2 id="판단-기준">판단 기준<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#판단-기준" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>LATERAL을 쓸지 말지는 양쪽 테이블의 크기, 오른쪽 인덱스 유무, 오른쪽에서 실제로 필요한 행의 비율을 함께 보고 정한다.</p>
+<blockquote class="callout tip" data-callout="tip">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p>판단 기준 </p></div>
+                  
+                </div>
+<div class="callout-content">
+<ul>
+<li>오른쪽 인덱스가 있고 왼쪽이 오른쪽보다 훨씬 작다 → <strong>LATERAL</strong></li>
+<li>양쪽이 비슷하게 크고 어차피 전부 읽어야 한다 → <strong>윈도우 함수 / DISTINCT ON</strong></li>
+</ul>
+</div>
+</blockquote>
+<h3 id="lateral이-유리한-경우">LATERAL이 유리한 경우<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lateral이-유리한-경우" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>왼쪽 행이 적고, 오른쪽에 인덱스가 있을 때</strong></p>
+<p>아래 인덱스가 있으면 <code>where customer_id = 1 order by order_date desc limit 1</code>은 <strong>인덱스에서 첫 행만 읽고 즉시 멈춘다</strong>.</p>
+<p><strong>오른쪽 테이블 인덱스</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">create</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> index</span><span style="--shiki-light:#1E66F5;--shiki-light-font-style:italic;--shiki-dark:#B392F0;--shiki-dark-font-style:inherit;" data-token-type="function"> ix_orders_cust_date</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> on</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders (customer_id, order_date </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">desc</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">);</span></span></code></pre></figure>
+<p><strong>오른쪽 테이블이 왼쪽보다 압도적으로 클 때</strong></p>
+<p>오른쪽을 통째로 스캔하는 비용이 감당 불가라면, 필요한 행만 집어오는 LATERAL이 유일한 답이다.</p>
+<blockquote class="callout warning" data-callout="warning">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p>직관의 함정 — &quot;오른쪽이 크면 LATERAL이 불리한 것 아닌가?&quot; </p></div>
+                  
+                </div>
+<div class="callout-content">
+<p>정반대다. <strong>큰 오른쪽 테이블은 LATERAL이 아니라 대안(Hash Join / Window function)에게 부담이다</strong>.</p>
+<ul>
+<li><strong>대안</strong>: <code>lead()</code>나 해시 테이블 구축을 위해 오른쪽을 <strong>전부</strong> 읽어야 한다. 크기 M에 비례한다.</li>
+<li><strong>LATERAL</strong>: 인덱스로 <strong>필요한 행만</strong> 집어온다. 오른쪽 크기 M과 거의 무관하다.</li>
+</ul>
+<p><strong>비용 비교</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="text" data-theme="catppuccin-latte github-dark"><code data-language="text" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span>LATERAL  ≈ N(왼쪽 행 수) × C(인덱스 1회 프로브)</span></span>
+<span data-line><span>대안      ≈ M(오른쪽 전체)  × C(순차 읽기) + 정렬 비용</span></span></code></pre></figure>
+<p>M이 커질수록 우변만 커지므로, <strong>오른쪽이 클수록 LATERAL의 상대적 이득이 커진다</strong>.</p>
+</div>
+</blockquote>
+<blockquote class="callout warning" data-callout="warning">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p>크기 비교만으로 판단하지 말 것 — 4가지 요인을 함께 본다 </p></div>
+                  
+                </div>
+<div class="callout-content">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>요인</th><th>LATERAL 유리</th><th>대안 유리</th></tr></thead><tbody><tr><td>왼쪽 행 수 N</td><td>적다</td><td>많다</td></tr><tr><td>오른쪽 크기 M</td><td><strong>크다</strong></td><td>작다</td></tr><tr><td>오른쪽 인덱스</td><td>있다</td><td>없어도 됨</td></tr><tr><td>오른쪽에서 실제 필요한 비율</td><td>극히 일부</td><td>대부분</td></tr></tbody></table></div>
+<p>마지막 항목이 특히 중요하다. <strong>오른쪽의 대부분을 어차피 읽어야 한다면</strong> LATERAL의 조기 종료 이점이 사라지고, 행별 랜덤 I/O 오버헤드만 남는다.</p>
+</div>
+</blockquote>
+<h3 id="lateral이-불리한-경우">LATERAL이 불리한 경우<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#lateral이-불리한-경우" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>왼쪽 행이 매우 많고(수백만), 오른쪽 인덱스가 없을 때</strong></p>
+<p>오른쪽 인덱스가 없으면 행마다 오른쪽 풀스캔을 해서 비효율적이다. 이럴 땐 <code>DISTINCT ON</code>이나 윈도우 함수로 <strong>한 번에 훑는</strong> 방식이 낫다.</p>
+<p><strong>DISTINCT ON 대안</strong></p>
+<figure data-rehype-pretty-code-figure><pre style="--shiki-light:#4c4f69;--shiki-dark:#e1e4e8;--shiki-light-bg:#eff1f5;--shiki-dark-bg:#24292e;" tabindex="0" data-language="sql" data-theme="catppuccin-latte github-dark"><code data-language="sql" data-theme="catppuccin-latte github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#7C7F93;--shiki-light-font-style:italic;--shiki-dark:#6A737D;--shiki-dark-font-style:inherit;" data-token-type="comment">-- 대안: DISTINCT ON (PostgreSQL 전용)</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">select distinct</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> on</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value"> (</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">) </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">name</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">amount</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> customer c</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">left join</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;"> orders o </span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">on</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">customer_id</span><span style="--shiki-light:#179299;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span></span>
+<span data-line><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword">order by</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value"> c</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">id</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">, </span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">o</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;" data-token-type="value">.</span><span style="--shiki-light:#4C4F69;--shiki-dark:#79B8FF;" data-token-type="value">order_date</span><span style="--shiki-light:#8839EF;--shiki-dark:#F97583;" data-token-type="keyword"> desc</span><span style="--shiki-light:#4C4F69;--shiki-dark:#E1E4E8;">;</span></span></code></pre></figure>
+<hr/>
+<h1 id="정리">정리<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#정리" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ol>
+<li><strong>LATERAL은 오른쪽 서브쿼리가 왼쪽 테이블 값을 참조하게 해주는 키워드다.</strong></li>
+<li>동작은 <strong>왼쪽 행마다 오른쪽을 반복 실행</strong>하는 FOR 루프다(= <code>Nested Loop</code>).</li>
+<li><code>ON true</code>는 문법 요구사항일 뿐, 실제 조건은 서브쿼리 <code>WHERE</code> 안에 있다.</li>
+<li><code>LEFT JOIN LATERAL ... ON true</code>를 <strong>기본으로 쓰면</strong> 행이 사라지지 않는다.</li>
+<li><span class="text-highlight">최대 강점은 **Top-N per group**이며, 오른쪽에 인덱스만 있으면 매우 빠르다</span>.</li>
+</ol>
+<hr/>
+<blockquote class="callout quote" data-callout="quote">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p>Reference </p></div>
+                  
+                </div>
+<div class="callout-content">
+<ul>
+<li><a href="https://www.postgresql.org/docs/current/queries-table-expressions.html#QUERIES-LATERAL" class="external external-link">PostgreSQL Docs — LATERAL Subqueries<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></li>
+<li><a href="https://www.postgresql.org/docs/current/sql-select.html#SQL-DISTINCT" class="external external-link">PostgreSQL Docs — SELECT DISTINCT ON<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></li>
+<li><a href="https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITION-PRUNING" class="external external-link">PostgreSQL Docs — Partition Pruning<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></li>
+</ul>
+</div>
+</blockquote></div></article><hr/><div class="page-footer"><div id="reading-progress-bar"></div><button id="back-to-top" aria-label="Back to top"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4l-8 8h5v8h6v-8h5z"></path></svg></button><nav class="prev-next-nav"><div class="prev-next-inner"><a class="prev-next-link prev" href="../../programming/postgresql/information-schema"><span class="direction">← Prev</span><span class="ptitle">information_schema 활용법</span></a><a class="prev-next-link next" href="../../programming/postgresql/trim"><span class="direction">Next →</span><span class="ptitle">TRIM 공백 및 문자 제거</span></a></div></nav><div class="giscus" data-repo="haden-hyun/haejunhyun.com" data-repo-id="R_kgDONbw-1g" data-category="Announcements" data-category-id="DIC_kwDONbw-1s4Cky-B" data-mapping="url" data-strict="1" data-reactions-enabled="1" data-input-position="bottom" data-light-theme="light" data-dark-theme="dark" data-theme-url="https://haejunhyun.com/static/giscus" data-lang="en"></div></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="desktop-only"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-51" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#들어가며" data-for="들어가며">들어가며</a></li><li class="depth-0"><a href="#일반-join으로는-풀리지-않는-문제" data-for="일반-join으로는-풀리지-않는-문제">일반 JOIN으로는 풀리지 않는 문제</a></li><li class="depth-1"><a href="#예제-데이터" data-for="예제-데이터">예제 데이터</a></li><li class="depth-1"><a href="#일반-join으로-시도" data-for="일반-join으로-시도">일반 JOIN으로 시도</a></li><li class="depth-1"><a href="#상관-서브쿼리로-시도" data-for="상관-서브쿼리로-시도">상관 서브쿼리로 시도</a></li><li class="depth-0"><a href="#lateral" data-for="lateral">LATERAL</a></li><li class="depth-1"><a href="#해결-쿼리" data-for="해결-쿼리">해결 쿼리</a></li><li class="depth-1"><a href="#작동-방식" data-for="작동-방식">작동 방식</a></li><li class="depth-1"><a href="#lateral을-빠뜨렸을-때" data-for="lateral을-빠뜨렸을-때">LATERAL을 빠뜨렸을 때</a></li><li class="depth-1"><a href="#left와-cross의-차이" data-for="left와-cross의-차이">LEFT와 CROSS의 차이</a></li><li class="depth-0"><a href="#활용" data-for="활용">활용</a></li><li class="depth-1"><a href="#top-n-per-group" data-for="top-n-per-group">Top-N per group</a></li><li class="depth-1"><a href="#계산식-재사용" data-for="계산식-재사용">계산식 재사용</a></li><li class="depth-1"><a href="#배열집합-반환-함수-펼치기" data-for="배열집합-반환-함수-펼치기">배열·집합 반환 함수 펼치기</a></li><li class="depth-0"><a href="#주의사항" data-for="주의사항">주의사항</a></li><li class="depth-1"><a href="#의존성-순서" data-for="의존성-순서">의존성 순서</a></li><li class="depth-1"><a href="#dbms별-문법-차이" data-for="dbms별-문법-차이">DBMS별 문법 차이</a></li><li class="depth-0"><a href="#성능과-사용-시기" data-for="성능과-사용-시기">성능과 사용 시기</a></li><li class="depth-1"><a href="#성능-특성" data-for="성능-특성">성능 특성</a></li><li class="depth-1"><a href="#판단-기준" data-for="판단-기준">판단 기준</a></li><li class="depth-0"><a href="#정리" data-for="정리">정리</a></li><li class="overflow-end"></li></ul></div></div></div><footer class><hr/><p style="text-align: left;">Created by <a href="https://github.com/haden-hyun">haejun</a></p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-3b557d08.js" type="module" data-persist="true"></script></html>
