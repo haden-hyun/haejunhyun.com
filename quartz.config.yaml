@@ -249,6 +249,17 @@ plugins:
     layout:
       position: beforeBody
       priority: 1
+  - source: ./plugins/topic-grid
+    enabled: true
+    # [리디자인 Phase 4] TopicGrid, 홈 전용(내부 가드는 home-hero와 동일 패턴).
+    # priority 2 = Hero(1) 바로 아래. content/index.md의 정적 Interests 표를
+    # 대체한다(P5) — 표 자체는 이 커밋에서 index.md 본문에서 제거했다.
+    options:
+      showHeader: true
+    order: 15
+    layout:
+      position: beforeBody
+      priority: 2
   - source: github:quartz-community/article-title
     enabled: true
     layout:
