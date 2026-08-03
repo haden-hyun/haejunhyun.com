@@ -260,6 +260,24 @@ plugins:
     layout:
       position: beforeBody
       priority: 2
+  - source: ./plugins/featured-notes
+    enabled: true
+    # [리디자인 Phase 4] Featured, 홈 전용. priority 3 = TopicGrid(2) 바로 아래.
+    # featured/pinned frontmatter 실측 0건이라 토픽 라운드로빈 자동 선정으로
+    # 시작(REDESIGN-GUIDE.md F3) — 나중에 frontmatter.featured: true를 달면
+    # 자동으로 우선 적용된다(FeaturedNotes.tsx 참고).
+    #
+    # recentExcludeCount: 6 — 아래 recent-notes-index의 options.limit: 6과
+    # 반드시 같은 값을 유지할 것. Featured의 자동 선정이 Recent Posts 상위
+    # 6개를 후보에서 제외해 홈 화면 중복 노출을 막는다(둘 중 하나를 바꾸면
+    # 이 값도 함께 바꿀 것 — 실제 런타임 결합은 아니고 설정값을 나란히
+    # 맞추는 수준의 절충).
+    options:
+      recentExcludeCount: 6
+    order: 15
+    layout:
+      position: beforeBody
+      priority: 3
   - source: github:quartz-community/article-title
     enabled: true
     layout:
