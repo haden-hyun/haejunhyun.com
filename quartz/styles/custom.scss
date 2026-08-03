@@ -592,37 +592,71 @@ tbody td {
   }
 }
 
-// ── 10.5 홈 레이아웃 — 우측 사이드바 접기 ─────────────────────────────────
+// ── 10.5 홈 레이아웃 — 좌측 세로 컬럼 → 상단 가로 바, 우측 컬럼 제거 ──────
 //
-// [리디자인] 홈의 우측 사이드바(그래프/TOC/백링크)는 전부 빈 채로 렌더된다
-// — 그래프는 P4로 조건부 숨김, TOC는 index.md에 헤딩이 없어서, 백링크는
-// 홈을 링크하는 노트가 없어서. 문제는 데스크톱 3단 그리드의 우측 컬럼
-// 폭이 $sidePanelWidth(320px) **고정**이라, 안의 컴포넌트가 전부 비어도
-// 그리드 컬럼 자체는 320px 빈 여백으로 그대로 남는다는 점이다 — "우측
-// 패널이 여전히 남아 있다"는 지적의 실체는 컴포넌트가 아니라 그리드 컬럼
-// 예약분이었다. (좌측 Explorer는 §7에서 `condition: not-index`로 이미
-// 조건부 렌더 자체를 껐다 — quartz.config.yaml 참고.)
+// [리디자인, 2026-08-03 수정] 1차 시도는 우측 컬럼만 접었으나, 좌측에
+// Explorer를 뺀 나머지(PageTitle·Search·Darkmode)가 여전히 320px 세로
+// 컬럼으로 남아 있다는 지적을 받았다 — "일반 html 사이트처럼 상단에" 둬야
+// 한다는 요청. 다시 보니 **정확히 이 배치가 이미 `variables.scss`의
+// `$mobileGrid`에 구현돼 있었다**: `grid-sidebar-left`를 최상단 행에 두고
+// (`.sidebar.left`도 `$mobile` 미디어쿼리에서 `flex-direction: row`로
+// 가로 바가 됨, base.scss:235). 모바일용으로 이미 존재하는 "상단 가로 바"
+// 모양을 홈에서는 데스크톱까지 확장 적용하면 된다 — 새로 설계할 필요가
+// 없었다.
 //
-// `layout.byPageType`로는 이 문제를 못 푼다: 홈(index.md)도 일반 노트와
-// 같은 "content" pageType을 쓰므로, 그 키를 오버라이드하면 사이트의 모든
-// 노트가 영향을 받는다. 그래서 body의 `data-slug="index"` 속성(quartz가
-// 이미 모든 페이지에 심어둠, renderPage.tsx)으로 홈만 targeting해
-// 데스크톱 그리드를 2단으로 줄이고 우측 사이드바를 완전히 숨긴다.
-// 태블릿/모바일 그리드는 우측 사이드바가 별도 컬럼이 아니라 스택된 행
-// (auto height)이라 빈 상태여도 폭 낭비가 없어 영향받지 않는다.
+// `layout.byPageType`로는 못 푼다: 홈(index.md)도 일반 노트와 같은
+// "content" pageType을 쓰므로, 그 키를 오버라이드하면 전체 노트가 영향을
+// 받는다. 그래서 body의 `data-slug="index"`(quartz가 모든 페이지에 이미
+// 심어둠, renderPage.tsx)로 홈만 타겟팅한다.
+//
+// 그래프·TOC·백링크가 전부 빈 채로 렌더되던 우측 컬럼(320px 고정폭)은
+// 여전히 완전히 제거 — 첫 시도에서 확인된 원인 그대로 유지.
 body[data-slug="index"] {
   .right.sidebar {
     display: none;
   }
 
-  #quartz-body {
-    @media all and ($desktop) {
-      grid-template-columns: #{$sidePanelWidth} auto;
-      grid-template-areas:
-        "grid-sidebar-left grid-header"
-        "grid-sidebar-left grid-center"
-        "grid-sidebar-left grid-footer";
+  // base.scss:221의 공용 `.sidebar` 규칙(height:100vh, position:sticky,
+  // flex-direction 없음 → 상위 .left 규칙의 column 상속)을 이겨야 하므로
+  // 여기서 전체를 재정의한다. $mobile 미디어쿼리 안의 기존 규칙(base.scss:235)과
+  // 값을 맞췄다 — 즉 홈은 모바일이든 데스크톱이든 좌측 요소가 항상
+  // "상단 가로 바"로 보인다.
+  .left.sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 0.8rem;
+    padding: 1.2rem 0 0.8rem 0;
+
+    // 실제 렌더 순서: PageTitle → SocialLinks(GitHub/LinkedIn) →
+    // flex-component(검색+다크모드 toolbar 그룹). 사이트 제목만 왼쪽에 두고
+    // 나머지(소셜 링크 + 검색 + 다크모드)를 통째로 오른쪽으로 밀어야
+    // "좌: 로고 / 우: 나머지 전부" 배치가 된다 — flex-component에만
+    // margin-left:auto를 걸면 SocialLinks가 둘 사이에 낀 채 남아 어색하게
+    // 벌어진다.
+    .social-links {
+      margin: 0 0 0 auto; // left만 auto → 오른쪽 정렬. 원래 세로형 top/bottom margin 리셋.
     }
+  }
+
+  #quartz-body {
+    grid-template-columns: auto;
+    grid-template-areas:
+      "grid-sidebar-left"
+      "grid-header"
+      "grid-center"
+      "grid-footer";
+  }
+
+  // $topSpacing(6rem, variables.scss)은 원래 좌측 세로 컬럼이 세로로 긴
+  // 사이드바를 차지하던 레이아웃 기준 여백이다. 좌측이 이제 짧은 가로 바로
+  // 바뀌었으니 그만큼 위 여백을 크게 둘 이유가 없어 홈에서만 줄인다
+  // (GlobalNav/Hero가 상단 바 바로 아래 붙도록).
+  .page-header {
+    margin-top: 1rem;
   }
 }
 
