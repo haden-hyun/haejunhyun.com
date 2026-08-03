@@ -8,18 +8,15 @@ import { QuartzComponent } from '@quartz-community/types';
  * this local plugin replaces it wholesale (registered under the same
  * structural "footer" slot — see quartz.config.yaml).
  *
- * [2026-08-02] 방문자 카운터를 같은 줄에 배치. VisitorCounter는 원래
- * `left` 사이드바(첫 인상 자리, P6) → `afterBody`(페이지 최하단, 단독 줄)로
- * 두 차례 옮겼으나, "Created by haejun" 줄 우측에 나란히 두는 편이 더 낫다는
- * 판단으로 이 컴포넌트에 직접 합쳤다.
+ * [2026-08-02] 방문자 카운터를 한때 같은 줄에 배치했었다(→ 2026-08-04에
+ * home-hero로 재이전, 아래 참고).
  *
- * `footer`는 left/right/beforeBody/afterBody와 달리 config-loader가 다루는
- * 위치 기반 그룹핑(layout.group) 대상이 아니라 **전용 단일 슬롯**이라
- * (`renderPage.tsx`가 `components.footer`를 별도로 꺼내 씀), 두 플러그인을
- * group으로 묶을 수 없다. 그래서 `@haejunhyun/visitor-counter`를 footer의
- * 일반 npm 의존성(file:)으로 물고 컴포넌트를 직접 렌더한다.
- * 이제 visitor-counter는 quartz.config.yaml에서 독립 위치를 갖지 않는다
- * (해당 설정의 주석 참고).
+ * [2026-08-04] 방문자 카운터를 여기서 뺐다 — 사용자 요청으로 home-hero(아바타
+ * 아래, beforeBody)로 옮겼다. 이유: "Created by haejun" 옆의 트래픽 숫자가
+ * 노트 페이지 footer(afterBody, 전 페이지 공통)에 매번 뜨는 것보다, 홈의
+ * 프로필 영역에 한 번 보이는 편이 자기소개 성격에 더 맞는다는 판단.
+ * `@haejunhyun/visitor-counter` 의존성도 home-hero의 package.json으로
+ * 옮겨감 — footer는 더 이상 그 패키지에 의존하지 않는다.
  */
 interface FooterOptions {
     links: Record<string, string>;

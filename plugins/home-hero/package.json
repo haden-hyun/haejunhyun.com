@@ -34,7 +34,8 @@
     }
   },
   "dependencies": {
-    "@quartz-community/types": "github:quartz-community/types"
+    "@quartz-community/types": "github:quartz-community/types",
+    "@haejunhyun/visitor-counter": "file:../visitor-counter"
   },
   "devDependencies": {
     "@types/node": "^24.10.0",

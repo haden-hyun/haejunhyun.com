@@ -3,24 +3,11 @@ footer {
   margin-bottom: 4rem;
   opacity: 0.7;
 
-  // [2026-08-02] "Created by haejun" 좌측 / 방문자 카운터 우측 정렬.
-  // VisitorCounter 자체 CSS(margin: 0.1rem 0 0.6rem 0)는 원래 단독 줄을
-  // 가정한 값이라 이 줄 안에서는 0으로 리셋한다.
-  & .footer-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-
-    & p {
-      margin: 0;
-    }
-
-    & .visitor-counter {
-      margin: 0;
-    }
+  // [2026-08-04] 방문자 카운터가 home-hero로 옮겨가면서 이 줄은 다시
+  // "Created by haejun" 하나뿐 — space-between 정렬용 .footer-row 래퍼도
+  // 함께 걷어냈다(과거엔 우측 카운터와의 정렬 때문에 필요했다).
+  & p {
+    margin: 0;
   }
 
   & ul {

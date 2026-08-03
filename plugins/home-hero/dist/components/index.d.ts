@@ -24,8 +24,12 @@ interface HomeHeroOptions {
     headline: string;
     description: string;
     links: Link[];
-    /** 실제 아바타 이미지 미정(design-handoff.md §Q1) — 이니셜 원으로 대체 */
+    /** avatarImage가 없을 때만 쓰이는 폴백 (이니셜 원) */
     avatarInitial: string;
+    /** [2026-08-04] 실제 아바타 이미지 경로(예: "./static/avatar.png"). 설정 시
+     *  avatarInitial 원 대신 이 이미지를 렌더. design-handoff.md §Q1 당시엔
+     *  이미지가 없어 이니셜로 대체했었다 — 이제 있으므로 우선한다. */
+    avatarImage?: string;
 }
 declare const _default: (userOpts?: Partial<HomeHeroOptions>) => QuartzComponent;
 

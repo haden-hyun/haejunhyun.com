@@ -3,7 +3,13 @@ configuration:
   # [2026-08-03] "☀️ haejun" → "Haejun" — 상단 통합 바에서 브랜드 텍스트로
   # 쓰인다(PageTitle 컴포넌트). og:site_name(Head.tsx:65)에도 쓰이므로
   # 소셜 미리보기 사이트명도 함께 바뀐다.
-  pageTitle: Haejun
+  # [2026-08-04] "Haejun" → "hae.log" → "H Y U N"(사용자가 직접 자간 넓힌
+  # 버전으로 교체) → "HYUNATLAS"(촌스럽다는 피드백으로 재검토).
+  # HYUNATLAS 선정 근거: "Atlas"=지도책은 실제로 GIS(공간 데이터 분석) 노트를
+  # 쓰는 분야와 직접 연결되는 은유이면서, 동시에 "내 지식/삶의 지도"라는
+  # 뜻으로 향후 추가될 개인적 콘텐츠까지 자연스럽게 품는다. 공백·점 없는
+  # 단일 단어 조건(사용자 요청)도 만족.
+  pageTitle: HYUNATLAS
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
@@ -288,6 +294,10 @@ plugins:
         - label: "LinkedIn"
           href: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
       avatarInitial: "H"
+      # [2026-08-04] avatar.png(quartz/static/avatar.png — 원래 저장소 루트에
+      # 있던 배경 없는 캐릭터 일러스트) 적용. avatarInitial은 avatarImage 없을
+      # 때의 폴백으로 그대로 둠.
+      avatarImage: "./static/avatar.png"
     order: 15
     layout:
       position: beforeBody
