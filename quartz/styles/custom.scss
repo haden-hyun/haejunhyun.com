@@ -592,6 +592,40 @@ tbody td {
   }
 }
 
+// ── 10.5 홈 레이아웃 — 우측 사이드바 접기 ─────────────────────────────────
+//
+// [리디자인] 홈의 우측 사이드바(그래프/TOC/백링크)는 전부 빈 채로 렌더된다
+// — 그래프는 P4로 조건부 숨김, TOC는 index.md에 헤딩이 없어서, 백링크는
+// 홈을 링크하는 노트가 없어서. 문제는 데스크톱 3단 그리드의 우측 컬럼
+// 폭이 $sidePanelWidth(320px) **고정**이라, 안의 컴포넌트가 전부 비어도
+// 그리드 컬럼 자체는 320px 빈 여백으로 그대로 남는다는 점이다 — "우측
+// 패널이 여전히 남아 있다"는 지적의 실체는 컴포넌트가 아니라 그리드 컬럼
+// 예약분이었다. (좌측 Explorer는 §7에서 `condition: not-index`로 이미
+// 조건부 렌더 자체를 껐다 — quartz.config.yaml 참고.)
+//
+// `layout.byPageType`로는 이 문제를 못 푼다: 홈(index.md)도 일반 노트와
+// 같은 "content" pageType을 쓰므로, 그 키를 오버라이드하면 사이트의 모든
+// 노트가 영향을 받는다. 그래서 body의 `data-slug="index"` 속성(quartz가
+// 이미 모든 페이지에 심어둠, renderPage.tsx)으로 홈만 targeting해
+// 데스크톱 그리드를 2단으로 줄이고 우측 사이드바를 완전히 숨긴다.
+// 태블릿/모바일 그리드는 우측 사이드바가 별도 컬럼이 아니라 스택된 행
+// (auto height)이라 빈 상태여도 폭 낭비가 없어 영향받지 않는다.
+body[data-slug="index"] {
+  .right.sidebar {
+    display: none;
+  }
+
+  #quartz-body {
+    @media all and ($desktop) {
+      grid-template-columns: #{$sidePanelWidth} auto;
+      grid-template-areas:
+        "grid-sidebar-left grid-header"
+        "grid-sidebar-left grid-center"
+        "grid-sidebar-left grid-footer";
+    }
+  }
+}
+
 // ── 11. Utilities ──────────────────────────────────────────────────────────
 
 hr {

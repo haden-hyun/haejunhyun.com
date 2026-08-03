@@ -207,6 +207,12 @@ plugins:
       position: left
       priority: 50
       display: desktop-only
+      # [리디자인] 홈에서 숨김. GlobalNav(Home|Topics|Archive) + TopicGrid가
+      # 이제 홈의 1차 탐색을 담당해, 폴더 트리 전체를 나열하는 Explorer는
+      # 중복 내비게이션이 됐다(사용자가 지적한 좌우 패널 중복 문제).
+      # 노트 상세·폴더·태그 페이지에서는 그대로 유지 — 그 페이지들에선
+      # 여전히 유일한 폴더 트리 탐색 수단이다.
+      condition: not-index
   - source: github:quartz-community/graph
     enabled: true
     layout:
