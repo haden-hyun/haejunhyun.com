@@ -1,0 +1,49 @@
+{
+  "name": "@haejunhyun/summary-description",
+  "version": "0.1.0",
+  "description": "Extracts the note's [!summary] Obsidian callout into frontmatter.description, so the built-in Description plugin uses it instead of auto-generating one that leaks the callout title (\"Summary\"/\"요약\") into cards, meta tags, RSS, and OG images.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@quartz-community/types": "github:quartz-community/types",
+    "unist-util-visit": "^5.1.0",
+    "mdast-util-to-string": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^24.10.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "quartz": {
+    "name": "summary-description",
+    "displayName": "Summary Callout Description",
+    "category": "transformer",
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 35,
+    "defaultEnabled": true,
+    "defaultOptions": {}
+  }
+}

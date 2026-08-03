@@ -78,6 +78,15 @@ plugins:
       enableVideoEmbed: true
       enableCheckbox: true
     order: 30
+  - source: ./plugins/summary-description
+    enabled: true
+    options: {}
+    # [리디자인 P1] obsidian-flavored-markdown(30) 다음, description(70) 이전.
+    # `[!summary]` 콜아웃 본문만 frontmatter.description에 채워 넣어, description
+    # 플러그인이 렌더 텍스트를 앞에서부터 잘라 만들던 기존 description에 콜아웃
+    # 타이틀 리터럴("Summary"/"요약")이 섞이는 문제를 해소한다. 상세 근거는
+    # 플러그인 소스 상단 주석 참고.
+    order: 35
   - source: github:quartz-community/github-flavored-markdown
     enabled: true
     order: 40

@@ -521,3 +521,70 @@ OG 이미지        147개 생성, 렌더 확인 완료
 ```
 
 **미검증:** 브라우저 실렌더(라이트/다크 토글). `--c-*`는 아직 참조하는 컴포넌트가 없어 정의만 된 상태다 — Phase 4에서 실제 사용된다.
+
+---
+
+## 12. 적용 완료 — Phase 2 데이터 계층 (2026-08-02)
+
+**`./plugins/summary-description` 신규 — `[!summary]` 콜아웃 추출 transformer.**
+
+### 12.1 동작
+
+`obsidian-flavored-markdown`(order 30) 다음, `description`(order 70) 이전에
+order 35로 실행되어, 콜아웃 본문만 `frontmatter.description`에 채운다.
+`description` 플러그인은 `frontmatter.description`이 있으면 그대로 쓰므로,
+이 플러그인은 "아직 없을 때만 채운다"는 조건 하나만 지키면 된다 — 우선순위
+(수동 frontmatter.description > 콜아웃 추출 > 자동 생성)가 별도 구현 없이 성립한다.
+
+### 12.2 작업 중 발견한 함정 — `[!summary]`는 `data-callout="summary"`가 아니다
+
+가장 중요한 발견이다. Obsidian 콜아웃 타입 정규화 규칙상 `[!summary]`는
+**"abstract"로 캐너니컬라이즈된다** (`obsidian-flavored-markdown` dist의
+`calloutMapping`: `summary: "abstract", tldr: "abstract"`). 렌더된 HTML
+실측도 확인됨: `<blockquote class="callout abstract" data-callout="abstract">`.
+
+**초판 계획대로 `data-callout === "summary"`로 매칭했다면 87건 전부 놓쳤을 것이다.**
+`"abstract"`로 매칭해야 `[!summary]`(85) + `[!abstract]`(1) + `[!tldr]`(1) = 87건이
+전부 잡힌다.
+
+### 12.3 타이틀 변형 문제 — 매칭 자체가 필요 없었다
+
+초판 §3에서 콜아웃 타이틀이 6종(`Summary`/`요약`/문장형 등)으로 갈려 "타이틀
+텍스트로 매칭하면 안 된다"고 적었는데, 실제 구현에서는 **타이틀을 아예 읽지
+않는다.** obsidian-flavored-markdown이 콜아웃을 `titleHtml`(제목)과
+`callout-content` div(본문)로 분리해두므로, `callout-content` 안쪽만 읽으면
+타이틀 문구가 무엇이든 무관하다. 문자열 매칭이 필요한 지점 자체가 없어졌다.
+
+### 12.4 검증
+
+```
+빌드              성공 (781 emitted)
+tsc --noEmit      통과
+prettier          통과
+
+meta description (stack-queue)
+  이전: "Summary 스택(Stack)은 후입선출..."
+  이후: "스택(Stack)은 후입선출(LIFO)로 동작하는 선형 자료구조이며, ..."
+
+전체 스캔 (90페이지 + 30여 폴더 인덱스, meta description 보유 121페이지)
+  Summary/요약 리터럴 오염: 2건 잔존 (아래 12.5)
+
+OG 이미지        렌더 확인 완료 (첫 불릿만, "Summary" 없음)
+회귀              Explorer·breadcrumb 정상
+```
+
+### 12.5 잔존 케이스 — 2건, 범위 밖
+
+`programming/python/string/str-filter.md`, `str-split.md` 2개 노트는
+`[!note] 요약`을 쓴다 — **타입이 `summary`가 아니라 `note`**이고, 제목 텍스트만
+우연히 "요약"이다. `data-callout`은 `"note"`로 캐너니컬라이즈되어 이 플러그인의
+매칭 대상이 아니다.
+
+- 이 2건까지 잡으려면 콜아웃 타입이 아니라 **타이틀 텍스트**로 매칭해야 하는데,
+  그건 §12.3에서 걷어낸 바로 그 취약한 방식이다 — "요약"이라는 제목을 가진
+  진짜 `note`가 나중에 추가되면 오작동한다.
+- 콘텐츠 수정 0건 원칙(F3)에도 맞지 않는다 — 근본적으로는 이 2개 노트가
+  `[!note]` 대신 `[!summary]`를 썼어야 하는 저작 실수다.
+- **처리하지 않음.** 87/89 콜아웃 노트(약 98%)가 해소됐고, 나머지 2건은
+  해당 노트의 콜아웃 타입을 `[!summary]`로 바꾸는 한 줄짜리 콘텐츠 수정으로
+  간단히 닫힌다 — 원하면 별도로 진행.
