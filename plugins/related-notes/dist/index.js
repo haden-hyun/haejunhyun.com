@@ -78,6 +78,7 @@ function isRealNote(slug) {
   if (slug.startsWith("tags/")) return false;
   if (slug === "index" || slug.endsWith("/index")) return false;
   if (slug === "404") return false;
+  if (slug === "topics" || slug === "archive") return false;
   return true;
 }
 var RelatedNotes_default = (() => {

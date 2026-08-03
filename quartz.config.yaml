@@ -188,6 +188,17 @@ plugins:
     enabled: true
   - source: github:quartz-community/tag-page
     enabled: true
+  - source: ./plugins/topics-page
+    enabled: true
+    # [리디자인 Phase 6] /topics 가상 페이지. match는 항상 false(실제 콘텐츠
+    # 파일을 가로채지 않음) — generate()가 만드는 가상 페이지 하나만 이
+    # 페이지타입 소유. priority 5로 낮게 둬 folder/tag-page(10)와 매치
+    # 우선순위 충돌 여지를 없앰(어차피 match가 항상 false라 실질적 영향 없음).
+    options: {}
+  - source: ./plugins/archive-page
+    enabled: true
+    # [리디자인 Phase 6] /archive 가상 페이지. topics-page와 동일한 패턴.
+    options: {}
   - source: github:quartz-community/explorer
     enabled: true
     options:
@@ -218,6 +229,17 @@ plugins:
     layout:
       position: right
       priority: 50
+  - source: ./plugins/global-nav
+    enabled: true
+    # [리디자인 Phase 6] Home | Topics | Archive. priority 0 = beforeBody 중
+    # 최상단(홈의 Hero, 노트의 breadcrumbs보다도 위). condition 없음 — 홈
+    # 포함 모든 페이지에 항상 노출. Notes/About 항목은 의도적으로 뺐다
+    # (GlobalNav.tsx 상단 주석 — 페이지네이션 미구현 / 실제 소개문 필요).
+    options: {}
+    order: 15
+    layout:
+      position: beforeBody
+      priority: 0
   - source: ./plugins/home-hero
     enabled: true
     # [리디자인 Phase 4] Hero + StatsStrip, 홈 전용. `is-index` 조건이 내장되어
@@ -508,3 +530,16 @@ layout:
         right: []
     canvas: {}
     bases: {}
+    # [리디자인 Phase 6] topics-page/archive-page 가상 페이지. folder/tag와
+    # 동일하게 그래프·TOC·백링크가 의미 없는 목록형 페이지라 우측 사이드바만
+    # 비운다(afterBody의 댓글 등은 folder/tag 관행대로 그대로 둠).
+    topics:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    archive:
+      exclude:
+        - reader-mode
+      positions:
+        right: []

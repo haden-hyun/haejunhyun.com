@@ -98,6 +98,9 @@ function isRealNote(slug: string): boolean {
   if (slug.startsWith("tags/")) return false
   if (slug === "index" || slug.endsWith("/index")) return false
   if (slug === "404") return false
+  // Phase 6에서 추가된 가상 페이지(topics-page/archive-page) — 이들도
+  // frontmatter.title이 채워진 채로 생성되므로 슬러그로 명시 제외해야 한다.
+  if (slug === "topics" || slug === "archive") return false
   return true
 }
 

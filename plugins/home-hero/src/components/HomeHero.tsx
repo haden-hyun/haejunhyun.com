@@ -69,6 +69,8 @@ function isRealNote(f: QuartzPluginData & Record<string, unknown>): boolean {
   // 있어 위 조건을 통과해버림을 발견 — 별도 토픽("404")으로 잡혀 8토픽/88노트로
   // 집계됐었다.
   if (slug === "404") return false
+  // Phase 6에서 추가된 가상 페이지(topics-page/archive-page)도 같은 이유로 제외.
+  if (slug === "topics" || slug === "archive") return false
   return true
 }
 
