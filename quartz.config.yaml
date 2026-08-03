@@ -425,6 +425,18 @@ plugins:
     layout:
       position: afterBody
       priority: 30
+  - source: ./plugins/related-notes
+    enabled: true
+    # [리디자인 Phase 5] design-handoff.md §4.1 RelatedNotes. 노트 "하단"(넓은
+    # 본문 폭 afterBody)에 백링크+아웃고잉 링크를 합쳐 최대 4개, 2열 카드로
+    # 표시. 우측 사이드바의 내장 backlinks(그대로 유지, 대체 아님)와는 목적이
+    # 다르다 — RelatedNotes.tsx 상단 주석 참고. priority 45 = prev-next(30)
+    # 다음, comments(50) 이전.
+    options: {}
+    order: 15
+    layout:
+      position: afterBody
+      priority: 45
   - source: ./plugins/reading-progress
     enabled: true
     options: {}

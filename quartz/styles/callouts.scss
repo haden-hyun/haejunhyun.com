@@ -41,10 +41,24 @@
     --callout-icon: var(--callout-icon-note);
   }
 
+  // [리디자인 Phase 5] `[!summary]`가 정규화되는 abstract 타입의 아이콘·타이틀
+  // 색만 사이트 액센트(--accent)로 재틴트 — 하드코딩된 청록(#00b0ff, 브랜드
+  // 액센트 슬레이트 블루와 무관)이었던 것을 통일한다.
+  //
+  // border/background는 여기서 건드리지 않는다: custom.scss(비-layer라 항상
+  // 우선)가 `.callout[data-callout="abstract"]`에 이미 `border-left: 3px
+  // solid var(--secondary)` + 틴트 배경을 지정해뒀다(v4→v5 이관 당시 작업,
+  // 이 파일 §0보다 먼저 존재). design-handoff.md §4.2가 원했던 "좌측 accent
+  // 보더 + 배경"과 정확히 같은 효과라 새로 만들 필요가 없었다 — 처음엔
+  // 몰랐다가 뒤늦게 발견해서, 여기 --border/--bg에 중복으로 넣었던 값은
+  // 제거했다(어차피 custom.scss에 가려져 죽은 코드였다).
+  //
+  // 참고: summary 텍스트를 ContentMeta 등에 "별도 배너"로 또 렌더하는 방식은
+  // 검토 후 채택하지 않았다 — Phase 2가 이미 콜아웃 본문을
+  // frontmatter.description으로 추출해 카드/메타태그/OG에 쓰고 있어, 본문의
+  // 이 콜아웃까지 또 복제 렌더하면 같은 텍스트가 한 페이지에 두 번 뜬다.
   &[data-callout="abstract"] {
-    --color: #00b0ff;
-    --border: #00b0ff44;
-    --bg: #00b0ff10;
+    --color: var(--accent);
     --callout-icon: var(--callout-icon-abstract);
   }
 
