@@ -1,0 +1,67 @@
+{
+  "name": "@haejunhyun/home-hero",
+  "version": "0.1.0",
+  "description": "Home page Hero + StatsStrip. Renders eyebrow/headline/description/links/avatar and live-aggregated note/topic counts, index-page only.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup"
+  },
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "preact": {
+      "optional": false
+    }
+  },
+  "dependencies": {
+    "@quartz-community/types": "github:quartz-community/types"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "preact": "^10.28.2",
+    "sass": "^1.97.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "quartz": {
+    "name": "home-hero",
+    "displayName": "Home Hero",
+    "category": "component",
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 15,
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "HomeHero": {
+        "displayName": "Home Hero",
+        "defaultPosition": "beforeBody",
+        "defaultPriority": 1
+      }
+    }
+  }
+}

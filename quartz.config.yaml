@@ -218,21 +218,58 @@ plugins:
     layout:
       position: right
       priority: 50
+  - source: ./plugins/home-hero
+    enabled: true
+    # [리디자인 Phase 4] Hero + StatsStrip, 홈 전용. `is-index` 조건이 내장되어
+    # 있지 않고(REDESIGN-GUIDE.md F5 — not-index의 역만 내장) 등록 실패 시
+    # "항상 렌더"로 폴백되어 모든 노트에 Hero가 뜨는 눈에 띄는 회귀가 생기므로,
+    # recent-notes-index와 동일하게 컴포넌트 내부 `fileData.slug !== "index"`
+    # 가드를 쓴다(HomeHero.tsx). priority 1 = article-title(10)보다 위.
+    #
+    # 카피(headline/description/eyebrow)는 검토 필요 — design-handoff.md 목업
+    # 원문("데이터 엔지니어링과 공간 데이터" 중심 소개)은 REDESIGN-GUIDE.md F2
+    # 실측(Programming 39건 > Data Engineering 19건, 나머지는 한 자릿수)과
+    # 어긋나 실제 분포에 맞게 다시 썼다. headline만 content/index.md의 기존
+    # 문구를 그대로 가져왔고, eyebrow/description은 이번에 새로 쓴 문구라
+    # 본인 목소리로 맞는지 검토 권장.
+    options:
+      eyebrow: "Programming · Data Engineering"
+      headline: "기록하고, 가끔 정리하고,\n어쩌다 블로그가 된 곳"
+      description: "프로그래밍과 데이터 엔지니어링을 중심으로, 통계·GIS·부동산 데이터까지 배운 것들을 노트로 남깁니다."
+      links:
+        - label: "노트 둘러보기"
+          href: "#recent"
+          primary: true
+        - label: "GitHub"
+          href: "https://github.com/haden-hyun/haejunhyun.com"
+        - label: "LinkedIn"
+          href: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
+      avatarInitial: "H"
+    order: 15
+    layout:
+      position: beforeBody
+      priority: 1
   - source: github:quartz-community/article-title
     enabled: true
     layout:
       position: beforeBody
       priority: 10
+      # [리디자인 Phase 4] 홈은 이제 HomeHero가 헤드라인을 대신 보여준다 —
+      # 그대로 두면 "Haejun Second Brain" 페이지 타이틀과 Hero 헤드라인이 중복 노출된다.
+      condition: not-index
   - source: github:quartz-community/content-meta
     enabled: true
     layout:
       position: beforeBody
       priority: 20
+      # 홈은 "포스트"가 아니라 인덱스라 날짜·읽기시간 메타가 의미 없다.
+      condition: not-index
   - source: github:quartz-community/tag-list
     enabled: true
     layout:
       position: beforeBody
       priority: 30
+      condition: not-index
   - source: github:quartz-community/page-title
     enabled: true
     layout:

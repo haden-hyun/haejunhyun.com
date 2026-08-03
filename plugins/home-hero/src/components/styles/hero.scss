@@ -1,0 +1,143 @@
+// design-handoff.md §4.1 Hero 레이아웃 스펙 이식.
+// 토큰은 custom.scss §0에서 정의한 별칭(--accent, --text 등)을 그대로 참조 —
+// 값을 새로 정의하지 않는다 (REDESIGN-GUIDE.md F4: 토큰 병렬 정의 금지).
+
+.home-hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 48px;
+  align-items: center;
+  padding: 2.5rem 0 2rem 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+
+  @media all and (max-width: 800px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 1.5rem 0 1.5rem 0;
+    text-align: left;
+  }
+}
+
+.hero-eyebrow {
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.6rem;
+}
+
+.hero-headline {
+  font-family: var(--headerFont);
+  font-weight: 780;
+  font-size: 2.1rem;
+  line-height: 1.28;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin: 0 0 0.9rem 0;
+  border: none;
+  padding: 0;
+
+  @media all and (max-width: 800px) {
+    font-size: 1.6rem;
+  }
+}
+
+.hero-description {
+  font-family: var(--bodyFont);
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 640px;
+  margin: 0 0 1.3rem 0;
+}
+
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.6rem;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius, 10px);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+
+  // 44px 이상 터치 영역 (UI/UX 우선순위 2: Touch & Interaction)
+  min-height: 44px;
+  box-sizing: border-box;
+
+  &:hover {
+    border-color: var(--accent);
+    background: var(--surface-2);
+  }
+}
+
+.hero-btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+
+  &:hover {
+    opacity: 0.9;
+    background: var(--accent);
+  }
+}
+
+.hero-stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+
+  b {
+    display: block;
+    font-family: var(--codeFont);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  span {
+    font-size: 0.72rem;
+    color: var(--text-3);
+  }
+}
+
+.hero-avatar {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--headerFont);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(
+    140deg,
+    var(--tertiary, var(--accent)) 0%,
+    var(--accent) 60%,
+    var(--dark) 130%
+  );
+  flex-shrink: 0;
+  user-select: none;
+
+  @media all and (max-width: 800px) {
+    width: 72px;
+    height: 72px;
+    font-size: 1.7rem;
+  }
+}
