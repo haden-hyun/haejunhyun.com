@@ -628,6 +628,12 @@ body[data-slug="index"] {
   // 여기서 전체를 재정의한다. $mobile 미디어쿼리 안의 기존 규칙(base.scss:235)과
   // 값을 맞췄다 — 즉 홈은 모바일이든 데스크톱이든 좌측 요소가 항상
   // "상단 가로 바"로 보인다.
+  //
+  // 실제 렌더 순서(최신): PageTitle → GlobalNav(Home/Topics/Archive,
+  // quartz.config.yaml에서 left 포지션 priority11로 이동) → SocialLinks →
+  // flex-component(검색+다크모드 toolbar 그룹). 브랜드만 왼쪽에 남기고
+  // 나머지(내비 앞부분 제외 소셜+검색+다크모드)를 오른쪽으로 밀어야
+  // "좌: 브랜드+내비 / 우: 소셜+검색+다크모드" 배치가 된다.
   .left.sidebar {
     position: static;
     height: auto;
@@ -635,17 +641,54 @@ body[data-slug="index"] {
     align-items: center;
     flex-wrap: wrap;
     width: 100%;
-    gap: 0.8rem;
+    // [2026-08-03] 사용자 요청 — "간격도 모두 동일하게 넓혀": 이 최상위 gap과
+    // .global-nav의 내부 링크 간 gap이 서로 달랐다(0.8rem vs 1.4rem). 하나의
+    // 값(1.5rem)으로 통일해 브랜드↔내비↔소셜 사이 간격과 Home/Topics/Archive
+    // 링크 사이 간격이 시각적으로 동일해 보이게 한다.
+    gap: 1.5rem;
     padding: 1.2rem 0 0.8rem 0;
 
-    // 실제 렌더 순서: PageTitle → SocialLinks(GitHub/LinkedIn) →
-    // flex-component(검색+다크모드 toolbar 그룹). 사이트 제목만 왼쪽에 두고
-    // 나머지(소셜 링크 + 검색 + 다크모드)를 통째로 오른쪽으로 밀어야
-    // "좌: 로고 / 우: 나머지 전부" 배치가 된다 — flex-component에만
-    // margin-left:auto를 걸면 SocialLinks가 둘 사이에 낀 채 남아 어색하게
-    // 벌어진다.
     .social-links {
       margin: 0 0 0 auto; // left만 auto → 오른쪽 정렬. 원래 세로형 top/bottom margin 리셋.
+    }
+  }
+
+  // [2026-08-03] 사이트 제목 "Haejun"이 Home/Topics/Archive 내비 링크보다
+  // 약간만 크게 보이도록. PageTitle 플러그인 자체 CSS(font-size:1.75rem)는
+  // 세로 사이드바 로고 기준값이라 홈의 짧은 가로 바에는 과하게 크다 — 홈에서만
+  // 낮춘다(노트 페이지의 세로 사이드바 로고 크기는 그대로 유지).
+  .page-title {
+    font-size: 1rem;
+  }
+
+  // .global-nav-link 기본 font-size(0.82rem)와 위 .left.sidebar gap(1.5rem)
+  // 을 맞추기 위해 내비 링크 사이 간격도 같은 값으로 통일.
+  .global-nav {
+    gap: 1.5rem;
+  }
+
+  // [2026-08-03] 검색창 확장 + ⌘K 힌트 노출. `search` 커뮤니티 플러그인은
+  // 이미 Cmd/Ctrl+K 단축키를 내장하고 있다(search.inline.ts:564 —
+  // `e.key === "k" && (e.ctrlKey || e.metaKey)`) — 클릭과 동일하게 검색을
+  // 연다. 그동안 시각적 힌트가 없었을 뿐이라, 코어 컴포넌트(github: 참조라
+  // 직접 수정 불가)를 건드리지 않고 CSS `::after`로 kbd 힌트만 추가한다.
+  .search {
+    width: 220px;
+    max-width: none;
+  }
+
+  .search > .search-button {
+    padding-right: 0.6rem;
+
+    &::after {
+      content: "⌘K";
+      margin-left: auto;
+      font-family: var(--codeFont);
+      font-size: 0.65rem;
+      color: var(--text-3);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      padding: 1px 5px;
     }
   }
 

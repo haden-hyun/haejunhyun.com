@@ -70,17 +70,14 @@
   background: var(--topic-color);
 }
 
-.topic-card-emoji {
-  font-size: 19px;
-  line-height: 1;
-  margin-bottom: 0.3rem;
-}
-
 .topic-card-label {
   font-family: var(--headerFont);
-  font-size: 0.95rem;
+  // [2026-08-03] 이모지 제거 후 라벨이 카드의 유일한 시각적 앵커가 되어
+  // 사용자 요청대로 키움(0.95rem → 1.15rem).
+  font-size: 1.15rem;
   font-weight: 670;
   color: var(--text);
+  margin-top: 0.2rem;
 }
 
 .topic-card-subtext {

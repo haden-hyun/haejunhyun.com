@@ -35,7 +35,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/topicsContent.scss
-var topicsContent_default = ".topics-page-content h1 {\n  margin-bottom: 0.3rem;\n}\n\n.topics-page-sub {\n  font-family: var(--codeFont);\n  font-size: 0.8rem;\n  color: var(--text-3);\n  margin: 0 0 1.5rem 0;\n}\n\n.topics-page-grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 14px;\n}\n@media all and (max-width: 1080px) {\n  .topics-page-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media all and (max-width: 480px) {\n  .topics-page-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.topics-page-card {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  gap: 0.15rem;\n  padding: 1.1rem 1.1rem 1rem 1.2rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  overflow: hidden;\n  transition: border-color 0.15s, transform 0.15s;\n  min-height: 116px;\n}\n.topics-page-card:hover {\n  border-color: var(--topic-color);\n}\n\n.topics-page-bar {\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  width: 3px;\n  background: var(--topic-color);\n}\n\n.topics-page-emoji {\n  font-size: 20px;\n  line-height: 1;\n  margin-bottom: 0.35rem;\n}\n\n.topics-page-label {\n  font-family: var(--headerFont);\n  font-size: 1rem;\n  font-weight: 670;\n  color: var(--text);\n}\n\n.topics-page-subtext {\n  font-size: 0.8rem;\n  color: var(--text-2);\n  line-height: 1.4;\n}\n\n.topics-page-count {\n  margin-top: 0.55rem;\n  font-family: var(--codeFont);\n  font-size: 0.7rem;\n  color: var(--text-3);\n}\n\n.topics-page-share {\n  margin-top: 0.4rem;\n  height: 3px;\n  border-radius: 2px;\n  background: var(--surface-2);\n  overflow: hidden;\n}\n\n.topics-page-share-fill {\n  height: 100%;\n  background: var(--topic-color);\n  opacity: 0.75;\n  border-radius: 2px;\n}";
+var topicsContent_default = ".topics-page-content h1 {\n  margin-bottom: 0.3rem;\n}\n\n.topics-page-sub {\n  font-family: var(--codeFont);\n  font-size: 0.8rem;\n  color: var(--text-3);\n  margin: 0 0 1.5rem 0;\n}\n\n.topics-page-grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 14px;\n}\n@media all and (max-width: 1080px) {\n  .topics-page-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media all and (max-width: 480px) {\n  .topics-page-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.topics-page-card {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  gap: 0.15rem;\n  padding: 1.1rem 1.1rem 1rem 1.2rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  overflow: hidden;\n  transition: border-color 0.15s, transform 0.15s;\n  min-height: 116px;\n}\n.topics-page-card:hover {\n  border-color: var(--topic-color);\n}\n\n.topics-page-bar {\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  width: 3px;\n  background: var(--topic-color);\n}\n\n.topics-page-label {\n  font-family: var(--headerFont);\n  font-size: 1.2rem;\n  font-weight: 670;\n  color: var(--text);\n  margin-top: 0.2rem;\n}\n\n.topics-page-subtext {\n  font-size: 0.8rem;\n  color: var(--text-2);\n  line-height: 1.4;\n}\n\n.topics-page-count {\n  margin-top: 0.55rem;\n  font-family: var(--codeFont);\n  font-size: 0.7rem;\n  color: var(--text-3);\n}\n\n.topics-page-share {\n  margin-top: 0.4rem;\n  height: 3px;\n  border-radius: 2px;\n  background: var(--surface-2);\n  overflow: hidden;\n}\n\n.topics-page-share-fill {\n  height: 100%;\n  background: var(--topic-color);\n  opacity: 0.75;\n  border-radius: 2px;\n}";
 var l;
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
@@ -61,43 +61,37 @@ function u2(e2, t2, n2, o2, i2, u3) {
 var TOPICS = [
   {
     key: "computer-science",
-    emoji: "\u{1F4BB}",
     label: "Computer Science",
     subtext: "\uC54C\uACE0\uB9AC\uC998 \xB7 \uC790\uB8CC\uAD6C\uC870",
     colorVar: "--c-cs"
   },
   {
     key: "data-engineering",
-    emoji: "\u{1F6E2}",
     label: "Data Engineering",
     subtext: "Airflow \xB7 Docker \xB7 PostgreSQL",
     colorVar: "--c-de"
   },
   {
     key: "data-science",
-    emoji: "\u{1F4CA}",
     label: "Data Science",
     subtext: "DL \xB7 ML \xB7 \uD1B5\uACC4 \xB7 \uC2DC\uAC01\uD654",
     colorVar: "--c-ds"
   },
-  { key: "gis", emoji: "\u{1F5FA}", label: "GIS", subtext: "\uACF5\uAC04 \uB370\uC774\uD130 \uBD84\uC11D", colorVar: "--c-gis" },
+  { key: "gis", label: "GIS", subtext: "\uACF5\uAC04 \uB370\uC774\uD130 \uBD84\uC11D", colorVar: "--c-gis" },
   {
     key: "programming",
-    emoji: "\u{1F40D}",
     label: "Programming",
     subtext: "Python \xB7 SQL",
     colorVar: "--c-prog"
   },
   {
     key: "finance-property",
-    emoji: "\u{1F3E0}",
     label: "Finance & Property",
     subtext: "\uBD80\uB3D9\uC0B0 \xB7 \uAE08\uC735",
     colorVar: "--c-fin"
   },
   {
     key: "tools",
-    emoji: "\u{1F527}",
     label: "Tools",
     subtext: "Obsidian \xB7 \uC6CC\uD06C\uD50C\uB85C\uC6B0",
     colorVar: "--c-tool"
@@ -151,7 +145,6 @@ var TopicsContent_default = (() => {
             style: `--topic-color: var(${t2.colorVar});`,
             children: [
               /* @__PURE__ */ u2("i", { class: "topics-page-bar", "aria-hidden": "true" }),
-              /* @__PURE__ */ u2("div", { class: "topics-page-emoji", "aria-hidden": "true", children: t2.emoji }),
               /* @__PURE__ */ u2("b", { class: "topics-page-label", children: t2.label }),
               /* @__PURE__ */ u2("span", { class: "topics-page-subtext", children: t2.subtext }),
               /* @__PURE__ */ u2("div", { class: "topics-page-count", children: [

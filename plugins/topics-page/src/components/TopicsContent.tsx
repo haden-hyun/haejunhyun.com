@@ -23,52 +23,46 @@ type FileData = QuartzPluginData & Record<string, unknown>
 
 interface Topic {
   key: string
-  emoji: string
   label: string
   subtext: string
   colorVar: string
 }
 
+// [2026-08-03] 이모지 제거 — topic-grid와 동일한 결정, 이유는 그쪽 주석 참고.
 const TOPICS: Topic[] = [
   {
     key: "computer-science",
-    emoji: "💻",
     label: "Computer Science",
     subtext: "알고리즘 · 자료구조",
     colorVar: "--c-cs",
   },
   {
     key: "data-engineering",
-    emoji: "🛢",
     label: "Data Engineering",
     subtext: "Airflow · Docker · PostgreSQL",
     colorVar: "--c-de",
   },
   {
     key: "data-science",
-    emoji: "📊",
     label: "Data Science",
     subtext: "DL · ML · 통계 · 시각화",
     colorVar: "--c-ds",
   },
-  { key: "gis", emoji: "🗺", label: "GIS", subtext: "공간 데이터 분석", colorVar: "--c-gis" },
+  { key: "gis", label: "GIS", subtext: "공간 데이터 분석", colorVar: "--c-gis" },
   {
     key: "programming",
-    emoji: "🐍",
     label: "Programming",
     subtext: "Python · SQL",
     colorVar: "--c-prog",
   },
   {
     key: "finance-property",
-    emoji: "🏠",
     label: "Finance & Property",
     subtext: "부동산 · 금융",
     colorVar: "--c-fin",
   },
   {
     key: "tools",
-    emoji: "🔧",
     label: "Tools",
     subtext: "Obsidian · 워크플로우",
     colorVar: "--c-tool",
@@ -122,9 +116,6 @@ export default (() => {
               style={`--topic-color: var(${t.colorVar});`}
             >
               <i class="topics-page-bar" aria-hidden="true" />
-              <div class="topics-page-emoji" aria-hidden="true">
-                {t.emoji}
-              </div>
               <b class="topics-page-label">{t.label}</b>
               <span class="topics-page-subtext">{t.subtext}</span>
               <div class="topics-page-count">{t.count}개 노트</div>

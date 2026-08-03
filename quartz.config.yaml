@@ -1,6 +1,9 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: ☀️ haejun
+  # [2026-08-03] "☀️ haejun" → "Haejun" — 상단 통합 바에서 브랜드 텍스트로
+  # 쓰인다(PageTitle 컴포넌트). og:site_name(Head.tsx:65)에도 쓰이므로
+  # 소셜 미리보기 사이트명도 함께 바뀐다.
+  pageTitle: Haejun
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true

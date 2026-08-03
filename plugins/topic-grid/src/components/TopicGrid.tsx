@@ -24,10 +24,12 @@ import style from "./styles/topicGrid.scss"
  * (24/31/38로 평탄화) 없이 실제 분포(Programming 38 vs Tools 4)가 드러나게
  * 했다. 진짜 bento 스팬은 브라우저 검증 가능해지면 별도로 전환 가능.
  *
- * 아이콘: 이모지 유지(SVG 미전환) — UI/UX 가이드는 SVG를 권장하지만, 7종을
- * 새로 그려 넣으면 브라우저 실렌더 없이는 검증이 어렵다. content/index.md가
- * 이미 같은 이모지를 쓰고 있어 최소 리스크로 판단해 유지했다. 결정 필요
- * 항목으로 남겨둠(REDESIGN-GUIDE.md Q6).
+ * 아이콘: [2026-08-03 결정] 이모지 제거. 초판은 "브라우저 검증 없이 SVG
+ * 새로 그려 넣기엔 리스크"라는 이유로 유지했었으나(REDESIGN-GUIDE.md Q6),
+ * 사용자가 직접 제거를 요청해 결정됐다 — 플랫폼별 렌더 편차·스크린리더
+ * 오독 문제(UI/UX 우선순위 4의 명시적 안티패턴)가 실제로 걷어낼 이유였다.
+ * 대체 아이콘 없이 라벨 텍스트 + 컬러바만으로 토픽을 구분한다(라벨 글자
+ * 크기를 키워 시각적 무게를 보완 — 아래 topicGrid.scss 참고).
  *
  * 홈 전용 렌더: home-hero와 동일하게 컴포넌트 내부 `fileData.slug !== "index"`
  * 가드. `is-index` 조건 미등록 폴백 위험 회피.
@@ -39,7 +41,6 @@ import style from "./styles/topicGrid.scss"
 
 interface Topic {
   key: string
-  emoji: string
   label: string
   subtext: string
   colorVar: string
@@ -49,43 +50,37 @@ interface Topic {
 const TOPICS: Topic[] = [
   {
     key: "computer-science",
-    emoji: "💻",
     label: "Computer Science",
     subtext: "알고리즘 · 자료구조",
     colorVar: "--c-cs",
   },
   {
     key: "data-engineering",
-    emoji: "🛢",
     label: "Data Engineering",
     subtext: "Airflow · Docker · PostgreSQL",
     colorVar: "--c-de",
   },
   {
     key: "data-science",
-    emoji: "📊",
     label: "Data Science",
     subtext: "DL · ML · 통계 · 시각화",
     colorVar: "--c-ds",
   },
-  { key: "gis", emoji: "🗺", label: "GIS", subtext: "공간 데이터 분석", colorVar: "--c-gis" },
+  { key: "gis", label: "GIS", subtext: "공간 데이터 분석", colorVar: "--c-gis" },
   {
     key: "programming",
-    emoji: "🐍",
     label: "Programming",
     subtext: "Python · SQL",
     colorVar: "--c-prog",
   },
   {
     key: "finance-property",
-    emoji: "🏠",
     label: "Finance & Property",
     subtext: "부동산 · 금융",
     colorVar: "--c-fin",
   },
   {
     key: "tools",
-    emoji: "🔧",
     label: "Tools",
     subtext: "Obsidian · 워크플로우",
     colorVar: "--c-tool",
@@ -157,9 +152,6 @@ export default ((userOpts?: Partial<TopicGridOptions>) => {
               style={`--topic-color: var(${t.colorVar});`}
             >
               <i class="topic-card-bar" aria-hidden="true" />
-              <div class="topic-card-emoji" aria-hidden="true">
-                {t.emoji}
-              </div>
               <b class="topic-card-label">{t.label}</b>
               <span class="topic-card-subtext">{t.subtext}</span>
               <div class="topic-card-count">{t.count}개 노트</div>

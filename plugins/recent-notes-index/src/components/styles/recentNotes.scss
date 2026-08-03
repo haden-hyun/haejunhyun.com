@@ -73,8 +73,11 @@
 
   .s {
     font-size: 13px;
-    color: var(--text-2);
-    margin-top: 3px;
+    // [2026-08-03] 사용자 요청 — 목업 원본은 --text-2/margin-top 3px였으나
+    // 제목과의 간격을 넓히고 색을 한 단계 더 연하게(--text-3) 바꿔달라는
+    // 명시적 지시로 목업값을 덮어씀.
+    color: var(--text-3);
+    margin-top: 7px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 1;
