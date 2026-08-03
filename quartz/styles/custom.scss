@@ -43,6 +43,13 @@
   --surface: var(--light);
   --surface-2: var(--lightgray);
   --border: var(--lightgray);
+  // [2026-08-03] design-handoff.md §2 원본 토큰(`--border-strong: #d4d3ce`,
+  // `--border: #e6e5e1` — 둘 다 연한 회색, 한 단계 차이)에 있었으나 이관
+  // 초기(§0)에서 누락됨 — featured-notes 작업 중 목업의 `.feat-item:hover
+  // {border-color: var(--border-strong)}` 재확인하며 발견. --darkgray(=
+  // --text-2와 동일 톤, 진한 텍스트색)를 쓰면 원본 의도보다 훨씬 무거운
+  // 테두리가 되므로, 중간 톤인 --gray로 "한 단계만 진하게"를 재현한다.
+  --border-strong: var(--gray);
   --text: var(--dark);
   --text-2: var(--darkgray);
   --text-3: var(--gray);

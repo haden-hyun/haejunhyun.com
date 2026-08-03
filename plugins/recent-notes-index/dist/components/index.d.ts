@@ -5,6 +5,7 @@ interface RecentNotesForIndexOptions {
     title?: string;
     limit: number;
     linkToMore: string | false;
+    linkToMoreLabel: string;
     showTags: boolean;
     filter: (f: RecentNotesPluginData) => boolean;
     sort: (f1: RecentNotesPluginData, f2: RecentNotesPluginData) => number;

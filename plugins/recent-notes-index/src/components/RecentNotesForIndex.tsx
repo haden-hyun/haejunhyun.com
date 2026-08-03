@@ -16,7 +16,7 @@ type RecentNotesPluginData = QuartzPluginData & Record<string, unknown>
  * 걸러낼 수 없다 — `folder-page`/`tag-page`가 자동 생성한 페이지도 title이
  * 채워진다(예: `computer-science/algorithm/index` → title "algorithm").
  * 폴더 인덱스 페이지는 자식 노트 중 가장 최근 수정일을 물려받는 경우가 많아,
- * 정렬 시 실제 최근 글보다 위로 올라와 "Recent Posts"에 폴더 페이지가 섞여
+ * 정렬 시 실제 최근 글보다 위로 올라와 "Recent Notes"에 폴더 페이지가 섞여
  * 나올 수 있다(home-hero 작업 중 static/contentIndex.json 실측으로 발견 —
  * 총 147건 중 87건만 실제 노트, 나머지는 tags/ 하위(27) + /index로 끝나는 폴더(33)).
  */
@@ -39,6 +39,7 @@ export interface RecentNotesForIndexOptions {
   title?: string
   limit: number
   linkToMore: string | false
+  linkToMoreLabel: string
   showTags: boolean
   filter: (f: RecentNotesPluginData) => boolean
   sort: (f1: RecentNotesPluginData, f2: RecentNotesPluginData) => number
@@ -59,29 +60,34 @@ function getDisplayDate(f: RecentNotesPluginData): Date | undefined {
   return f.dates?.modified ?? f.dates?.created ?? f.dates?.published
 }
 
+/**
+ * [2026-08-03 재작성] 목업(haejun-redesign-abc.html:97-134, 128-136) 재확인
+ * 결과 Recent Notes는 카드 그리드가 아니라 **행 리스트**였다 — 이전 구현은
+ * v4에서 이식한 `note-card` 그리드를 그대로 썼는데, 목업의 실제 마크업
+ * (`.rows > .row { grid-template-columns: 96px 1fr auto }`)과 달랐다.
+ *
+ * `.tag`도 카테고리명을 번역한 pill 여러 개가 아니라 **원본 tags[0] 문자열
+ * 하나**(예: `computer-science/network`)를 그대로 보여준다. frontmatter에
+ * 태그가 없는 노트를 위한 폴백으로 슬러그의 마지막 세그먼트(파일명)를 뺀
+ * 나머지를 사용한다 — 목업의 "topic/subfolder" 형태와 동일한 모양이 된다.
+ */
+function getTagLabel(f: RecentNotesPluginData): string {
+  const tags = f.frontmatter?.tags
+  if (Array.isArray(tags) && tags.length > 0 && typeof tags[0] === "string") {
+    return tags[0]
+  }
+  const slug = (f.slug as string | undefined) ?? ""
+  const parts = slug.split("/")
+  return parts.length > 1 ? parts.slice(0, -1).join("/") : (parts[0] ?? "")
+}
+
 const defaultOptions: RecentNotesForIndexOptions = {
   limit: 6,
   linkToMore: false,
+  linkToMoreLabel: "아카이브 →",
   showTags: true,
   filter: () => true,
   sort: (f1, f2) => getSortTime(f2) - getSortTime(f1),
-}
-
-const CATEGORY_NAMES: Record<string, string> = {
-  "computer-science": "Computer Science",
-  "data-engineering": "Data Engineering",
-  "data-science": "Data Science",
-  gis: "GIS",
-  programming: "Programming",
-  "finance-property": "Finance & Property",
-  tools: "Tools",
-}
-
-function getCategory(slug: string): { key: string; name: string } {
-  const key = slug.split("/")[0] ?? ""
-  const name =
-    CATEGORY_NAMES[key] ?? key.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-  return { key, name }
 }
 
 export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
@@ -114,47 +120,32 @@ export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
       // [2026-08-03] id="recent" — home-hero의 "노트 둘러보기" CTA(href="#recent")가
       // 스크롤 대상으로 참조한다.
       <div id="recent" class={classNames(displayClass, "recent-notes")}>
-        <h2>{opts.title ?? "Recent Posts"}</h2>
-        <div class="notes-grid">
+        <div class="recent-notes-header">
+          <h2>{opts.title ?? "Recent Notes"}</h2>
+          {opts.linkToMore && (
+            <a class="recent-notes-more" href={resolveRelative(fileData.slug!, opts.linkToMore)}>
+              {opts.linkToMoreLabel}
+            </a>
+          )}
+        </div>
+        <div class="rows">
           {pages.map((page) => {
             const title = page.frontmatter?.title ?? "Untitled"
-            const tags = page.frontmatter?.tags ?? []
             const description = page.description ?? ""
-            const { key: catKey, name: catName } = getCategory(page.slug ?? "")
             const displayDate = getDisplayDate(page)
 
             return (
-              <a
-                class="note-card"
-                data-category={catKey}
-                href={resolveRelative(fileData.slug!, page.slug!)}
-              >
-                <div class="card-category">{catName}</div>
-                {displayDate && (
-                  <div class="card-meta">
-                    <time dateTime={displayDate.toISOString()}>
-                      {formatDate(displayDate, locale)}
-                    </time>
-                  </div>
-                )}
-                <h3 class="card-title">{title}</h3>
-                {description && <p class="card-desc">{description}</p>}
-                {opts.showTags && tags.length > 0 && (
-                  <div class="card-tags">
-                    {tags.slice(0, 3).map((tag) => (
-                      <span class="tag-chip">#{tag}</span>
-                    ))}
-                  </div>
-                )}
+              <a class="row" href={resolveRelative(fileData.slug!, page.slug!)}>
+                <span class="d">{displayDate ? formatDate(displayDate, locale) : ""}</span>
+                <span>
+                  <span class="t">{title}</span>
+                  {description && <span class="s">{description}</span>}
+                </span>
+                {opts.showTags && <span class="tag">{getTagLabel(page)}</span>}
               </a>
             )
           })}
         </div>
-        {opts.linkToMore && (
-          <a href={resolveRelative(fileData.slug!, opts.linkToMore)} class="see-more">
-            {`See ${Math.max(0, files.length - opts.limit)} more`}
-          </a>
-        )}
       </div>
     )
   }

@@ -28,9 +28,16 @@ import style from "./styles/featured.scss"
  * 모든 파일에 채워 넣으므로(order 70) allFiles 각 항목에서도 사용 가능함을
  * 확인함(quartz/build.ts의 allFiles = content.map(c => c[1].data)).
  *
- * "전체 보기 →" 링크(design-handoff.md 원안)는 넣지 않았다 — 연결할 아카이브/
- * Notes 페이지가 아직 없음(Phase 6 미착수). 존재하지 않는 라우트를 링크로
- * 걸지 않는다.
+ * "전체 보기 →" 링크(design-handoff.md 원안)는 넣지 않았다 — 연결할 Notes
+ * 페이지가 아직 없음(전체 노트 페이지네이션 UI, Phase 6 범위 밖). Archive는
+ * 이제 있지만 "전체 노트"와 "전체 아카이브"는 다른 개념이라 링크하지 않음.
+ *
+ * [2026-08-03 버그픽스] 카테고리 라벨(featured-cat)이 전부 `--accent`
+ * 고정색이었다 — 목업(haejun-redesign-abc.html:104-108) 재확인 결과 실제로는
+ * `.cat`이 토픽별로 다른 색(`.c-fin`, `.c-ds`, `.c-de`, `.c-cs` 등, custom.scss
+ * §0의 `--c-*` 토큰)이었다. topic-grid/topics-page와 동일한 토픽→색 매핑을
+ * 재사용하되, 라벨은 텍스트라 대비가 확보된 `-text` 변형을 쓴다(원본 `--c-*`
+ * 그대로 쓰면 topic-grid 작업 때 확인된 것과 같은 AA 미달 문제가 재발한다).
  *
  * 홈 전용 렌더: 다른 홈 컴포넌트와 동일한 내부 가드 패턴.
  *
@@ -65,9 +72,24 @@ const CATEGORY_NAMES: Record<string, string> = {
   tools: "Tools",
 }
 
+const CATEGORY_COLOR_VARS: Record<string, string> = {
+  "computer-science": "--c-cs-text",
+  "data-engineering": "--c-de-text",
+  "data-science": "--c-ds-text",
+  gis: "--c-gis-text",
+  programming: "--c-prog-text",
+  "finance-property": "--c-fin-text",
+  tools: "--c-tool-text",
+}
+
 function getCategoryName(slug: string): string {
   const key = slug.split("/")[0] ?? ""
   return CATEGORY_NAMES[key] ?? key.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+function getCategoryColorVar(slug: string): string {
+  const key = slug.split("/")[0] ?? ""
+  return CATEGORY_COLOR_VARS[key] ?? "--text-3"
 }
 
 function isRealNote(slug: string): boolean {
@@ -185,7 +207,12 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
         </div>
         <div class="featured-grid">
           <a class="featured-main" href={resolveRelative(fileData.slug!, main!.slug as string)}>
-            <span class="featured-cat">{getCategoryName((main!.slug as string) ?? "")}</span>
+            <span
+              class="featured-cat"
+              style={`color:var(${getCategoryColorVar((main!.slug as string) ?? "")})`}
+            >
+              {getCategoryName((main!.slug as string) ?? "")}
+            </span>
             <h3>{(main!.frontmatter as { title?: string } | undefined)?.title ?? "Untitled"}</h3>
             {main!.description && <p>{main!.description as string}</p>}
             <div class="featured-meta">
@@ -208,7 +235,12 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
           <div class="featured-side">
             {sideItems.map((item) => (
               <a class="featured-item" href={resolveRelative(fileData.slug!, item.slug as string)}>
-                <span class="featured-cat">{getCategoryName((item.slug as string) ?? "")}</span>
+                <span
+                  class="featured-cat"
+                  style={`color:var(${getCategoryColorVar((item.slug as string) ?? "")})`}
+                >
+                  {getCategoryName((item.slug as string) ?? "")}
+                </span>
                 <h4>{(item.frontmatter as { title?: string } | undefined)?.title ?? "Untitled"}</h4>
                 <div class="featured-meta">
                   {(() => {

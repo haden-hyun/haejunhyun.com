@@ -92,7 +92,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/recentNotes.scss
-var recentNotes_default = "/**\n * Layout breakpoints\n * $mobile: screen width below this value will use mobile styles\n * $desktop: screen width above this value will use desktop styles\n * Screen width between $mobile and $desktop width will use the tablet layout.\n * assuming mobile < desktop\n */\n.note-card[data-category=computer-science] {\n  --cat-color: #3d6b8e;\n}\n.note-card[data-category=data-engineering] {\n  --cat-color: #2e7d62;\n}\n.note-card[data-category=data-science] {\n  --cat-color: #6b5ea8;\n}\n.note-card[data-category=gis] {\n  --cat-color: #b5722a;\n}\n.note-card[data-category=programming] {\n  --cat-color: #c0554a;\n}\n.note-card[data-category=finance-property] {\n  --cat-color: #3a7a5a;\n}\n.note-card[data-category=tools] {\n  --cat-color: #7a8090;\n}\n\n.recent-notes {\n  margin-top: 2rem;\n}\n.recent-notes > h2 {\n  font-size: 1rem;\n  font-weight: 700;\n  color: var(--dark);\n  margin: 0 0 1.2rem;\n  padding-bottom: 0.5rem;\n  border-bottom: 1.5px solid var(--lightgray);\n  letter-spacing: -0.01em;\n}\n\n.notes-grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 0.9rem;\n}\n@media all and ((min-width: 800px) and (max-width: 1200px)) {\n  .notes-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media all and ((max-width: 800px)) {\n  .notes-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.note-card {\n  display: flex;\n  flex-direction: column;\n  gap: 0.25rem;\n  padding: 1rem 1.1rem;\n  border: 1px solid var(--lightgray);\n  border-top: 3px solid var(--cat-color, var(--lightgray));\n  border-radius: 8px;\n  text-decoration: none;\n  border-bottom: 1px solid var(--lightgray) !important;\n  transition: border-color 0.15s, background 0.15s, transform 0.18s, box-shadow 0.18s;\n  color: inherit;\n}\n.note-card:hover {\n  border-color: var(--cat-color, var(--secondary)) !important;\n  border-top-color: var(--cat-color, var(--secondary)) !important;\n  background: color-mix(in srgb, var(--cat-color, var(--secondary)) 4%, transparent);\n  transform: translateY(-3px);\n  box-shadow: 0 6px 16px color-mix(in srgb, var(--cat-color, var(--secondary)) 15%, transparent);\n}\n.note-card .card-category {\n  display: inline-block;\n  font-size: 0.72rem;\n  font-weight: 800;\n  color: var(--cat-color, var(--secondary));\n  background: color-mix(in srgb, var(--cat-color, var(--secondary)) 12%, transparent);\n  text-transform: uppercase;\n  letter-spacing: 0.07em;\n  padding: 0.18rem 0.55rem;\n  border-radius: 4px;\n  margin-bottom: 0.3rem;\n}\n.note-card .card-meta {\n  font-size: 0.71rem;\n  color: var(--gray);\n  font-family: var(--bodyFont);\n}\n.note-card .card-title {\n  font-size: 0.92rem;\n  font-weight: 700;\n  color: var(--dark);\n  margin: 0.1rem 0 0;\n  line-height: 1.4;\n  font-family: var(--headerFont);\n  letter-spacing: -0.01em;\n}\n.note-card .card-desc {\n  font-size: 0.78rem;\n  color: var(--gray);\n  line-height: 1.6;\n  margin: 0.15rem 0 0;\n  display: -webkit-box;\n  -webkit-line-clamp: 2;\n  -webkit-box-orient: vertical;\n  overflow: hidden;\n  font-family: var(--bodyFont);\n  flex: 1;\n}\n.note-card .card-tags {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.3rem;\n  margin-top: 0.5rem;\n}\n.note-card .card-tags .tag-chip {\n  font-size: 0.65rem;\n  font-weight: 500;\n  color: var(--secondary);\n  background: rgba(61, 107, 142, 0.08);\n  padding: 2px 7px;\n  border-radius: 4px;\n  border: 1px solid rgba(61, 107, 142, 0.15);\n  letter-spacing: 0.01em;\n}\n\n.see-more {\n  display: inline-block;\n  margin-top: 1rem;\n  font-size: 0.82rem;\n  color: var(--secondary);\n  text-decoration: none;\n  border-bottom: 1px solid transparent;\n  transition: border-color 0.15s;\n}\n.see-more:hover {\n  border-bottom-color: var(--secondary);\n}";
+var recentNotes_default = ".recent-notes {\n  margin-top: 2rem;\n}\n\n.recent-notes-header {\n  display: flex;\n  align-items: baseline;\n  justify-content: space-between;\n  margin-bottom: 20px;\n}\n.recent-notes-header h2 {\n  font-size: 19px;\n  font-weight: 720;\n  letter-spacing: -0.02em;\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n}\n\n.recent-notes-more {\n  font-size: 13px;\n  color: var(--text-3);\n  font-weight: 550;\n  text-decoration: none;\n  font-family: var(--codeFont);\n}\n.recent-notes-more:hover {\n  color: var(--accent);\n}\n\n.rows {\n  border-top: 1px solid var(--border);\n}\n\n.row {\n  display: grid;\n  grid-template-columns: 96px 1fr auto;\n  gap: 18px;\n  align-items: center;\n  padding: 15px 8px;\n  border-bottom: 1px solid var(--border);\n  text-decoration: none;\n  color: inherit;\n  transition: 0.12s;\n}\n.row:hover {\n  background: var(--surface-2);\n  padding-left: 14px;\n  padding-right: 2px;\n}\n.row .d {\n  font-family: var(--codeFont);\n  font-size: 12px;\n  color: var(--text-3);\n}\n.row .t {\n  font-size: 15.5px;\n  font-weight: 620;\n  letter-spacing: -0.018em;\n  color: var(--text);\n}\n.row .s {\n  font-size: 13px;\n  color: var(--text-2);\n  margin-top: 3px;\n  overflow: hidden;\n  display: -webkit-box;\n  -webkit-line-clamp: 1;\n  -webkit-box-orient: vertical;\n}\n\n.tag {\n  font-family: var(--codeFont);\n  font-size: 11px;\n  color: var(--text-3);\n  border: 1px solid var(--border);\n  border-radius: 5px;\n  padding: 3px 8px;\n  white-space: nowrap;\n}";
 
 // src/components/RecentNotesForIndex.tsx
 function isAutoGeneratedPage(slug2) {
@@ -104,27 +104,23 @@ function getSortTime(f3) {
 function getDisplayDate(f3) {
   return f3.dates?.modified ?? f3.dates?.created ?? f3.dates?.published;
 }
+function getTagLabel(f3) {
+  const tags = f3.frontmatter?.tags;
+  if (Array.isArray(tags) && tags.length > 0 && typeof tags[0] === "string") {
+    return tags[0];
+  }
+  const slug2 = f3.slug ?? "";
+  const parts = slug2.split("/");
+  return parts.length > 1 ? parts.slice(0, -1).join("/") : parts[0] ?? "";
+}
 var defaultOptions = {
   limit: 6,
   linkToMore: false,
+  linkToMoreLabel: "\uC544\uCE74\uC774\uBE0C \u2192",
   showTags: true,
   filter: () => true,
   sort: (f1, f22) => getSortTime(f22) - getSortTime(f1)
 };
-var CATEGORY_NAMES = {
-  "computer-science": "Computer Science",
-  "data-engineering": "Data Engineering",
-  "data-science": "Data Science",
-  gis: "GIS",
-  programming: "Programming",
-  "finance-property": "Finance & Property",
-  tools: "Tools"
-};
-function getCategory(slug2) {
-  const key = slug2.split("/")[0] ?? "";
-  const name = CATEGORY_NAMES[key] ?? key.replace(/-/g, " ").replace(/\b\w/g, (c2) => c2.toUpperCase());
-  return { key, name };
-}
 var RecentNotesForIndex_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
   const RecentNotesForIndex = ({
@@ -143,33 +139,23 @@ var RecentNotesForIndex_default = ((userOpts) => {
       // [2026-08-03] id="recent" — home-hero의 "노트 둘러보기" CTA(href="#recent")가
       // 스크롤 대상으로 참조한다.
       /* @__PURE__ */ u2("div", { id: "recent", class: classNames(displayClass, "recent-notes"), children: [
-        /* @__PURE__ */ u2("h2", { children: opts.title ?? "Recent Posts" }),
-        /* @__PURE__ */ u2("div", { class: "notes-grid", children: pages.map((page) => {
+        /* @__PURE__ */ u2("div", { class: "recent-notes-header", children: [
+          /* @__PURE__ */ u2("h2", { children: opts.title ?? "Recent Notes" }),
+          opts.linkToMore && /* @__PURE__ */ u2("a", { class: "recent-notes-more", href: resolveRelative(fileData.slug, opts.linkToMore), children: opts.linkToMoreLabel })
+        ] }),
+        /* @__PURE__ */ u2("div", { class: "rows", children: pages.map((page) => {
           const title = page.frontmatter?.title ?? "Untitled";
-          const tags = page.frontmatter?.tags ?? [];
           const description = page.description ?? "";
-          const { key: catKey, name: catName } = getCategory(page.slug ?? "");
           const displayDate = getDisplayDate(page);
-          return /* @__PURE__ */ u2(
-            "a",
-            {
-              class: "note-card",
-              "data-category": catKey,
-              href: resolveRelative(fileData.slug, page.slug),
-              children: [
-                /* @__PURE__ */ u2("div", { class: "card-category", children: catName }),
-                displayDate && /* @__PURE__ */ u2("div", { class: "card-meta", children: /* @__PURE__ */ u2("time", { dateTime: displayDate.toISOString(), children: formatDate(displayDate, locale) }) }),
-                /* @__PURE__ */ u2("h3", { class: "card-title", children: title }),
-                description && /* @__PURE__ */ u2("p", { class: "card-desc", children: description }),
-                opts.showTags && tags.length > 0 && /* @__PURE__ */ u2("div", { class: "card-tags", children: tags.slice(0, 3).map((tag) => /* @__PURE__ */ u2("span", { class: "tag-chip", children: [
-                  "#",
-                  tag
-                ] })) })
-              ]
-            }
-          );
-        }) }),
-        opts.linkToMore && /* @__PURE__ */ u2("a", { href: resolveRelative(fileData.slug, opts.linkToMore), class: "see-more", children: `See ${Math.max(0, files.length - opts.limit)} more` })
+          return /* @__PURE__ */ u2("a", { class: "row", href: resolveRelative(fileData.slug, page.slug), children: [
+            /* @__PURE__ */ u2("span", { class: "d", children: displayDate ? formatDate(displayDate, locale) : "" }),
+            /* @__PURE__ */ u2("span", { children: [
+              /* @__PURE__ */ u2("span", { class: "t", children: title }),
+              description && /* @__PURE__ */ u2("span", { class: "s", children: description })
+            ] }),
+            opts.showTags && /* @__PURE__ */ u2("span", { class: "tag", children: getTagLabel(page) })
+          ] });
+        }) })
       ] })
     );
   };
