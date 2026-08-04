@@ -6,8 +6,13 @@
 }
 
 .global-nav-link {
-  font-family: var(--codeFont);
-  font-size: 0.82rem;
+  // [2026-08-05] titleFont(Anton)로 통일했다가 "너무 뚱뚱하다"는 피드백으로
+  // headerFont(Hahmlet)로 재변경. Anton은 로고 전용으로 설계된 매우 두꺼운
+  // 디스플레이 서체라 본문 크기 UI 텍스트엔 과함 — Hahmlet은 헤딩에 이미
+  // 쓰이는 서체라 두께가 자연스럽고, 700/900 weight가 로드돼 있어(quartz.config.yaml)
+  // 합성 볼드 걱정 없이 강조를 줄 수 있다. Anton 전용 보정(자간 확대)은 불필요해 제거.
+  font-family: var(--headerFont);
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-2);
   text-decoration: none;

@@ -20,10 +20,12 @@
 }
 
 .hero-eyebrow {
-  font-family: var(--codeFont);
+  // [2026-08-05] titleFont(Anton) → headerFont(Hahmlet) 재변경 — "너무
+  // 뚱뚱하다" 피드백. Anton은 로고 전용 디스플레이 서체라 두께가 과했다.
+  font-family: var(--headerFont);
   font-size: 0.95rem; // 0.72 → 0.95 (2026-08-05 사용자 요청: 확대)
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.02em;
   // 목업 원본은 대문자 강제였으나, 실제 콘텐츠("blue notes. 🎷")는 소문자로
   // 쓰도록 의도된 문구라 강제 변환을 뺐다(사용자 피드백).
   color: var(--accent);
@@ -47,7 +49,9 @@
 }
 
 .hero-description {
-  font-family: var(--bodyFont);
+  // headerFont(Hahmlet) — 2026-08-05 사용자 요청. 본문 서체(Noto Sans KR)
+  // 대신 헤딩 서체로, Hero 존 전체의 브랜드 무드를 통일한다.
+  font-family: var(--headerFont);
   font-size: 1.02rem;
   line-height: 1.7;
   color: var(--text-2);
@@ -65,7 +69,10 @@
 .hero-btn {
   display: inline-flex;
   align-items: center;
-  font-size: 0.85rem;
+  // [2026-08-05] titleFont(Anton) → headerFont(Hahmlet) 재변경 — "너무
+  // 뚱뚱하다" 피드백. §hero-eyebrow와 같은 이유(Anton은 로고 전용).
+  font-family: var(--headerFont);
+  font-size: 0.9rem;
   font-weight: 600;
   padding: 0.55rem 1.1rem;
   border-radius: var(--radius, 10px);

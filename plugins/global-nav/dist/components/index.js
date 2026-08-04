@@ -35,7 +35,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/globalNav.scss
-var globalNav_default = ".global-nav {\n  display: flex;\n  align-items: center;\n  gap: 1.4rem;\n  flex-wrap: wrap;\n}\n\n.global-nav-link {\n  font-family: var(--codeFont);\n  font-size: 0.82rem;\n  font-weight: 600;\n  color: var(--text-2);\n  text-decoration: none;\n  padding: 0.3rem 0;\n  border-bottom: 2px solid transparent;\n  transition: color 0.15s, border-color 0.15s;\n}\n.global-nav-link:hover {\n  color: var(--text);\n}\n.global-nav-link.active {\n  color: var(--accent);\n  border-bottom-color: var(--accent);\n}";
+var globalNav_default = ".global-nav {\n  display: flex;\n  align-items: center;\n  gap: 1.4rem;\n  flex-wrap: wrap;\n}\n\n.global-nav-link {\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  color: var(--text-2);\n  text-decoration: none;\n  padding: 0.3rem 0;\n  border-bottom: 2px solid transparent;\n  transition: color 0.15s, border-color 0.15s;\n}\n.global-nav-link:hover {\n  color: var(--text);\n}\n.global-nav-link.active {\n  color: var(--accent);\n  border-bottom-color: var(--accent);\n}";
 var l;
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
