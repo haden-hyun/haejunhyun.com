@@ -24,42 +24,52 @@ import style from "./styles/globalNav.scss"
  * DefaultFrame 렌더 코드는 남아 있지만 이 YAML 기반 config 경로에서는 채울
  * 방법이 없는 사실상 죽은 슬롯이다. 그래서 beforeBody로 전환했다.
  *
- * **5개 항목 중 3개만 구현했다. Home/Topics/Archive만 링크가 있고, Notes와
- * About은 의도적으로 뺐다** — 조용히 범위를 줄인 게 아니라 아래 이유로 막혀
- * 있어 명시적으로 표시한다:
+ * **5개 항목 중 4개 구현. About만 의도적으로 뺐다** — 조용히 범위를 줄인 게
+ * 아니라 아래 이유로 막혀 있어 명시적으로 표시한다:
  *
- *   - **Notes** — design-handoff.md §3.1: "/notes 전체 노트 목록
- *     (페이지네이션)". 87개 노트 전체를 나열하는 페이지네이션 UI는 이번
- *     세션에서 만든 /topics, /archive보다 훨씬 큰 별도 작업(정렬·필터·페이지
- *     분할 UX 설계 필요)이라 범위에 넣지 않았다. 지금 wiring하면 링크가
- *     아무 데도 안 가는 죽은 네비게이션 항목이 된다.
  *   - **About** — 실제 이력·자기소개 문구가 필요한 콘텐츠 저작 영역이다.
  *     본인 목소리로 쓸 내용을 대신 지어낼 수 없어 페이지 자체를 만들지
  *     않았다. 콘텐츠를 주면 라우트 추가는 간단하다(content-page 하나로 충분,
  *     별도 pageType 불필요).
  *
- * 둘 다 나중에 추가되면 이 파일의 NAV_ITEMS 배열에 항목만 추가하면 된다.
+ * 나중에 추가되면 이 파일의 NAV_ITEMS 배열에 항목만 추가하면 된다.
+ *
+ * **Notes** — [2026-08-05] 사용자 피드백으로 추가. design-handoff.md §3.1이
+ * 원래 그리던 "/notes 전체 노트 목록(페이지네이션)"은 여전히 별도 작업
+ * (정렬·필터·페이지 분할 UX)이라 이번엔 만들지 않았다. 대신 slug가 없는
+ * 항목(`slug: null`)으로 등록해 "Home/Topics/Archive 중 어느 것도 아닌
+ * 페이지"(개별 노트, 폴더, 태그)에서 자동으로 active가 되도록 하고, 링크는
+ * 이미 존재하는 전체 노트 목록인 /archive를 가리키게 했다 — 클릭했을 때
+ * 아무 데도 안 가는 죽은 링크보다 낫다. 전용 /notes 페이지가 생기면 그때
+ * href만 바꾸면 된다.
  */
 
-const NAV_ITEMS = [
+const NAV_ITEMS: { label: string; slug: string | null }[] = [
   { label: "Home", slug: "index" },
+  { label: "Notes", slug: null },
   { label: "Topics", slug: "topics" },
   { label: "Archive", slug: "archive" },
 ]
 
+// slug를 가진 나머지 항목들 — "Notes"의 활성 상태를 "이 중 아무것도 아닐 때"로 판정하는 기준.
+const NAMED_SLUGS = new Set(
+  NAV_ITEMS.filter((item) => item.slug !== null).map((item) => item.slug as string),
+)
+
 export default (() => {
   const GlobalNav: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
-    const currentSlug = (fileData.slug as string) ?? "index"
+    const currentSlug = (fileData.slug as string) || "index"
 
     return (
       <nav class={`${displayClass ?? ""} global-nav`}>
         {NAV_ITEMS.map((item) => {
           const isActive =
-            currentSlug === item.slug || (item.slug === "index" && currentSlug === "")
+            item.slug === null ? !NAMED_SLUGS.has(currentSlug) : currentSlug === item.slug
+          const targetSlug = item.slug ?? "archive"
           return (
             <a
               class={`global-nav-link${isActive ? " active" : ""}`}
-              href={resolveRelative(currentSlug, item.slug)}
+              href={resolveRelative(currentSlug, targetSlug)}
             >
               {item.label}
             </a>

@@ -97,10 +97,12 @@ export interface FullPageLayout {
   afterBody: QuartzComponent[]
   left: QuartzComponent[]
   right: QuartzComponent[]
+  /** Full-width global bar above everything else (site brand/nav/search/darkmode). */
+  topbar: QuartzComponent[]
   footer: QuartzComponent
   /** Page frame name (e.g. "default", "full-width", "minimal"). Defaults to "default". */
   frame?: string
 }
 
-export type PageLayout = Pick<FullPageLayout, "beforeBody" | "left" | "right">
+export type PageLayout = Pick<FullPageLayout, "beforeBody" | "left" | "right" | "topbar">
 export type SharedLayout = Pick<FullPageLayout, "head" | "header" | "footer" | "afterBody">

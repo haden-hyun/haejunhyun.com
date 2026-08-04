@@ -31,6 +31,7 @@ function resolveLayout(
     afterBody: overrides.afterBody ?? sharedDefaults.afterBody ?? [],
     left: overrides.left ?? sharedDefaults.left ?? [],
     right: overrides.right ?? sharedDefaults.right ?? [],
+    topbar: overrides.topbar ?? sharedDefaults.topbar ?? [],
     footer: overrides.footer ?? sharedDefaults.footer!,
     frame,
   }
@@ -52,6 +53,7 @@ function collectComponents(
       ...layout.afterBody,
       ...layout.left,
       ...layout.right,
+      ...layout.topbar,
       layout.footer,
     ]
     for (const c of all) {

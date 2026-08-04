@@ -21,10 +21,11 @@
 
 .hero-eyebrow {
   font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-size: 0.95rem; // 0.72 → 0.95 (2026-08-05 사용자 요청: 확대)
   font-weight: 600;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  // 목업 원본은 대문자 강제였으나, 실제 콘텐츠("blue notes. 🎷")는 소문자로
+  // 쓰도록 의도된 문구라 강제 변환을 뺐다(사용자 피드백).
   color: var(--accent);
   margin-bottom: 0.6rem;
 }

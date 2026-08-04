@@ -22,6 +22,8 @@ export interface PageFrameProps {
   left: QuartzComponent[]
   /** Right sidebar components */
   right: QuartzComponent[]
+  /** Full-width global bar above the sidebar/content grid (site brand/nav/search/darkmode) */
+  topbar: QuartzComponent[]
   /** Footer component */
   footer: QuartzComponent
 }

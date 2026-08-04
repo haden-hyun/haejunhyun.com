@@ -19,10 +19,16 @@ export const DefaultFrame: PageFrame = {
     afterBody,
     left,
     right,
+    topbar,
     footer: Footer,
   }: PageFrameProps) {
     return (
       <>
+        <div class="topbar">
+          {topbar.map((BodyComponent) => (
+            <BodyComponent {...componentData} />
+          ))}
+        </div>
         <div class="left sidebar">
           {left.map((BodyComponent) => (
             <BodyComponent {...componentData} />

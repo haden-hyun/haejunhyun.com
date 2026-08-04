@@ -197,6 +197,13 @@ plugins:
     enabled: true
     options:
       folderClickBehavior: collapse
+      # [2026-08-05] 이전엔 true — 예전에 손으로 펼친 다른 토픽 폴더가
+      # localStorage에 계속 남아 세션 내내 트리가 길어지는 문제(사용자
+      # 피드백: "위계 구분이 어렵고 트리도 길어진다"). 현재 파일의 상위
+      # 경로는 explorer.inline.ts가 어차피 자동으로 펼쳐주므로(코드 확인:
+      # "폴더가 현재 slug의 prefix면 강제 open"), 저장 상태 없이도 탐색에
+      # 지장 없음 — 매 페이지 진입 시 현재 경로만 펼치고 나머진 항상 접힘.
+      useSavedState: false
     layout:
       position: left
       priority: 50
@@ -213,7 +220,7 @@ plugins:
   - source: github:quartz-community/search
     enabled: true
     layout:
-      position: left
+      position: topbar
       priority: 20
       group: toolbar
       groupOptions:
@@ -225,12 +232,12 @@ plugins:
       priority: 50
   - source: ./plugins/global-nav
     enabled: true
-    # Home|Topics|Archive 내비. left 포지션 — PageTitle과 같은 줄(.left.sidebar)에
-    # 렌더돼 홈에서 브랜드+내비가 한 줄로 보인다(custom.scss §10.5).
+    # Home|Topics|Archive 내비. topbar 포지션 — PageTitle과 같은 줄(.topbar)에
+    # 렌더돼 모든 페이지에서 브랜드+내비가 한 줄로 보인다(custom.scss §10.5).
     options: {}
     order: 15
     layout:
-      position: left
+      position: topbar
       priority: 11
   - source: ./plugins/home-hero
     enabled: true
@@ -247,7 +254,6 @@ plugins:
           href: "https://github.com/haden-hyun/haejunhyun.com"
         - label: "LinkedIn"
           href: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
-      avatarInitial: "H"
       avatarImage: "./static/avatar.png"
     order: 15
     layout:
@@ -297,18 +303,18 @@ plugins:
   - source: github:quartz-community/page-title
     enabled: true
     layout:
-      position: left
+      position: topbar
       priority: 10
   - source: github:quartz-community/darkmode
     enabled: true
     layout:
-      position: left
+      position: topbar
       priority: 30
       group: toolbar
   - source: github:quartz-community/reader-mode
     enabled: false
     layout:
-      position: left
+      position: topbar
       priority: 35
       group: toolbar
   - source: github:quartz-community/breadcrumbs
@@ -338,7 +344,7 @@ plugins:
     options: {}
     order: 25
     layout:
-      position: left
+      position: topbar
       priority: 15
       display: mobile-only
   - source: github:quartz-community/bases-page
@@ -401,7 +407,7 @@ plugins:
             12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
     order: 15
     layout:
-      position: left
+      position: topbar
       priority: 13
   - source: ./plugins/recent-notes-index
     enabled: true
@@ -424,9 +430,9 @@ plugins:
       position: afterBody
       priority: 30
   - source: ./plugins/related-notes
-    enabled: true
-    # 노트 하단에 백링크+아웃고잉 링크를 합쳐 최대 4개, 2열 카드로 표시.
-    # 우측 사이드바의 backlinks(그대로 유지)와는 목적이 다르다.
+    enabled: false
+    # 노트 하단 "연결된 노트" 섹션 — [2026-08-05] 사용자 요청으로 제거.
+    # 우측 사이드바의 backlinks는 유지(별개 컴포넌트, 그대로 남음).
     options: {}
     order: 15
     layout:
@@ -482,6 +488,7 @@ layout:
         beforeBody: []
         left: []
         right: []
+        topbar: []
     content: {}
     folder:
       exclude:

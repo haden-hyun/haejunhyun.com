@@ -60,19 +60,24 @@ function u2(e2, t2, n2, o2, i2, u3) {
 // src/components/GlobalNav.tsx
 var NAV_ITEMS = [
   { label: "Home", slug: "index" },
+  { label: "Notes", slug: null },
   { label: "Topics", slug: "topics" },
   { label: "Archive", slug: "archive" }
 ];
+var NAMED_SLUGS = new Set(
+  NAV_ITEMS.filter((item) => item.slug !== null).map((item) => item.slug)
+);
 var GlobalNav_default = (() => {
   const GlobalNav = ({ fileData, displayClass }) => {
-    const currentSlug = fileData.slug ?? "index";
+    const currentSlug = fileData.slug || "index";
     return /* @__PURE__ */ u2("nav", { class: `${displayClass ?? ""} global-nav`, children: NAV_ITEMS.map((item) => {
-      const isActive = currentSlug === item.slug || item.slug === "index" && currentSlug === "";
+      const isActive = item.slug === null ? !NAMED_SLUGS.has(currentSlug) : currentSlug === item.slug;
+      const targetSlug = item.slug ?? "archive";
       return /* @__PURE__ */ u2(
         "a",
         {
           class: `global-nav-link${isActive ? " active" : ""}`,
-          href: resolveRelative(currentSlug, item.slug),
+          href: resolveRelative(currentSlug, targetSlug),
           children: item.label
         }
       );
