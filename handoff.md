@@ -1,3 +1,6 @@
+> 📦 **이관됨 (2026-08-04)** — 현재 상태는 [`DESIGN-SYSTEM.md`](./DESIGN-SYSTEM.md),
+> 결정 이력은 [`CHANGELOG.md`](./CHANGELOG.md) 참고. 이 문서는 실행 이력으로 보존.
+
 # handoff.md — haejunhyun.com UI/UX 개선 작업 인수인계
 
 - **작성일**: 2026-07-29

@@ -1,3 +1,6 @@
+> 📦 **이관됨 (2026-08-04)** — 현재 상태는 [`DESIGN-SYSTEM.md`](./DESIGN-SYSTEM.md),
+> 결정 이력은 [`CHANGELOG.md`](./CHANGELOG.md) 참고. 이 문서는 실행 이력으로 보존.
+
 # 리디자인 구현 가이드라인 — design-handoff.md 대조 검증 결과
 
 > 작성일: 2026-08-02 · 브랜치: `redesign/v5-homepage`

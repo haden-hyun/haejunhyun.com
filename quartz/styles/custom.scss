@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════
 //  quartz/styles/custom.scss — Theme B
-//  Nanum Myeongjo (heading) + Noto Sans KR (body) + Slate Blue
+//  [2026-08-04] Anton (logo, title 슬롯) + Hahmlet (heading) + Noto Sans KR (body) + Slate Blue
 //  v4 → v5 이관 메모:
 //  v4는 `@use "base";` 로 base.scss(+variables/syntax/callouts)를 이 파일 안에서
 //  직접 끌어왔다 (v4 componentResources.ts가 custom.scss만 import했기 때문).
@@ -18,24 +18,11 @@
 
 // put your custom CSS here!
 
-// ── 0. 리디자인 토큰 ────────────────────────────────────────────────────────
-//
-// [2026-08-02] design-handoff.md §2의 토큰을 이식하되, **값을 새로 정의하지 않고
-// Quartz 변수의 별칭으로 둔다.**
-//
-// 핸드오프는 --accent/--text/--bg를 독립 값으로 정의하고 "신규 컴포넌트는 이 토큰만
-// 참조"하라고 지시했다. 그대로 하면 신규 컴포넌트만 새 색을 쓰고 기존 30여 개
-// 플러그인(explorer/search/backlinks/graph/toc/callouts/syntax…)은 옛 색에 남아
-// 사이트가 두 브랜드로 쪼개진다. 색의 단일 소스는 quartz.config.yaml의
-// theme.colors 하나여야 한다.
-//
-// 액센트 컬러 결정(2026-08-02): 현행 슬레이트 블루 유지.
-//   라이트 #3d6b8e on #fafaf8 = 5.44:1 (AA ✓) / 다크 #7aaed4 on #1a1e24 = 7.04:1 (AA ✓)
-//   핸드오프의 테라코타 #c2703a는 라이트에서 3.58:1로 AA 미달이었고, 채택 근거도
-//   문서에 없었다(핸드오프 스스로 §Q5에서 미결로 남김).
-//
-// 주의: :root 커스텀 프로퍼티는 §1의 @layer 지뢰와 무관하다. 그 문제는 bare
-// h1/p 같은 **요소 선택자**가 non-layered로 나가 플러그인 규칙을 이기는 것이었다.
+// ── 0. 브랜드 토큰 ──────────────────────────────────────────────────────────
+// --accent/--text/--border 등은 값을 새로 정의하지 않고 quartz.config.yaml
+// theme.colors의 별칭으로만 둔다 — 색의 단일 소스를 하나로 유지해 신규
+// 컴포넌트와 기존 30여 개 플러그인이 항상 같은 색을 쓰게 한다.
+// 액센트는 슬레이트 블루 유지 (라이트/다크 모두 AA 대비 통과).
 
 :root {
   --accent: var(--secondary);
@@ -54,29 +41,11 @@
   --text-2: var(--darkgray);
   --text-3: var(--gray);
 
-  // ── 토픽 컬러 (2026-08-03 재설계 — 10슬롯 체계) ──
-  //
-  // [문제] 핸드오프 원본 7색은 hue가 겹쳤다: de(161.9°)와 fin(162.1°)이
-  // 사실상 동일한 청록/초록, gis(24.0°)와 prog(21.0°)도 사실상 동일한
-  // 주황. 실측(HSL 변환)으로 확인 — 카드 그리드에서 육안으로 구분 불가.
-  //
-  // [해법] 9개 채도 hue를 360°/9 = 정확히 40°씩 균등 배치해 원천적으로
-  // 겹침을 방지했다. tool은 무채색(회색)이라 hue 값 자체가 무의미해 10번째
-  // "축"으로 별도 취급 — 어떤 채도색과도 절대 헷갈리지 않는다.
-  // 현재 7개 토픽 외 3개(t8/t9/t10)는 향후 신규 토픽 추가를 대비한 예약
-  // 슬롯이다(호스트 요청: "10개 topic까지 고려"). 실제 토픽에 배정되기
-  // 전까지는 어디에도 참조되지 않는다.
-  //
-  //   --c-*        원본 값. 3px 컬러바·이모지 등 **장식 전용** (대비 요구 없음)
-  //   --c-*-text   AA(4.5:1) 통과하도록 명도 보정. 카테고리 **라벨 텍스트 전용**
-  //
-  // 라이트/다크 각각 별도로 명도를 맞춰야 한다(하나의 값으로 양쪽 다
-  // 통과하는 경우는 우연일 뿐 보장되지 않는다 — 이전 팔레트도 이 원칙으로
-  // 검증했었다). 목업의 `<span class="cat c-fin">`처럼 색을 글자에 쓰는
-  // 자리에는 반드시 -text 쪽을, saved-theme에 따라 알맞은 값을 쓸 것.
-  //
-  // hue 배치(40° 간격, 시계 방향): gis 10° → t8 50° → t9 90° → fin 130°
-  // → de 170° → cs 210° → ds 250° → t10 290° → prog 330° → (gis로 순환)
+  // ── 토픽 컬러 (10슬롯, 40° 균등 hue 배치) ──
+  // --c-*        원본 값. 3px 컬러바 등 장식 전용 (대비 요구 없음)
+  // --c-*-text   AA(4.5:1) 통과하도록 명도 보정한 라벨 텍스트 전용
+  // t8/t9/t10은 향후 신규 토픽을 위한 예약 슬롯. 색을 글자에 쓰는 자리엔
+  // 반드시 -text 쪽을, saved-theme에 맞는 값을 쓸 것.
   --c-gis: #f33b16;
   --c-t8: #c9ac1d; // 예약 — 향후 8번째 토픽
   --c-t9: #5c8532; // 예약 — 향후 9번째 토픽
@@ -100,13 +69,8 @@
   --c-tool-text: #534646; // 8.62:1
 }
 
-// 다크모드. Quartz는 documentElement의 `saved-theme` 속성으로 제어한다
-// (.quartz/plugins/darkmode/dist/index.js — `setAttribute("saved-theme", …)`).
-// 목업은 `data-theme`을 썼으므로 셀렉터를 반드시 치환해야 한다.
-//
-// hue/채도는 라이트와 동일하게 유지하고 명도만 다크 배경(#1a1e24) 기준
-// AA(4.5:1)로 재조정. 원본 값이 이미 통과하는 색(de/ds/prog/tool)은 원본
-// 그대로 재사용.
+// 다크모드 — Quartz는 documentElement의 `saved-theme` 속성으로 제어한다.
+// hue/채도는 라이트와 동일, 명도만 다크 배경 기준 AA로 재조정.
 :root[saved-theme="dark"] {
   --c-gis-text: #f34522; // 4.53:1
   --c-t8-text: #c9ac1d; // 7.49:1 (원본 통과)
@@ -121,17 +85,13 @@
 }
 
 // ── 1. Typography ──────────────────────────────────────────────────────────
-//
-// [레이어 버그픽스 2026-07-19] 전역 요소 선택자(h1~h6, p, strong)는 반드시
-// @layer quartz-base 안에 둔다. custom.scss는 기본적으로 non-layered로 출력되어
-// 명시도와 무관하게 @layer 안의 모든 플러그인 스타일을 이기는데, 그 결과
-// bare h2가 Explorer 제목(button.desktop-explorer h2 { margin: 0 })을,
-// bare p가 breadcrumb 구분자(.breadcrumb-element p { margin: 0 })를 덮어써서
-// "explorer 접으면 사라짐" / "breadcrumb ❯ 정렬 깨짐" 버그를 일으켰다.
-// 같은 레이어 안에 넣으면 v4와 동일하게 명시도로 경쟁한다 (컴포넌트 규칙이
-// 자기 영역에서 이기고, 경쟁자 없는 본문에는 이 타이포가 그대로 적용됨).
+// 전역 요소 선택자(h1~h6, p, strong)는 반드시 @layer quartz-base 안에 둔다.
+// custom.scss는 non-layered라 밖에 두면 명시도와 무관하게 Explorer/breadcrumb
+// 등 플러그인 스타일을 깨뜨린다.
 
 @layer quartz-base {
+  // h1만 소폭 음수 자간, h2 이하는 0 — Hahmlet은 자소 간격이 넉넉한
+  // 서체라 작은 헤딩까지 조이면 한글 자소가 붙는다.
   h1,
   h2,
   h3,
@@ -139,7 +99,7 @@
   h5,
   h6 {
     font-family: var(--headerFont);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     line-height: 1.3;
   }
 
@@ -147,6 +107,7 @@
     font-weight: 800;
     font-size: 1.75rem;
     color: var(--dark);
+    letter-spacing: -0.02em;
   }
 
   h2 {
@@ -366,14 +327,15 @@ a.tag-link {
 }
 
 // ── 6. PageTitle ───────────────────────────────────────────────────────────
-// .page-title = 사이드바 사이트 타이틀(<h2 class="page-title"><a>☀️ haejun</a></h2>).
-// 글 본문 h1(article-title)과는 다른 요소 — v5에서도 동일 구조 확인.
-
+// .page-title = 사이드바 사이트 타이틀. 로고는 헤딩(Hahmlet)이 아니라
+// title 슬롯(--titleFont=Anton)을 써서 브랜드 존을 본문과 분리한다.
+// Anton은 400 weight만 존재 — 800을 걸면 합성 볼드로 획이 뭉갠다.
 .page-title {
-  font-family: var(--headerFont) !important;
+  font-family: var(--titleFont) !important;
   font-size: 1.75rem !important; // 1.5 → 1.75 (2026-07-19 사용자 요청)
-  font-weight: 800 !important;
-  letter-spacing: -0.02em !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
   color: var(--secondary) !important;
 }
 
@@ -600,40 +562,17 @@ tbody td {
 }
 
 // ── 10.5 홈 레이아웃 — 좌측 세로 컬럼 → 상단 가로 바, 우측 컬럼 제거 ──────
-//
-// [리디자인, 2026-08-03 수정] 1차 시도는 우측 컬럼만 접었으나, 좌측에
-// Explorer를 뺀 나머지(PageTitle·Search·Darkmode)가 여전히 320px 세로
-// 컬럼으로 남아 있다는 지적을 받았다 — "일반 html 사이트처럼 상단에" 둬야
-// 한다는 요청. 다시 보니 **정확히 이 배치가 이미 `variables.scss`의
-// `$mobileGrid`에 구현돼 있었다**: `grid-sidebar-left`를 최상단 행에 두고
-// (`.sidebar.left`도 `$mobile` 미디어쿼리에서 `flex-direction: row`로
-// 가로 바가 됨, base.scss:235). 모바일용으로 이미 존재하는 "상단 가로 바"
-// 모양을 홈에서는 데스크톱까지 확장 적용하면 된다 — 새로 설계할 필요가
-// 없었다.
-//
-// `layout.byPageType`로는 못 푼다: 홈(index.md)도 일반 노트와 같은
-// "content" pageType을 쓰므로, 그 키를 오버라이드하면 전체 노트가 영향을
-// 받는다. 그래서 body의 `data-slug="index"`(quartz가 모든 페이지에 이미
-// 심어둠, renderPage.tsx)로 홈만 타겟팅한다.
-//
-// 그래프·TOC·백링크가 전부 빈 채로 렌더되던 우측 컬럼(320px 고정폭)은
-// 여전히 완전히 제거 — 첫 시도에서 확인된 원인 그대로 유지.
+// 모바일용 `$mobileGrid`(variables.scss)의 가로 바 배치를 홈에서는 데스크톱
+// 까지 확장 적용한다. 홈도 일반 노트와 같은 "content" pageType이라
+// layout.byPageType으로는 분기할 수 없어, body의 `data-slug="index"`로
+// 홈만 타겟팅한다. 그래프·TOC·백링크가 빈 채로 렌더되던 우측 컬럼은 제거.
 body[data-slug="index"] {
   .right.sidebar {
     display: none;
   }
 
-  // base.scss:221의 공용 `.sidebar` 규칙(height:100vh, position:sticky,
-  // flex-direction 없음 → 상위 .left 규칙의 column 상속)을 이겨야 하므로
-  // 여기서 전체를 재정의한다. $mobile 미디어쿼리 안의 기존 규칙(base.scss:235)과
-  // 값을 맞췄다 — 즉 홈은 모바일이든 데스크톱이든 좌측 요소가 항상
-  // "상단 가로 바"로 보인다.
-  //
-  // 실제 렌더 순서(최신): PageTitle → GlobalNav(Home/Topics/Archive,
-  // quartz.config.yaml에서 left 포지션 priority11로 이동) → SocialLinks →
-  // flex-component(검색+다크모드 toolbar 그룹). 브랜드만 왼쪽에 남기고
-  // 나머지(내비 앞부분 제외 소셜+검색+다크모드)를 오른쪽으로 밀어야
-  // "좌: 브랜드+내비 / 우: 소셜+검색+다크모드" 배치가 된다.
+  // 렌더 순서: PageTitle → GlobalNav → SocialLinks → 검색+다크모드.
+  // 브랜드+내비는 왼쪽, 나머지는 오른쪽으로 밀어 좌우 그룹을 나눈다.
   .left.sidebar {
     position: static;
     height: auto;
@@ -641,16 +580,8 @@ body[data-slug="index"] {
     align-items: center;
     flex-wrap: wrap;
     width: 100%;
-    // [2026-08-03] 사용자 요청 — "간격도 모두 동일하게 넓혀": 이 최상위 gap과
-    // .global-nav의 내부 링크 간 gap이 서로 달랐다(0.8rem vs 1.4rem). 하나의
-    // 값(1.5rem)으로 통일해 브랜드↔내비↔소셜 사이 간격과 Home/Topics/Archive
-    // 링크 사이 간격이 시각적으로 동일해 보이게 한다.
     gap: 1.5rem;
     padding: 1.2rem 0 1rem 0;
-    // [2026-08-04] 사용자 요청 — 상단 바와 본문(Hero) 사이 구분선. 아래
-    // .home-hero(hero.scss)의 border-bottom과 같은 토큰·굵기를 써서 "같은
-    // 종류의 구분선"으로 읽히게 한다. hero의 padding-top(2.5rem)이 이미
-    // 이 선과 Hero 콘텐츠 사이 여백을 만들어주므로 여기 margin은 추가 불필요.
     border-bottom: 1px solid var(--border);
 
     .social-links {
@@ -658,52 +589,19 @@ body[data-slug="index"] {
     }
   }
 
-  // [2026-08-03] 사이트 제목이 Home/Topics/Archive 내비 링크보다 약간만
-  // 크게 보이도록. PageTitle 플러그인 자체 CSS(font-size:1.75rem)는 세로
-  // 사이드바 로고 기준값이라 홈의 짧은 가로 바에는 과하게 크다 — 홈에서만
-  // 낮춘다(노트 페이지의 세로 사이드바 로고 크기는 그대로 유지).
-  //
-  // [2026-08-04 버그 수정] 위 font-size 낮추기가 실제로는 **한 번도 적용된
-  // 적이 없었다** — §6(370줄 부근)의 전역 `.page-title` 규칙이
-  // `font-size/font-family/color/font-weight` 전부에 `!important`를 걸어둔
-  // 상태라, 이 홈 전용 규칙(non-!important)은 specificity가 더 높아도
-  // importance 앞에서는 진다(importance가 specificity보다 우선하는 게
-  // CSS cascade 규칙). 실측: 브라우저 computed style이 줄곧 28px/
-  // Nanum Myeongjo였다(1rem/codeFont로 보인 건 "hae.log"처럼 짧고 내림선
-  // 없는 소문자 단어라 착시였을 뿐). 여기 두 속성만 !important로 맞대응—
-  // 전역 규칙 자체를 손대면 노트 상세 페이지 세로 로고까지 깨진다.
-  //
-  // [2026-08-04 추가 수정] 사용자 요청 — 밑줄 제거 + 폰트 키움. 밑줄은
-  // `.page-title a`에 text-decoration 리셋이 어디에도 없어 브라우저 기본
-  // 언더라인이 그대로 노출된 것(article 본문 링크만 §5에서 리셋했었음).
-  // 크기는 1rem → 1.3rem → 1.5rem(재요청, "폰트 좀 더 키워") — nav 링크
-  // (0.82rem)보다 확실히 크게, 여전히 코어 1.75rem보다는 작게. "HYUNATLAS"
-  // 로 브랜드명이 길어져도(9자) 모노스페이스 codeFont 기준 상단 바 폭에
-  // 여유 있게 들어간다.
+  // 홈의 가로 바에서는 로고를 내비 링크보다 살짝만 크게 — 세로 사이드바
+  // 기준값(1.75rem)은 과하다. !important — 전역 .page-title 규칙(§6)이
+  // 이미 !important라 specificity만으론 못 이긴다.
   .page-title {
     font-size: 1.5rem !important;
-    font-family: var(--codeFont) !important;
 
     a {
       text-decoration: none !important;
     }
   }
 
-  // [2026-08-04] 사용자 요청 — 우측 소셜/검색/다크모드 정렬이 "안 맞는다".
-  // 실측(getComputedStyle)으로 두 단계 문제를 확인:
-  //
-  // 1) `.flex-component`(검색+다크모드를 담는 wrapper) 자체의 gap이
-  //    !important 없이는 전혀 안 먹힌다 — §6 page-title과 같은 원인으로
-  //    보이는 우선순위 문제(정확한 소스는 못 찾았으나 !important로
-  //    맞대응하면 실측상 확실히 적용됨, page-title 사례와 동일 패턴).
-  // 2) align-items:center를 걸어도 다크모드 토글이 여전히 2.5px 낮았다 —
-  //    원인은 다른 계층: `.flex-component`의 두 자식(검색 wrapper div,
-  //    다크모드 wrapper div) 중 다크모드 쪽 wrapper 자체가 37px로 검색
-  //    wrapper(32px)보다 크다. 부모의 align-items는 그 37px 박스를
-  //    통째로 중앙 정렬할 뿐, **박스 안에서 버튼이 위쪽에 붙어있는** 건
-  //    못 고친다 — wrapper 자신도 flex+center로 만들어야 버튼이 그 안에서
-  //    다시 중앙 정렬된다. wrapper가 익명 div라 클래스가 없어 `:has()`로
-  //    구조적으로 찾는다.
+  // 검색·다크모드 wrapper 수직 정렬 보정 — 다크모드 쪽 익명 wrapper가 검색
+  // wrapper보다 커서 :has()로 구조적으로 찾아 내부 정렬까지 맞춘다.
   .flex-component {
     align-items: center !important;
     gap: 0.75rem !important;
@@ -720,11 +618,7 @@ body[data-slug="index"] {
     gap: 1.5rem;
   }
 
-  // [2026-08-03] 검색창 확장 + ⌘K 힌트 노출. `search` 커뮤니티 플러그인은
-  // 이미 Cmd/Ctrl+K 단축키를 내장하고 있다(search.inline.ts:564 —
-  // `e.key === "k" && (e.ctrlKey || e.metaKey)`) — 클릭과 동일하게 검색을
-  // 연다. 그동안 시각적 힌트가 없었을 뿐이라, 코어 컴포넌트(github: 참조라
-  // 직접 수정 불가)를 건드리지 않고 CSS `::after`로 kbd 힌트만 추가한다.
+  // 검색창 확장 + ⌘K 힌트(단축키는 search 플러그인에 이미 내장).
   .search {
     width: 220px;
     max-width: none;
@@ -754,10 +648,7 @@ body[data-slug="index"] {
       "grid-footer";
   }
 
-  // $topSpacing(6rem, variables.scss)은 원래 좌측 세로 컬럼이 세로로 긴
-  // 사이드바를 차지하던 레이아웃 기준 여백이다. 좌측이 이제 짧은 가로 바로
-  // 바뀌었으니 그만큼 위 여백을 크게 둘 이유가 없어 홈에서만 줄인다
-  // (GlobalNav/Hero가 상단 바 바로 아래 붙도록).
+  // 좌측이 가로 바로 바뀌어 $topSpacing(6rem) 만큼의 여백이 필요 없다.
   .page-header {
     margin-top: 1rem;
   }

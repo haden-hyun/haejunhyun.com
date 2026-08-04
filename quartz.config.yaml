@@ -1,17 +1,6 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  # [2026-08-03] "☀️ haejun" → "Haejun" — 상단 통합 바에서 브랜드 텍스트로
-  # 쓰인다(PageTitle 컴포넌트). og:site_name(Head.tsx:65)에도 쓰이므로
-  # 소셜 미리보기 사이트명도 함께 바뀐다.
-  # [2026-08-04] "Haejun" → "hae.log" → "H Y U N"(사용자가 직접 자간 넓힌
-  # 버전으로 교체) → "HYUNATLAS"(촌스럽다는 피드백으로 재검토).
-  # HYUNATLAS 선정 근거: "Atlas"=지도책은 실제로 GIS(공간 데이터 분석) 노트를
-  # 쓰는 분야와 직접 연결되는 은유이면서, 동시에 "내 지식/삶의 지도"라는
-  # 뜻으로 향후 추가될 개인적 콘텐츠까지 자연스럽게 품는다. 공백·점 없는
-  # 단일 단어 조건(사용자 요청)도 만족.
-  # [2026-08-04] "HYUNATLAS" -> "HAEJUN RECORDS"
-  # 변경 근거: GIS(지도)의 딱딱한 메타포를 버리고, '기록'과 '인디 음반사(Record Label)'의 
-  # 중의적 의미를 담아 IT, 음악, 일상을 모두 포용하는 쿨한 네이밍으로 개편.
+  # 사이트 브랜드명. PageTitle 컴포넌트 + og:site_name에 쓰인다.
   pageTitle: HAEJUN RECORDS
   pageTitleSuffix: ""
   enableSPA: true
@@ -28,11 +17,19 @@ configuration:
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
+    # Google Fonts URL 구성 + og-image(satori) 렌더용. 실제 브라우저 표시
+    # 폰트는 아래 `fonts` 플러그인 옵션이 최종 결정하므로 두 값을 맞춰 유지.
+    #
+    # 폰트 방향: 로고(title)=Anton, 헤딩(header)=Hahmlet, 본문(body)=Noto
+    # Sans KR, 코드=JetBrains Mono. 로고를 헤딩과 분리해 브랜드 존/가독성
+    # 존을 나눈다. weights는 각 서체 실사용 굵기에 맞춰 명시.
     typography:
-      # Google Fonts URL 구성 + og-image(satori) 폰트 로드에 쓰인다.
-      # 실제 브라우저 표시 폰트(--bodyFont 등)는 아래 `fonts` 플러그인 옵션이
-      # 최종 결정한다(그 CSS가 가장 뒤에 로드됨) — 두 값이 같아야 일관된다.
-      header: Nanum Myeongjo
+      title:
+        name: Anton
+        weights: [400]
+      header:
+        name: Hahmlet
+        weights: [400, 700, 900]
       body: Noto Sans KR
       code: JetBrains Mono
     colors:
@@ -93,11 +90,8 @@ plugins:
   - source: ./plugins/summary-description
     enabled: true
     options: {}
-    # [리디자인 P1] obsidian-flavored-markdown(30) 다음, description(70) 이전.
-    # `[!summary]` 콜아웃 본문만 frontmatter.description에 채워 넣어, description
-    # 플러그인이 렌더 텍스트를 앞에서부터 잘라 만들던 기존 description에 콜아웃
-    # 타이틀 리터럴("Summary"/"요약")이 섞이는 문제를 해소한다. 상세 근거는
-    # 플러그인 소스 상단 주석 참고.
+    # `[!summary]` 콜아웃 본문을 frontmatter.description으로 추출.
+    # description(70) 플러그인보다 먼저 실행돼야 하므로 order: 35.
     order: 35
   - source: github:quartz-community/github-flavored-markdown
     enabled: true
@@ -109,11 +103,7 @@ plugins:
       maxDepth: 2
     layout:
       position: right
-      # [리디자인] 30 → 10. 우측 사이드바는 priority 오름차순으로 위→아래 배치된다
-      # (config-loader.ts:910 `entries.sort((a,b) => a.priority - b.priority)`).
-      # 기존엔 graph(10) → toc(30) → backlinks(50) 순이라 그래프가 맨 위였다.
-      # 노트를 읽는 동안 실제로 쓰는 건 목차이므로 toc를 최상단으로 올린다.
-      # 결과 순서: toc(10) → graph(30) → backlinks(50)
+      # 우측 사이드바는 priority 오름차순 배치. toc를 최상단에 둔다.
       priority: 10
       display: desktop-only
   - source: github:quartz-community/crawl-links
@@ -143,19 +133,14 @@ plugins:
     order: 92
   - source: github:quartz-community/fonts
     enabled: true
-    # [2026-08-02 버그픽스, 유지] 옵션 없이 켜두면 이 플러그인이 **자기 기본값**
-    # (Schibsted Grotesk / Source Sans Pro / IBM Plex Mono)으로 CSS를 emit하고,
-    # 그 파일(static/resource-style-*.css)이 코어 테마 CSS보다 **뒤에** 로드되어
-    # `configuration.theme.typography`를 통째로 덮어썼다.
-    # → 그동안 사이트는 Nanum Myeongjo가 아니라 Schibsted Grotesk로 렌더됐고,
-    #   한글은 폴백 스택도 없이 브라우저 기본 폰트로 떨어지고 있었다.
-    # 옵션 없이 되돌리면 이 버그가 재발하므로, 본문 폰트를 Pretendard→Noto Sans KR로
-    # 롤백한 뒤에도 옵션 명시는 그대로 유지한다. fontOrigin: local = 이 플러그인은
-    # 폰트를 로드하지 않는다는 뜻("로컬 폰트"가 아니라 "로딩 안 함"). 실제 로딩은
-    # 코어 theme.fontOrigin(googleFonts)이 담당.
+    # 실제 --titleFont/--headerFont/--bodyFont/--codeFont 값은 여기서 결정된다
+    # (가장 뒤에 로드되어 최종 승리). 옵션을 비우면 플러그인 기본값(Schibsted
+    # Grotesk 등)으로 덮어써지므로 반드시 명시. fontOrigin: local = 이
+    # 플러그인은 폰트를 로드하지 않음 — 실제 로딩은 위 theme.fontOrigin이 담당.
     options:
       fontOrigin: local
-      header: '"Nanum Myeongjo", serif'
+      title: '"Anton", sans-serif'
+      header: '"Hahmlet", serif'
       body: '"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif'
       code: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
   - source: github:quartz-community/remove-draft
@@ -202,14 +187,11 @@ plugins:
     enabled: true
   - source: ./plugins/topics-page
     enabled: true
-    # [리디자인 Phase 6] /topics 가상 페이지. match는 항상 false(실제 콘텐츠
-    # 파일을 가로채지 않음) — generate()가 만드는 가상 페이지 하나만 이
-    # 페이지타입 소유. priority 5로 낮게 둬 folder/tag-page(10)와 매치
-    # 우선순위 충돌 여지를 없앰(어차피 match가 항상 false라 실질적 영향 없음).
+    # /topics 가상 페이지 (실제 콘텐츠 파일과 매치되지 않음).
     options: {}
   - source: ./plugins/archive-page
     enabled: true
-    # [리디자인 Phase 6] /archive 가상 페이지. topics-page와 동일한 패턴.
+    # /archive 가상 페이지, topics-page와 동일한 패턴.
     options: {}
   - source: github:quartz-community/explorer
     enabled: true
@@ -219,20 +201,14 @@ plugins:
       position: left
       priority: 50
       display: desktop-only
-      # [리디자인] 홈에서 숨김. GlobalNav(Home|Topics|Archive) + TopicGrid가
-      # 이제 홈의 1차 탐색을 담당해, 폴더 트리 전체를 나열하는 Explorer는
-      # 중복 내비게이션이 됐다(사용자가 지적한 좌우 패널 중복 문제).
-      # 노트 상세·폴더·태그 페이지에서는 그대로 유지 — 그 페이지들에선
-      # 여전히 유일한 폴더 트리 탐색 수단이다.
+      # 홈에서 숨김 — GlobalNav+TopicGrid가 1차 탐색을 대신한다.
       condition: not-index
   - source: github:quartz-community/graph
     enabled: true
     layout:
       position: right
-      # [리디자인] 10 → 30. toc 아래로 내린다 (toc 주석 참고).
       priority: 30
-      # [리디자인 P4] 홈에서 제거. 홈의 그래프는 연결이 없어 노드 1개짜리
-      # 빈 박스로 렌더돼 죽은 UI였다. 노트 상세의 local graph는 그대로 유지.
+      # 홈에서 제거 — wikilink가 적어 노드 1개짜리 빈 박스로 렌더된다.
       condition: not-index
   - source: github:quartz-community/search
     enabled: true
@@ -249,22 +225,8 @@ plugins:
       priority: 50
   - source: ./plugins/global-nav
     enabled: true
-    # [리디자인, 2026-08-03 위치 정정] 최초엔 beforeBody(priority 0)에 두어
-    # "brand 바"(PageTitle+SocialLinks+Search+Darkmode, left 포지션)와
-    # "nav 바"(이 컴포넌트, beforeBody)가 홈에서 위아래로 **분리된 두 줄**로
-    # 렌더됐다 — 목업(haejun-redesign-abc.html:435-441 `.site-hd`)은
-    # brand+nav+search+darkmode가 **한 줄**이라 지적받음.
-    #
-    # 두 블록은 서로 다른 grid-area(grid-sidebar-left vs grid-header)에
-    # 렌더되는 별개 DOM 서브트리라 CSS만으로는 한 줄로 합칠 수 없다 — 유일한
-    # 해법은 이 컴포넌트를 left 포지션으로 옮겨 같은 flex row(.left.sidebar)
-    # 안에 넣는 것. priority 11 = page-title(10) 바로 다음, social-links(13)
-    # 이전 — 렌더 순서가 [PageTitle "haejun"] [이 nav] ... margin-left:auto ...
-    # [SocialLinks] [Search+Darkmode]가 되어 목업의 "좌: 브랜드+내비 / 우: 검색+
-    # 아이콘" 그룹핑과 일치한다. 홈에서는 이 줄 전체가 이미 상단 가로 바로
-    # 재배치돼 있다(custom.scss §10.5). 노트/폴더/태그 페이지에서는 좌측
-    # 세로 컬럼 안에 자연스럽게 한 항목으로 들어간다 — 사이트 전역 노출
-    # 요구사항은 유지된다.
+    # Home|Topics|Archive 내비. left 포지션 — PageTitle과 같은 줄(.left.sidebar)에
+    # 렌더돼 홈에서 브랜드+내비가 한 줄로 보인다(custom.scss §10.5).
     options: {}
     order: 15
     layout:
@@ -272,18 +234,7 @@ plugins:
       priority: 11
   - source: ./plugins/home-hero
     enabled: true
-    # [리디자인 Phase 4] Hero + StatsStrip, 홈 전용. `is-index` 조건이 내장되어
-    # 있지 않고(REDESIGN-GUIDE.md F5 — not-index의 역만 내장) 등록 실패 시
-    # "항상 렌더"로 폴백되어 모든 노트에 Hero가 뜨는 눈에 띄는 회귀가 생기므로,
-    # recent-notes-index와 동일하게 컴포넌트 내부 `fileData.slug !== "index"`
-    # 가드를 쓴다(HomeHero.tsx). priority 1 = article-title(10)보다 위.
-    #
-    # 카피(headline/description/eyebrow)는 검토 필요 — design-handoff.md 목업
-    # 원문("데이터 엔지니어링과 공간 데이터" 중심 소개)은 REDESIGN-GUIDE.md F2
-    # 실측(Programming 39건 > Data Engineering 19건, 나머지는 한 자릿수)과
-    # 어긋나 실제 분포에 맞게 다시 썼다. headline만 content/index.md의 기존
-    # 문구를 그대로 가져왔고, eyebrow/description은 이번에 새로 쓴 문구라
-    # 본인 목소리로 맞는지 검토 권장.
+    # Hero + StatsStrip, 홈 전용(컴포넌트 내부 slug 가드). priority 1 = 최상단.
     options:
       eyebrow: "blue notes. 🎷"
       headline: "어쩌다 보니 모인\n관심사의 파편들"
@@ -304,20 +255,10 @@ plugins:
       priority: 1
   - source: ./plugins/featured-notes
     enabled: true
-    # [리디자인 Phase 4, 2026-08-03 순서 정정] Featured, 홈 전용. priority 2 =
-    # Hero(1) 바로 아래. 목업(haejun-redesign-abc.html:470-548) 재확인 결과
-    # 홈 섹션 순서는 Hero → **Featured → Topics** → Recent Notes였다 — 초판은
-    # Topics를 Featured보다 앞에 둬 순서가 어긋나 있었다.
-    #
-    # featured/pinned frontmatter 실측 0건이라 토픽 라운드로빈 자동 선정으로
-    # 시작(REDESIGN-GUIDE.md F3) — 나중에 frontmatter.featured: true를 달면
-    # 자동으로 우선 적용된다(FeaturedNotes.tsx 참고).
-    #
-    # recentExcludeCount: 6 — 아래 recent-notes-index의 options.limit: 6과
-    # 반드시 같은 값을 유지할 것. Featured의 자동 선정이 Recent Posts 상위
-    # 6개를 후보에서 제외해 홈 화면 중복 노출을 막는다(둘 중 하나를 바꾸면
-    # 이 값도 함께 바꿀 것 — 실제 런타임 결합은 아니고 설정값을 나란히
-    # 맞추는 수준의 절충).
+    # Featured, 홈 전용. priority 2 = Hero 바로 아래. featured frontmatter가
+    # 없으면 토픽 라운드로빈으로 자동 선정 — `featured: true`를 달면 우선 적용.
+    # recentExcludeCount는 아래 recent-notes-index.limit과 같은 값을 유지할 것
+    # (홈 화면 중복 노출 방지, 설정값을 나란히 맞추는 수준의 결합).
     options:
       recentExcludeCount: 6
     order: 15
@@ -326,11 +267,7 @@ plugins:
       priority: 2
   - source: ./plugins/topic-grid
     enabled: true
-    # [리디자인 Phase 4, 2026-08-03 순서 정정] TopicGrid, 홈 전용(내부 가드는
-    # home-hero와 동일 패턴). priority 3 = Featured(2) 바로 아래 — 목업 순서
-    # Hero→Featured→Topics→Recent Notes에 맞춤(위 featured-notes 주석 참고).
-    # content/index.md의 정적 Interests 표를 대체한다(P5) — 표 자체는 이
-    # 커밋에서 index.md 본문에서 제거했다.
+    # TopicGrid, 홈 전용. priority 3 = Featured 바로 아래.
     options:
       showHeader: true
     order: 15
@@ -342,15 +279,14 @@ plugins:
     layout:
       position: beforeBody
       priority: 10
-      # [리디자인 Phase 4] 홈은 이제 HomeHero가 헤드라인을 대신 보여준다 —
-      # 그대로 두면 "Haejun Second Brain" 페이지 타이틀과 Hero 헤드라인이 중복 노출된다.
+      # 홈은 HomeHero가 헤드라인을 대신 보여주므로 제외 (중복 방지).
       condition: not-index
   - source: github:quartz-community/content-meta
     enabled: true
     layout:
       position: beforeBody
       priority: 20
-      # 홈은 "포스트"가 아니라 인덱스라 날짜·읽기시간 메타가 의미 없다.
+      # 홈은 인덱스라 날짜·읽기시간 메타가 의미 없다.
       condition: not-index
   - source: github:quartz-community/tag-list
     enabled: true
@@ -393,8 +329,7 @@ plugins:
     layout:
       position: afterBody
       priority: 50
-      # [리디자인 P6] 홈에서 댓글 섹션 제거. `0 comments`가 첫인상에 노출되는 것을
-      # 막는다. 노트 상세에서는 그대로 유지.
+      # 홈에서 댓글 섹션 제거 — `0 comments`가 첫인상에 노출되는 것 방지.
       condition: not-index
   - source: github:quartz-community/recent-notes
     enabled: false
@@ -470,9 +405,7 @@ plugins:
       priority: 13
   - source: ./plugins/recent-notes-index
     enabled: true
-    # [2026-08-03] title/linkToMore를 목업(haejun-redesign-abc.html:132-133
-    # `<h3>Recent Notes</h3><a>아카이브 →</a>`)과 일치시킴. /archive가
-    # Phase 6에서 생겼으므로 이제 실제로 연결 가능한 링크다.
+    # 홈 "Recent Notes" 섹션. linkToMore는 /archive로 연결.
     options:
       title: "Recent Notes"
       limit: 6
@@ -492,11 +425,8 @@ plugins:
       priority: 30
   - source: ./plugins/related-notes
     enabled: true
-    # [리디자인 Phase 5] design-handoff.md §4.1 RelatedNotes. 노트 "하단"(넓은
-    # 본문 폭 afterBody)에 백링크+아웃고잉 링크를 합쳐 최대 4개, 2열 카드로
-    # 표시. 우측 사이드바의 내장 backlinks(그대로 유지, 대체 아님)와는 목적이
-    # 다르다 — RelatedNotes.tsx 상단 주석 참고. priority 45 = prev-next(30)
-    # 다음, comments(50) 이전.
+    # 노트 하단에 백링크+아웃고잉 링크를 합쳐 최대 4개, 2열 카드로 표시.
+    # 우측 사이드바의 backlinks(그대로 유지)와는 목적이 다르다.
     options: {}
     order: 15
     layout:
@@ -524,16 +454,8 @@ plugins:
       position: afterBody
       priority: 20
   - source: ./plugins/visitor-counter
-    # [2026-08-02] 독립 위치 제거 (삭제 아님, 이력: left/11 → afterBody/60 → 여기).
-    # "Created by haejun" 줄 우측에 나란히 두기로 해서, 이제 이 컴포넌트는
-    # site-wide position이 아니라 `./plugins/footer`의 npm 의존성(file:)으로
-    # 물려 Footer.tsx가 직접 렌더한다 (plugins/footer/src/components/Footer.tsx).
-    #
-    # `layout` 키를 비워두면 config-loader가 이 엔트리를 위치 기반 렌더 대상에서
-    # 건너뛴다(entry.layout이 없으면 continue) — 그래도 dist는 그대로 남아있어
-    # footer가 file: 의존성으로 정상 참조한다. enabled는 true로 유지: 다른
-    # local plugin과 동일하게 install-plugins 파이프라인에서 정상 취급되어야
-    # dist 빌드/심볼릭 링크 관례가 깨지지 않는다.
+    # 독립 위치 없음 — footer가 npm(file:) 의존성으로 직접 렌더한다.
+    # layout 키를 비워 위치 기반 렌더 대상에서 제외.
     enabled: true
     options: {}
     order: 15
@@ -573,9 +495,7 @@ layout:
         right: []
     canvas: {}
     bases: {}
-    # [리디자인 Phase 6] topics-page/archive-page 가상 페이지. folder/tag와
-    # 동일하게 그래프·TOC·백링크가 의미 없는 목록형 페이지라 우측 사이드바만
-    # 비운다(afterBody의 댓글 등은 folder/tag 관행대로 그대로 둠).
+    # topics/archive 가상 페이지 — folder/tag와 동일하게 우측 사이드바만 비움.
     topics:
       exclude:
         - reader-mode
