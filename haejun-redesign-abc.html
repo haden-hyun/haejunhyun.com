@@ -1,0 +1,889 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>haejunhyun.com 리디자인 — A / B / C 안 비교</title>
+<style>
+
+/* ---------- Design Tokens ---------- */
+:root{
+  --bg:#fbfbfa; --surface:#ffffff; --surface-2:#f4f4f2;
+  --border:#e6e5e1; --border-strong:#d4d3ce;
+  --text:#1a1a18; --text-2:#57564f; --text-3:#8b8a82;
+  --accent:#c2703a;
+  --c-cs:#4c6ef5; --c-de:#12b886; --c-ds:#7950f2; --c-gis:#f76707; --c-prog:#e8590c; --c-fin:#0ca678; --c-tool:#868e96;
+  --radius:10px; --radius-lg:16px;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04);
+  --maxw:1300px;
+  --font:"Pretendard","Pretendard Variable",-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",sans-serif;
+  --mono:"JetBrains Mono","SFMono-Regular",Consolas,"D2Coding","Malgun Gothic",monospace;
+}
+[data-theme="dark"]{
+  --bg:#131312; --surface:#1b1b1a; --surface-2:#232322;
+  --border:#2e2e2c; --border-strong:#3d3d3a;
+  --text:#f0efec; --text-2:#a8a79f; --text-3:#75746d;
+  --accent:#e0965c;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);
+  -webkit-font-smoothing:antialiased;line-height:1.6;transition:background .2s,color .2s}
+a{color:inherit;text-decoration:none}
+
+/* ---------- Mockup chrome ---------- */
+.mock-bar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px;
+  padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--border);
+  font-size:12.5px;color:var(--text-2);flex-wrap:wrap}
+.mock-bar strong{color:var(--text);font-size:13px;letter-spacing:-.01em}
+.mock-bar .spacer{flex:1}
+.tgl{border:1px solid var(--border-strong);background:transparent;color:var(--text-2);
+  padding:5px 12px;border-radius:99px;font:inherit;font-size:12px;cursor:pointer}
+.tgl:hover{background:var(--surface-2);color:var(--text)}
+.screen-label{max-width:var(--maxw);margin:56px auto 0;padding:0 28px;
+  display:flex;align-items:baseline;gap:12px}
+.screen-label h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.screen-label span{font-size:13px;color:var(--text-3)}
+.frame{max-width:var(--maxw);margin:14px auto 0;padding:0 28px}
+.frame-inner{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+
+/* ---------- Site header ---------- */
+.site-hd{display:flex;align-items:center;gap:20px;padding:16px 32px;
+  border-bottom:1px solid var(--border);background:var(--surface)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:750;font-size:17px;letter-spacing:-.02em}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.nav{display:flex;gap:22px;font-size:14px;color:var(--text-2);font-weight:500}
+.nav a:hover{color:var(--text)}
+.nav a.on{color:var(--text);font-weight:650}
+.hd-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.kbar{display:flex;align-items:center;gap:8px;border:1px solid var(--border-strong);
+  background:var(--bg);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--text-3);min-width:190px}
+.kbar kbd{margin-left:auto;font-family:var(--mono);font-size:10.5px;border:1px solid var(--border-strong);
+  border-radius:4px;padding:1px 5px;color:var(--text-3)}
+.ico{width:30px;height:30px;display:grid;place-items:center;border-radius:7px;color:var(--text-2)}
+.ico:hover{background:var(--surface-2);color:var(--text)}
+
+/* ---------- Hero ---------- */
+.hero{padding:56px 32px 44px;border-bottom:1px solid var(--border);
+  display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center}
+.avatar{width:104px;height:104px;border-radius:50%;
+  background:linear-gradient(140deg,#e8b98a,#c2703a 60%,#8a4a22);
+  display:grid;place-items:center;font-size:38px;font-weight:700;color:#fff;
+  box-shadow:0 6px 24px rgba(194,112,58,.28)}
+.eyebrow{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);font-weight:700;margin-bottom:12px}
+.hero h1{font-size:40px;line-height:1.22;letter-spacing:-.035em;font-weight:780;margin-bottom:14px}
+.hero p{font-size:16.5px;color:var(--text-2);max-width:56ch;line-height:1.72}
+.hero-cta{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 17px;border-radius:8px;
+  font-size:14px;font-weight:600;border:1px solid var(--border-strong);color:var(--text)}
+.btn:hover{background:var(--surface-2)}
+.btn.pri{background:var(--text);color:var(--surface);border-color:var(--text)}
+.btn.pri:hover{opacity:.86;background:var(--text)}
+.stats{display:flex;gap:40px;margin-top:26px;padding-top:22px;border-top:1px solid var(--border)}
+.stat b{display:block;font-size:21px;font-weight:750;letter-spacing:-.02em}
+.stat span{font-size:12px;color:var(--text-3)}
+
+/* ---------- Sections ---------- */
+.sec{padding:40px 32px}
+.sec + .sec{border-top:1px solid var(--border)}
+.sec-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px}
+.sec-hd h3{font-size:19px;font-weight:720;letter-spacing:-.02em}
+.sec-hd a{font-size:13px;color:var(--text-3);font-weight:550}
+.sec-hd a:hover{color:var(--accent)}
+
+/* Featured */
+.feat{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}
+.feat-main{border:1px solid var(--border);border-radius:var(--radius);padding:26px;
+  background:linear-gradient(160deg,var(--surface-2),var(--surface));display:flex;flex-direction:column}
+.feat-side{display:flex;flex-direction:column;gap:12px}
+.feat-item{border:1px solid var(--border);border-radius:var(--radius);padding:15px 17px;flex:1;
+  display:flex;flex-direction:column;justify-content:center;transition:border-color .15s}
+.feat-item:hover,.feat-main:hover{border-color:var(--border-strong)}
+.cat{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase}
+.cat::before{content:"";width:6px;height:6px;border-radius:2px;background:currentColor}
+.c-cs{color:var(--c-cs)} .c-de{color:var(--c-de)} .c-ds{color:var(--c-ds)}
+.c-gis{color:var(--c-gis)} .c-fin{color:var(--c-fin)} .c-prog{color:var(--c-prog)}
+.feat-main h4{font-size:26px;line-height:1.32;letter-spacing:-.028em;font-weight:730;margin:14px 0 10px}
+.feat-main p{font-size:14.5px;color:var(--text-2);line-height:1.7;margin-bottom:auto}
+.feat-item h4{font-size:15.5px;line-height:1.42;letter-spacing:-.02em;font-weight:670;margin:9px 0 7px}
+.meta{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text-3);margin-top:16px}
+.meta .sep{width:2px;height:2px;border-radius:50%;background:var(--text-3)}
+.feat-item .meta{margin-top:0}
+
+/* Topic grid */
+.topics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.topic{border:1px solid var(--border);border-radius:var(--radius);padding:17px;
+  display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden;transition:.15s}
+.topic:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+.topic .bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+.topic .emoji{font-size:19px;margin-bottom:3px}
+.topic b{font-size:14.5px;font-weight:670;letter-spacing:-.015em}
+.topic span{font-size:12.5px;color:var(--text-3);line-height:1.5}
+.topic .n{margin-top:8px;font-size:11.5px;font-family:var(--mono);color:var(--text-3)}
+
+/* Recent list */
+.rows{border-top:1px solid var(--border)}
+.row{display:grid;grid-template-columns:96px 1fr auto;gap:18px;align-items:center;
+  padding:15px 8px;border-bottom:1px solid var(--border);transition:.12s}
+.row:hover{background:var(--surface-2);padding-left:14px;padding-right:2px}
+.row .d{font-family:var(--mono);font-size:12px;color:var(--text-3)}
+.row .t{font-size:15.5px;font-weight:620;letter-spacing:-.018em}
+.row .s{font-size:13px;color:var(--text-2);margin-top:3px;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+.tag{font-family:var(--mono);font-size:11px;color:var(--text-3);
+  border:1px solid var(--border);border-radius:5px;padding:3px 8px;white-space:nowrap}
+
+/* ---------- Post page ---------- */
+.post-wrap{display:grid;grid-template-columns:196px minmax(0,1fr) 208px;gap:40px;padding:44px 36px}
+.side-l{font-size:13px;min-width:0}
+.side-r{min-width:0}
+.post{max-width:720px}
+.crumb{font-size:12.5px;color:var(--text-3);margin-bottom:16px}
+.crumb a:hover{color:var(--accent)}
+.post h1{font-size:34px;line-height:1.28;letter-spacing:-.035em;font-weight:770;margin:12px 0 14px}
+.post-meta{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--text-3);
+  padding-bottom:22px;border-bottom:1px solid var(--border);margin-bottom:26px}
+.callout{border:1px solid var(--border);border-left:3px solid var(--accent);
+  background:var(--surface-2);border-radius:0 8px 8px 0;padding:14px 18px;margin-bottom:26px}
+.callout b{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.callout p{font-size:14.5px;color:var(--text-2);margin-top:5px;line-height:1.68}
+.post h2{font-size:21px;letter-spacing:-.025em;font-weight:720;margin:32px 0 12px}
+.post p{font-size:16.5px;line-height:1.82;color:var(--text-2);margin-bottom:16px}
+.post p strong{color:var(--text);font-weight:640}
+pre{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;
+  padding:15px 17px;overflow-x:auto;margin-bottom:18px}
+code{font-family:var(--mono);font-size:13px;line-height:1.7}
+.k{color:#a626a4}.st{color:#50a14f}.cm{color:var(--text-3)}
+[data-theme="dark"] .k{color:#c792ea}[data-theme="dark"] .st{color:#c3e88d}
+.related{margin-top:34px;padding-top:22px;border-top:1px solid var(--border)}
+.related h3{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:12px}
+.rel-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rel{border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:14px;font-weight:600}
+.rel span{display:block;font-size:12px;color:var(--text-3);font-weight:400;margin-top:3px}
+.rel:hover{border-color:var(--border-strong)}
+/* sticky TOC */
+.toc{position:sticky;top:80px}
+.toc h4{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:11px}
+.toc a{display:block;font-size:13px;color:var(--text-3);padding:5px 0 5px 12px;
+  border-left:2px solid var(--border);line-height:1.45}
+.toc a.on{color:var(--text);border-left-color:var(--accent);font-weight:600}
+.toc a:hover{color:var(--text)}
+.side-l .tree{position:sticky;top:80px}
+.tree .grp{font-size:12.5px;font-weight:700;color:var(--text-2);margin:14px 0 6px;letter-spacing:-.01em}
+.tree .grp:first-child{margin-top:0}
+.tree a{display:block;padding:4px 0 4px 11px;color:var(--text-3);font-size:13px;
+  border-left:1.5px solid var(--border)}
+.tree a.on{color:var(--accent);border-left-color:var(--accent);font-weight:600}
+.tree a:hover{color:var(--text)}
+
+/* ---------- Notes ---------- */
+.notes{max-width:var(--maxw);margin:44px auto 80px;padding:0 28px}
+.notes-inner{border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:26px 30px;background:var(--surface)}
+.notes h3{font-size:15px;font-weight:720;margin-bottom:14px;letter-spacing:-.015em}
+.notes ul{list-style:none;display:grid;gap:9px}
+.notes li{font-size:14px;color:var(--text-2);padding-left:22px;position:relative;line-height:1.65}
+.notes li::before{content:"→";position:absolute;left:0;color:var(--accent);font-weight:700}
+.notes li b{color:var(--text);font-weight:640}
+
+@media(max-width:1080px){
+  .post-wrap{grid-template-columns:1fr;gap:28px}
+  .side-l,.side-r{display:none}
+  .topics{grid-template-columns:repeat(2,1fr)}
+  .feat{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr;gap:24px}
+  .hero h1{font-size:31px}
+  .row{grid-template-columns:1fr;gap:6px}
+  .row .d{order:-1}
+  .nav,.kbar{display:none}
+}
+
+
+.mock-bar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px;
+  padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--border);
+  font-size:12.5px;color:var(--text-2);flex-wrap:wrap}
+.mock-bar strong{color:var(--text);font-size:13px;letter-spacing:-.01em}
+.mock-bar .spacer{flex:1}
+.tgl{border:1px solid var(--border-strong);background:transparent;color:var(--text-2);
+  padding:5px 12px;border-radius:99px;font:inherit;font-size:12px;cursor:pointer}
+.tgl:hover{background:var(--surface-2);color:var(--text)}
+.screen-label{max-width:var(--maxw);margin:56px auto 0;padding:0 28px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.screen-label h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.screen-label span{font-size:13px;color:var(--text-3)}
+.frame{max-width:var(--maxw);margin:14px auto 0;padding:0 28px}
+.frame-inner{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+
+.site-hd{display:flex;align-items:center;gap:20px;padding:16px 32px;
+  border-bottom:1px solid var(--border);background:var(--surface)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:750;font-size:17px;letter-spacing:-.02em}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.nav{display:flex;gap:22px;font-size:14px;color:var(--text-2);font-weight:500}
+.nav a:hover{color:var(--text)}.nav a.on{color:var(--text);font-weight:650}
+.hd-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.kbar{display:flex;align-items:center;gap:8px;border:1px solid var(--border-strong);
+  background:var(--bg);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--text-3);min-width:190px}
+.kbar kbd{margin-left:auto;font-family:var(--mono);font-size:10.5px;border:1px solid var(--border-strong);
+  border-radius:4px;padding:1px 5px;color:var(--text-3)}
+.ico{width:30px;height:30px;display:grid;place-items:center;border-radius:7px;color:var(--text-2)}
+.ico:hover{background:var(--surface-2);color:var(--text)}
+.cat{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.cat::before{content:"";width:6px;height:6px;border-radius:2px;background:currentColor}
+.c-cs{color:var(--c-cs)}.c-de{color:var(--c-de)}.c-ds{color:var(--c-ds)}
+.c-gis{color:var(--c-gis)}.c-fin{color:var(--c-fin)}.c-prog{color:var(--c-prog)}
+.sec{padding:36px 32px}.sec+.sec{border-top:1px solid var(--border)}
+.sec-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px}
+.sec-hd h3{font-size:18px;font-weight:720;letter-spacing:-.02em}
+.sec-hd a{font-size:13px;color:var(--text-3);font-weight:550}
+.sec-hd a:hover{color:var(--accent)}
+.meta{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text-3)}
+.meta .sep{width:2px;height:2px;border-radius:50%;background:var(--text-3)}
+
+/* ================= B : Dashboard Garden ================= */
+.b-hero{padding:0;border-bottom:1px solid var(--border)}
+.graph-hero{position:relative;height:330px;background:
+  radial-gradient(circle at 22% 34%,rgba(76,110,245,.10),transparent 42%),
+  radial-gradient(circle at 72% 62%,rgba(121,80,242,.10),transparent 42%),
+  radial-gradient(circle at 50% 20%,rgba(18,184,134,.08),transparent 46%),
+  var(--surface-2);overflow:hidden}
+.graph-hero svg{position:absolute;inset:0;width:100%;height:100%}
+.graph-hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,var(--surface) 0%,rgba(0,0,0,0) 52%),
+             linear-gradient(0deg,var(--surface) 0%,rgba(0,0,0,0) 34%);opacity:.88}
+[data-theme="dark"] .graph-hero::after{opacity:.82}
+.graph-cap{position:absolute;left:32px;bottom:26px;max-width:520px;z-index:2}
+.graph-ctl{z-index:2}
+.graph-cap .eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:9px}
+.graph-cap h1{font-size:31px;letter-spacing:-.032em;font-weight:770;line-height:1.28;margin-bottom:9px}
+.graph-cap p{font-size:14.5px;color:var(--text-2);line-height:1.68}
+.graph-ctl{position:absolute;right:22px;top:20px;display:flex;gap:7px}
+.chip{font-size:11.5px;padding:5px 11px;border-radius:99px;border:1px solid var(--border-strong);
+  background:var(--surface);color:var(--text-2);font-weight:600}
+.chip.on{background:var(--text);color:var(--surface);border-color:var(--text)}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--border)}
+.kpi{padding:20px 24px;border-right:1px solid var(--border)}
+.kpi:last-child{border-right:none}
+.kpi b{display:block;font-size:26px;font-weight:760;letter-spacing:-.03em;line-height:1.1}
+.kpi span{font-size:12px;color:var(--text-3);display:block;margin-top:4px}
+.kpi .delta{font-size:11.5px;color:var(--c-de);font-family:var(--mono);margin-top:6px;display:block}
+.b-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:0}
+.b-grid > *{padding:32px}
+.b-grid > *:first-child{border-right:1px solid var(--border)}
+.heat{display:grid;grid-template-columns:repeat(26,1fr);gap:3px;margin-top:6px}
+.heat i{aspect-ratio:1;border-radius:2px;background:var(--surface-2)}
+.heat i.l1{background:rgba(194,112,58,.22)}
+.heat i.l2{background:rgba(194,112,58,.45)}
+.heat i.l3{background:rgba(194,112,58,.70)}
+.heat i.l4{background:var(--accent)}
+.heat-legend{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-3);margin-top:10px;justify-content:flex-end}
+.heat-legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.bars{display:flex;flex-direction:column;gap:11px;margin-top:4px}
+.bar-row{display:grid;grid-template-columns:118px 1fr 34px;align-items:center;gap:11px;font-size:13px}
+.bar-row .track{height:7px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar-row .fill{height:100%;border-radius:99px}
+.bar-row .v{font-family:var(--mono);font-size:11.5px;color:var(--text-3);text-align:right}
+.cloud{display:flex;flex-wrap:wrap;gap:8px}
+.cloud a{border:1px solid var(--border);border-radius:99px;padding:6px 13px;color:var(--text-2);
+  font-family:var(--mono);font-size:12px}
+.cloud a:hover{border-color:var(--accent);color:var(--accent)}
+.cloud a.big{font-size:14.5px;font-weight:600;color:var(--text);padding:8px 16px}
+.cloud a.mid{font-size:13px}
+.tl{border-left:2px solid var(--border);padding-left:20px;margin-left:6px}
+.tl-y{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;margin:16px 0 8px;position:relative}
+.tl-y:first-child{margin-top:0}
+.tl-y::before{content:"";position:absolute;left:-27px;top:5px;width:9px;height:9px;border-radius:50%;
+  background:var(--accent);border:2px solid var(--surface)}
+.tl-i{display:flex;justify-content:space-between;gap:14px;padding:7px 0;font-size:13.5px;border-bottom:1px solid var(--border)}
+.tl-i span{font-family:var(--mono);font-size:11.5px;color:var(--text-3);white-space:nowrap}
+.tl-i:hover{color:var(--accent)}
+
+/* ================= C : Docs Knowledge Base ================= */
+.c-wrap{display:grid;grid-template-columns:238px minmax(0,1fr) 214px;gap:0}
+.c-side{border-right:1px solid var(--border);padding:24px 20px;font-size:13px}
+.c-side .srch{display:flex;align-items:center;gap:8px;border:1px solid var(--border-strong);
+  background:var(--bg);border-radius:8px;padding:7px 10px;font-size:13px;color:var(--text-3);margin-bottom:20px}
+.c-side .srch kbd{margin-left:auto;font-family:var(--mono);font-size:10.5px;
+  border:1px solid var(--border-strong);border-radius:4px;padding:1px 5px}
+.c-grp{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);
+  font-weight:700;margin:18px 0 7px}
+.c-grp:first-of-type{margin-top:0}
+.c-side a{display:block;padding:5px 10px;border-radius:6px;color:var(--text-2);line-height:1.45}
+.c-side a:hover{background:var(--surface-2);color:var(--text)}
+.c-side a.on{background:var(--surface-2);color:var(--accent);font-weight:650}
+.c-side a.sub{padding-left:22px;font-size:12.5px;color:var(--text-3)}
+.c-main{padding:34px 40px;min-width:0}
+.c-main > .crumb{font-size:12.5px;color:var(--text-3);margin-bottom:14px}
+.c-main h1{font-size:33px;line-height:1.28;letter-spacing:-.035em;font-weight:770;margin:10px 0 12px}
+.c-lead{font-size:16px;color:var(--text-2);line-height:1.75;padding-bottom:22px;border-bottom:1px solid var(--border)}
+.prereq{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0 28px}
+.pre-box{border:1px solid var(--border);border-radius:var(--radius);padding:15px 17px}
+.pre-box h4{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);
+  font-weight:700;margin-bottom:10px}
+.pre-box a{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--text-2);padding:4px 0}
+.pre-box a::before{content:"◦";color:var(--accent);font-weight:700}
+.pre-box a:hover{color:var(--text)}
+.c-main h2{font-size:20px;letter-spacing:-.025em;font-weight:720;margin:30px 0 11px}
+.c-main p{font-size:16px;line-height:1.82;color:var(--text-2);margin-bottom:15px}
+.c-main p strong{color:var(--text);font-weight:640}
+.path{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:6px}
+.path-hd{background:var(--surface-2);padding:12px 17px;font-size:13px;font-weight:670;
+  display:flex;justify-content:space-between;align-items:center}
+.path-hd span{font-family:var(--mono);font-size:11.5px;color:var(--text-3);font-weight:400}
+.step{display:grid;grid-template-columns:30px 1fr auto;gap:13px;align-items:center;
+  padding:12px 17px;border-top:1px solid var(--border)}
+.step .n{width:24px;height:24px;border-radius:50%;background:var(--surface-2);color:var(--text-3);
+  display:grid;place-items:center;font-family:var(--mono);font-size:11.5px;font-weight:700}
+.step.done .n{background:var(--accent);color:#fff}
+.step b{font-size:14px;font-weight:620;display:block}
+.step small{font-size:12px;color:var(--text-3)}
+.step .t{font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.step:hover{background:var(--surface-2)}
+.c-toc{border-left:1px solid var(--border);padding:34px 20px}
+.c-toc div{position:sticky;top:80px}
+.c-toc h4{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);
+  font-weight:700;margin-bottom:11px}
+.c-toc a{display:block;font-size:12.5px;color:var(--text-3);padding:5px 0 5px 12px;
+  border-left:2px solid var(--border);line-height:1.45}
+.c-toc a.on{color:var(--text);border-left-color:var(--accent);font-weight:600}
+.c-toc a:hover{color:var(--text)}
+.mini-graph{margin-top:22px;border:1px solid var(--border);border-radius:8px;height:132px;
+  background:var(--surface-2);position:relative;overflow:hidden}
+.mini-graph svg{position:absolute;inset:0;width:100%;height:100%}
+
+/* ================= compare table ================= */
+.cmp{max-width:var(--maxw);margin:56px auto 80px;padding:0 28px}
+.cmp-inner{border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);overflow:hidden}
+.cmp h3{font-size:16px;font-weight:730;padding:22px 26px 16px;letter-spacing:-.02em}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:12px 16px;border-top:1px solid var(--border);vertical-align:top;line-height:1.6}
+th{background:var(--surface-2);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--text-3);font-weight:700}
+td:first-child{font-weight:650;color:var(--text);white-space:nowrap}
+td{color:var(--text-2)}
+td b{color:var(--text);font-weight:640}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;
+  background:var(--surface-2);color:var(--text-2);border:1px solid var(--border)}
+.pill.rec{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+@media(max-width:1080px){
+  .c-wrap{grid-template-columns:1fr}
+  .c-side,.c-toc{display:none}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .kpi{border-bottom:1px solid var(--border)}
+  .b-grid{grid-template-columns:1fr}
+  .b-grid>*:first-child{border-right:none;border-bottom:1px solid var(--border)}
+  .prereq{grid-template-columns:1fr}
+  .nav,.kbar{display:none}
+  table{font-size:12.5px}
+}
+
+
+
+
+/* ---- unified nav bar ---- */
+.mock-bar .tabs{display:flex;gap:4px;margin-left:6px}
+.mock-bar .tabs a{font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:99px;
+  color:var(--text-2);border:1px solid transparent}
+.mock-bar .tabs a:hover{background:var(--surface-2);color:var(--text)}
+.mock-bar .tabs a.rec{color:var(--accent);border-color:var(--accent)}
+.intro{max-width:var(--maxw);margin:40px auto 0;padding:0 28px}
+.intro-inner{border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:var(--surface);padding:26px 30px}
+.intro h1{font-size:22px;font-weight:760;letter-spacing:-.025em;margin-bottom:8px}
+.intro p{font-size:14.5px;color:var(--text-2);line-height:1.72;max-width:78ch}
+.intro .legend{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.intro .legend a{border:1px solid var(--border);border-radius:8px;padding:10px 14px;flex:1;min-width:210px}
+.intro .legend a:hover{border-color:var(--border-strong)}
+.intro .legend b{display:block;font-size:13.5px;font-weight:680;margin-bottom:3px}
+.intro .legend span{font-size:12.5px;color:var(--text-3);line-height:1.5}
+html{scroll-behavior:smooth}
+.intro .legend .pill.rec{color:#fff}
+</style>
+</head>
+<body>
+<div class="mock-bar">
+  <strong>haejunhyun.com 리디자인</strong>
+  <div class="tabs">
+    <a href="#a" class="rec">A · Minimal Editorial</a>
+    <a href="#b">B · Dashboard Garden</a>
+    <a href="#c">C · Docs Knowledge Base</a>
+    <a href="#cmp">비교표</a>
+  </div>
+  <div class="spacer"></div>
+  <button class="tgl" onclick="var r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'">&#9686; 라이트 / 다크 전환</button>
+</div>
+
+<div class="intro"><div class="intro-inner">
+  <h1>세 가지 방향의 개선안</h1>
+  <p>현재 haejunhyun.com은 Quartz 4 기반 디지털 가든으로, 129개의 노트가 쌓여 있지만
+     첫 방문자가 무엇부터 읽어야 할지 알기 어렵고 · Graph View가 빈 상태로 렌더되며 ·
+     카드 요약에 &quot;Summary&quot; 리터럴이 노출되는 문제가 있습니다.
+     아래 세 안은 같은 콘텐츠를 서로 다른 관점으로 재구성한 결과입니다.</p>
+  <div class="legend">
+    <a href="#a"><b>A · Minimal Editorial <span class="pill rec" style="margin-left:4px">추천</span></b><span>읽기 경험 중심 — 무엇부터 읽을지 큐레이션</span></a>
+    <a href="#b"><b>B · Dashboard Garden</b><span>축적 자산 시각화 — 얼마나 쌓였는지 과시</span></a>
+    <a href="#c"><b>C · Docs Knowledge Base</b><span>학습 경로 중심 — 어떤 순서로 읽을지 안내</span></a>
+  </div>
+</div></div>
+
+
+
+
+<!-- ============ SCREEN 1 : HOME ============ -->
+<div class="screen-label" id="a"><h2>Screen 01</h2><span>홈 — Hero · Featured · Topics · Recent</span></div>
+<div class="frame"><div class="frame-inner">
+
+  <header class="site-hd">
+    <div class="brand"><span class="dot"></span>haejun</div>
+    <nav class="nav">
+      <a href="#" class="on">Home</a><a href="#">Notes</a><a href="#">Topics</a><a href="#">Archive</a><a href="#">About</a>
+    </nav>
+    <div class="hd-right">
+      <div class="kbar">🔍 검색<kbd>⌘K</kbd></div>
+      <a class="ico" href="#">☾</a><a class="ico" href="#">⌥</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Data Engineer · Seoul</div>
+      <h1>기록하고, 가끔 정리하고,<br>어쩌다 블로그가 된 곳</h1>
+      <p>데이터 엔지니어링과 공간 데이터를 다루며 배운 것들을 노트로 남깁니다.
+         파이프라인, 통계, GIS, 그리고 부동산 데이터에 대한 129개의 기록.</p>
+      <div class="hero-cta">
+        <a class="btn pri" href="#">노트 둘러보기</a>
+        <a class="btn" href="#">GitHub</a>
+        <a class="btn" href="#">LinkedIn</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>129</b><span>노트</span></div>
+        <div class="stat"><b>7</b><span>토픽</span></div>
+        <div class="stat"><b>Jul 26</b><span>최근 업데이트</span></div>
+      </div>
+    </div>
+    <div class="avatar">H</div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><h3>Featured</h3><a href="#">전체 보기 →</a></div>
+    <div class="feat">
+      <a class="feat-main" href="#">
+        <span class="cat c-fin">Finance &amp; Property</span>
+        <h4>부동산 경매 권리분석</h4>
+        <p>부동산 경매는 서류의 용어를 아는 것을 넘어, 그 기록이 낙찰자에게 얼마의 인수 부담으로
+           남는지를 읽어내는 작업이다. 말소기준권리부터 대항력 판단까지 실제 사례로 정리했다.</p>
+        <div class="meta">Jul 21, 2026<span class="sep"></span>8분<span class="sep"></span>real-estate/경매</div>
+      </a>
+      <div class="feat-side">
+        <a class="feat-item" href="#">
+          <span class="cat c-ds">Data Science</span>
+          <h4>상호정보량(MI)</h4>
+          <div class="meta">Jul 15, 2026<span class="sep"></span>6분</div>
+        </a>
+        <a class="feat-item" href="#">
+          <span class="cat c-de">Data Engineering</span>
+          <h4>GPU — 개념과 실전 사용</h4>
+          <div class="meta">Jul 09, 2026<span class="sep"></span>11분</div>
+        </a>
+        <a class="feat-item" href="#">
+          <span class="cat c-cs">Computer Science</span>
+          <h4>API</h4>
+          <div class="meta">Jul 24, 2026<span class="sep"></span>5분</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><h3>Topics</h3><a href="#">전체 7개 →</a></div>
+    <div class="topics">
+      <a class="topic" href="#"><i class="bar" style="background:var(--c-cs)"></i>
+        <div class="emoji">💻</div><b>Computer Science</b><span>알고리즘 · 자료구조 · 네트워크</span><div class="n">24 notes</div></a>
+      <a class="topic" href="#"><i class="bar" style="background:var(--c-de)"></i>
+        <div class="emoji">🛢</div><b>Data Engineering</b><span>Airflow · Docker · PostgreSQL</span><div class="n">31 notes</div></a>
+      <a class="topic" href="#"><i class="bar" style="background:var(--c-ds)"></i>
+        <div class="emoji">📊</div><b>Data Science</b><span>DL · ML · 통계 · 시각화</span><div class="n">38 notes</div></a>
+      <a class="topic" href="#"><i class="bar" style="background:var(--c-gis)"></i>
+        <div class="emoji">🗺</div><b>GIS</b><span>공간 데이터 분석</span><div class="n">12 notes</div></a>
+      <a class="topic" href="#"><i class="bar" style="background:var(--c-prog)"></i>
+        <div class="emoji">🐍</div><b>Programming</b><span>Python · SQL</span><div class="n">14 notes</div></a>
+      <a class="topic" href="#"><i class="bar" style="background:var(--c-fin)"></i>
+        <div class="emoji">🏠</div><b>Finance &amp; Property</b><span>부동산 · 금융</span><div class="n">7 notes</div></a>
+      <a class="topic" href="#"><i class="bar" style="background:var(--c-tool)"></i>
+        <div class="emoji">🔧</div><b>Tools</b><span>Obsidian · 워크플로우</span><div class="n">3 notes</div></a>
+      <a class="topic" href="#" style="justify-content:center;align-items:center;color:var(--text-3)">
+        <div class="emoji">🕸</div><b style="color:var(--text-2)">Graph View</b><span>노트 연결망 보기</span></a>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-hd"><h3>Recent Notes</h3><a href="#">아카이브 →</a></div>
+    <div class="rows">
+      <a class="row" href="#"><span class="d">Jul 24, 2026</span>
+        <span><span class="t">API</span><span class="s">프로그램끼리 데이터를 주고받는 방법(=코드로 작성된 규칙)이며, 요청과 응답의 계약이다.</span></span>
+        <span class="tag">computer-science/network</span></a>
+      <a class="row" href="#"><span class="d">Jul 21, 2026</span>
+        <span><span class="t">부동산 경매 권리분석</span><span class="s">서류의 용어를 아는 것을 넘어, 그 기록이 낙찰자에게 얼마의 인수 부담으로 남는지를 읽는 일.</span></span>
+        <span class="tag">real-estate/경매</span></a>
+      <a class="row" href="#"><span class="d">Jul 15, 2026</span>
+        <span><span class="t">상호정보량(MI)</span><span class="s">피어슨 상관계수가 포착하지 못하는 비선형 관계까지 측정하는 정보이론 기반 지표.</span></span>
+        <span class="tag">statistics/information-theory</span></a>
+      <a class="row" href="#"><span class="d">Jul 09, 2026</span>
+        <span><span class="t">GPU — 개념과 실전 사용</span><span class="s">CPU와 달리 수천~수만 개의 단순 코어로 동시 연산을 수행하도록 설계된 프로세서.</span></span>
+        <span class="tag">data-engineering/infra</span></a>
+      <a class="row" href="#"><span class="d">Jul 09, 2026</span>
+        <span><span class="t">2. 기초 통계량과 스케일링</span><span class="s">큰 수의 법칙과 중심극한정리는 자주 혼동되지만 전혀 다른 개념이다.</span></span>
+        <span class="tag">statistics/스케일링</span></a>
+      <a class="row" href="#"><span class="d">Jul 09, 2026</span>
+        <span><span class="t">3. 분포 변환과 행렬</span><span class="s">정규성 변환과 분산 안정화는 통계 분석의 가정을 충족시키기 위한 필수 전처리다.</span></span>
+        <span class="tag">statistics/분포변환</span></a>
+    </div>
+  </section>
+
+</div></div>
+
+<!-- ============ SCREEN 2 : POST ============ -->
+<div class="screen-label"><h2>Screen 02</h2><span>노트 상세 — 좌 트리 · 우 sticky TOC · 관련 노트</span></div>
+<div class="frame"><div class="frame-inner">
+
+  <header class="site-hd">
+    <div class="brand"><span class="dot"></span>haejun</div>
+    <nav class="nav"><a href="#">Home</a><a href="#" class="on">Notes</a><a href="#">Topics</a><a href="#">Archive</a><a href="#">About</a></nav>
+    <div class="hd-right"><div class="kbar">🔍 검색<kbd>⌘K</kbd></div><a class="ico" href="#">☾</a></div>
+  </header>
+
+  <div class="post-wrap">
+    <aside class="side-l"><div class="tree">
+      <div class="grp">computer-science</div>
+      <a href="#">algorithm</a><a href="#">data-structure</a><a href="#" class="on">network</a>
+      <div class="grp">data-engineering</div>
+      <a href="#">infra</a><a href="#">pipeline</a>
+      <div class="grp">data-science</div>
+      <a href="#">statistics</a><a href="#">machine-learning</a>
+    </div></aside>
+
+    <article class="post">
+      <div class="crumb"><a href="#">Home</a> › <a href="#">computer-science</a> › <a href="#">network</a></div>
+      <span class="cat c-cs">Computer Science</span>
+      <h1>API</h1>
+      <div class="post-meta">Jul 24, 2026<span class="sep"></span>5분 읽기<span class="sep"></span>1,240 words<span class="sep"></span>#network</div>
+
+      <div class="callout"><b>Summary</b>
+        <p>API는 프로그램끼리 데이터를 주고받는 방법(=코드로 작성된 규칙)이며,
+           호출자와 제공자 사이의 계약이다. 계약이 명확할수록 시스템은 느슨하게 결합된다.</p></div>
+
+      <h2 id="s1">API란 무엇인가</h2>
+      <p>API(Application Programming Interface)는 <strong>프로그램이 다른 프로그램에게 무엇을 요청할 수 있고,
+         그 대가로 무엇을 돌려받는지</strong>를 명시한 규칙의 집합이다. 사용자는 내부 구현을 알 필요가 없고,
+         제공자는 계약만 지키면 내부를 자유롭게 바꿀 수 있다.</p>
+
+      <h2 id="s2">요청과 응답</h2>
+      <p>HTTP 기반 API에서 요청은 메서드·경로·헤더·본문으로 구성된다. 응답은 상태 코드와 본문으로 돌아온다.</p>
+      <pre><code><span class="cm"># 요청 예시</span>
+<span class="k">import</span> requests
+
+res = requests.get(
+    <span class="st">"https://api.example.com/v1/users"</span>,
+    headers={<span class="st">"Authorization"</span>: <span class="st">f"Bearer {token}"</span>},
+    params={<span class="st">"limit"</span>: 20},
+)
+<span class="k">print</span>(res.status_code, res.json())</code></pre>
+
+      <h2 id="s3">REST와 계약</h2>
+      <p>REST는 자원을 URL로 표현하고 동작을 HTTP 메서드에 위임한다. 이 규약이 지켜질 때
+         클라이언트는 문서를 거의 읽지 않고도 다음 동작을 예측할 수 있다.</p>
+
+      <div class="related">
+        <h3>연결된 노트</h3>
+        <div class="rel-grid">
+          <a class="rel" href="#">HTTP 프로토콜<span>computer-science/network</span></a>
+          <a class="rel" href="#">인증과 토큰<span>computer-science/network</span></a>
+          <a class="rel" href="#">Airflow HttpOperator<span>data-engineering/pipeline</span></a>
+          <a class="rel" href="#">공공데이터 API 수집<span>gis</span></a>
+        </div>
+      </div>
+    </article>
+
+    <aside class="side-r"><div class="toc">
+      <h4>On this page</h4>
+      <a href="#s1" class="on">API란 무엇인가</a>
+      <a href="#s2">요청과 응답</a>
+      <a href="#s3">REST와 계약</a>
+      <h4 style="margin-top:24px">Graph</h4>
+      <a href="#" style="border:none;padding-left:0">🕸 이 노트의 연결망</a>
+    </div></aside>
+  </div>
+
+</div></div>
+
+<div class="notes"><div class="notes-inner">
+  <h3>이 목업에 반영된 개선 사항</h3>
+  <ul>
+    <li><b>Hero 신설</b> — 직함·소개·CTA·통계 스트립. 기존 <code style="font-size:12px">Today 0 / Total 129</code>를 의미 있는 지표로 대체</li>
+    <li><b>Interests 표 → 클릭 가능한 Topic 카드</b> — 컬러바 + 노트 개수 배지, 마지막 칸을 Graph View 진입점으로 활용</li>
+    <li><b>Featured 영역 도입</b> — 129개 중 무엇부터 읽어야 할지 제시</li>
+    <li><b>Recent를 카드 → 행 리스트로</b> — 날짜·제목·요약·태그가 한 줄에 스캔되도록 위계 재정렬</li>
+    <li><b>"Summary" 리터럴 제거</b> — 상세 페이지에서 라벨이 붙은 callout 블록으로 승격</li>
+    <li><b>죽은 Graph View 제거</b> — 홈 우측 빈 박스 대신 노트 상세의 <b>연결된 노트</b> 섹션으로 대체</li>
+    <li><b>sticky TOC + breadcrumb + 폴더 트리</b> — 깊은 계층에서의 현재 위치 인지</li>
+    <li><b>상단 글로벌 네비 + ⌘K 검색</b> — Archive / About / Topics 진입점 추가</li>
+    <li><b>0 reactions · 0 comments 숨김</b> — 값이 0일 때 렌더 생략</li>
+    <li><b>타이포 재정의</b> — Pretendard 본문 16.5px / line-height 1.82, h1 40px, 코드 JetBrains Mono</li>
+  </ul>
+</div></div>
+
+
+
+
+
+
+
+
+<!-- ============ B ============ -->
+<div class="screen-label" id="b"><h2>개선안 B</h2><span>Dashboard Garden — 129개 축적 자산을 전면에</span></div>
+<div class="frame"><div class="frame-inner">
+
+  <header class="site-hd">
+    <div class="brand"><span class="dot"></span>haejun</div>
+    <nav class="nav"><a href="#" class="on">Dashboard</a><a href="#">Notes</a><a href="#">Graph</a><a href="#">Tags</a><a href="#">Archive</a><a href="#">About</a></nav>
+    <div class="hd-right"><div class="kbar">🔍 검색<kbd>⌘K</kbd></div><a class="ico" href="#">☾</a></div>
+  </header>
+
+  <div class="b-hero">
+    <div class="graph-hero">
+      <svg viewBox="0 0 1200 330" preserveAspectRatio="xMidYMid slice">
+        <g stroke="currentColor" stroke-opacity=".16" stroke-width="1" fill="none" color="#57564f">
+          <path d="M420 150 L300 90"/><path d="M420 150 L310 215"/><path d="M420 150 L560 120"/>
+          <path d="M420 150 L540 210"/><path d="M560 120 L700 95"/><path d="M560 120 L680 175"/>
+          <path d="M540 210 L660 255"/><path d="M700 95 L830 130"/><path d="M680 175 L820 200"/>
+          <path d="M660 255 L800 265"/><path d="M830 130 L940 95"/><path d="M820 200 L950 175"/>
+          <path d="M800 265 L920 255"/><path d="M300 90 L200 55"/><path d="M310 215 L190 250"/>
+          <path d="M940 95 L1040 145"/><path d="M950 175 L1050 145"/><path d="M680 175 L560 120"/>
+          <path d="M420 150 L250 150"/><path d="M250 150 L190 250"/>
+        </g>
+        <g>
+          <circle cx="420" cy="150" r="15" fill="#c2703a"/>
+          <circle cx="560" cy="120" r="9" fill="#4c6ef5"/><circle cx="540" cy="210" r="9" fill="#7950f2"/>
+          <circle cx="700" cy="95" r="7" fill="#4c6ef5"/><circle cx="680" cy="175" r="8" fill="#12b886"/>
+          <circle cx="660" cy="255" r="7" fill="#7950f2"/><circle cx="830" cy="130" r="6" fill="#4c6ef5"/>
+          <circle cx="820" cy="200" r="6" fill="#12b886"/><circle cx="800" cy="265" r="6" fill="#7950f2"/>
+          <circle cx="940" cy="95" r="5" fill="#f76707"/><circle cx="950" cy="175" r="5" fill="#12b886"/>
+          <circle cx="920" cy="255" r="5" fill="#0ca678"/><circle cx="1040" cy="145" r="4.5" fill="#868e96"/>
+          <circle cx="1050" cy="145" r="4" fill="#868e96"/>
+          <circle cx="300" cy="90" r="8" fill="#e8590c"/><circle cx="310" cy="215" r="8" fill="#0ca678"/>
+          <circle cx="250" cy="150" r="6" fill="#868e96"/>
+          <circle cx="200" cy="55" r="5" fill="#e8590c"/><circle cx="190" cy="250" r="5" fill="#0ca678"/>
+        </g>
+      </svg>
+      <div class="graph-ctl">
+        <span class="chip on">All</span><span class="chip">Data Science</span><span class="chip">Engineering</span><span class="chip">GIS</span>
+      </div>
+      <div class="graph-cap">
+        <div class="eyebrow">129 notes · 284 links</div>
+        <h1>연결된 것만 지식이 된다</h1>
+        <p>4년간 쌓인 노트와 그 사이의 연결을 한눈에. 노드를 클릭하면 해당 주제의 기록으로 이동합니다.</p>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><b>129</b><span>전체 노트</span><em class="delta">+6 this month</em></div>
+      <div class="kpi"><b>284</b><span>노트 간 연결</span><em class="delta">avg 2.2 / note</em></div>
+      <div class="kpi"><b>7</b><span>토픽</span><em class="delta" style="color:var(--text-3)">23 sub-folders</em></div>
+      <div class="kpi"><b>41</b><span>태그</span><em class="delta" style="color:var(--text-3)">top: statistics</em></div>
+      <div class="kpi"><b>Jul 26</b><span>최근 업데이트</span><em class="delta" style="color:var(--text-3)">3일 전</em></div>
+    </div>
+  </div>
+
+  <div class="b-grid">
+    <div>
+      <div class="sec-hd"><h3>기록 활동</h3><a href="#">최근 26주</a></div>
+      <div class="heat">
+        <i></i><i class="l1"></i><i class="l2"></i><i></i><i class="l1"></i><i class="l3"></i><i class="l2"></i>
+        <i class="l1"></i><i></i><i class="l2"></i><i class="l4"></i><i class="l3"></i><i class="l1"></i><i></i>
+        <i class="l2"></i><i class="l3"></i><i></i><i class="l1"></i><i class="l4"></i><i class="l2"></i><i class="l1"></i>
+        <i></i><i class="l3"></i><i class="l2"></i><i class="l4"></i><i class="l3"></i>
+        <i class="l1"></i><i></i><i class="l3"></i><i class="l2"></i><i></i><i class="l1"></i><i class="l2"></i>
+        <i class="l4"></i><i class="l3"></i><i></i><i class="l1"></i><i class="l2"></i><i></i><i class="l3"></i>
+        <i class="l1"></i><i class="l2"></i><i></i><i class="l4"></i><i class="l2"></i><i class="l1"></i><i></i>
+        <i class="l2"></i><i class="l3"></i><i class="l1"></i><i></i><i class="l2"></i>
+      </div>
+      <div class="heat-legend">Less <i style="background:var(--surface-2)"></i><i style="background:rgba(194,112,58,.22)"></i><i style="background:rgba(194,112,58,.45)"></i><i style="background:rgba(194,112,58,.70)"></i><i style="background:var(--accent)"></i> More</div>
+
+      <div class="sec-hd" style="margin-top:34px"><h3>토픽 분포</h3><a href="#">전체 →</a></div>
+      <div class="bars">
+        <div class="bar-row"><span>Data Science</span><span class="track"><i class="fill" style="width:100%;background:var(--c-ds);display:block"></i></span><span class="v">38</span></div>
+        <div class="bar-row"><span>Data Engineering</span><span class="track"><i class="fill" style="width:82%;background:var(--c-de);display:block"></i></span><span class="v">31</span></div>
+        <div class="bar-row"><span>Computer Science</span><span class="track"><i class="fill" style="width:63%;background:var(--c-cs);display:block"></i></span><span class="v">24</span></div>
+        <div class="bar-row"><span>Programming</span><span class="track"><i class="fill" style="width:37%;background:var(--c-prog);display:block"></i></span><span class="v">14</span></div>
+        <div class="bar-row"><span>GIS</span><span class="track"><i class="fill" style="width:32%;background:var(--c-gis);display:block"></i></span><span class="v">12</span></div>
+        <div class="bar-row"><span>Finance &amp; Property</span><span class="track"><i class="fill" style="width:18%;background:var(--c-fin);display:block"></i></span><span class="v">7</span></div>
+        <div class="bar-row"><span>Tools</span><span class="track"><i class="fill" style="width:8%;background:var(--c-tool);display:block"></i></span><span class="v">3</span></div>
+      </div>
+
+      <div class="sec-hd" style="margin-top:34px"><h3>태그 클라우드</h3><a href="#">41개 →</a></div>
+      <div class="cloud">
+        <a class="big" href="#">#statistics</a><a class="mid" href="#">#network</a><a href="#">#airflow</a>
+        <a class="big" href="#">#python</a><a href="#">#docker</a><a class="mid" href="#">#postgresql</a>
+        <a href="#">#경매</a><a class="mid" href="#">#machine-learning</a><a href="#">#kde</a>
+        <a href="#">#information-theory</a><a class="mid" href="#">#공간분석</a><a href="#">#obsidian</a>
+        <a href="#">#sql</a><a class="mid" href="#">#알고리즘</a><a href="#">#분포변환</a><a href="#">#gpu</a>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-hd"><h3>아카이브</h3><a href="#">전체 →</a></div>
+      <div class="tl">
+        <div class="tl-y">2026 · 34 notes</div>
+        <a class="tl-i" href="#">API<span>Jul 24</span></a>
+        <a class="tl-i" href="#">부동산 경매 권리분석<span>Jul 21</span></a>
+        <a class="tl-i" href="#">상호정보량(MI)<span>Jul 15</span></a>
+        <a class="tl-i" href="#">GPU — 개념과 실전 사용<span>Jul 09</span></a>
+        <a class="tl-i" href="#">3. 분포 변환과 행렬<span>Jul 09</span></a>
+        <div class="tl-y">2025 · 52 notes</div>
+        <a class="tl-i" href="#">BallTree 알고리즘<span>Dec 18</span></a>
+        <a class="tl-i" href="#">커널 밀도 추정 KDE<span>Nov 30</span></a>
+        <a class="tl-i" href="#">DFS와 BFS 그래프 탐색<span>Nov 02</span></a>
+        <div class="tl-y">2024 · 43 notes</div>
+        <a class="tl-i" href="#">시간복잡도<span>Sep 11</span></a>
+        <a class="tl-i" href="#">Airflow DAG 설계<span>Jun 27</span></a>
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+<!-- ============ C ============ -->
+<div class="screen-label" id="c" style="margin-top:64px"><h2>개선안 C</h2><span>Docs Knowledge Base — 학습 경로 중심</span></div>
+<div class="frame"><div class="frame-inner">
+
+  <header class="site-hd">
+    <div class="brand"><span class="dot"></span>haejun <span style="font-weight:450;color:var(--text-3);font-size:14px">/ notes</span></div>
+    <nav class="nav"><a href="#" class="on">Learn</a><a href="#">Reference</a><a href="#">Changelog</a></nav>
+    <div class="hd-right"><div class="kbar" style="min-width:230px">🔍 노트 · 태그 · 본문 검색<kbd>⌘K</kbd></div><a class="ico" href="#">☾</a></div>
+  </header>
+
+  <div class="c-wrap">
+    <aside class="c-side">
+      <div class="srch">🔍 Quick search<kbd>⌘K</kbd></div>
+      <div class="c-grp">Computer Science</div>
+      <a href="#">Algorithm</a>
+      <a href="#" class="sub">시간복잡도</a>
+      <a href="#" class="sub">BallTree 알고리즘</a>
+      <a href="#" class="sub">DFS와 BFS 그래프 탐색</a>
+      <a href="#">Data Structure</a>
+      <a href="#" class="on">Network</a>
+      <a href="#" class="sub" style="color:var(--accent)">API</a>
+      <a href="#" class="sub">HTTP 프로토콜</a>
+      <a href="#" class="sub">인증과 토큰</a>
+      <div class="c-grp">Data Engineering</div>
+      <a href="#">Infra</a><a href="#">Pipeline</a>
+      <div class="c-grp">Data Science</div>
+      <a href="#">Statistics</a><a href="#">Machine Learning</a>
+    </aside>
+
+    <main class="c-main">
+      <div class="crumb"><a href="#">Learn</a> › <a href="#">Computer Science</a> › <a href="#">Network</a></div>
+      <span class="cat c-cs">Computer Science</span>
+      <h1>API</h1>
+      <p class="c-lead">프로그램끼리 데이터를 주고받는 방법(=코드로 작성된 규칙)이며,
+        호출자와 제공자 사이의 <strong>계약</strong>이다. 계약이 명확할수록 시스템은 느슨하게 결합된다.</p>
+
+      <div class="prereq">
+        <div class="pre-box"><h4>선행 지식</h4>
+          <a href="#">HTTP 프로토콜</a><a href="#">클라이언트-서버 모델</a><a href="#">JSON 직렬화</a></div>
+        <div class="pre-box"><h4>이어서 읽기</h4>
+          <a href="#">인증과 토큰</a><a href="#">Airflow HttpOperator</a><a href="#">공공데이터 API 수집</a></div>
+      </div>
+
+      <h2 id="c1">API란 무엇인가</h2>
+      <p>API(Application Programming Interface)는 <strong>프로그램이 다른 프로그램에게 무엇을 요청할 수 있고,
+        그 대가로 무엇을 돌려받는지</strong>를 명시한 규칙의 집합이다. 사용자는 내부 구현을 알 필요가 없고,
+        제공자는 계약만 지키면 내부를 자유롭게 바꿀 수 있다.</p>
+
+      <h2 id="c2">이 노트가 속한 학습 경로</h2>
+      <div class="path">
+        <div class="path-hd">네트워크 기초 → 데이터 수집 파이프라인 <span>7 notes · 약 52분</span></div>
+        <div class="step done"><span class="n">1</span><span><b>네트워크와 프로토콜</b><small>OSI 7계층과 TCP/IP</small></span><span class="t">6분</span></div>
+        <div class="step done"><span class="n">2</span><span><b>HTTP 프로토콜</b><small>요청/응답 구조와 상태 코드</small></span><span class="t">9분</span></div>
+        <div class="step done"><span class="n">3</span><span><b>API</b><small>지금 읽는 노트</small></span><span class="t">5분</span></div>
+        <div class="step"><span class="n">4</span><span><b>인증과 토큰</b><small>OAuth 2.0과 Bearer 토큰</small></span><span class="t">8분</span></div>
+        <div class="step"><span class="n">5</span><span><b>공공데이터 API 수집</b><small>실전: 국토부 실거래가 API</small></span><span class="t">11분</span></div>
+        <div class="step"><span class="n">6</span><span><b>Airflow HttpOperator</b><small>수집 자동화</small></span><span class="t">13분</span></div>
+      </div>
+    </main>
+
+    <aside class="c-toc"><div>
+      <h4>On this page</h4>
+      <a href="#c1" class="on">API란 무엇인가</a>
+      <a href="#c2">이 노트가 속한 학습 경로</a>
+      <h4 style="margin-top:24px">Local graph</h4>
+      <div class="mini-graph">
+        <svg viewBox="0 0 200 132">
+          <g stroke="#8b8a82" stroke-opacity=".35" fill="none">
+            <path d="M100 66 L52 34"/><path d="M100 66 L48 96"/><path d="M100 66 L152 40"/>
+            <path d="M100 66 L148 100"/><path d="M100 66 L100 20"/><path d="M100 66 L100 116"/>
+          </g>
+          <circle cx="100" cy="66" r="9" fill="#c2703a"/>
+          <circle cx="52" cy="34" r="5" fill="#4c6ef5"/><circle cx="48" cy="96" r="5" fill="#4c6ef5"/>
+          <circle cx="152" cy="40" r="5" fill="#12b886"/><circle cx="148" cy="100" r="5" fill="#f76707"/>
+          <circle cx="100" cy="20" r="4" fill="#4c6ef5"/><circle cx="100" cy="116" r="4" fill="#12b886"/>
+        </svg>
+      </div>
+    </div></aside>
+  </div>
+
+</div></div>
+
+<!-- ============ compare ============ -->
+<div class="cmp" id="cmp"><div class="cmp-inner">
+  <h3>A · B · C 비교</h3>
+  <table>
+    <tr><th style="width:110px">기준</th>
+      <th>A — Minimal Editorial <span class="pill rec">추천</span></th>
+      <th>B — Dashboard Garden</th>
+      <th>C — Docs Knowledge Base</th></tr>
+    <tr><td>핵심 컨셉</td>
+      <td>읽기 경험 중심. <b>무엇부터 읽을지</b> 큐레이션</td>
+      <td>축적 자산 과시. <b>얼마나 쌓였는지</b> 시각화</td>
+      <td>학습 경로 중심. <b>어떤 순서로 읽을지</b> 안내</td></tr>
+    <tr><td>홈 첫 화면</td>
+      <td>Hero + Featured + Topic 카드</td>
+      <td>Graph 히어로 + KPI 5칸 + 히트맵</td>
+      <td>홈 없이 바로 문서 진입 (사이드바 상시)</td></tr>
+    <tr><td>Graph View</td>
+      <td>제거 → 노트 하단 백링크로 대체</td>
+      <td><b>전체폭 히어로로 승격</b> (현재 죽은 자산 활용)</td>
+      <td>우측 사이드 local graph로 축소</td></tr>
+    <tr><td>강점</td>
+      <td>구현 난도 낮고, 첫 방문자 이탈 방어에 가장 효과적</td>
+      <td>포트폴리오·채용 맥락에서 임팩트 최대</td>
+      <td>시리즈 노트(1·2·3번 통계 글) 완독률 상승</td></tr>
+    <tr><td>약점</td>
+      <td>차별화 포인트가 약함. 흔한 블로그로 보일 수 있음</td>
+      <td>숫자가 정체되면 역효과. 글 자체 노출이 밀림</td>
+      <td>단발성 노트가 많으면 빈 경로가 생김. 큐레이션 수작업 필요</td></tr>
+    <tr><td>필요 데이터</td>
+      <td>frontmatter <b>summary · featured</b> 플래그</td>
+      <td><b>링크 그래프 · 커밋 히스토리 · 태그 인덱스</b></td>
+      <td><b>prerequisite / next</b> frontmatter 수동 입력</td></tr>
+    <tr><td>Quartz 작업량</td>
+      <td><span class="pill">중</span> 컴포넌트 4개 + SCSS</td>
+      <td><span class="pill">상</span> Graph 커스텀 + 히트맵/집계 로직</td>
+      <td><span class="pill">중상</span> 사이드바 재구성 + 경로 메타 스키마</td></tr>
+    <tr><td>추천 상황</td>
+      <td>지금처럼 <b>다양한 주제를 폭넓게</b> 기록하는 경우</td>
+      <td>블로그를 <b>이력서 대체재</b>로 쓰려는 경우</td>
+      <td>특정 주제를 <b>연재 형태</b>로 깊게 파는 경우</td></tr>
+  </table>
+</div></div>
+
+
+
+
+</body>
+</html>
+
+
