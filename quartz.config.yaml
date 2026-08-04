@@ -282,11 +282,11 @@ plugins:
     # 문구를 그대로 가져왔고, eyebrow/description은 이번에 새로 쓴 문구라
     # 본인 목소리로 맞는지 검토 권장.
     options:
-      eyebrow: "Programming · Data Engineering"
-      headline: "기록하고, 가끔 정리하고,\n어쩌다 블로그가 된 곳"
-      description: "프로그래밍과 데이터 엔지니어링을 중심으로, 통계·GIS·부동산 데이터까지 배운 것들을 노트로 남깁니다."
+      eyebrow: "blue notes. 🎷"
+      headline: "어쩌다 보니 모인\n관심사의 파편들"
+      description: "일로 만지는 데이터와 코드, 취미로 치는 기타. 정해진 주제나 규칙 없이 그저 내게 필요한 것들을 모아두는 아카이브입니다."
       links:
-        - label: "노트 둘러보기"
+        - label: "Play Notes"
           href: "#recent"
           primary: true
         - label: "GitHub"
@@ -294,9 +294,6 @@ plugins:
         - label: "LinkedIn"
           href: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
       avatarInitial: "H"
-      # [2026-08-04] avatar.png(quartz/static/avatar.png — 원래 저장소 루트에
-      # 있던 배경 없는 캐릭터 일러스트) 적용. avatarInitial은 avatarImage 없을
-      # 때의 폴백으로 그대로 둠.
       avatarImage: "./static/avatar.png"
     order: 15
     layout:
