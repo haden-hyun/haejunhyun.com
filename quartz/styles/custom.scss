@@ -31,11 +31,43 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 
 :root {
   --accent: var(--secondary);
+
+  // [2026-08-05] accent의 RGB 삼원색 — rgba()로 투명도를 섞어야 하는 자리
+  // (태그 배경, 테이블 헤더, 콜아웃, 블록쿼트, 카드 hover 등)를 위해 둔다.
+  // 이전엔 이 자리에 `rgba(61, 107, 142, ·)` 리터럴이 15곳 하드코딩돼 있어,
+  // theme.colors에서 accent를 바꿔도 그 15곳만 옛 색으로 남는 구조였다
+  // ("색의 단일 소스는 config.yaml"이라는 §0 원칙이 실제로는 깨져 있었음).
+  // CSS 변수는 rgba() 안에서 값 치환으로 동작하므로 삼원색만 따로 보관한다.
+  // secondary(#1c5f95)를 바꿀 땐 이 값도 반드시 같이 바꿀 것 — 두 값이
+  // 같은 색을 가리킨다는 보장이 문법 차원엔 없다.
+  --accent-rgb: 28, 95, 149;
+
+  // ── 웜 액센트 2종 ──
+  // Blue Note의 원래 정체성이 블랙+시안+브릭 3색이었던 것처럼, 웜 계열을
+  // 둘 둔다. 다만 둘을 "그냥 예쁜 색 두 개"로 쓰면 화면이 산만해지므로
+  // 역할을 고정한다 — 색이 곧 의미가 되도록.
+  //
+  //   accent-2    (Chitlins 핑크) = 행동. CTA(Play Notes)처럼 누르는 것.
+  //                                 드물게 등장하고 시선을 끌어야 한다.
+  //   accent-code (Brick 오렌지)  = 기술 리터럴. 인라인 코드.
+  //                                 본문에 자주 섞이므로 튀면 안 된다.
+  //
+  // 두 색은 색상환에서 45° 떨어져 있어 서로 다른 색으로 읽힌다(H326 vs H11).
+  // 이 간격이 좁아지면 역할 구분이 무너지므로, 값을 조정할 땐 대비뿐 아니라
+  // 상호 색상차도 함께 확인할 것.
+  //
+  // 출처: Chitlins = blue-midnight.jpeg 마젠타, Brick = blue-note.jpeg의
+  // "uncompromising expression" 브릭. 둘 다 커버에서 실제 추출한 값이다.
+  // 이전 인라인 코드 색(#8b4513 브라운)을 대체한다 — 그 값은 팔레트
+  // 어디에도 근거가 없는 고립된 하드코딩이었다.
+  --accent-2: #b03a7d; // 5.14:1  AA
+  --accent-code: #b8442a; // 4.94:1  AA
+
   --bg: var(--light);
   --surface: var(--light);
   --surface-2: var(--lightgray);
   --border: var(--lightgray);
-  // [2026-08-03] design-handoff.md §2 원본 토큰(`--border-strong: #d4d3ce`,
+  // [2026-08-03] 원안의 토큰(`--border-strong: #d4d3ce`,
   // `--border: #e6e5e1` — 둘 다 연한 회색, 한 단계 차이)에 있었으나 이관
   // 초기(§0)에서 누락됨 — featured-notes 작업 중 목업의 `.feat-item:hover
   // {border-color: var(--border-strong)}` 재확인하며 발견. --darkgray(=
@@ -77,6 +109,11 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 // 다크모드 — Quartz는 documentElement의 `saved-theme` 속성으로 제어한다.
 // hue/채도는 라이트와 동일, 명도만 다크 배경 기준 AA로 재조정.
 :root[saved-theme="dark"] {
+  // 라이트와 짝을 이루는 다크 값 — 위 :root 주석 참고.
+  --accent-rgb: 111, 178, 224; // = secondary #6fb2e0
+  --accent-2: #dd7ab0; // 6.57:1  AA
+  --accent-code: #e87256; // 6.12:1  AA
+
   --c-gis-text: #f34522; // 4.53:1
   --c-t8-text: #c9ac1d; // 7.49:1 (원본 통과)
   --c-t9-text: #659238; // 4.56:1
@@ -191,11 +228,11 @@ pre[data-language] {
 code:not(pre code) {
   font-family: var(--codeFont);
   font-size: 0.85em;
-  background: rgba(61, 107, 142, 0.08);
-  color: #8b4513;
+  background: rgba(var(--accent-rgb), 0.08);
+  color: var(--accent-code);
   padding: 0.15em 0.4em;
   border-radius: 4px;
-  border: 1px solid rgba(61, 107, 142, 0.15);
+  border: 1px solid rgba(var(--accent-rgb), 0.15);
 }
 
 pre {
@@ -235,8 +272,8 @@ pre code {
 // ── 3. KaTeX ───────────────────────────────────────────────────────────────
 
 .katex-display {
-  background: rgba(61, 107, 142, 0.04);
-  border: 1px solid rgba(61, 107, 142, 0.15);
+  background: rgba(var(--accent-rgb), 0.04);
+  border: 1px solid rgba(var(--accent-rgb), 0.15);
   border-radius: 8px;
   padding: 1rem 1.5rem;
   margin: 1.2rem 0;
@@ -277,12 +314,12 @@ pre code {
 // `[!summary]` 를 canonical 타입인 "abstract" 로 정규화한다
 // (빌드된 HTML에서 실측: data-callout="abstract" 로 렌더링됨, "summary" 값은 존재하지 않음).
 .callout[data-callout="abstract"] {
-  --callout-color: 61, 107, 142;
-  background: rgba(61, 107, 142, 0.06);
+  --callout-color: var(--accent-rgb);
+  background: rgba(var(--accent-rgb), 0.06);
   border-left: 3px solid var(--secondary);
 }
 .callout[data-callout="note"] {
-  --callout-color: 61, 107, 142;
+  --callout-color: var(--accent-rgb);
 }
 .callout[data-callout="warning"] {
   --callout-color: 180, 100, 30;
@@ -298,7 +335,7 @@ pre code {
 // v4에서도 동일하게 발생하던 동작이라 이관 시 그대로 유지 — 회귀 아님.
 blockquote {
   border-left: 3px solid var(--secondary);
-  background: rgba(61, 107, 142, 0.04);
+  background: rgba(var(--accent-rgb), 0.04);
   padding: 0.7rem 1.2rem;
   border-radius: 0 6px 6px 0;
   margin: 1.2rem 0;
@@ -319,15 +356,15 @@ a.tag-link {
   font-weight: 500;
   padding: 3px 10px;
   border-radius: 5px;
-  background: rgba(61, 107, 142, 0.08);
+  background: rgba(var(--accent-rgb), 0.08);
   color: var(--secondary);
-  border: 1px solid rgba(61, 107, 142, 0.2);
+  border: 1px solid rgba(var(--accent-rgb), 0.2);
   text-decoration: none;
   letter-spacing: 0.02em;
   &:hover {
-    background: rgba(61, 107, 142, 0.15);
+    background: rgba(var(--accent-rgb), 0.15);
     border-color: var(--secondary);
-    border-bottom: 1px solid rgba(61, 107, 142, 0.2);
+    border-bottom: 1px solid rgba(var(--accent-rgb), 0.2);
   }
 }
 
@@ -524,7 +561,7 @@ table {
   font-family: var(--bodyFont);
 }
 thead tr {
-  background: rgba(61, 107, 142, 0.08);
+  background: rgba(var(--accent-rgb), 0.08);
   border-bottom: 2px solid var(--secondary);
 }
 thead th {
@@ -536,7 +573,7 @@ thead th {
 tbody tr {
   border-bottom: 1px solid var(--lightgray);
   &:hover {
-    background: rgba(61, 107, 142, 0.04);
+    background: rgba(var(--accent-rgb), 0.04);
   }
 }
 tbody td {
@@ -570,7 +607,7 @@ tbody td {
 
     &:hover {
       border-color: var(--secondary);
-      background: rgba(61, 107, 142, 0.04);
+      background: rgba(var(--accent-rgb), 0.04);
     }
 
     .meta {

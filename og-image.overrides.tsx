@@ -13,7 +13,8 @@ import type { ImageOptions, UserOpts } from "./.quartz/plugins"
  * The `og-image` plugin's `imageStructure` option is function-typed, so it can't
  * be expressed in `quartz.config.yaml` — it's supplied here via the plugin's
  * documented `CustomOgImages()` TS-override hook (see quartz.ts), which is the
- * sanctioned "callback option" escape hatch per MIGRATION-NOTES §0/§14.
+ * sanctioned "callback option" escape hatch for function-typed options that
+ * YAML cannot express.
  *
  * This function otherwise mirrors `.quartz/plugins/og-image/src/emitter.tsx`'s
  * own `defaultImage` byte-for-byte (field names, SVG markup, a11y attributes) —

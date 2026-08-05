@@ -7,8 +7,7 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/globalNav.scss"
 
 /**
- * design-handoff.md §3.1 글로벌 네비게이션: `Home | Notes | Topics | Archive
- * | About`. `position: beforeBody`, priority 0(모든 beforeBody 컴포넌트 중
+ * 글로벌 네비게이션: `Home | Notes | Topics | Archive | About`. `position: beforeBody`, priority 0(모든 beforeBody 컴포넌트 중
  * 최상단) — 홈의 Hero/TopicGrid보다도 위, 노트의 breadcrumbs(5)보다도 위에
  * 렌더된다. `condition`은 걸지 않는다 — 홈 포함 모든 페이지에서 항상 보여야
  * 하는 사이트 전역 네비게이션이라 not-index를 걸면 홈에서 사라진다.
@@ -34,8 +33,8 @@ import style from "./styles/globalNav.scss"
  *
  * 나중에 추가되면 이 파일의 NAV_ITEMS 배열에 항목만 추가하면 된다.
  *
- * **Notes** — [2026-08-05] 사용자 피드백으로 추가. design-handoff.md §3.1이
- * 원래 그리던 "/notes 전체 노트 목록(페이지네이션)"은 여전히 별도 작업
+ * **Notes** — [2026-08-05] 사용자 피드백으로 추가. 원안이 그리던
+ * "/notes 전체 노트 목록(페이지네이션)"은 여전히 별도 작업
  * (정렬·필터·페이지 분할 UX)이라 이번엔 만들지 않았다. 대신 slug가 없는
  * 항목(`slug: null`)으로 등록해 "Home/Topics/Archive 중 어느 것도 아닌
  * 페이지"(개별 노트, 폴더, 태그)에서 자동으로 active가 되도록 하고, 링크는

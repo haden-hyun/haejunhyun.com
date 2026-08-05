@@ -8,27 +8,27 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/featured.scss"
 
 /**
- * design-handoff.md §4.1 Featured 스펙 구현: 대형 카드 1개 + 소형 카드 3개.
+ * Featured: 대형 카드 1개 + 소형 카드 3개.
  *
- * 선정 로직 (핸드오프 §4.1의 3가지 옵션 중 실제 데이터에 맞는 것을 적용):
+ * 선정 로직 (원안의 3가지 옵션 중 실제 데이터에 맞는 것을 적용):
  *   1. frontmatter.featured === true 우선 사용(실측 0건 — 지금은 no-op이지만
  *      나중에 수동 큐레이션을 켜면 자동으로 우선한다)
  *   2. 부족분은 **토픽 라운드로빈**으로 채운다: 토픽별 최신 노트를 하나씩,
  *      토픽을 "자신의 최신 노트가 더 최근인 순"으로 돌며 뽑는다. 순수
  *      전체 최신순 4개를 뽑으면 Programming(38건)이 슬롯을 독식할 수 있어
- *      다양성을 위해 라운드로빈을 기본으로 둔다(REDESIGN-GUIDE.md F3).
+ *      다양성을 위해 라운드로빈을 기본으로 둔다.
  *   3. `pinned` 태그도 실측 0건이라 이번엔 관여하지 않는다.
  *
  * 메인 카드 = 선정된 4개 중 가장 최근 것(현재성 유지), 나머지 3개는 사이드에
  * 최신순으로 배치.
  *
- * 읽기 시간: 별도 readingTime 필드가 없어(REDESIGN-GUIDE.md §5 "Quartz 플러그인
- * 자동 산출 가능"이었지만 실제로 붙어있지 않음) og-image.overrides.tsx와 동일한
+ * 읽기 시간: 별도 readingTime 필드가 없어(Quartz가 자동 산출해 줄 것으로 봤으나
+ * 실측 결과 어느 파일에도 붙어있지 않았다) og-image.overrides.tsx와 동일한
  * 방식(단어 수 / 200wpm)으로 산출. `fileData.text`는 description 플러그인이
  * 모든 파일에 채워 넣으므로(order 70) allFiles 각 항목에서도 사용 가능함을
  * 확인함(quartz/build.ts의 allFiles = content.map(c => c[1].data)).
  *
- * "전체 보기 →" 링크(design-handoff.md 원안)는 넣지 않았다 — 연결할 Notes
+ * "전체 보기 →" 링크(원안)는 넣지 않았다 — 연결할 Notes
  * 페이지가 아직 없음(전체 노트 페이지네이션 UI, Phase 6 범위 밖). Archive는
  * 이제 있지만 "전체 노트"와 "전체 아카이브"는 다른 개념이라 링크하지 않음.
  *

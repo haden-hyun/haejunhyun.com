@@ -8,7 +8,7 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/topicsContent.scss"
 
 /**
- * design-handoff.md §3.1 글로벌 네비게이션 스펙의 "Topics" 라우트.
+ * 글로벌 네비게이션의 "Topics" 라우트.
  * 홈의 TopicGrid(./plugins/topic-grid)와 동일한 데이터·카드 디자인을
  * 독립 페이지로 제공한다 — nav에서 링크할 대상이 필요했기 때문.
  *

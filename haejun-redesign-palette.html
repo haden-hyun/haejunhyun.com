@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>haejunhyun.com — D안 "True Midnight" 목업</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Hahmlet:wght@400;700;900&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+/* ══════════════════════════════════════════════════════════════════
+   D안 "True Midnight" — quartz.config.yaml theme.colors 와 1:1 대응.
+   값을 바꾸면 config 쪽도 같이 바꿀 것 (색의 단일 소스는 config).
+   대비는 전부 WCAG 검증됨: 본문/제목 AAA, 나머지 AA 이상.
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  /* config: lightMode */
+  --light:#f7f5ef; --lightgray:#e4dfd4; --gray:#676f7c;
+  --darkgray:#323e4c; --dark:#141d28;
+  --secondary:#1c5f95; --tertiary:#17527f;
+  --highlight:rgba(28,95,149,.10); --textHighlight:#fde68a88;
+
+  /* custom.scss §0 */
+  --accent:var(--secondary);
+  --accent-rgb:28,95,149;
+  --accent-2:#b03a7d;      /* 행동 — CTA */
+  --accent-code:#b8442a;   /* 기술 리터럴 — 인라인 코드 */
+
+  --bg:var(--light); --surface:#fffdf7; --surface-2:#efebe0;
+  --border:var(--lightgray); --border-strong:#cfc7b6;
+  --text:var(--dark); --text-2:var(--darkgray); --text-3:var(--gray);
+
+  /* 토픽 컬러 — 이번 작업에서 미변경 (DESIGN-SYSTEM.md §3.5 보류) */
+  --c-cs:#1774d0; --c-de:#178270; --c-ds:#5c40e7; --c-gis:#db2e0c;
+  --c-prog:#d6267e; --c-fin:#268336; --c-tool:#534646;
+
+  --titleFont:"Anton",sans-serif;
+  --headerFont:"Hahmlet",serif;
+  --bodyFont:"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Malgun Gothic",sans-serif;
+  --codeFont:"JetBrains Mono",ui-monospace,Consolas,monospace;
+
+  --radius:8px; --maxw:1500px;
+  --shadow:0 1px 2px rgba(20,29,40,.04),0 4px 16px rgba(20,29,40,.05);
+}
+
+[data-theme="dark"]{
+  /* config: darkMode */
+  --light:#0e1420; --lightgray:#1e2836; --gray:#7c8899;
+  --darkgray:#bcc9d9; --dark:#e9eff7;
+  --secondary:#6fb2e0; --tertiary:#9dcdec;
+  --highlight:rgba(111,178,224,.15); --textHighlight:#b3aa0288;
+
+  --accent-rgb:111,178,224;
+  --accent-2:#dd7ab0;
+  --accent-code:#e87256;
+
+  --surface:#141b28; --surface-2:#1b2432; --border-strong:#2c3a4d;
+
+  --c-cs:#308ce8; --c-de:#1da58e; --c-ds:#8873ee; --c-gis:#f34522;
+  --c-prog:#e04d96; --c-fin:#2c983e; --c-tool:#948181;
+
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:var(--bodyFont);font-size:16px;line-height:1.9;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--secondary);text-decoration:none}
+a:hover{color:var(--tertiary)}
+
+/* ── 목업 뷰어 크롬 (실제 사이트 아님) ────────────────────── */
+.viewer{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:10px 20px;background:var(--surface);
+  border-bottom:1px solid var(--border-strong);
+}
+.viewer .badge{
+  font-family:var(--codeFont);font-size:10.5px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2);
+  border:1px solid var(--accent-2);border-radius:3px;padding:2px 7px;
+}
+.viewer .vtitle{font-family:var(--codeFont);font-size:12px;color:var(--text-3)}
+.viewer .spacer{margin-left:auto}
+.viewer button{
+  font-family:var(--codeFont);font-size:11.5px;cursor:pointer;
+  padding:6px 12px;border-radius:5px;min-height:32px;
+  border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text-2);
+}
+.viewer button:hover{border-color:var(--secondary);color:var(--secondary)}
+.viewer button:focus-visible{outline:2px solid var(--secondary);outline-offset:2px}
+
+.screen-label{
+  max-width:var(--maxw);margin:38px auto 0;padding:0 28px;
+  font-family:var(--codeFont);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text-3);
+}
+
+/* ── topbar (custom.scss §10.5) ───────────────────────────── */
+.topbar{
+  display:flex;align-items:center;flex-wrap:wrap;gap:1.5rem;
+  padding:1.2rem 28px 1rem;border-bottom:1px solid var(--border);
+}
+.page-title{
+  font-family:var(--titleFont);font-size:1.75rem;font-weight:400;
+  letter-spacing:.02em;text-transform:uppercase;color:var(--secondary);
+  line-height:1.1;
+}
+.global-nav{display:flex;gap:1.5rem}
+.global-nav a{
+  font-size:.82rem;color:var(--text-2);font-weight:500;
+}
+.global-nav a.active{color:var(--secondary);font-weight:700}
+.social{display:flex;gap:.75rem;margin-left:auto;color:var(--text-3)}
+.social svg{width:17px;height:17px;fill:currentColor;display:block}
+.social a{color:var(--text-3)}
+.social a:hover{color:var(--secondary)}
+.searchbox{
+  display:flex;align-items:center;gap:.5rem;width:220px;
+  padding:.42rem .6rem;border:1px solid var(--border-strong);
+  border-radius:6px;background:var(--surface);
+  font-size:.78rem;color:var(--text-3);
+}
+.searchbox kbd{
+  margin-left:auto;font-family:var(--codeFont);font-size:.65rem;
+  border:1px solid var(--border-strong);border-radius:4px;padding:1px 5px;
+}
+.moon{
+  width:32px;height:32px;display:grid;place-items:center;
+  border:1px solid var(--border-strong);border-radius:6px;
+  background:var(--surface);color:var(--text-3);font-size:13px;
+}
+
+.page{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero{display:flex;gap:48px;align-items:flex-start;padding:52px 0 34px}
+.hero-main{flex:1;min-width:0}
+.hero-eyebrow{
+  font-family:var(--headerFont);font-size:.82rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--accent-2);
+  margin-bottom:14px;
+}
+.hero h1{
+  font-family:var(--headerFont);font-weight:900;
+  font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.22;
+  letter-spacing:-.02em;margin:0 0 18px;color:var(--dark);
+  word-break:keep-all;
+}
+.hero p.desc{
+  font-size:.98rem;line-height:1.95;color:var(--text-2);
+  max-width:56ch;margin:0 0 26px;word-break:keep-all;
+}
+.hero-cta{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.6rem}
+.hero-btn{
+  display:inline-flex;align-items:center;min-height:44px;
+  font-family:var(--headerFont);font-size:.9rem;font-weight:600;
+  padding:.55rem 1.1rem;border-radius:10px;
+  border:1px solid var(--border);color:var(--text);
+}
+.hero-btn:hover{border-color:var(--accent);background:var(--surface-2);color:var(--text)}
+/* 핑크는 화면에서 여기 한 곳에만 나타난다 — '누르는 것'의 유일한 색 */
+.hero-btn-primary{
+  background:var(--accent-2);border-color:var(--accent-2);color:var(--light);
+}
+.hero-btn-primary:hover{background:var(--accent-2);opacity:.9;color:var(--light)}
+.hero-avatar{
+  width:132px;height:132px;border-radius:50%;flex:none;
+  background:var(--surface-2);border:1px solid var(--border-strong);
+  display:grid;place-items:center;font-family:var(--titleFont);
+  font-size:2.6rem;color:var(--secondary);
+}
+.stats{display:flex;gap:2rem;flex-wrap:wrap;padding-bottom:8px}
+.stat .n{
+  font-family:var(--codeFont);font-size:1.45rem;font-weight:600;
+  color:var(--secondary);display:block;line-height:1.3;
+}
+.stat .l{
+  font-family:var(--codeFont);font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-3);
+}
+
+/* ── 섹션 공통 ────────────────────────────────────────────── */
+.sec{padding:40px 0 8px}
+.sec-head{
+  display:flex;align-items:baseline;gap:14px;
+  margin-bottom:20px;padding-bottom:.35rem;
+  border-bottom:1.5px solid var(--lightgray);
+}
+.sec-head h2{
+  font-family:var(--headerFont);font-weight:700;font-size:1.2rem;
+  margin:0;color:var(--dark);letter-spacing:0;
+}
+.sec-head .more{margin-left:auto;font-size:.78rem;color:var(--text-3)}
+.sec-head .more:hover{color:var(--secondary)}
+
+/* ── Featured ─────────────────────────────────────────────── */
+.feat{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.feat-col{display:flex;flex-direction:column;gap:12px}
+.feat-item{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;
+  display:flex;flex-direction:column;gap:7px;
+}
+.feat-item:hover{border-color:var(--border-strong)}
+.feat-item.big{justify-content:flex-end;min-height:230px}
+.feat-item .kicker{
+  font-family:var(--codeFont);font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.feat-item h3{
+  font-family:var(--headerFont);font-weight:700;margin:0;
+  font-size:1rem;line-height:1.45;color:var(--dark);word-break:keep-all;
+}
+.feat-item.big h3{font-size:1.5rem;line-height:1.35}
+.feat-item p{
+  margin:0;font-size:.83rem;line-height:1.8;color:var(--text-2);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden;word-break:keep-all;
+}
+.feat-item .meta{font-family:var(--codeFont);font-size:.68rem;color:var(--text-3)}
+
+/* ── Topic grid ───────────────────────────────────────────── */
+.topics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.topic{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 18px;
+  border-top:3px solid var(--tc,var(--secondary));
+}
+.topic:hover{border-color:var(--border-strong)}
+.topic .t{
+  font-family:var(--headerFont);font-weight:700;font-size:.95rem;
+  color:var(--dark);
+}
+.topic .n{
+  margin-top:6px;font-family:var(--codeFont);font-size:.7rem;color:var(--text-3);
+}
+
+/* ── Recent ───────────────────────────────────────────────── */
+.rows{display:flex;flex-direction:column}
+.row{
+  display:flex;align-items:baseline;gap:14px;
+  padding:13px 4px;border-bottom:1px solid var(--border);
+}
+.row:hover{background:rgba(var(--accent-rgb),.04)}
+.row .d{font-family:var(--codeFont);font-size:.72rem;color:var(--text-3);flex:none;width:88px}
+.row .t{font-size:.92rem;color:var(--text);flex:1;min-width:0;word-break:keep-all}
+.row:hover .t{color:var(--secondary)}
+.row .tags{display:flex;gap:.35rem;flex:none}
+.tag{
+  font-size:.72rem;font-weight:500;padding:3px 10px;border-radius:5px;
+  background:rgba(var(--accent-rgb),.08);color:var(--secondary);
+  border:1px solid rgba(var(--accent-rgb),.2);letter-spacing:.02em;
+}
+
+/* ── POST 화면 ────────────────────────────────────────────── */
+.post-wrap{display:grid;grid-template-columns:280px minmax(0,1fr) 260px;gap:28px;padding:26px 0 60px}
+.side{font-size:.8rem}
+.side h4{
+  font-family:var(--codeFont);font-size:.66rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--text-3);margin:0 0 12px;font-weight:600;
+}
+.tree .grp{
+  font-weight:700;font-size:.82rem;color:var(--darkgray);
+  letter-spacing:-.01em;padding:3px 0;
+}
+.tree .f{
+  display:block;padding:3px 0 3px .6rem;margin-left:.9rem;
+  font-size:.8rem;color:var(--gray);
+}
+.tree .f:hover{color:var(--secondary)}
+.tree .f.active{color:var(--secondary);font-weight:600}
+.toc a{display:block;padding:3px 0;font-size:.78rem;color:var(--gray);line-height:1.5}
+.toc a:hover{color:var(--secondary)}
+.toc a.sub{border-left:2px solid var(--border);padding-left:.7rem}
+.toc a.in-view{color:var(--secondary);font-weight:600}
+.toc a.sub.in-view{border-left-color:var(--secondary)}
+
+.crumbs{font-family:var(--codeFont);font-size:.72rem;color:var(--text-3);margin-bottom:14px}
+article h1{
+  font-family:var(--bodyFont);font-weight:800;font-size:1.75rem;
+  letter-spacing:-.02em;line-height:1.3;color:var(--dark);margin:0 0 10px;
+  word-break:keep-all;
+}
+.post-meta{font-family:var(--codeFont);font-size:.72rem;color:var(--text-3);margin-bottom:12px}
+.post-tags{display:flex;gap:.35rem;margin-bottom:26px}
+article h2{
+  font-family:var(--bodyFont);font-weight:700;font-size:1.2rem;color:var(--dark);
+  padding-bottom:.35rem;border-bottom:1.5px solid var(--lightgray);
+  margin:2.2rem 0 .8rem;
+}
+article h3{
+  font-family:var(--bodyFont);font-weight:700;font-size:1rem;
+  color:var(--dark);margin:1.5rem 0 .5rem;
+}
+article p{
+  font-size:1rem;line-height:1.9;color:var(--darkgray);
+  word-break:keep-all;margin:0 0 1rem;
+}
+article strong{color:var(--dark);font-weight:700}
+article a{border-bottom:1px solid transparent}
+article a:hover{border-bottom-color:var(--secondary)}
+
+/* 인라인 코드 = Brick. 본문에 자주 섞이는 '기술 리터럴' */
+code:not(pre code){
+  font-family:var(--codeFont);font-size:.85em;
+  background:rgba(var(--accent-rgb),.08);color:var(--accent-code);
+  padding:.15em .4em;border-radius:4px;
+  border:1px solid rgba(var(--accent-rgb),.15);
+}
+pre{
+  background:var(--surface-2);border:1px solid var(--lightgray);
+  border-radius:8px;padding:14px 16px;margin:1.2rem 0;
+  overflow-x:auto;box-shadow:var(--shadow);position:relative;
+}
+pre::before{
+  content:attr(data-language);position:absolute;top:.45rem;right:.7rem;
+  font-family:var(--codeFont);font-size:.62rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--secondary);opacity:.7;
+}
+pre code{font-family:var(--codeFont);font-size:.82rem;line-height:1.65;color:var(--text-2)}
+pre .k{color:var(--accent-2)}
+pre .s{color:var(--c-de)}
+pre .c{color:var(--text-3)}
+
+blockquote{
+  border-left:3px solid var(--secondary);background:rgba(var(--accent-rgb),.04);
+  padding:.7rem 1.2rem;border-radius:0 6px 6px 0;margin:1.2rem 0;
+  color:var(--darkgray);
+}
+blockquote p{margin:0}
+.callout{
+  border-left:3px solid var(--secondary);background:rgba(var(--accent-rgb),.06);
+  border-radius:6px;margin:1.2rem 0;padding:.2rem 1rem .5rem;
+}
+.callout .ct{
+  font-family:var(--headerFont);font-weight:700;font-size:.88rem;
+  color:var(--secondary);padding:.6rem 0 .2rem;
+}
+.callout p{font-size:.9rem;margin:0 0 .6rem}
+table{border-collapse:collapse;width:100%;margin:1.2rem 0;font-size:.85rem}
+thead tr{background:rgba(var(--accent-rgb),.08);border-bottom:2px solid var(--secondary)}
+thead th{font-weight:700;color:var(--dark);padding:.6rem .8rem;text-align:left}
+tbody tr{border-bottom:1px solid var(--lightgray)}
+tbody tr:hover{background:rgba(var(--accent-rgb),.04)}
+tbody td{padding:.5rem .8rem;color:var(--darkgray)}
+.table-scroll{overflow-x:auto}
+
+.divider{height:1px;background:var(--border);margin:0}
+
+/* ── Screen 0 : 팔레트 스펙 ────────────────────────────────── */
+.spec{padding:34px 0 8px}
+.spec-lede{
+  font-size:.92rem;line-height:1.9;color:var(--text-2);
+  max-width:64ch;margin:0 0 26px;word-break:keep-all;
+}
+.spec-lede strong{color:var(--text)}
+
+.group-label{
+  font-family:var(--codeFont);font-size:.68rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--text-3);
+  margin:30px 0 14px;display:flex;align-items:center;gap:10px;
+}
+.group-label::after{content:"";flex:1;height:1px;background:var(--border)}
+
+/* 트랙 리스팅 — True Blue 커버가 이름 붙은 색 격자였던 데서 가져온 구조 */
+.tracks{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:14px}
+.track{display:flex;flex-direction:column;gap:5px}
+.track .plate{
+  aspect-ratio:4/3;border-radius:3px;border:1px solid var(--border-strong);
+}
+.track .nm{
+  font-family:var(--headerFont);font-weight:700;font-size:.88rem;
+  color:var(--text);line-height:1.35;
+}
+.track .hx{
+  font-family:var(--codeFont);font-size:.72rem;color:var(--text-3);
+  font-variant-numeric:tabular-nums;
+}
+.track .rl{
+  font-family:var(--codeFont);font-size:.65rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-3);
+}
+.track .cr{
+  font-family:var(--codeFont);font-size:.68rem;font-variant-numeric:tabular-nums;
+}
+.aaa{color:var(--c-fin);font-weight:600}
+.aa{color:var(--c-de);font-weight:600}
+
+/* 역할 카드 — 웜 액센트 2종이 왜 나뉘는지 */
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.role-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-left:3px solid var(--rc);border-radius:var(--radius);
+  padding:16px 18px;display:flex;flex-direction:column;gap:7px;
+}
+.role-card .rh{
+  font-family:var(--headerFont);font-weight:700;font-size:.98rem;color:var(--text);
+  display:flex;align-items:center;gap:8px;
+}
+.role-card .dot{width:12px;height:12px;border-radius:50%;background:var(--rc);flex:none}
+.role-card .rw{
+  font-family:var(--codeFont);font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--rc);
+}
+.role-card p{margin:0;font-size:.84rem;line-height:1.8;color:var(--text-2);word-break:keep-all}
+.role-card .ex{margin-top:4px}
+
+/* 대비 검증표 */
+.spec-table{font-size:.8rem}
+.spec-table th,.spec-table td{font-family:var(--codeFont);font-variant-numeric:tabular-nums}
+.spec-table td.swatch-cell{display:flex;align-items:center;gap:8px}
+.sw{width:14px;height:14px;border-radius:3px;border:1px solid var(--border-strong);flex:none}
+.was{color:var(--c-gis);font-weight:600}
+
+.note-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-left:3px solid var(--accent-code);border-radius:var(--radius);
+  padding:16px 18px;margin-top:16px;
+}
+.note-box p{margin:0 0 .5rem;font-size:.85rem;line-height:1.8;color:var(--text-2);word-break:keep-all}
+.note-box p:last-child{margin-bottom:0}
+.note-box strong{color:var(--text)}
+.note-box code{font-family:var(--codeFont);font-size:.85em}
+
+@media (max-width:1100px){
+  .post-wrap{grid-template-columns:minmax(0,1fr)}
+  .side{display:none}
+  .feat{grid-template-columns:1fr}
+  .hero-avatar{display:none}
+}
+@media (max-width:640px){
+  .page,.topbar,.screen-label{padding-left:16px;padding-right:16px}
+  .searchbox{display:none}
+  .row .tags{display:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<!-- ══ 목업 뷰어 크롬 — 실제 사이트에는 없는 조작부 ══ -->
+<div class="viewer">
+  <span class="badge">D안 · True Midnight</span>
+  <span class="vtitle">라이트=크림 인쇄지 · 다크=잉크 네이비 &nbsp;|&nbsp; accent #1c5f95 (H207) · CTA #b03a7d · code #b8442a</span>
+  <span class="spacer"></span>
+  <button id="toggle" aria-label="라이트/다크 전환">◐ 다크로 전환</button>
+</div>
+
+<!-- ══════════════ SCREEN 0 : 팔레트 스펙 ══════════════ -->
+<div class="screen-label">Screen 0 — Palette</div>
+
+<div class="page spec">
+  <p class="spec-lede">
+    레퍼런스 커버 4장(<code>palette-sample-img/</code>)에서 실제 픽셀 분포를 추출해 재구성했다.
+    <strong>라이트는 크림 인쇄지(True Blue 커버), 다크는 잉크 네이비(Blue Giant).</strong>
+    accent의 색상 H207은 True Blue(H208)와 Midnight Blue(H202)가 실제로 교차하는 지점이다.
+    아래 모든 대비 수치는 눈대중이 아니라 WCAG 상대 휘도로 계산한 값이다.
+  </p>
+
+  <!-- ── 중립 축 ── -->
+  <div class="group-label">중립 축 — 배경과 텍스트</div>
+  <div class="tracks">
+    <div class="track">
+      <div class="plate" style="background:#f7f5ef"></div>
+      <div class="nm">Press Stock</div><div class="hx">#f7f5ef</div>
+      <div class="rl">bg · light</div><div class="cr">순백 대비 광량 91.3%</div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#e4dfd4"></div>
+      <div class="nm">Sleeve Edge</div><div class="hx">#e4dfd4</div>
+      <div class="rl">border · light</div><div class="cr">장식 전용</div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#676f7c"></div>
+      <div class="nm">Liner Note</div><div class="hx">#676f7c</div>
+      <div class="rl">meta · light</div><div class="cr"><span class="aa">4.65 AA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#323e4c"></div>
+      <div class="nm">Reading Ink</div><div class="hx">#323e4c</div>
+      <div class="rl">body · light</div><div class="cr"><span class="aaa">9.99 AAA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#141d28"></div>
+      <div class="nm">Deep Press</div><div class="hx">#141d28</div>
+      <div class="rl">heading · light</div><div class="cr"><span class="aaa">15.58 AAA</span></div>
+    </div>
+  </div>
+
+  <div class="tracks" style="margin-top:14px">
+    <div class="track">
+      <div class="plate" style="background:#0e1420"></div>
+      <div class="nm">After Hours</div><div class="hx">#0e1420</div>
+      <div class="rl">bg · dark</div><div class="cr">Blue Giant 잉크</div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#1e2836"></div>
+      <div class="nm">Room Tone</div><div class="hx">#1e2836</div>
+      <div class="rl">border · dark</div><div class="cr">장식 전용</div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#7c8899"></div>
+      <div class="nm">Dim Label</div><div class="hx">#7c8899</div>
+      <div class="rl">meta · dark</div><div class="cr"><span class="aa">5.12 AA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#bcc9d9"></div>
+      <div class="nm">Stage Read</div><div class="hx">#bcc9d9</div>
+      <div class="rl">body · dark</div><div class="cr"><span class="aaa">10.96 AAA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#e9eff7"></div>
+      <div class="nm">Spotlight</div><div class="hx">#e9eff7</div>
+      <div class="rl">heading · dark</div><div class="cr"><span class="aaa">15.93 AAA</span></div>
+    </div>
+  </div>
+
+  <!-- ── 블루 축 ── -->
+  <div class="group-label">블루 축 — 링크와 강조</div>
+  <div class="tracks">
+    <div class="track">
+      <div class="plate" style="background:#1c5f95"></div>
+      <div class="nm">True Midnight</div><div class="hx">#1c5f95</div>
+      <div class="rl">accent · light · H207</div><div class="cr"><span class="aa">6.17 AA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#17527f"></div>
+      <div class="nm">Deeper Cut</div><div class="hx">#17527f</div>
+      <div class="rl">hover · light</div><div class="cr"><span class="aaa">7.55 AAA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#6fb2e0"></div>
+      <div class="nm">Stage Light</div><div class="hx">#6fb2e0</div>
+      <div class="rl">accent · dark</div><div class="cr"><span class="aaa">8.00 AAA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#9dcdec"></div>
+      <div class="nm">Rim Light</div><div class="hx">#9dcdec</div>
+      <div class="rl">hover · dark</div><div class="cr"><span class="aaa">10.86 AAA</span></div>
+    </div>
+  </div>
+
+  <div class="note-box" style="border-left-color:var(--secondary)">
+    <p><strong>hover는 밝아지지 않고 진해진다.</strong> 라이트 배경에서 hover가 밝아지면
+    대비가 떨어져 AA를 만족시킬 방법이 없다. 기존 값 <code>#6a9ab8</code>이 정확히 그 문제로
+    <span class="was">2.90:1</span>이었고, 이건 링크 hover <em>텍스트</em> 색이라 장식이 아니라
+    가독성 문제였다. 다크 모드는 반대로 밝아지는 게 맞다.</p>
+  </div>
+
+  <!-- ── 웜 축 ── -->
+  <div class="group-label">웜 축 — 두 색, 두 역할</div>
+  <div class="tracks">
+    <div class="track">
+      <div class="plate" style="background:#b03a7d"></div>
+      <div class="nm">Chitlins</div><div class="hx">#b03a7d</div>
+      <div class="rl">행동 · light · H326</div><div class="cr"><span class="aa">5.14 AA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#dd7ab0"></div>
+      <div class="nm">Chitlins Light</div><div class="hx">#dd7ab0</div>
+      <div class="rl">행동 · dark</div><div class="cr"><span class="aa">6.57 AA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#b8442a"></div>
+      <div class="nm">Brick Heat</div><div class="hx">#b8442a</div>
+      <div class="rl">리터럴 · light · H11</div><div class="cr"><span class="aa">4.94 AA</span></div>
+    </div>
+    <div class="track">
+      <div class="plate" style="background:#e87256"></div>
+      <div class="nm">Brick Light</div><div class="hx">#e87256</div>
+      <div class="rl">리터럴 · dark</div><div class="cr"><span class="aa">6.12 AA</span></div>
+    </div>
+  </div>
+
+  <div class="roles" style="margin-top:16px">
+    <div class="role-card" style="--rc:#b03a7d">
+      <div class="rh"><span class="dot"></span>Chitlins</div>
+      <div class="rw">행동 — 누르는 것</div>
+      <p>Play Notes CTA <strong>한 곳에만</strong> 쓴다. 드물게 등장하고 시선을 끌어야 한다.
+      기존엔 CTA와 본문 링크가 같은 블루라 "누르는 것"과 "이동하는 것"이 구분되지 않았다.</p>
+      <div class="ex"><a href="#recent" class="hero-btn hero-btn-primary" style="min-height:36px;padding:.4rem .9rem;font-size:.82rem">Play Notes</a></div>
+    </div>
+    <div class="role-card" style="--rc:#b8442a">
+      <div class="rh"><span class="dot"></span>Brick Heat</div>
+      <div class="rw">리터럴 — 기술 토큰</div>
+      <p>인라인 코드에 쓴다. 본문에 자주 섞이므로 튀면 안 된다.
+      근거 없이 고립돼 있던 <code>#8b4513</code> 브라운을 대체한다.</p>
+      <div class="ex" style="font-size:.85rem;color:var(--text-2)">예: <code>Connection</code>은 <code>conn_id</code>로 조회된다</div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    <p><strong>두 색은 색상환에서 45° 떨어져 있다</strong>(H326 vs H11). Blue Note의 원래
+    정체성도 블랙+시안+브릭 3색이었다 — 웜을 둘 두는 것 자체는 문제가 아니고,
+    <strong>역할 없이 두는 것</strong>이 문제다. 값을 조정할 땐 대비뿐 아니라
+    <strong>상호 색상차도 함께</strong> 확인할 것. 이 간격이 좁아지면 역할 구분이 무너진다.</p>
+    <p>보류: Chitlins는 토픽 컬러 <code>--c-prog</code>(<code>#d6267e</code>)와 색상차 3°라
+    태그와 CTA가 나란히 놓이면 같은 색으로 읽힌다. 토픽 컬러는 40° 균등 10슬롯 체계라
+    한 칸만 옮기면 배치가 깨지므로 이번 작업에서는 손대지 않았다.</p>
+  </div>
+
+  <!-- ── 고친 결함 ── -->
+  <div class="group-label">이전 팔레트에서 고친 결함</div>
+  <div class="table-scroll">
+    <table class="spec-table">
+      <thead><tr><th>토큰</th><th>이전</th><th>대비</th><th>변경</th><th>대비</th><th>영향 범위</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>gray · light</td>
+          <td class="swatch-cell"><span class="sw" style="background:#a09890"></span>#a09890</td>
+          <td class="was">2.72 ✕</td>
+          <td class="swatch-cell"><span class="sw" style="background:#676f7c"></span>#676f7c</td>
+          <td class="aa">4.65 AA</td>
+          <td>날짜·읽기시간·Explorer·TOC·캡션</td>
+        </tr>
+        <tr>
+          <td>gray · dark</td>
+          <td class="swatch-cell"><span class="sw" style="background:#5a6478"></span>#5a6478</td>
+          <td class="was">2.81 ✕</td>
+          <td class="swatch-cell"><span class="sw" style="background:#7c8899"></span>#7c8899</td>
+          <td class="aa">5.12 AA</td>
+          <td>동일</td>
+        </tr>
+        <tr>
+          <td>tertiary · light</td>
+          <td class="swatch-cell"><span class="sw" style="background:#6a9ab8"></span>#6a9ab8</td>
+          <td class="was">2.90 ✕</td>
+          <td class="swatch-cell"><span class="sw" style="background:#17527f"></span>#17527f</td>
+          <td class="aaa">7.55 AAA</td>
+          <td>링크 hover 텍스트</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note-box">
+    <p><strong>색만 바꿔서는 안 되는 게 하나 더 있었다.</strong> <code>custom.scss</code>에
+    <code>rgba(61,107,142,·)</code> 리터럴이 <strong>15곳</strong> 하드코딩돼 있어,
+    config에서 accent를 바꿔도 태그·테이블·콜아웃·블록쿼트는 옛 색으로 남았다.
+    "색의 단일 소스는 config"라는 원칙이 실제로는 깨져 있던 것이다.</p>
+    <p><code>--accent-rgb</code>(삼원색만 보관) 토큰을 만들어 전부 치환했다.
+    ⚠️ <code>secondary</code>를 바꿀 땐 <code>--accent-rgb</code>도 <strong>반드시 같이</strong>
+    바꿀 것 — 두 값이 같은 색을 가리킨다는 보장이 문법 차원엔 없다.</p>
+  </div>
+</div>
+
+<div style="height:48px"></div>
+<div class="divider"></div>
+
+<!-- ══════════════ SCREEN 1 : HOME ══════════════ -->
+<div class="screen-label">Screen 1 — Home</div>
+
+<header class="topbar">
+  <span class="page-title">Haejun Records</span>
+  <nav class="global-nav">
+    <a href="#" class="active">Home</a>
+    <a href="#">Notes</a>
+    <a href="#">Topics</a>
+    <a href="#">Archive</a>
+  </nav>
+  <div class="social">
+    <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4 1.02 0 2.05.13 3.01.4 2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg></a>
+    <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M19 0H5a5 5 0 00-5 5v14a5 5 0 005 5h14a5 5 0 005-5V5a5 5 0 00-5-5zM8 19H5V8h3v11zM6.5 6.73a1.77 1.77 0 110-3.53 1.77 1.77 0 010 3.53zM20 19h-3v-5.6c0-3.37-4-3.11-4 0V19h-3V8h3v1.77c1.4-2.59 7-2.78 7 2.47V19z"/></svg></a>
+  </div>
+  <div class="searchbox"><span>검색…</span><kbd>⌘K</kbd></div>
+  <div class="moon">☾</div>
+</header>
+
+<div class="page">
+  <section class="hero">
+    <div class="hero-main">
+      <div class="hero-eyebrow">blue notes. 🎷</div>
+      <h1>어쩌다 보니 모인<br>관심사의 파편들</h1>
+      <p class="desc">일로 만지는 데이터와 코드, 취미로 치는 기타. 정해진 주제나 규칙 없이 그저 내게 필요한 것들을 모아두는 아카이브입니다.</p>
+      <div class="hero-cta">
+        <a href="#recent" class="hero-btn hero-btn-primary">Play Notes</a>
+        <a href="#" class="hero-btn">GitHub</a>
+        <a href="#" class="hero-btn">LinkedIn</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="n">90</span><span class="l">Notes</span></div>
+        <div class="stat"><span class="n">7</span><span class="l">Topics</span></div>
+        <div class="stat"><span class="n">2026.08</span><span class="l">Last updated</span></div>
+      </div>
+    </div>
+    <div class="hero-avatar">H</div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Featured</h2></div>
+    <div class="feat">
+      <div class="feat-item big">
+        <span class="kicker" style="color:var(--c-de)">DATA ENGINEERING</span>
+        <h3>Airflow Connection과 Hook, 무엇을 어디에 두어야 하나</h3>
+        <p>Connection은 접속 정보를 담는 그릇이고, Hook은 그 정보를 실제 클라이언트로 바꿔주는 어댑터다. 둘을 나눠 두면 DAG 코드에 자격 증명이 남지 않는다.</p>
+        <span class="meta">2026-08-01 · 7 min</span>
+      </div>
+      <div class="feat-col">
+        <div class="feat-item">
+          <span class="kicker" style="color:var(--c-gis)">GIS</span>
+          <h3>좌표계(CRS)를 틀리면 생기는 일</h3>
+          <span class="meta">2026-07-28 · 5 min</span>
+        </div>
+        <div class="feat-item">
+          <span class="kicker" style="color:var(--c-ds)">DATA SCIENCE</span>
+          <h3>퍼셉트론에서 신경망까지</h3>
+          <span class="meta">2026-07-24 · 9 min</span>
+        </div>
+        <div class="feat-item">
+          <span class="kicker" style="color:var(--c-prog)">PROGRAMMING</span>
+          <h3>PostgreSQL LATERAL JOIN 이해하기</h3>
+          <span class="meta">2026-07-20 · 6 min</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2>Topics</h2><a href="#" class="more">전체 보기 →</a></div>
+    <div class="topics">
+      <div class="topic" style="--tc:var(--c-de)"><div class="t">Data Engineering</div><div class="n">24 notes</div></div>
+      <div class="topic" style="--tc:var(--c-prog)"><div class="t">Programming</div><div class="n">39 notes</div></div>
+      <div class="topic" style="--tc:var(--c-ds)"><div class="t">Data Science</div><div class="n">11 notes</div></div>
+      <div class="topic" style="--tc:var(--c-gis)"><div class="t">GIS</div><div class="n">9 notes</div></div>
+      <div class="topic" style="--tc:var(--c-cs)"><div class="t">Computer Science</div><div class="n">8 notes</div></div>
+      <div class="topic" style="--tc:var(--c-fin)"><div class="t">Finance &amp; Property</div><div class="n">12 notes</div></div>
+      <div class="topic" style="--tc:var(--c-tool)"><div class="t">Tools</div><div class="n">5 notes</div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="recent">
+    <div class="sec-head"><h2>Recent Notes</h2><a href="#" class="more">아카이브 →</a></div>
+    <div class="rows">
+      <div class="row"><span class="d">2026-08-01</span><span class="t">Airflow Connection과 Hook의 관계</span><span class="tags"><span class="tag">airflow</span></span></div>
+      <div class="row"><span class="d">2026-07-28</span><span class="t">좌표계(CRS)를 틀리면 생기는 일</span><span class="tags"><span class="tag">gis</span></span></div>
+      <div class="row"><span class="d">2026-07-26</span><span class="t">Docker Compose로 Postgres 컨테이너 띄우기</span><span class="tags"><span class="tag">docker</span></span></div>
+      <div class="row"><span class="d">2026-07-24</span><span class="t">퍼셉트론에서 신경망까지</span><span class="tags"><span class="tag">deep-learning</span></span></div>
+      <div class="row"><span class="d">2026-07-22</span><span class="t">pathlib로 경로 다루기</span><span class="tags"><span class="tag">python</span></span></div>
+      <div class="row"><span class="d">2026-07-20</span><span class="t">PostgreSQL LATERAL JOIN 이해하기</span><span class="tags"><span class="tag">postgresql</span></span></div>
+    </div>
+  </section>
+</div>
+
+<div style="height:56px"></div>
+<div class="divider"></div>
+
+<!-- ══════════════ SCREEN 2 : POST ══════════════ -->
+<div class="screen-label">Screen 2 — Note</div>
+
+<header class="topbar">
+  <span class="page-title">Haejun Records</span>
+  <nav class="global-nav">
+    <a href="#">Home</a>
+    <a href="#" class="active">Notes</a>
+    <a href="#">Topics</a>
+    <a href="#">Archive</a>
+  </nav>
+  <div class="social">
+    <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.4 1.02 0 2.05.13 3.01.4 2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg></a>
+  </div>
+  <div class="searchbox"><span>검색…</span><kbd>⌘K</kbd></div>
+  <div class="moon">☾</div>
+</header>
+
+<div class="page post-wrap">
+  <aside class="side tree">
+    <h4>Explorer</h4>
+    <div class="grp">Data Engineering</div>
+    <a class="f" href="#">Airflow</a>
+    <a class="f active" href="#">Connection &amp; Hook</a>
+    <a class="f" href="#">Infra</a>
+    <div class="grp">GIS</div>
+    <a class="f" href="#">Concept</a>
+    <a class="f" href="#">Python GIS</a>
+    <div class="grp">Programming</div>
+    <a class="f" href="#">PostgreSQL</a>
+    <a class="f" href="#">Python</a>
+  </aside>
+
+  <main>
+    <div class="crumbs">Home › Data Engineering › Airflow › Connection &amp; Hook</div>
+    <article>
+      <h1>Airflow Connection과 Hook의 관계</h1>
+      <div class="post-meta">2026-08-01 · 7 min read</div>
+      <div class="post-tags"><span class="tag">airflow</span><span class="tag">data-engineering</span></div>
+
+      <div class="callout">
+        <div class="ct">📌 Summary</div>
+        <p>Connection은 접속 정보를 저장하는 <strong>설정</strong>이고, Hook은 그 설정을 읽어 실제 클라이언트를 만들어주는 <strong>코드</strong>다. 이 경계를 지키면 DAG에 자격 증명이 하드코딩되지 않는다.</p>
+      </div>
+
+      <p>Airflow를 처음 쓸 때 가장 헷갈리는 지점이 <code>Connection</code>과 <code>Hook</code>의 역할 구분입니다. 이름만 보면 둘 다 "연결"처럼 보이지만, 실제로는 층이 다릅니다.</p>
+
+      <h2>Connection — 접속 정보를 담는 그릇</h2>
+      <p>Connection은 Airflow 메타데이터 DB에 저장되는 <strong>레코드</strong>입니다. 호스트, 포트, 로그인, 비밀번호, 그리고 <code>extra</code> JSON 필드를 갖습니다. UI나 CLI, 환경변수로 등록할 수 있습니다.</p>
+
+      <pre data-language="bash"><code><span class="c"># 환경변수로 등록하면 DB 없이도 동작한다</span>
+<span class="k">export</span> AIRFLOW_CONN_MY_PG=<span class="s">'postgresql://user:pw@localhost:5432/db'</span></code></pre>
+
+      <p>여기서 중요한 건 <strong>Connection 자체는 아무것도 연결하지 않는다</strong>는 점입니다. 그저 값의 묶음일 뿐이고, 실제 접속은 Hook이 담당합니다.</p>
+
+      <h2>Hook — 설정을 클라이언트로 바꾸는 어댑터</h2>
+      <p>Hook은 <code>conn_id</code>를 받아 해당 Connection을 조회하고, 그 값으로 실제 클라이언트 객체를 만들어 돌려줍니다. <a href="#">PostgresHook</a>은 psycopg2 커넥션을, <code>S3Hook</code>은 boto3 클라이언트를 반환하는 식입니다.</p>
+
+      <pre data-language="python"><code><span class="k">from</span> airflow.providers.postgres.hooks.postgres <span class="k">import</span> PostgresHook
+
+<span class="k">def</span> extract():
+    hook = PostgresHook(conn_id=<span class="s">"my_pg"</span>)
+    <span class="c"># 자격 증명은 코드 어디에도 없다</span>
+    <span class="k">return</span> hook.get_records(<span class="s">"SELECT * FROM users"</span>)</code></pre>
+
+      <blockquote>
+        <p>DAG 파일에 비밀번호를 적는 순간, 그 저장소는 더 이상 공개할 수 없게 된다.</p>
+      </blockquote>
+
+      <h3>언제 무엇을 쓰나</h3>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>상황</th><th>Connection</th><th>Hook</th></tr></thead>
+          <tbody>
+            <tr><td>접속 정보 변경</td><td>UI에서 수정</td><td>코드 변경 없음</td></tr>
+            <tr><td>새 DB 추가</td><td><code>conn_id</code> 신규 등록</td><td>같은 Hook 재사용</td></tr>
+            <tr><td>커스텀 로직 필요</td><td>변경 없음</td><td>Hook 상속</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>정리하면, <strong>Connection은 배포 환경마다 달라지는 값</strong>이고 <strong>Hook은 환경과 무관한 코드</strong>입니다. 이 경계를 지키면 같은 DAG를 로컬·스테이징·운영에서 그대로 돌릴 수 있습니다.</p>
+    </article>
+  </main>
+
+  <aside class="side toc">
+    <h4>Table of Contents</h4>
+    <a href="#" class="in-view">Connection — 접속 정보를 담는 그릇</a>
+    <a href="#" class="sub">환경변수 등록</a>
+    <a href="#">Hook — 설정을 클라이언트로</a>
+    <a href="#" class="sub">언제 무엇을 쓰나</a>
+    <h4 style="margin-top:26px">Backlinks</h4>
+    <a href="#">Docker Compose로 Postgres 띄우기</a>
+    <a href="#">Airflow 설치와 초기 설정</a>
+  </aside>
+</div>
+
+<script>
+  // 목업 전용 테마 토글 — 실제 사이트는 darkmode 플러그인이 담당(saved-theme 속성).
+  const root = document.documentElement;
+  const btn = document.getElementById("toggle");
+  btn.addEventListener("click", () => {
+    const dark = root.getAttribute("data-theme") === "dark";
+    root.setAttribute("data-theme", dark ? "light" : "dark");
+    btn.textContent = dark ? "◐ 다크로 전환" : "◑ 라이트로 전환";
+  });
+</script>
+
+</body>
+</html>

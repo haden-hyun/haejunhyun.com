@@ -32,26 +32,37 @@ configuration:
         weights: [400, 700, 900]
       body: Noto Sans KR
       code: JetBrains Mono
+    # [2026-08-05] "True Midnight" — Blue Note/Blue Giant 레퍼런스 커버에서
+    # 실제 픽셀을 추출해 재구성한 팔레트. 라이트=크림 인쇄지(True Blue 커버),
+    # 다크=잉크 네이비(Blue Giant). accent hue는 True Blue(H208)와
+    # Midnight Blue(H202)의 중간값 H207.
+    #
+    # 모든 값은 WCAG 대비 계산으로 검증됨 — 본문/제목 AAA, 나머지 AA 이상.
+    # 이전 팔레트에서 고친 결함 2건(둘 다 텍스트에 쓰이는데 AA 미달이었음):
+    #   gray     #a09890 → 2.72:1  (날짜·읽기시간·Explorer·TOC·캡션)
+    #   tertiary #6a9ab8 → 2.90:1  (링크 hover 색, base.scss:96)
+    # tertiary는 "hover 시 밝아짐"에서 "진해짐"으로 방향을 바꿨다 —
+    # 라이트 배경에서 밝아지면 대비가 떨어져 AA를 만족시킬 수 없다.
     colors:
       lightMode:
-        light: "#fafaf8"
-        lightgray: "#e8e4de"
-        gray: "#a09890"
-        darkgray: "#3d3833"
-        dark: "#1a1612"
-        secondary: "#3d6b8e"
-        tertiary: "#6a9ab8"
-        highlight: rgba(61,107,142,0.10)
+        light: "#f7f5ef" # bg · 크림 인쇄지 (순백 대비 광량 91.3%)
+        lightgray: "#e4dfd4" # border
+        gray: "#676f7c" # meta          4.65:1  AA
+        darkgray: "#323e4c" # body          9.99:1  AAA
+        dark: "#141d28" # heading      15.58:1  AAA
+        secondary: "#1c5f95" # accent        6.17:1  AA
+        tertiary: "#17527f" # accent hover  7.55:1  AAA
+        highlight: rgba(28,95,149,0.10)
         textHighlight: "#fde68a88"
       darkMode:
-        light: "#1a1e24"
-        lightgray: "#2a3040"
-        gray: "#5a6478"
-        darkgray: "#b8c4d4"
-        dark: "#e8edf5"
-        secondary: "#7aaed4"
-        tertiary: "#9cc4e4"
-        highlight: rgba(122,174,212,0.15)
+        light: "#0e1420" # bg · 잉크 네이비 (Blue Giant #0c0c24 계열)
+        lightgray: "#1e2836" # border
+        gray: "#7c8899" # meta          5.12:1  AA
+        darkgray: "#bcc9d9" # body         10.96:1  AAA
+        dark: "#e9eff7" # heading      15.93:1  AAA
+        secondary: "#6fb2e0" # accent        8.00:1  AAA
+        tertiary: "#9dcdec" # accent hover 10.86:1  AAA
+        highlight: rgba(111,178,224,0.15)
         textHighlight: "#b3aa0288"
 plugins:
   - source: github:quartz-community/created-modified-date

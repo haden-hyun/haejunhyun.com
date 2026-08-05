@@ -2,6 +2,43 @@
 
 > "지금 상태"는 `DESIGN-SYSTEM.md`. 여기는 "왜 이렇게 됐는가"의 타임라인만.
 
+## 2026-08-05 — 선행 문서 5종 삭제, 근거는 코드 주석으로 이관
+
+`handoff.md` / `REDESIGN-GUIDE.md` / `design-handoff.md` /
+`MIGRATION-NOTES.md` / `CODE_OF_CONDUCT.md` 삭제.
+
+앞의 넷은 플러그인 소스 21곳에서 섹션 번호까지 찍어 참조되고 있었다
+(`design-handoff.md` 12곳, `REDESIGN-GUIDE.md` 5곳, `MIGRATION-NOTES.md`
+4곳). 그 주석들은 단순 출처 표기가 아니라 "무엇이 틀렸었는지"를 담고
+있어서 — 예: "목업의 129 노트는 실측 90으로 틀렸음", "토큰 병렬 정의
+금지" — 문서만 지우면 경고의 근거가 사라진다. **참조를 걷어내는 대신
+각 문서가 갖고 있던 사실을 주석 안으로 옮겨 자체 완결되게 고쳤다.**
+코드 변경은 없고 주석만 바뀌었다.
+
+`CODE_OF_CONDUCT.md`는 fork로 딸려온 Quartz 커뮤니티의 문서로, 이
+저장소(개인 블로그, 외부 기여 없음)와 무관해 삭제. `LICENSE.txt`는
+fork 라이선스 의무이므로 유지.
+
+## 2026-08-05 — 컬러 "True Midnight" 적용 (D안)
+
+레퍼런스 커버 4장에서 픽셀 추출 → A/C/D 3안 비교 후 D안 확정.
+라이트=크림 인쇄지(`#f7f5ef`), 다크=잉크 네이비(`#0e1420`), accent는
+True Blue(H208)와 Midnight Blue(H202)의 중간값 `#1c5f95`(H207).
+
+웜 액센트는 2종을 역할로 분리 — Chitlins(`#b03a7d`)=행동/CTA,
+Brick(`#b8442a`)=기술 리터럴/인라인 코드. 두 색은 색상환 45° 간격.
+
+작업 중 **AA 미달 2건을 발견해 함께 수정**: `--gray`(2.72:1)와
+`--tertiary`(2.90:1). 후자는 링크 hover 텍스트 색이라 장식이 아니라
+가독성 문제였고, hover 방향을 "밝아짐 → 진해짐"으로 바꿔 해결했다.
+
+또한 `custom.scss`의 `rgba(61,107,142,·)` 하드코딩 15곳을 발견 —
+"색의 단일 소스는 config"라는 원칙이 실제로는 깨져 있었다.
+`--accent-rgb` 토큰으로 전부 치환.
+
+기각: 다크모드 Hero 뒤 radial-gradient 광원(시안까지 만들었으나 제외).
+보류: 토픽 컬러 10슬롯 AA 재계산, 코드블록 테마 웜 계열 교체.
+
 ## 2026-08-04 — Blue Note Bar/Blue Giant 컬러 비교 (§5.0)
 
 도쿄 Blue Note Bar(네이비+베이지, 블루 네온 vs 브릭/가죽 온도 대비)와
@@ -44,9 +81,19 @@ design-handoff.md가 가정한 아키텍처(Quartz v4)와 실제(v5 플러그인
 
 ---
 
-## 폐기된 문서
+## 삭제된 문서
 
-- `design-bluenote-handoff.md` — Gothic A1/IBM Plex Sans KR 제안이
-  기각되어 무효. 결정 내용은 `DESIGN-SYSTEM.md` §2로 대체.
-- `handoff.md`, `REDESIGN-GUIDE.md` — 실행 이력은 이 문서로, 현재
-  상태는 `DESIGN-SYSTEM.md`로 이관.
+전부 2026-08-05에 삭제됨. 내용이 어디로 갔는지만 남긴다.
+
+| 문서 | 내용의 행선지 |
+|---|---|
+| `handoff.md` | 진단 결과는 이 문서 타임라인, 현재 상태는 `DESIGN-SYSTEM.md` |
+| `REDESIGN-GUIDE.md` | F1~F7 교정 사항은 해당 플러그인 소스 주석 |
+| `design-handoff.md` | §3.1/§4.1/§4.2 스펙은 각 플러그인 소스 주석 |
+| `MIGRATION-NOTES.md` | v5 API 함정은 이를 참조하던 4개 소스 주석 |
+| `design-bluenote-handoff.md` | Gothic A1/IBM Plex Sans KR 제안 기각(2026-08-04 항목). 이미 삭제돼 있었음 |
+| `CODE_OF_CONDUCT.md` | fork 잔재, 이 저장소와 무관 — 대체 없이 삭제 |
+
+`docs/superpowers/plans/2026-07-18-quartz-v5-migration.md`에 남은
+`MIGRATION-NOTES.md` 언급은 완료된 계획서의 기록이고 외부 경로
+(`~/Developer/haejunhyun-v5-test/`)를 가리키므로 그대로 둔다.

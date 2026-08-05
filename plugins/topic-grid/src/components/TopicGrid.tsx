@@ -8,15 +8,14 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/topicGrid.scss"
 
 /**
- * design-handoff.md §4.1 TopicGrid 스펙 구현. content/index.md의 정적
+ * TopicGrid. content/index.md의 정적
  * "Interests" 표(P5)를 클릭 가능한 카드로 대체한다.
  *
  * 데이터: content/index.md의 기존 Interests 표 문구를 그대로 재사용(새로
  * 지어내지 않음). 색은 custom.scss §0에서 정의한 --c-* 토큰(장식용 —
  * 라벨 텍스트가 아니라 3px 바에만 쓰므로 -text 변형 불필요).
  *
- * 정렬: REDESIGN-GUIDE.md §2는 "노트 수 내림차순 + 상위 3개 2칸 폭(bento)"을
- * 권장했다. 다만 7개 카드를 4열 그리드에서 일부만 2칸으로 스팬하면 브라우저
+ * 정렬: 초기 설계는 "노트 수 내림차순 + 상위 3개 2칸 폭(bento)"을 권장했다. 다만 7개 카드를 4열 그리드에서 일부만 2칸으로 스팬하면 브라우저
  * 실렌더로 줄바꿈 지점을 확인해야 하는데 이 세션엔 브라우저 자동화가
  * 연결되지 않아 검증 없이 넣기엔 레이아웃이 깨질 위험이 있다. 그래서
  * 균등 4열 그리드는 유지하되 (a) 정렬을 노트 수 내림차순으로 바꾸고
@@ -25,7 +24,7 @@ import style from "./styles/topicGrid.scss"
  * 했다. 진짜 bento 스팬은 브라우저 검증 가능해지면 별도로 전환 가능.
  *
  * 아이콘: [2026-08-03 결정] 이모지 제거. 초판은 "브라우저 검증 없이 SVG
- * 새로 그려 넣기엔 리스크"라는 이유로 유지했었으나(REDESIGN-GUIDE.md Q6),
+ * 새로 그려 넣기엔 리스크"라는 이유로 유지했었으나,
  * 사용자가 직접 제거를 요청해 결정됐다 — 플랫폼별 렌더 편차·스크린리더
  * 오독 문제(UI/UX 우선순위 4의 명시적 안티패턴)가 실제로 걷어낼 이유였다.
  * 대체 아이콘 없이 라벨 텍스트 + 컬러바만으로 토픽을 구분한다(라벨 글자
@@ -34,7 +33,7 @@ import style from "./styles/topicGrid.scss"
  * 홈 전용 렌더: home-hero와 동일하게 컴포넌트 내부 `fileData.slug !== "index"`
  * 가드. `is-index` 조건 미등록 폴백 위험 회피.
  *
- * Graph View 진입 카드(design-handoff.md 원안의 8번째 칸)는 포함하지 않았다
+ * Graph View 진입 카드(원안의 8번째 칸)는 포함하지 않았다
  * — 홈의 그래프 위젯을 다시 켤지 여부를 사용자가 보류했다("일단 두자").
  * 링크할 대상 자체가 아직 없어 추가하지 않음.
  */

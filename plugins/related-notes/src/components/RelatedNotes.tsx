@@ -8,21 +8,21 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/relatedNotes.scss"
 
 /**
- * design-handoff.md §4.1 RelatedNotes 스펙 구현. **"노트 하단"** — 즉 본문과
+ * RelatedNotes. **"노트 하단"** — 즉 본문과
  * 같은 폭의 afterBody 영역(320px 우측 사이드바가 아니라)에 백링크 +
  * 아웃고잉 링크를 합쳐 최대 4개, 2열 카드 그리드로 표시한다. `1fr 1fr`
  * 그리드가 자연스러우려면 이 넓이가 필요하다 — 사이드바(고정 320px,
  * variables.scss `$sidePanelWidth`)에 넣으면 카드가 너무 좁아진다.
  *
  * 내장 `github:quartz-community/backlinks`(우측 사이드바)는 **그대로 둔다.**
- * design-handoff.md §4.2 "수정 컴포넌트" 표에는 Backlinks가 없다 — 즉
+ * 원안의 "수정 컴포넌트" 목록에도 Backlinks는 없었다 — 즉
  * RelatedNotes는 대체가 아니라 **추가**다. 우측 사이드바의 간결한 백링크
  * 목록과, 하단의 풍성한(카테고리+제목 카드) 발견용 섹션은 목적이 다르다고
  * 판단했다. 일부 정보가 겹칠 수 있지만(백링크가 양쪽에 다 뜰 수 있음),
  * 위치와 밀도가 달라 UX상 중복으로 느껴지지 않는다.
  *
  * [중요 정정] 이전 세션에서 "backlinks가 어느 노트에도 렌더되지 않는다"고
- * 기록했었는데(REDESIGN-GUIDE.md §Phase 5 메모) 이는 오류였다. 실측 결과
+ * 기록했었는데 이는 오류였다. 실측 결과
  * `.quartz/plugins/backlinks/src/components/Backlinks.tsx`는 서버사이드
  * `allFiles`를 그대로 순회하는 `file.links?.includes(currentSlug)` 검사로
  * 정상 동작하며, 실제로 5개 노트(통계 3종 상호링크, 부동산 3종)에서

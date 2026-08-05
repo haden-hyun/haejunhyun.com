@@ -8,7 +8,7 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/archiveContent.scss"
 
 /**
- * design-handoff.md §3.1 글로벌 네비게이션 스펙의 "Archive" 라우트
+ * 글로벌 네비게이션의 "Archive" 라우트
  * ("연도별 타임라인"). 모든 실제 노트를 연도별로 묶어 최신 연도부터
  * 내림차순으로 나열한다.
  *

@@ -1,6 +1,7 @@
-// design-handoff.md §4.1 Hero 레이아웃 스펙 이식.
+// Hero 레이아웃.
 // 토큰은 custom.scss §0에서 정의한 별칭(--accent, --text 등)을 그대로 참조 —
-// 값을 새로 정의하지 않는다 (REDESIGN-GUIDE.md F4: 토큰 병렬 정의 금지).
+// 값을 새로 정의하지 않는다. 플러그인이 자기 색을 병렬로 정의하면 사이트가
+// 분열된다(색의 단일 소스는 quartz.config.yaml의 theme.colors).
 
 .home-hero {
   display: grid;
@@ -93,14 +94,20 @@
   }
 }
 
+// [2026-08-05] --accent(블루) → --accent-2(Chitlins 핑크).
+// Play Notes는 이 사이트에서 유일하게 "누르는 것"인데, 본문 링크와 같은
+// 블루를 쓰면 "이동하는 것"과 위계가 구분되지 않았다. 웜 액센트를 줘서
+// 화면 전체에서 핑크가 이 버튼 한 곳에만 나타나게 한다.
+// --accent-2 정의는 quartz/styles/custom.scss §0. 대비 5.14:1 (AA).
 .hero-btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+  // --surface(=--light) = 배경색 토큰. 핑크 위에 올려 5.14:1 확보.
   color: var(--surface);
 
   &:hover {
     opacity: 0.9;
-    background: var(--accent);
+    background: var(--accent-2);
   }
 }
 

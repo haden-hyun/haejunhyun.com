@@ -2,7 +2,7 @@ import { simplifySlug as utilSimplifySlug, joinSegments } from "@quartz-communit
 
 // Local plain-`string` wrapper around @quartz-community/utils' branded-slug
 // helpers. `fileData`/`allFiles` entries are typed as loosely-typed
-// `QuartzPluginData & Record<string, unknown>` (see MIGRATION-NOTES §1), so
+// `QuartzPluginData & Record<string, unknown>`, so
 // `.slug` reads back as `unknown`/`string`, not the branded `FullSlug` type
 // that `@quartz-community/utils/path`'s `resolveRelative` expects. Mirrors
 // the same pattern used by plugins/recent-notes-index/src/util/path.ts and

@@ -35,7 +35,8 @@ Cloudflare ── haejunhyun.com 서빙
 | `docs/` | Quartz 공식 문서 (upstream 그대로) |
 | `quartz.config.yaml` | **설정의 중심.** 테마(폰트·컬러)·플러그인·레이아웃이 전부 이 파일에 있다 |
 | `quartz.ts` / `og-image.overrides.tsx` | YAML로 표현할 수 없는 고급 오버라이드 (OG 이미지 등) |
-| `MIGRATION-NOTES.md` | v4 → v5 마이그레이션 기록과 로컬 플러그인 작성 규약 |
+| `DESIGN-SYSTEM.md` | 타이포그래피·컬러 등 디자인 시스템의 현재 상태 |
+| `CHANGELOG.md` | 디자인·구조 결정의 이력 ("왜 이렇게 됐는가") |
 
 ### 로컬 플러그인 (`plugins/`)
 
@@ -43,7 +44,10 @@ Cloudflare ── haejunhyun.com 서빙
 
 `social-links` · `recent-notes-index` · `prev-next` · `reading-progress` · `back-to-top` · `image-lightbox` · `visitor-counter` · `footer` · `goatcounter-tracking`
 
-작성 규약(디렉토리 구조, package.json 형태, 빌드 명령)은 `MIGRATION-NOTES.md` §15 참고.
+작성 규약(디렉토리 구조, `package.json` 형태, 빌드 명령)은 기존 플러그인 하나를
+그대로 본뜨는 것이 가장 정확합니다 — 예: `plugins/home-hero/`. 각 패키지는
+`npm install && npm run build`(tsup)로 `dist/`를 만들며, **`dist/`는 커밋 대상**입니다
+(빌드 시 저장소 상태 그대로 로드되므로 소스만 고치면 반영되지 않습니다).
 
 ### 배포 스크립트 (`scripts/`)
 

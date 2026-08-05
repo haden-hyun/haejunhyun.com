@@ -48,7 +48,7 @@
   // border/background는 여기서 건드리지 않는다: custom.scss(비-layer라 항상
   // 우선)가 `.callout[data-callout="abstract"]`에 이미 `border-left: 3px
   // solid var(--secondary)` + 틴트 배경을 지정해뒀다(v4→v5 이관 당시 작업,
-  // 이 파일 §0보다 먼저 존재). design-handoff.md §4.2가 원했던 "좌측 accent
+  // 이 파일 §0보다 먼저 존재). 원안이 원했던 "좌측 accent
   // 보더 + 배경"과 정확히 같은 효과라 새로 만들 필요가 없었다 — 처음엔
   // 몰랐다가 뒤늦게 발견해서, 여기 --border/--bg에 중복으로 넣었던 값은
   // 제거했다(어차피 custom.scss에 가려져 죽은 코드였다).

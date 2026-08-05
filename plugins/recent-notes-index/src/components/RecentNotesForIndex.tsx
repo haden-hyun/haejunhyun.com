@@ -49,8 +49,7 @@ export interface RecentNotesForIndexOptions {
  * v4 semantics preserved: sort by modified date, falling back to created
  * date, falling back to 0 (unset dates sort last). Deliberately NOT reusing
  * `@quartz-community/utils/sort`'s `byDateAndAlphabetical`, which only reads
- * a single `defaultDateType` with no modified→created fallback chain — see
- * MIGRATION-NOTES §15 decision note for this plugin.
+ * a single `defaultDateType` with no modified→created fallback chain.
  */
 function getSortTime(f: RecentNotesPluginData): number {
   return f.dates?.modified?.getTime() ?? f.dates?.created?.getTime() ?? 0
@@ -100,7 +99,7 @@ export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
     cfg,
   }: QuartzComponentProps) => {
     // Index-only guard. No built-in v5 layout `condition` matches "index page
-    // only" — only the inverse, `not-index`, is built in (MIGRATION-NOTES §6)
+    // only" — only the inverse, `not-index`, is built in
     // — so this keeps the same internal-guard pattern v4 used.
     if (fileData.slug !== "index") return <></>
 
