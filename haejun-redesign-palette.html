@@ -24,7 +24,7 @@
   --accent:var(--secondary);
   --accent-rgb:28,95,149;
   --accent-action:#b8442a;        /* 행위 — CTA */
-  --accent-state:#b03a7d;         /* 시간 — 읽기 진행바 */
+  --accent-state:#b03a7d;         /* 시간 — 읽기 진행바, TOC 활성 */
 
   /* 코드 */
   --code-chip-bg:#eae4d6; --code-chip-border:#c6bda8;
@@ -268,15 +268,18 @@ a:hover{color:var(--tertiary)}
   font-family:var(--codeFont);font-size:.66rem;letter-spacing:.13em;
   text-transform:uppercase;color:var(--text-3);margin:0 0 12px;font-weight:600;
 }
-.tree .grp{font-weight:700;font-size:.82rem;color:var(--darkgray);padding:3px 0}
-.tree .f{display:block;padding:3px 0 3px .6rem;margin-left:.9rem;font-size:.8rem;color:var(--gray)}
+.tree .grp{display:block;font-family:var(--codeFont);font-size:.68rem;letter-spacing:.06em;color:var(--gray);padding:6px 0 2px;text-decoration:none}
+.tree .grp:hover{color:var(--secondary)}
+.tree .f{display:block;padding:4px 0 4px .6rem;border-left:2px solid transparent;font-size:.82rem;color:var(--gray)}
 .tree .f:hover{color:var(--secondary)}
-.tree .f.active{color:var(--secondary);font-weight:600}
+.tree .f.active{color:var(--secondary);font-weight:600;border-left-color:var(--secondary)}
+.tree .more{display:block;margin-top:.9rem;padding-top:.7rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--gray);text-decoration:none}
+.tree .more:hover{color:var(--secondary)}
 .toc a{display:block;padding:3px 0;font-size:.78rem;color:var(--gray);line-height:1.5}
 .toc a:hover{color:var(--secondary)}
 .toc a.sub{border-left:2px solid var(--border);padding-left:.7rem}
-.toc a.in-view{color:var(--secondary);font-weight:600}
-.toc a.sub.in-view{border-left-color:var(--secondary)}
+.toc a.in-view{color:var(--accent-state);font-weight:600}
+.toc a.sub.in-view{border-left-color:var(--accent-state)}
 
 .crumbs{font-family:var(--codeFont);font-size:.72rem;color:var(--text-3);margin-bottom:14px}
 article h1{
@@ -339,7 +342,7 @@ blockquote p{margin:0}
 
 /* 콜아웃 */
 .callout{
-  border:1px solid var(--border);border-left:3px solid var(--co);
+  border:1px solid color-mix(in srgb,var(--co) 28%,transparent);border-left:3px solid var(--co);
   background:color-mix(in srgb,var(--co) 7%,transparent);
   border-radius:6px;margin:1.2rem 0;padding:.2rem 1rem .5rem;
 }
@@ -486,8 +489,8 @@ tbody td{padding:.5rem .8rem;color:var(--darkgray)}
     <div class="role-card" style="--rc:#1c5f95">
       <div class="rh"><span class="dot"></span>True Midnight</div>
       <div class="rw">공간 — 여기서 저기로</div>
-      <p>본문 링크, Explorer·TOC의 현재 위치. <strong>"지금 어디에 있나"</strong>에 답한다.</p>
-      <div class="ex">예: <a href="#">Hook</a> · Explorer 활성 항목</div>
+      <p>본문 링크, 백링크, breadcrumb, CATALOG 현재 항목. <strong>"지금 어디에 있나"</strong>에 답한다.</p>
+      <div class="ex">예: <a href="#">Hook</a> · CATALOG 활성 항목</div>
     </div>
     <div class="role-card" style="--rc:#b8442a">
       <div class="rh"><span class="dot"></span>Brick Heat</div>
@@ -498,8 +501,8 @@ tbody td{padding:.5rem .8rem;color:var(--darkgray)}
     <div class="role-card" style="--rc:#b03a7d">
       <div class="rh"><span class="dot"></span>Chitlins</div>
       <div class="rw">시간 — 읽는 중</div>
-      <p>읽기 진행바. 노트 페이지에서 핑크가 나타나는 곳은 여기 하나다.</p>
-      <div class="ex">페이지 최상단의 얇은 선</div>
+      <p>읽기 진행바와 TOC 활성 마커. 둘 다 <strong>"지금 읽는 위치"</strong>라 같은 색을 쓴다.</p>
+      <div class="ex">페이지 최상단의 얇은 선 · 목차의 현재 섹션</div>
     </div>
   </div>
 
@@ -737,17 +740,13 @@ tbody td{padding:.5rem .8rem;color:var(--darkgray)}
 
 <div class="page post-wrap">
   <aside class="side tree">
-    <h4>Explorer</h4>
-    <div class="grp">Data Engineering</div>
+    <h4>CATALOG</h4>
+    <a class="grp" href="#">data-engineering / airflow</a>
     <a class="f" href="#">Airflow 설치와 초기 설정</a>
     <a class="f active" href="#">Connection &amp; Hook</a>
     <a class="f" href="#">Infra</a>
-    <div class="grp">GIS</div>
-    <a class="f" href="#">Concept</a>
-    <a class="f" href="#">Python GIS</a>
-    <div class="grp">Programming</div>
-    <a class="f" href="#">PostgreSQL</a>
-    <a class="f" href="#">Python</a>
+    <a class="f" href="#">DAG 작성 패턴</a>
+    <a class="more" href="#">← 모든 토픽 보기</a>
   </aside>
 
   <main>

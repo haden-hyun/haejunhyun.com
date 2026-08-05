@@ -22,7 +22,7 @@
 
     &:hover {
       border-color: var(--secondary) !important;
-      background: rgba(61, 107, 142, 0.04);
+      background: rgba(var(--accent-rgb), 0.04);
     }
 
     &.next {

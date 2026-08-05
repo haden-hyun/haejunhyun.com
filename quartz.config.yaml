@@ -45,7 +45,10 @@ configuration:
         secondary: "#1c5f95" # accent        6.17:1  AA
         tertiary: "#17527f" # accent hover  7.55:1  AAA
         highlight: rgba(28,95,149,0.10)
-        textHighlight: "#fde68a88"
+        # `==강조==` 밑줄 밴드. 세 축(공간/행위/시간)에 속하지 않는 신호라
+        # 색상이 아니라 명도로만 구분한다 — 인라인 코드와 같은 "재질" 해법.
+        # 밴드 위 본문(#323e4c) 대비 7.99:1 AAA
+        textHighlight: "#e5dcc4"
       darkMode:
         light: "#0e1420" # bg · 잉크 네이비 (Blue Giant #0c0c24 계열)
         lightgray: "#1e2836" # border
@@ -55,7 +58,7 @@ configuration:
         secondary: "#6fb2e0" # accent        8.00:1  AAA
         tertiary: "#9dcdec" # accent hover 10.86:1  AAA
         highlight: rgba(111,178,224,0.15)
-        textHighlight: "#b3aa0288"
+        textHighlight: "#2a3444" # 밴드 위 본문(#bcc9d9) 대비 7.40:1 AAA
 plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
@@ -208,14 +211,23 @@ plugins:
     enabled: true
     # /archive 가상 페이지, topics-page와 동일한 패턴.
     options: {}
+  # ./plugins/note-catalog로 대체됨.
+  # ⚠️ useSavedState 옵션은 동작하지 않는다 — Explorer.tsx가 data-savestate를
+  # 내보내지만 explorer.inline.ts는 그 속성을 읽지 않고 localStorage("fileTree")를
+  # 무조건 읽고 쓴다. 한 번 연 폴더가 영구 누적되는 원인이었다.
   - source: github:quartz-community/explorer
+    enabled: false
+  - source: ./plugins/note-catalog
     enabled: true
+    # 좌측 CATALOG — 전체 트리 대신 현재 노트의 형제 노트만. 길이가 형제 수에만
+    # 비례하고 펼침 상태가 없어 explorer의 누적 문제가 구조적으로 사라진다.
+    # ⚠️ 우측 graph 기본 접힘 스크립트도 이 컴포넌트가 싣는다 — 엔트리당
+    #    컴포넌트 1개 제약(config-loader.ts:753) 때문.
     options:
-      folderClickBehavior: collapse
-      # false = 펼침 상태를 localStorage에 저장하지 않음.
-      # true면 과거에 펼친 폴더가 계속 남아 트리가 길어져 위계가 무너진다.
-      # 현재 경로는 explorer.inline.ts가 자동으로 펼치므로 탐색에 지장 없음.
-      useSavedState: false
+      title: "CATALOG"
+      moreHref: "topics"
+      moreLabel: "← 모든 토픽 보기"
+    order: 15
     layout:
       position: left
       priority: 50
@@ -226,7 +238,9 @@ plugins:
     enabled: true
     layout:
       position: right
-      priority: 30
+      # 우측 최하단. 노드가 1~2개뿐인 노트가 많아 TOC/백링크에 자리를 먼저 준다.
+      # 기본 접힘은 note-catalog의 graphFold 스크립트가 담당.
+      priority: 50
       # 홈에서 제거 — wikilink가 적어 노드 1개짜리 빈 박스로 렌더된다.
       condition: not-index
   - source: github:quartz-community/search
@@ -241,7 +255,8 @@ plugins:
     enabled: true
     layout:
       position: right
-      priority: 50
+      # TOC 다음. 이전엔 graph(30) 뒤라 남는 높이가 없어 한 줄만 보였다.
+      priority: 30
   - source: ./plugins/global-nav
     enabled: true
     # Home|Topics|Archive 내비. topbar 포지션 — PageTitle과 같은 줄(.topbar)에

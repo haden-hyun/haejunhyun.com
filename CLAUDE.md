@@ -13,11 +13,12 @@ Obsidian vault를 **Quartz v5**로 빌드해 Cloudflare로 서빙하는 개인 �
 |---|---|
 | `DESIGN-SYSTEM.md` | **디자인의 현재 상태.** 색·서체를 건드리기 전 §6(고칠 때 규칙) 필독 |
 | `CHANGELOG.md` | "왜 이렇게 됐나"의 타임라인. 서사는 전부 여기 |
-| `README.md` | 배포 구조 ⚠️ 로컬 플러그인 개수가 낡음(9종 → 실제 17종) |
+| `README.md` | 배포 구조 ⚠️ 로컬 플러그인 개수가 낡음(9종 → 실제 18종) |
 | `haejun-redesign-palette.html` | 정적 목업. **빌드 없이 열리는 유일한 시각 검증 수단** |
 
-주석은 **개조식으로 짧게**, 함정에는 `⚠️`. 히스토리·날짜·세션 서사는 주석에 남기지 말고
-CHANGELOG로 보낸다. 규칙과 경고는 주석에 남긴다.
+**주석은 핵심 기능·커스텀 로직에만, 한 줄로.** `.scss`/`.yaml`/`.tsx` 어디든 동일 — "왜
+이 값을 골랐는지" 서사·비교·근거 나열은 쓰지 않는다. 함정만 `⚠️` 한 줄. 히스토리·날짜·
+세션 서사·디자인 근거는 주석에 남기지 말고 CHANGELOG.md/DESIGN-SYSTEM.md로 보낸다.
 
 ---
 
@@ -36,11 +37,10 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 ### `public/`은 커밋 대상 배포본
 
 `public/`을 갱신하지 않으면 **아무리 소스를 고쳐도 라이브에 반영되지 않는다.**
-현재 `public/`은 옛 팔레트 상태다(§5.0).
 
 ### 로컬 플러그인은 `dist/`가 커밋 대상
 
-`plugins/*` 17종. 각각 독립 npm 패키지다.
+`plugins/*` 18종. 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
 ### `custom.scss`는 비-레이어라 항상 이긴다
@@ -55,19 +55,32 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ---
 
-## 빌드 — 현재 막혀 있음 ❌
+## 빌드 ✅ (2026-08-05 기준 동작)
 
 ```bash
 npx quartz plugin install   # .quartz/ 생성 (gitignore된 생성 디렉터리)
 npx quartz build
 ```
 
-`.quartz/`가 이 클론에 없어서 `quartz.ts:2`, `quartz/components/Head.tsx:7`의
-`./.quartz/plugins` import가 해결되지 않는다. 위 두 명령이 해결책이다.
+`.quartz/`가 없으면 `quartz.ts:2`, `quartz/components/Head.tsx:7`의
+`./.quartz/plugins` import가 해결되지 않는다 — 그때 첫 명령이 해결책이다.
 
 - ⚠️ `npm run install-plugins`는 **YAML 설정 이전의 레거시 경로** — 쓰지 말 것.
-- `scripts/deploy.sh` · `deploy-clean.sh` · `deploy-dev.sh` 3종 모두 빌드를 거치므로 함께 막혀 있다.
+- ⚠️ `.quartz/plugins/`에 **끊어진 symlink가 남으면 `plugin install`이 ENOENT로 죽는다**
+  (`plugins/`에서 지운 플러그인의 링크가 남는다). 해당 링크만 지우면 된다.
 - **사용자가 로컬 npm 실행을 원하지 않을 수 있다.** 빌드·설치를 돌리기 전에 확인할 것.
+
+### 렌더 결과 검증 — 실측이 가장 빠르다
+
+```bash
+cd public && python3 -m http.server 8899   # 빌드본을 띄우고 computed style을 실측
+```
+
+SCSS에 규칙을 썼다고 적용된 게 아니다(§사실 확인 원칙). 색·크기·대비는
+브라우저 computed style로 확인한다. ⚠️ 탭이 백그라운드면 IntersectionObserver가
+안 돌아 TOC `in-view` 같은 게 "깨진 것처럼" 보인다 — 스크린샷으로 탭을 활성화한
+뒤 재측정할 것. 색은 `transition` 진행 중에 재면 중간값이 나오므로 테마를 바꿀 땐
+토글이 아니라 **새로 로드**해서 잰다.
 
 ### 빌드 없이 가능한 검증
 
@@ -110,6 +123,11 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
   페이지, 404, topics/archive 가상 페이지도 title이 있다 → **슬러그 패턴으로 거른다**
 - "가장 진한 색은 식별자" ↔ 그 토큰 타입은 사이트 전체에 37개뿐이었다
 - 빌드 실패 원인을 "순환 의존"으로 기록 ↔ 실제로는 생성 디렉터리 부재
+- **플러그인 옵션이 설정에 있다고 동작하는 건 아니다** ↔ explorer의 `useSavedState`는
+  `Explorer.tsx`가 `data-savestate`를 내보내지만 `explorer.inline.ts`가 그 속성을
+  읽지 않아 no-op이었다 → **옵션을 믿기 전에 런타임에서 소비되는지 grep으로 확인**
+- 우리 SCSS가 있으니 적용된다는 가정 ↔ `.katex{font-size:1.05em}`은 CDN CSS가 뒤에
+  링크돼 죽은 코드였다 → **computed style로 실측**해야 적용 여부를 안다
 
 렌더 결과는 `public/**/*.html`에서 직접 셀 수 있다(팔레트는 낡았지만 **구조는 유효**).
 
@@ -119,8 +137,10 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
 
 - 컨셉: **Blue Note / 빈티지 음반 레이블.** 기술 포트폴리오가 아니라 아날로그 지식 아카이브.
 - 팔레트 "True Midnight" — 라이트 = 크림 인쇄지 `#f7f5ef` / 다크 = 잉크 네이비 `#0e1420`, accent H207.
-- **색의 세 축**: 공간(블루 `#1c5f95`, 링크) / 행위(브릭 `#b8442a`, CTA) / 시간(Chitlins `#b03a7d`, 읽기 진행바).
-  각 색이 답하는 질문이 달라 역할 침범이 없다.
+- **색의 세 축**: 공간(블루 `#1c5f95`, 링크·백링크·breadcrumb·CATALOG) / 행위(브릭 `#b8442a`, CTA) /
+  시간(Chitlins `#b03a7d`, 읽기 진행바·TOC 활성). 각 색이 답하는 질문이 달라 역할 침범이 없다.
+- **하이라이트·인라인 코드·bold는 색이 아니라 재질/무게로 구분한다.** 세 축에 속하지 않는
+  신호라 네 번째 색을 만들면 축 체계가 무너진다.
 - 서체: 로고 Anton / 헤딩 Hahmlet / 본문 Noto Sans KR / 코드 JetBrains Mono.
   ⚠️ `theme.typography`와 `fonts` 플러그인 옵션 **두 곳을 항상 같게** 유지(후자가 최종 결정).
 - **토픽 컬러는 폐지됐다.** 색은 그룹핑엔 강하나 명명엔 약한데 토픽은 명명 문제다.

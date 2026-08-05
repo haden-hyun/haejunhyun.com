@@ -1,0 +1,1 @@
+@layer quartz-base{#reading-progress-bar{background:var(--accent-state);z-index:9999;pointer-events:none;width:0%;height:2px;transition:width 80ms ease-out;position:fixed;top:0;left:0}}

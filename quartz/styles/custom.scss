@@ -198,9 +198,39 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   }
 
   strong {
-    color: var(--dark);
     font-weight: 700;
   }
+}
+
+// 강조 두 종 — 레이어 밖 + `article` 스코프.
+// ⚠️ 레이어 안에 두면 안 된다: base.scss의 `p > strong { color: var(--dark) }`가
+//    같은 레이어에서 명시도로 이긴다. 그렇다고 전역 요소 선택자를 레이어 밖에
+//    두면 플러그인 UI가 깨지므로(CLAUDE.md), 본문만 잡는 `article`로 가둔다.
+//
+// strong에 색을 주지 않는 이유: 헤딩과 같은 --dark를 쓰면 "강조"와 "구조"가
+// 같은 신호가 되어 굵은 본문 조각이 소제목처럼 읽힌다.
+// 명도 = 구조(헤딩 독점), 무게 = 강조로 채널을 나눈다.
+article strong {
+  color: inherit;
+  font-weight: 700;
+}
+
+// Noto Sans KR엔 진짜 이탤릭이 없어 브라우저가 합성 오블리크를 만든다.
+// 한글엔 이탤릭 관습 자체가 없으므로 기울임 대신 톤 다운으로 "방백"을 낸다.
+article em {
+  font-style: normal;
+  color: var(--gray);
+  letter-spacing: 0.02em;
+}
+
+// `==강조==` — 채움이 아니라 밑줄 밴드. 채움으로 두면 인라인 코드 칩
+// (--code-chip-bg #eae4d6 + 보더)과 값이 가까워 혼동된다. 칩=박스,
+// 하이라이트=밑줄로 형태를 갈라둔다. 색은 --textHighlight(웜 뉴트럴) 단일 소스.
+.text-highlight {
+  background-color: transparent;
+  box-shadow: inset 0 -0.45em 0 var(--textHighlight);
+  border-radius: 0;
+  padding: 0;
 }
 
 // 본문 내부 링크만 하단선 (사이드바 링크 오염 방지)
@@ -304,8 +334,25 @@ pre code {
   overflow-x: auto;
   text-align: center;
 }
-.katex {
-  font-size: 1.05em;
+
+// ⚠️ 반드시 `body`를 붙여둘 것 — 명시도 (0,1,1)로 올리기 위한 것이지 스코프가
+// 목적이 아니다. latex 플러그인이 externalResources()로 주입하는 KaTeX CDN CSS는
+// index.css **뒤에** 링크되고, KaTeX의 `.katex{font-size:1.21em}`와 명시도가
+// 같아(0,1,0) 소스 순서로 CDN이 이긴다. `body`를 빼면 이 블록 전체가 죽는다.
+//
+// KaTeX의 1.21은 KaTeX_Main(x-height/em ≈ 0.43)이 **세리프 본문** 옆에서
+// 작아 보이는 걸 보정하는 값이다. 우리 본문은 Noto Sans KR(≈ 0.53)이라
+// 보정이 필요 없는 자리에 보정이 들어가 이중으로 커져 있었다.
+// 1.21 × (0.43/0.53) ≈ 1.0 — 인라인 수식이 본문과 x-height가 맞는 값이다.
+body .katex {
+  font-size: 1em;
+  line-height: inherit;
+}
+
+// 디스플레이 수식은 독립 블록이라 본문보다 커도 되고 오히려 낫다.
+body .katex-display .katex {
+  font-size: 1.15em;
+  line-height: normal;
 }
 
 // [2026-08-05] 수식 안 한글이 못생기던 문제.
@@ -362,7 +409,15 @@ pre code {
 // callouts.scss가 이미 타입별 --color를 정의하고 제목·아이콘에 쓰고 있으므로
 // 여기서 --color만 그룹 단위로 재정의하면 박스까지 한 번에 따라온다.
 // 나머지 세 변은 callouts.scss의 1px --border가 그대로 유지된다.
+// ⚠️ 네 변을 모두 --color에서 파생시킬 것. 예전엔 좌측 3px만 여기서 지정하고
+// 나머지 3면은 base callouts.scss의 `border: 1px solid var(--border)`가 그대로
+// 남아, **타입마다 Obsidian 하드코딩 색이 나왔다** (note는 #448aff44 콘플라워,
+// warning은 #db894244 오렌지, quote만 중립 --lightgray). 좌측 바와 테두리가
+// 다른 색 계열이라 "콜아웃 정의가 안 먹는다"로 보이던 원인이 이것이다.
+// 여기서 파생시켜 두면 신규 타입도 --color 하나만 주면 네 변이 따라온다.
+// (base의 --border/--bg 선언은 이 규칙에 가려져 더 이상 쓰이지 않는다.)
 .callout {
+  border-color: color-mix(in srgb, var(--color) 28%, transparent);
   border-left: 3px solid var(--color);
   background: color-mix(in srgb, var(--color) 7%, transparent);
 }
@@ -449,6 +504,40 @@ a.tag-link {
   }
 }
 
+// ── 5.5 Breadcrumb — 카탈로그 번호 스트립 ──────────────────────────────────
+// "이 판이 어느 시리즈 몇 번인가"라는 좌표라 음반 카탈로그 번호처럼 조판한다.
+// 로고(Anton) → breadcrumb(Mono) → 제목(Noto)으로 세 층의 목소리가 갈린다.
+// 마지막 크럼은 자기 자신을 가리키는 링크(href 빈 값)라 링크처럼 파랗게
+// 보였다 — `:last-child`로 링크 표시를 걷어낸다.
+
+.breadcrumb-container {
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  gap: 0.3rem;
+
+  a {
+    color: var(--gray);
+    text-decoration: none;
+    border-bottom: none !important;
+
+    &:hover {
+      color: var(--secondary);
+    }
+  }
+
+  // 구분자 — 위계를 나누는 장식이라 크럼보다 옅게.
+  .breadcrumb-element p {
+    color: var(--lightgray);
+    margin: 0 0 0 0.3rem;
+  }
+
+  .breadcrumb-element:last-child a {
+    color: var(--darkgray);
+    pointer-events: none;
+  }
+}
+
 // ── 6. PageTitle ───────────────────────────────────────────────────────────
 // .page-title = 사이드바 사이트 타이틀. 로고는 헤딩(Hahmlet)이 아니라
 // title 슬롯(--titleFont=Anton)을 써서 브랜드 존을 본문과 분리한다.
@@ -487,104 +576,82 @@ body:not([data-slug="index"]) {
   }
 }
 
-// ── 7. Explorer 폴더 구조 — A안 목업 스타일(플랫, 아이콘 없음) ─────────────
+// ── 7. 좌측 CATALOG 패널 ──────────────────────────────────
+// 패널 자체 스타일은 plugins/note-catalog의 noteCatalog.scss가 가지고 있다
+// (플러그인 단위 자기완결성 유지). 여긴 사이드바 컨테이너 맥락만 둔다.
 //
-//  실제 DOM (v5에서도 동일 확인 — .quartz/plugins/explorer):
-//  .explorer-content > ul.explorer-ul
-//  ├── li (파일)
-//  │    └── a
-//  └── li (폴더)
-//       ├── div.folder-container
-//       │    ├── svg.folder-icon        ← 숨김(접기는 폴더명 클릭)
-//       │    └── div > button.folder-button > span.folder-title
-//       └── div.folder-outer(.open)
-//            └── ul.content            ← 들여쓰기만, 세로선 없음
-//  .active / .open 클래스는 explorer.inline.ts가 런타임에 부여 (정적 HTML엔 없음, 스크립트로 검증).
+// 구 전체 트리(explorer)는 폐기됐다 — 폴더 32/파일 89개가 전부 DOM에
+// 렌더되었고, useSavedState 옵션이 동작하지 않아 열었던 폴더가
+// localStorage에 영구 누적됐다. 상세는 CHANGELOG.md.
+
+.sidebar.left > .note-catalog,
+.sidebar.left > .desktop-only > .note-catalog {
+  min-height: 0;
+}
+
+// ── 8. 우측 사이드바 — TOC / Backlinks / Graph ────────────────────────────
+// 순서는 quartz.config.yaml의 layout priority가 정한다(TOC 10 → Backlinks 30
+// → Graph 50). 여기선 셋의 높이 배분만 고정한다.
 //
-//  [2026-08-04] 📁/📂 폴더 이모지, 파일 앞 "ㄴ" 표시, 세로 트리 가이드라인
-//  전부 제거 — 목업 A(haejun-redesign-abc.html)의 `.tree` 처럼 그룹명은
-//  굵게, 파일은 왼쪽 보더 하나로만 구분하는 플랫한 리스트로 전환
-//  (사용자 피드백: 이전 트리 UI가 목업과 느낌이 다르다). 이전엔 이모지·
-//  세로선이 사용자 명시 요청으로 들어간 장식이었으나, 이번 피드백으로
-//  대체됨 — 되돌릴 필요 없음.
+// 예전엔 셋 다 `flex: 0 1 auto`라 TOC가 자연 높이를 다 먹고 남는 것만 백링크가
+// 받아, 861px 사이드바에서 백링크가 52px(한 줄)이었다. base가 백링크 목록에
+// 건 `max-height: calc(100% - 2rem)`도 부모 높이가 auto라 해석되지 않고 무시됐다.
+//
+// ⚠️ `min-height: 0`을 빼지 말 것 — flex 자식의 기본값은 `min-height: auto`라
+//    내용보다 작아지지 않는다. 이게 없으면 flex 값을 뭘 주든 줄지 않는다.
+// ⚠️ TOC를 감싼 `.desktop-only`는 base.scss에서 `display: contents`다. flex에
+//    투명하므로 래퍼가 아니라 .toc/.backlinks/.graph를 직접 타겟해야 한다.
 
-.explorer-content {
-  font-size: 1.15rem;
-} // 0.82 → 1.15 (2026-07-19 사용자 요청: 디렉토리·파일명 확대)
+.sidebar.right {
+  .toc {
+    flex: 1 1 0;
+    min-height: 4rem;
+  }
 
-// "Explorer" 제목 확대 (base: 1rem)
-button.desktop-explorer h2,
-button.mobile-explorer h2 {
-  font-size: 1.25rem;
+  .backlinks {
+    flex: 0 0 auto;
+    min-height: 0;
+    max-height: 9rem;
+  }
+
+  .graph {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
 }
 
-.folder-container {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 0;
+.toc-content.overflow,
+.backlinks > ul.overflow {
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.backlinks > ul.overflow {
+  max-height: 6.5rem;
+}
+
+// graph는 note-catalog의 graphFold 스크립트가 페이지마다 기본 접힘으로 되돌린다.
+// 노드가 1~2개뿐인 노트가 많아 250px를 상시 점유할 값어치가 없다.
+.graph > h3 {
   cursor: pointer;
-  &:hover .folder-title {
-    color: var(--secondary);
+  user-select: none;
+
+  &::after {
+    content: "▾";
+    margin-left: 0.4rem;
+    font-size: 0.7em;
+    color: var(--gray);
   }
 }
 
-// chevron(>) 숨김 — 접기/펼치기는 폴더명 클릭으로 대체 (yaml folderClickBehavior: collapse)
-.folder-icon {
-  display: none;
-}
-
-.folder-button {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  text-align: left;
-  border-bottom: none !important;
-  &:hover {
-    border-bottom: none !important;
+.graph.folded {
+  > .graph-outer {
+    display: none;
+  }
+  > h3::after {
+    content: "▸";
   }
 }
-
-// 목업 A `.grp` — 그룹명은 이모지/아이콘 없이 굵게, 톤은 본문보다 한 단계
-// 진하게(--text-2)만 줘서 파일 링크(--gray)와 위계를 나눈다.
-span.folder-title {
-  font-family: var(--bodyFont);
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--darkgray);
-  letter-spacing: -0.01em;
-}
-
-// 하위 항목 들여쓰기만 — 세로 가이드라인 없이 목업처럼 플랫하게.
-.folder-outer > ul.content {
-  margin-left: 0.4rem;
-  padding-left: 0.5rem;
-}
-
-// 파일 링크 — 아이콘/접두어 없이 들여쓰기만. [2026-08-05] 왼쪽 보더는
-// 제거(사용자 피드백: 트리마다 "|" 문자처럼 보여 산만함) — 들여쓰기
-// (.folder-outer > ul.content의 margin/padding)만으로 위계를 구분한다.
-.explorer-content li > a {
-  display: block;
-  padding: 3px 0 3px 0.6rem;
-  font-size: 0.8rem;
-  color: var(--gray);
-  transition: color 0.12s;
-  border-bottom: none !important;
-
-  &:hover {
-    color: var(--secondary);
-    border-bottom: none !important;
-  }
-}
-
-.explorer-content li > a.active {
-  color: var(--secondary);
-  font-weight: 600;
-}
-
-// ── 8. TOC / Backlinks ─────────────────────────────────────────────────────
 
 .toc li a,
 .backlinks ul li a {
@@ -593,9 +660,16 @@ span.folder-title {
     border-bottom: none !important;
   }
 }
+
+// ⚠️ `opacity: 1`을 되돌리지 말 것. base(table-of-contents 플러그인)는 비활성
+// 항목에 `opacity: .35`를 거는데, --gray(4.65:1) 위에 곱해지면 크림 배경 기준
+// 실효 대비가 약 1.6:1로 떨어진다 — AA 4.5 예외 없음(CLAUDE.md §1) 위반이다.
+// 활성/비활성 구분은 투명도가 아니라 색과 굵기가 맡는다.
+.toc-content.overflow > li > a,
 .toc li a {
   font-size: 0.78rem;
   color: var(--gray);
+  opacity: 1;
   &:hover {
     color: var(--secondary);
   }
@@ -612,22 +686,24 @@ span.folder-title {
   line-height: 1.5;
 }
 
-.toc-content li.depth-0 > a {
-  &.in-view {
-    color: var(--secondary);
-    font-weight: 600;
-  }
+// 활성 표시는 시간 축(--accent-state) — "지금 읽고 있는 위치"라 읽기 진행바와
+// 같은 질문에 답한다. 블루(공간 축)를 쓰면 링크와 신호가 겹친다.
+.toc-content.overflow > li > a.in-view,
+.toc-content li.depth-0 > a.in-view {
+  color: var(--accent-state);
+  opacity: 1;
+  font-weight: 600;
 }
 
-// 하위 섹션만 좌측 보더로 위계 표시 — 목차가 길어져도(overflow-y: auto,
-// base.scss) 각 항목이 항상 자기 보더를 갖고 있어 시각적으로 안정적이다.
+// 하위 섹션만 좌측 보더로 위계 표시 — 목차가 길어져도(overflow-y: auto)
+// 각 항목이 항상 자기 보더를 갖고 있어 시각적으로 안정적이다.
 .toc-content li:not(.depth-0) > a {
   border-left: 2px solid var(--border);
   padding-left: 0.7rem;
 
   &.in-view {
-    color: var(--secondary);
-    border-left-color: var(--secondary);
+    color: var(--accent-state);
+    border-left-color: var(--accent-state);
     font-weight: 600;
   }
 }
@@ -751,9 +827,11 @@ tbody td {
   align-items: center;
   flex-wrap: wrap;
   width: 100vw;
-  position: relative;
-  left: 50%;
-  margin-left: -50vw;
+  // ⚠️ relative로 바꾸지 말 것 — non-layered라 base.scss의 sticky를 덮어써 고정이 깨진다.
+  // ⚠️ left:50%+margin-left:-50vw 쓰지 말 것 — sticky에서 퍼센트 기준이 달라져 밀린다.
+  position: sticky;
+  top: 0;
+  margin-left: calc(50% - 50vw);
   gap: 1.5rem;
   // 안쪽 좌우 여백은 홈 히어로("blue notes." 시작점)와 정확히 같은 위치가
   // 되도록 base.scss `#quartz-body`의 반응형 padding(데스크톱 0 / 태블릿·
@@ -775,6 +853,11 @@ tbody td {
 
   .social-links {
     margin: 0 0 0 auto; // left만 auto → 오른쪽 정렬. 원래 세로형 top/bottom margin 리셋.
+
+    // 브랜드 컬러 배경 대신 hover 중립 칩만 — 상시 배경은 플러그인에서 의도적으로 제거된 자리.
+    ul li a:hover {
+      background-color: var(--surface-2);
+    }
   }
 
   // 바 안에서는 세로 사이드바 시절 기준값(1.75rem) 그대로 사용 — 가로
@@ -856,6 +939,29 @@ body[data-slug="index"] {
   .page-header {
     margin-top: 1rem;
   }
+}
+
+// ── 10.7 홈 섹션 헤더 컬러 ──────────────────────────────────────────────────
+// 세 컴포넌트 다 이미 홈 전용이라(quartz.config.yaml) 별도 스코프 불필요.
+.featured-header h2,
+.topic-grid-header h2,
+.recent-notes-header h2 {
+  color: var(--secondary);
+}
+
+.featured-cat {
+  color: var(--accent-state);
+}
+
+// Recent Notes 얼룩말 — table과 동일 비율(3.5%/10%), hover는 순서상 뒤에 와야 이긴다.
+.recent-notes .row:nth-child(even) {
+  background: rgba(var(--accent-rgb), 0.035);
+}
+.recent-notes .row:hover {
+  background: rgba(var(--accent-rgb), 0.1);
+}
+.recent-notes .row .t {
+  font-family: var(--headerFont);
 }
 
 // ── 11. Utilities ──────────────────────────────────────────────────────────

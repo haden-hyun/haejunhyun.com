@@ -1,0 +1,73 @@
+.note-catalog {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  .note-catalog-title {
+    margin: 0;
+    font-family: var(--headerFont);
+    font-size: 1.25rem;
+    color: var(--dark);
+  }
+
+  // 현재 폴더 좌표 — 본문 breadcrumb과 같은 조판(모노·자간)을 써서
+  // "위치 표시"라는 역할을 두 곳에서 같은 목소리로 낸다.
+  .note-catalog-path {
+    margin-top: 0.5rem;
+    font-family: var(--codeFont);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+    text-decoration: none;
+    border-bottom: none !important;
+    word-break: break-all;
+
+    &:hover {
+      color: var(--secondary);
+    }
+  }
+
+  .note-catalog-list {
+    margin: 0.7rem 0 0;
+    padding: 0;
+    list-style: none;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .note-catalog-link {
+    display: block;
+    padding: 4px 0 4px 0.6rem;
+    border-left: 2px solid transparent;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--gray);
+    text-decoration: none;
+    border-bottom: none !important;
+    transition: color 0.12s;
+
+    &:hover {
+      color: var(--secondary);
+    }
+
+    &.active {
+      color: var(--secondary);
+      font-weight: 600;
+      border-left-color: var(--secondary);
+    }
+  }
+
+  .note-catalog-more {
+    margin-top: 0.9rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--lightgray);
+    font-size: 0.75rem;
+    color: var(--gray);
+    text-decoration: none;
+    border-bottom: none !important;
+
+    &:hover {
+      color: var(--secondary);
+    }
+  }
+}
