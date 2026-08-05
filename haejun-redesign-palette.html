@@ -31,7 +31,7 @@
   --code-ink:#443e36; --code-bg:#efebe0;
 
   /* 콜아웃 6그룹 */
-  --cal-info:var(--secondary); --cal-good:#187755; --cal-warn:#8f6410;
+  --cal-info:var(--secondary); --cal-good:#187755; --cal-warn:#8a600f;
   --cal-bad:#b8324a; --cal-quote:#6b6560; --cal-ref:#6b3fa0;
 
   /* syntax.scss — 잉크 팔레트. 스프레드 8.65 (대비는 --code-bg 기준) */
@@ -342,16 +342,13 @@ blockquote p{margin:0}
 
 /* 콜아웃 */
 .callout{
-  border:none;
-  border-top:1.5px solid color-mix(in srgb,var(--co) 45%,transparent);
-  border-bottom:1.5px solid color-mix(in srgb,var(--co) 45%,transparent);
-  background:color-mix(in srgb,var(--co) 5%,transparent);
-  border-radius:0;margin:1.6rem 0;padding:.2rem 1rem .5rem;
+  border:1px solid color-mix(in srgb,var(--co) 28%,transparent);border-left:3px solid var(--co);
+  background:color-mix(in srgb,var(--co) 7%,transparent);
+  border-radius:6px;margin:1.2rem 0;padding:.2rem 1rem .5rem;
 }
 .callout .ct{
-  font-family:var(--headerFont);font-weight:700;font-size:.76rem;
-  letter-spacing:.1em;text-transform:uppercase;
-  color:var(--co);padding:.7rem 0 .1rem;
+  font-family:var(--headerFont);font-weight:700;font-size:.88rem;
+  color:var(--co);padding:.6rem 0 .2rem;
 }
 .callout p{font-size:.9rem;margin:0 0 .6rem;line-height:1.75;color:var(--text-2)}
 .cal-info{--co:var(--cal-info)}

@@ -89,17 +89,17 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   // 값 보정 2건:
   //  · bad — 통상적인 #c0392b(H6)는 Brick CTA(H11)와 5°라 구분이 안 돼
   //    크림슨(H349)으로 밀었다. 22° 확보.
-  //  · warn — 흔한 앰버 #a86a12는 크림 배경에서 4.07로 AA 미달. 명도를
-  //    낮춰 4.82를 확보한 값이 #8f6410이다.
+  //  · warn — 흔한 앰버 #a86a12는 크림 배경에서 4.07로 AA 미달. 명도를 낮췄다.
   // quote(#6b6560)는 warn과 색상차 12°지만 채도가 S10 vs S89라 회색과
   // 앰버로 명확히 갈린다 — 색상차 규칙은 채도가 비슷할 때만 의미가 있다.
   // ⚠️ 대비는 페이지 배경이 아니라 **콜아웃 틴트 배경** 기준으로 잰다(CLAUDE.md §7).
-  //    옛 #1a7f5a는 페이지 배경에선 4.56이지만 자기 틴트 위에선 4.28로 AA 미달이었다.
-  --cal-info: var(--secondary); // 5.76  AA
-  --cal-good: #187755; // 4.74  AA
-  --cal-warn: #8f6410; // 4.53  AA (틴트 배경 기준)
-  --cal-bad: #b8324a; // 4.98  AA (틴트 배경 기준)
-  --cal-quote: #6b6560; // 4.95  AA (틴트) · article em과 공유
+  //    옛 #1a7f5a는 페이지 배경에선 4.56이지만 자기 틴트(7%) 위에선 4.28로 미달이었다
+  //    (#8f6410도 4.42로 같은 문제). 아래 값은 전부 틴트 배경 기준으로 잰 것이다.
+  --cal-info: var(--secondary); // 5.57  AA
+  --cal-good: #187755; // 4.60  AA
+  --cal-warn: #8a600f; // 4.69  AA
+  --cal-bad: #b8324a; // 4.83  AA
+  --cal-quote: #6b6560; // 4.82  AA · article em과 공유
   // reference — Obsidian 표준에 없는 커스텀 타입(`[!reference]`). ofm 파서는
   // 미지의 타입도 data-callout에 그대로 실어 보내므로 CSS만으로 추가된다.
   // 보라(H267)를 쓴 이유: 기존 5그룹과 최소 60° 떨어져 있고, callouts.scss가
@@ -183,10 +183,14 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
     margin-bottom: 0.8rem;
   }
 
+  // h1과 같은 잉크. ⚠️ --darkgray로 되돌리지 말 것 — 그 값은 본문 p와
+  // **완전히 같은 색**이라 h3가 색으로는 본문과 구분되지 않았다.
+  // 블루로도 갈 수 없다: 라이트 모드의 블루는 2개뿐인데 더 깊은
+  // Deeper Cut(7.55)이 h2의 True Midnight(6.17)보다 강해 위계가 뒤집힌다.
   h3 {
     font-weight: 700;
     font-size: 1rem;
-    color: var(--darkgray);
+    color: var(--dark);
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
   }
@@ -383,41 +387,29 @@ body .katex-display .katex {
 
 // ── 4. Callouts ────────────────────────────────────────────────────────────
 
-// 인쇄 조판 — 둥근 박스·아이콘을 버리고 위아래 괘선으로 단을 나눈다.
-// 그 셋(Lucide 아이콘 + 둥근 모서리 + 좌측 바)이 "Obsidian 콜아웃"의 형태
-// 문법이라, 색만 바꾸면 여전히 앱 UI로 읽힌다. 형태를 바꿔야 인쇄물이 된다.
+// Obsidian 형태(아이콘 + 둥근 박스 + 좌측 바)를 유지하고 색만 우리 것을 쓴다.
+// ⚠️ 아이콘 제거 + 위아래 괘선으로 바꾸는 "인쇄 조판" 안은 시도 후 되돌렸다
+//    (2026-08-06) — 형태가 낯설어져 읽기가 더 나빠졌다.
 .callout {
-  border: none;
-  border-top: 1.5px solid color-mix(in srgb, var(--color) 45%, transparent);
-  border-bottom: 1.5px solid color-mix(in srgb, var(--color) 45%, transparent);
-  border-radius: 0;
-  margin: 1.6rem 0;
+  border-radius: 6px;
+  margin: 1.2rem 0;
   line-height: 1.75;
 
-  // 제목은 사용자가 쓴 텍스트다("Summary" / "왜도란"). 대문자 변환은 라틴에만
-  // 걸리고 한글은 그대로라, 라벨처럼 보이면서 한글 제목도 읽힌다.
+  // 상단 여백 균일화: v5 callouts.scss의 `.callout-title { padding: 1rem 0 }` 상쇄
   & > .callout-title {
     font-family: var(--headerFont);
     font-weight: 700;
-    font-size: 0.76rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.7rem 0 0.1rem;
+    font-size: 0.88rem;
+    padding: 0.6rem 0.3rem 0.5rem;
     margin: 0;
   }
   & > .callout-content {
-    padding: 0.35rem 0 0.8rem;
+    padding: 0.5rem 0.3rem 0.7rem;
     font-size: 0.9rem;
     p:last-child {
       margin-bottom: 0;
     }
   }
-}
-
-// Obsidian/Lucide 기본 아이콘 — 형태 문법의 가장 큰 단서라 걷어낸다.
-// 접기 아이콘(.fold-callout-icon)은 기능이므로 남긴다.
-.callout-title > .callout-icon {
-  display: none;
 }
 
 // 어댑트: v4 원본은 data-callout="summary" 를 대상으로 했으나, v5의
@@ -436,7 +428,9 @@ body .katex-display .katex {
 // 여기서 파생시켜 두면 신규 타입도 --color 하나만 주면 네 변이 따라온다.
 // (base의 --border/--bg 선언은 이 규칙에 가려져 더 이상 쓰이지 않는다.)
 .callout {
-  background: color-mix(in srgb, var(--color) 5%, transparent);
+  border-color: color-mix(in srgb, var(--color) 28%, transparent);
+  border-left: 3px solid var(--color);
+  background: color-mix(in srgb, var(--color) 7%, transparent);
 }
 
 // 5그룹 매핑. 실제 사용량(빌드 실측): abstract 87 · quote 70 · note 51 ·
@@ -607,33 +601,22 @@ body:not([data-slug="index"]) article thead {
 // ⚠️ TOC를 감싼 `.desktop-only`는 base.scss에서 `display: contents`다. flex에
 //    투명하므로 래퍼가 아니라 .toc/.backlinks/.graph를 직접 타겟해야 한다.
 
-// 패널 라벨 4종 — 모노 대문자로 통일해 "이건 콘텐츠가 아니라 패널 이름"임을
-// 서체가 먼저 말하게 한다. 색은 그 패널이 답하는 질문(§3.2 세 축)을 따른다.
-//   CATALOG·BACKLINKS = 공간(어디로 갈 수 있나) · CONTENTS = 시간(지금 어디를 읽나)
-// TOC 헤더와 활성 항목이 같은 잉크라 패널 정체성이 강해진다.
+// 패널 라벨 5종은 **한 규칙으로 통일한다** — 넷이 서로 다른 조판이면 같은
+// 종류의 물건으로 읽히지 않는다. 기준은 SPECS(헤딩 기본값: Hahmlet 700 / 1rem).
+// ⚠️ 모노 대문자·패널별 색으로 나누지 말 것(2026-08-06 시도 후 되돌림) —
+//    라벨이 콘텐츠보다 시끄러워지고 "Table of Contents"가 대문자로 뭉갠다.
+.note-specs-title,
 .note-catalog-title,
 button.toc-header h3,
 .backlinks > h3,
 .graph > h3 {
-  font-family: var(--codeFont);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.note-catalog-title,
-.backlinks > h3 {
-  color: var(--secondary);
-}
-
-button.toc-header h3 {
-  color: var(--accent-state);
-}
-
-// 접혀 있는 게 기본이라 한 단계 물러선 톤.
-.graph > h3 {
-  color: var(--gray);
+  font-family: var(--headerFont);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--darkgray);
+  margin: 0;
 }
 
 .sidebar.right {
