@@ -93,11 +93,13 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   //    낮춰 4.82를 확보한 값이 #8f6410이다.
   // quote(#6b6560)는 warn과 색상차 12°지만 채도가 S10 vs S89라 회색과
   // 앰버로 명확히 갈린다 — 색상차 규칙은 채도가 비슷할 때만 의미가 있다.
-  --cal-info: var(--secondary); // 6.17  AA
-  --cal-good: #1a7f5a; // 4.56  AA
-  --cal-warn: #8f6410; // 4.82  AA
-  --cal-bad: #b8324a; // 5.36  AA
-  --cal-quote: #6b6560; // 5.27  AA
+  // ⚠️ 대비는 페이지 배경이 아니라 **콜아웃 틴트 배경** 기준으로 잰다(CLAUDE.md §7).
+  //    옛 #1a7f5a는 페이지 배경에선 4.56이지만 자기 틴트 위에선 4.28로 AA 미달이었다.
+  --cal-info: var(--secondary); // 5.76  AA
+  --cal-good: #187755; // 4.74  AA
+  --cal-warn: #8f6410; // 4.53  AA (틴트 배경 기준)
+  --cal-bad: #b8324a; // 4.98  AA (틴트 배경 기준)
+  --cal-quote: #6b6560; // 4.95  AA (틴트) · article em과 공유
   // reference — Obsidian 표준에 없는 커스텀 타입(`[!reference]`). ofm 파서는
   // 미지의 타입도 data-callout에 그대로 실어 보내므로 CSS만으로 추가된다.
   // 보라(H267)를 쓴 이유: 기존 5그룹과 최소 60° 떨어져 있고, callouts.scss가
@@ -169,10 +171,12 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
     letter-spacing: -0.02em;
   }
 
+  // h2만 액센트 블루 — 헤딩은 항상 블록 단독이고 링크는 항상 문단 안(인라인)이라
+  // 같은 흐름에서 경쟁하지 않는다. 색이 아니라 위치가 둘을 가른다.
   h2 {
     font-weight: 700;
     font-size: 1.2rem;
-    color: var(--dark);
+    color: var(--secondary);
     padding-bottom: 0.35rem;
     border-bottom: 1.5px solid var(--lightgray);
     margin-top: 2.2rem;
@@ -182,7 +186,7 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   h3 {
     font-weight: 700;
     font-size: 1rem;
-    color: var(--dark);
+    color: var(--darkgray);
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
   }
@@ -207,19 +211,20 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 //    같은 레이어에서 명시도로 이긴다. 그렇다고 전역 요소 선택자를 레이어 밖에
 //    두면 플러그인 UI가 깨지므로(CLAUDE.md), 본문만 잡는 `article`로 가둔다.
 //
-// strong에 색을 주지 않는 이유: 헤딩과 같은 --dark를 쓰면 "강조"와 "구조"가
-// 같은 신호가 되어 굵은 본문 조각이 소제목처럼 읽힌다.
-// 명도 = 구조(헤딩 독점), 무게 = 강조로 채널을 나눈다.
+// bold가 --dark를 써도 되는 이유: 헤딩이 Hahmlet, 본문이 Noto Sans KR이라
+// **서체가 이미 둘을 가른다.** 예전엔 헤딩까지 본문 서체여서 같은 색·같은 흐름·
+// 같은 서체가 겹쳐 굵은 문장이 소제목처럼 읽혔다 — 그 조건이 사라졌다.
 article strong {
-  color: inherit;
+  color: var(--dark);
   font-weight: 700;
 }
 
 // Noto Sans KR엔 진짜 이탤릭이 없어 브라우저가 합성 오블리크를 만든다.
 // 한글엔 이탤릭 관습 자체가 없으므로 기울임 대신 톤 다운으로 "방백"을 낸다.
+// 잉크는 인용/출처 계열(--cal-quote)과 공유한다 — 둘 다 "다른 목소리"다.
 article em {
   font-style: normal;
-  color: var(--gray);
+  color: var(--cal-quote);
   letter-spacing: 0.02em;
 }
 
@@ -378,27 +383,41 @@ body .katex-display .katex {
 
 // ── 4. Callouts ────────────────────────────────────────────────────────────
 
+// 인쇄 조판 — 둥근 박스·아이콘을 버리고 위아래 괘선으로 단을 나눈다.
+// 그 셋(Lucide 아이콘 + 둥근 모서리 + 좌측 바)이 "Obsidian 콜아웃"의 형태
+// 문법이라, 색만 바꾸면 여전히 앱 UI로 읽힌다. 형태를 바꿔야 인쇄물이 된다.
 .callout {
-  border-radius: 6px;
-  margin: 1.2rem 0;
+  border: none;
+  border-top: 1.5px solid color-mix(in srgb, var(--color) 45%, transparent);
+  border-bottom: 1.5px solid color-mix(in srgb, var(--color) 45%, transparent);
+  border-radius: 0;
+  margin: 1.6rem 0;
   line-height: 1.75;
 
-  // 상단 여백 균일화: base의 과다 padding-top override
-  // v5 callouts.scss의 `.callout-title { padding: 1rem 0; }` 를 상쇄 (검증 완료: base.scss/callouts.scss)
+  // 제목은 사용자가 쓴 텍스트다("Summary" / "왜도란"). 대문자 변환은 라틴에만
+  // 걸리고 한글은 그대로라, 라벨처럼 보이면서 한글 제목도 읽힌다.
   & > .callout-title {
     font-family: var(--headerFont);
     font-weight: 700;
-    font-size: 0.88rem;
-    padding: 0.6rem 0.3rem 0.5rem;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.7rem 0 0.1rem;
     margin: 0;
   }
   & > .callout-content {
-    padding: 0.5rem 0.3rem 0.7rem;
+    padding: 0.35rem 0 0.8rem;
     font-size: 0.9rem;
     p:last-child {
       margin-bottom: 0;
     }
   }
+}
+
+// Obsidian/Lucide 기본 아이콘 — 형태 문법의 가장 큰 단서라 걷어낸다.
+// 접기 아이콘(.fold-callout-icon)은 기능이므로 남긴다.
+.callout-title > .callout-icon {
+  display: none;
 }
 
 // 어댑트: v4 원본은 data-callout="summary" 를 대상으로 했으나, v5의
@@ -417,9 +436,7 @@ body .katex-display .katex {
 // 여기서 파생시켜 두면 신규 타입도 --color 하나만 주면 네 변이 따라온다.
 // (base의 --border/--bg 선언은 이 규칙에 가려져 더 이상 쓰이지 않는다.)
 .callout {
-  border-color: color-mix(in srgb, var(--color) 28%, transparent);
-  border-left: 3px solid var(--color);
-  background: color-mix(in srgb, var(--color) 7%, transparent);
+  background: color-mix(in srgb, var(--color) 5%, transparent);
 }
 
 // 5그룹 매핑. 실제 사용량(빌드 실측): abstract 87 · quote 70 · note 51 ·
@@ -556,24 +573,12 @@ a.tag-link {
   gap: 0.8rem;
 }
 
-// ── 6.5 노트 본문 헤딩 — 홈(Hahmlet)과 분리, 본문 폰트로 ────────────────────
-// base.scss의 전역 h1~h6 규칙(§헤딩)은 Hahmlet(--headerFont) 고정이라
-// 홈·사이드바 UI(Explorer/TOC/Backlinks 라벨 등)엔 그대로 두되, 노트
-// 본문(article 안 h1~h6 + 노트 제목 .article-title)만 Noto Sans KR로
-// 되돌린다(사용자 피드백: 노트에서는 Hahmlet 대신 기존 본문 서체를 원함).
-// 사이드바 라벨은 article 밖이라 영향 없음 — 페이지 전체가 아니라 "노트
-// 내용"만 바꾸는 의도를 selector로 명확히 한다.
-body:not([data-slug="index"]) {
-  article h1,
-  article h2,
-  article h3,
-  article h4,
-  article h5,
-  article h6,
-  article thead,
-  .article-title {
-    font-family: var(--bodyFont);
-  }
+// ── 6.5 노트 본문 표 헤더만 본문 서체 ──────────────────────────────────────
+// 헤딩(h1~h6, .article-title)은 Hahmlet(--headerFont)을 쓴다 — 본문(Noto Sans KR)과
+// 서체가 갈려야 "구조"와 "강조"가 다른 채널이 된다(§1 article strong 주석 참고).
+// 표 헤더는 헤딩이 아니라 데이터 라벨이라 본문 서체가 맞다.
+body:not([data-slug="index"]) article thead {
+  font-family: var(--bodyFont);
 }
 
 // ── 7. 좌측 CATALOG 패널 ──────────────────────────────────
@@ -602,7 +607,42 @@ body:not([data-slug="index"]) {
 // ⚠️ TOC를 감싼 `.desktop-only`는 base.scss에서 `display: contents`다. flex에
 //    투명하므로 래퍼가 아니라 .toc/.backlinks/.graph를 직접 타겟해야 한다.
 
+// 패널 라벨 4종 — 모노 대문자로 통일해 "이건 콘텐츠가 아니라 패널 이름"임을
+// 서체가 먼저 말하게 한다. 색은 그 패널이 답하는 질문(§3.2 세 축)을 따른다.
+//   CATALOG·BACKLINKS = 공간(어디로 갈 수 있나) · CONTENTS = 시간(지금 어디를 읽나)
+// TOC 헤더와 활성 항목이 같은 잉크라 패널 정체성이 강해진다.
+.note-catalog-title,
+button.toc-header h3,
+.backlinks > h3,
+.graph > h3 {
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.note-catalog-title,
+.backlinks > h3 {
+  color: var(--secondary);
+}
+
+button.toc-header h3 {
+  color: var(--accent-state);
+}
+
+// 접혀 있는 게 기본이라 한 단계 물러선 톤.
+.graph > h3 {
+  color: var(--gray);
+}
+
 .sidebar.right {
+  // SPECS는 최상단 고정 — 사양 표기는 스크롤되지 않는다.
+  .note-specs {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+
   .toc {
     flex: 1 1 0;
     min-height: 4rem;

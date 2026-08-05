@@ -3,11 +3,10 @@
   flex-direction: column;
   min-width: 0;
 
+  // 조판·색은 custom.scss가 우측 패널 라벨 3종과 함께 한 곳에서 정한다
+  // (네 패널이 같은 규칙을 공유해야 "패널 라벨"로 읽힌다).
   .note-catalog-title {
     margin: 0;
-    font-family: var(--headerFont);
-    font-size: 1.25rem;
-    color: var(--dark);
   }
 
   // 현재 폴더 좌표 — 본문 breadcrumb과 같은 조판(모노·자간)을 써서

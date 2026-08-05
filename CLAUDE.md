@@ -13,7 +13,7 @@ Obsidian vault를 **Quartz v5**로 빌드해 Cloudflare로 서빙하는 개인 �
 |---|---|
 | `DESIGN-SYSTEM.md` | **디자인의 현재 상태.** 색·서체를 건드리기 전 §6(고칠 때 규칙) 필독 |
 | `CHANGELOG.md` | "왜 이렇게 됐나"의 타임라인. 서사는 전부 여기 |
-| `README.md` | 배포 구조 ⚠️ 로컬 플러그인 개수가 낡음(9종 → 실제 18종) |
+| `README.md` | 배포 구조 ⚠️ 로컬 플러그인 개수가 낡음(9종 → 실제 19종) |
 | `haejun-redesign-palette.html` | 정적 목업. **빌드 없이 열리는 유일한 시각 검증 수단** |
 
 **주석은 핵심 기능·커스텀 로직에만, 한 줄로.** `.scss`/`.yaml`/`.tsx` 어디든 동일 — "왜
@@ -40,7 +40,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 로컬 플러그인은 `dist/`가 커밋 대상
 
-`plugins/*` 18종. 각각 독립 npm 패키지다.
+`plugins/*` 19종. 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
 ### `custom.scss`는 비-레이어라 항상 이긴다
@@ -128,6 +128,14 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
   읽지 않아 no-op이었다 → **옵션을 믿기 전에 런타임에서 소비되는지 grep으로 확인**
 - 우리 SCSS가 있으니 적용된다는 가정 ↔ `.katex{font-size:1.05em}`은 CDN CSS가 뒤에
   링크돼 죽은 코드였다 → **computed style로 실측**해야 적용 여부를 안다
+- "색이 안 먹는다" ↔ 콜아웃은 색이 정상 적용돼 있었고 **형태(Lucide 아이콘·둥근
+  모서리·좌측 바)가 Obsidian이었다** → 증상이 색이라고 원인도 색인 건 아니다
+- 설계한 타입이 원고에 있다는 가정 ↔ `[!reference]`는 원고에서 0회, 그 역할은
+  `[!quote]` 70개 중 69개가 대신하고 있었다 → **설계 전에 원고를 세어볼 것**
+- 로컬 플러그인 의존성은 ESM 번들 가능한 것만 ↔ `reading-time`(CJS)을 넣었더니
+  `Dynamic require of "stream"`으로 **컴포넌트가 통째로 로드 실패**했다.
+  에러가 아니라 `declares components but failed to load them` 경고 한 줄이라
+  "빌드는 성공인데 안 보임"으로 나타난다 → 새 의존성은 `node -e "await import(dist)"`로 확인
 
 렌더 결과는 `public/**/*.html`에서 직접 셀 수 있다(팔레트는 낡았지만 **구조는 유효**).
 

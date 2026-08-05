@@ -1,0 +1,57 @@
+// 음반 슬리브 사양 표기 — 라벨/값 2열. 라벨은 모노 소문자 폭으로 눌러
+// "인쇄된 사양"처럼 보이게 하고, 값만 읽히도록 명도를 나눈다.
+.note-specs {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  .note-specs-list {
+    margin: 0.5rem 0 0;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--lightgray);
+    border-bottom: 1px solid var(--lightgray);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .note-specs-row {
+    display: grid;
+    grid-template-columns: 4.6rem 1fr;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  dt {
+    font-family: var(--codeFont);
+    font-size: 0.63rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray);
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--codeFont);
+    font-size: 0.72rem;
+    color: var(--darkgray);
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .note-specs-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+
+    a {
+      color: var(--secondary);
+      text-decoration: none;
+      border-bottom: none !important;
+
+      &:hover {
+        color: var(--tertiary);
+      }
+    }
+  }
+}

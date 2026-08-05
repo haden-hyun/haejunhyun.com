@@ -63,7 +63,10 @@ plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
     options:
-      defaultDateType: published
+      # ⚠️ published를 쓰지 말 것 — `published:` 프론트매터를 가진 노트가 0개라
+      # 항상 filesystem mtime으로 폴백하고, 그 값은 동기화·체크아웃마다 바뀐다
+      # (수정한 적 없는 노트가 빌드 날짜로 찍혔다). `updated:`는 89개 노트에 있다.
+      defaultDateType: modified
       priority:
         - frontmatter
         - git
@@ -108,6 +111,17 @@ plugins:
   - source: github:quartz-community/github-flavored-markdown
     enabled: true
     order: 40
+  - source: ./plugins/note-specs
+    enabled: true
+    # 우측 최상단 SPECS — 음반 슬리브 사양 표기(날짜·읽기시간·토픽).
+    # 제목 바로 아래에 뭉쳐 있던 메타를 여기로 옮겨 본문 진입을 비운다.
+    options: {}
+    order: 15
+    layout:
+      position: right
+      priority: 5
+      display: desktop-only
+      condition: not-index
   - source: github:quartz-community/table-of-contents
     enabled: true
     order: 50
@@ -314,11 +328,14 @@ plugins:
       priority: 10
       # 홈은 HomeHero가 헤드라인을 대신 보여주므로 제외 (중복 방지).
       condition: not-index
+  # 데스크톱에선 우측 note-specs가 날짜·읽기시간·토픽을 대신하므로 모바일만 남긴다
+  # (모바일엔 우측 사이드바가 본문 아래로 밀려 상단 메타 역할을 못 한다).
   - source: github:quartz-community/content-meta
     enabled: true
     layout:
       position: beforeBody
       priority: 20
+      display: mobile-only
       # 홈은 인덱스라 날짜·읽기시간 메타가 의미 없다.
       condition: not-index
   - source: github:quartz-community/tag-list
@@ -326,6 +343,7 @@ plugins:
     layout:
       position: beforeBody
       priority: 30
+      display: mobile-only
       condition: not-index
   - source: github:quartz-community/page-title
     enabled: true
