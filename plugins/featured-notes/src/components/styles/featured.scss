@@ -1,8 +1,7 @@
 .featured-section {
   margin: 0 0 1.5rem 0;
-  // [2026-08-04] 사용자 요청 — Featured/Topics 사이 구분선. 위 .home-hero
-  // (hero.scss)와 같은 토큰·굵기로 통일해 "섹션이 끝나고 다음 섹션이
-  // 시작된다"는 신호를 동일한 시각 문법으로 반복한다.
+  // 섹션 구분선 — hero.scss와 같은 토큰·굵기를 반복해
+  // "섹션이 끝났다"는 신호를 동일한 시각 문법으로 준다.
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--border);
 }
@@ -30,11 +29,9 @@
   }
 }
 
-// [2026-08-03] haejun-redesign-abc.html:104-108(.cat) 실측대로 교정.
-// 색은 여기서 고정하지 않는다 — FeaturedNotes.tsx가 노트 토픽별로
-// `style="color:var(--c-*-text)"` 인라인 스타일을 넣는다(목업의
-// `.c-fin`/`.c-ds`/`.c-de`/`.c-cs` 등 토픽별 클래스와 동일한 효과).
+// 토픽별 색 없음 — 대문자 + 자간 + 굵기가 위계를 만들고 색은 정보를 나르지 않는다.
 .featured-cat {
+  color: var(--text-3);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -60,8 +57,7 @@
   padding: 26px;
   border: 1px solid var(--border);
   border-radius: var(--radius, 10px);
-  // [2026-08-03] haejun-redesign-abc.html:98-99 실측 — 메인 카드는 단색이
-  // 아니라 옅은 대각선 그라디언트로 나머지 3개 소형 카드와 구분된다.
+  // 메인 카드는 옅은 대각선 그라디언트로 소형 카드 3개와 구분된다.
   background: linear-gradient(160deg, var(--surface-2), var(--surface));
   text-decoration: none;
   transition: border-color 0.15s;
@@ -111,8 +107,7 @@
   text-decoration: none;
   transition: border-color 0.15s;
 
-  // [2026-08-03] 목업(haejun-redesign-abc.html:103)은 main/item 둘 다
-  // hover에서 --accent가 아니라 --border-strong으로만 살짝 진해진다.
+  // hover는 --accent가 아니라 --border-strong으로만 살짝 진해진다.
   &:hover {
     border-color: var(--border-strong);
   }

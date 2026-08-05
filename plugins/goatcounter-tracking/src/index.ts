@@ -2,21 +2,13 @@ import { h } from "preact"
 import type { QuartzTransformerPlugin } from "@quartz-community/types"
 
 /**
- * v4 parity: v4's `quartz/components/Head.tsx` hardcoded a GoatCounter tracking
- * `<script>` tag directly into `<head>`, in addition to (not instead of) the
- * `analytics.provider: "google"` config already handled by the built-in Head
- * component + `componentResources.ts` (v5 has native `provider: "goatcounter"`
- * support too, but `analytics:` only accepts a single provider, and this site
- * already runs Google Analytics — so the GoatCounter script has to be added as
- * an *extra* head resource rather than by switching providers).
+ * GoatCounter 트래킹 스크립트를 `<head>`에 주입한다.
  *
- * The VisitorCounter local plugin (Task 10) reads visit counts from the
- * GoatCounter API independently of this script, but the counts it reads are
- * only accurate if this tracking script is actually recording pageviews.
- *
- * This is a plain transformer plugin (no layout/component) that injects the
- * exact static script tag v4 used, via the `externalResources().additionalHead`
- * extension point in `quartz/components/Head.tsx` — no core file edits needed.
+ * · v5에 native `provider: "goatcounter"`가 있지만 `analytics:`는 provider를
+ *   **하나만** 받는다. 이 사이트는 Google Analytics를 쓰므로 GoatCounter는
+ *   추가 head 리소스로 넣어야 한다
+ * · ⚠️ visitor-counter 플러그인이 읽는 방문 수는 이 스크립트가 실제로
+ *   페이지뷰를 기록해야만 맞는다 — 함께 유지할 것
  */
 
 export interface GoatcounterTrackingOptions {
@@ -38,9 +30,8 @@ const GoatcounterTracking: QuartzTransformerPlugin<Partial<GoatcounterTrackingOp
 
   return {
     name: "GoatcounterTracking",
-    // No-op: only `externalResources` is used, but Quartz's transformer-category
-    // validation requires at least one of textTransform/markdownPlugins/htmlPlugins
-    // to be present on the instance (see config-loader.ts's `validateCategory`).
+    // ⚠️ no-op이지만 지우면 안 된다 — Quartz의 transformer 검증이
+    // textTransform/markdownPlugins/htmlPlugins 중 하나를 요구한다.
     htmlPlugins() {
       return []
     },

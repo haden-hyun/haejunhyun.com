@@ -47,10 +47,17 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   // 둘 둔다. 다만 둘을 "그냥 예쁜 색 두 개"로 쓰면 화면이 산만해지므로
   // 역할을 고정한다 — 색이 곧 의미가 되도록.
   //
-  //   accent-2    (Chitlins 핑크) = 행동. CTA(Play Notes)처럼 누르는 것.
-  //                                 드물게 등장하고 시선을 끌어야 한다.
-  //   accent-code (Brick 오렌지)  = 기술 리터럴. 인라인 코드.
-  //                                 본문에 자주 섞이므로 튀면 안 된다.
+  //   accent-action (Brick 오렌지)  = 행위. 누르는 것 — Play Notes CTA.
+  //   accent-state  (Chitlins 핑크) = 시간. 읽는 중 — 읽기 진행바.
+  //
+  //   [2026-08-05 교체] 원래는 Chitlins=CTA, Brick=인라인 코드였다. 바꾼 이유:
+  //     ① 채도·빈도가 역전 — Brick(S77)이 문단마다 나오는 인라인 코드에,
+  //        Chitlins(S67)가 페이지당 1회인 CTA에 있었다. 강도는 중요도에
+  //        비례하고 빈도에 반비례해야 한다.
+  //     ② 원전 — blue-note.jpeg의 브릭은 "uncompromising expression"이라는
+  //        선언 문구의 색(드물게·강하게)이고, blue-midnight의 마젠타는
+  //        듀오톤 조명 wash(앰비언트)다.
+  //   인라인 코드는 무채색(--code-ink)으로 빠졌다 — 색은 네 번째 중복 채널.
   //
   // 두 색은 색상환에서 45° 떨어져 있어 서로 다른 색으로 읽힌다(H326 vs H11).
   // 이 간격이 좁아지면 역할 구분이 무너지므로, 값을 조정할 땐 대비뿐 아니라
@@ -60,8 +67,43 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   // "uncompromising expression" 브릭. 둘 다 커버에서 실제 추출한 값이다.
   // 이전 인라인 코드 색(#8b4513 브라운)을 대체한다 — 그 값은 팔레트
   // 어디에도 근거가 없는 고립된 하드코딩이었다.
-  --accent-2: #b03a7d; // 5.14:1  AA
-  --accent-code: #b8442a; // 4.94:1  AA
+  --accent-action: #b8442a; // 4.94:1  AA — CTA
+  --accent-state: #b03a7d; // 5.14:1  AA — 읽기 진행바
+
+  // ── 인라인 코드 칩 ──
+  // 코드는 세 축(공간/행위/시간) 어디에도 속하지 않으므로 색을 주지 않고
+  // "재질"로 구분한다 — 활자가 눌린 자국처럼. 예전엔 배경/보더가 accent
+  // 7%/14%라 보더 대비가 1.11로 사실상 보이지 않았고, 그래서 칩이 본문에
+  // 묻혔다. 보더를 1.47로 올려 윤곽을 만든다(글자색이 아니라 보더가 원인).
+  --code-chip-bg: #eae4d6;
+  --code-chip-border: #c6bda8;
+  --code-ink: #443e36; // 8.33:1  AAA
+  --code-bg: #efebe0; // 코드블럭 배경 — syntax.scss 대비 계산의 기준
+
+  // ── 콜아웃 시맨틱 5그룹 ──
+  // 토픽 컬러는 폐지하면서 콜아웃은 색을 쓰는 이유: 토픽은 "명명"이고
+  // 콜아웃은 "가치(valence)"다. 색은 명명엔 약하고 가치 전달엔 강하며,
+  // 빨강=위험 같은 보편 관습이 이미 있다. 또 콜아웃은 읽기 흐름에서
+  // 하나씩 나오지, 토픽처럼 10개가 그리드에서 경쟁하지 않는다.
+  //
+  // 값 보정 2건:
+  //  · bad — 통상적인 #c0392b(H6)는 Brick CTA(H11)와 5°라 구분이 안 돼
+  //    크림슨(H349)으로 밀었다. 22° 확보.
+  //  · warn — 흔한 앰버 #a86a12는 크림 배경에서 4.07로 AA 미달. 명도를
+  //    낮춰 4.82를 확보한 값이 #8f6410이다.
+  // quote(#6b6560)는 warn과 색상차 12°지만 채도가 S10 vs S89라 회색과
+  // 앰버로 명확히 갈린다 — 색상차 규칙은 채도가 비슷할 때만 의미가 있다.
+  --cal-info: var(--secondary); // 6.17  AA
+  --cal-good: #1a7f5a; // 4.56  AA
+  --cal-warn: #8f6410; // 4.82  AA
+  --cal-bad: #b8324a; // 5.36  AA
+  --cal-quote: #6b6560; // 5.27  AA
+  // reference — Obsidian 표준에 없는 커스텀 타입(`[!reference]`). ofm 파서는
+  // 미지의 타입도 data-callout에 그대로 실어 보내므로 CSS만으로 추가된다.
+  // 보라(H267)를 쓴 이유: 기존 5그룹과 최소 60° 떨어져 있고, callouts.scss가
+  // example에 쓰던 보라 계열이 우리 매핑에선 info로 흡수돼 비어 있었다.
+  // quote(인용문)와 나누는 이유 — "누가 한 말"과 "어디서 왔나"는 다른 정보다.
+  --cal-ref: #6b3fa0; // 6.77  AA
 
   --bg: var(--light);
   --surface: var(--light);
@@ -78,32 +120,6 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --text-2: var(--darkgray);
   --text-3: var(--gray);
 
-  // ── 토픽 컬러 (10슬롯, 40° 균등 hue 배치) ──
-  // --c-*        원본 값. 3px 컬러바 등 장식 전용 (대비 요구 없음)
-  // --c-*-text   AA(4.5:1) 통과하도록 명도 보정한 라벨 텍스트 전용
-  // t8/t9/t10은 향후 신규 토픽을 위한 예약 슬롯. 색을 글자에 쓰는 자리엔
-  // 반드시 -text 쪽을, saved-theme에 맞는 값을 쓸 것.
-  --c-gis: #f33b16;
-  --c-t8: #c9ac1d; // 예약 — 향후 8번째 토픽
-  --c-t9: #5c8532; // 예약 — 향후 9번째 토픽
-  --c-fin: #2c963d;
-  --c-de: #1da58e;
-  --c-cs: #308ce8;
-  --c-ds: #5c40e7;
-  --c-t10: #b63bce; // 예약 — 향후 10번째 토픽
-  --c-prog: #dd3c8c;
-  --c-tool: #504949; // 무채색 축 — hue 없음, 항상 구분됨
-
-  --c-gis-text: #db2e0c; // 4.56:1
-  --c-t8-text: #857213; // 4.55:1
-  --c-t9-text: #577e30; // 4.53:1
-  --c-fin-text: #268336; // 4.59:1
-  --c-de-text: #178270; // 4.50:1
-  --c-cs-text: #1774d0; // 4.52:1
-  --c-ds-text: #5c40e7; // 6.01:1 (원본 그대로 통과)
-  --c-t10-text: #b53ace; // 4.50:1
-  --c-prog-text: #d6267e; // 4.53:1
-  --c-tool-text: #534646; // 8.62:1
 }
 
 // 다크모드 — Quartz는 documentElement의 `saved-theme` 속성으로 제어한다.
@@ -111,19 +127,20 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 :root[saved-theme="dark"] {
   // 라이트와 짝을 이루는 다크 값 — 위 :root 주석 참고.
   --accent-rgb: 111, 178, 224; // = secondary #6fb2e0
-  --accent-2: #dd7ab0; // 6.57:1  AA
-  --accent-code: #e87256; // 6.12:1  AA
+  --accent-action: #e87256; // 6.12:1  AA
+  --accent-state: #dd7ab0; // 6.57:1  AA
 
-  --c-gis-text: #f34522; // 4.53:1
-  --c-t8-text: #c9ac1d; // 7.49:1 (원본 통과)
-  --c-t9-text: #659238; // 4.56:1
-  --c-fin-text: #2c983e; // 4.52:1
-  --c-de-text: #1da58e; // 5.44:1 (원본 통과)
-  --c-cs-text: #308ce8; // 4.81:1 (원본 통과)
-  --c-ds-text: #8873ee; // 4.57:1
-  --c-t10-text: #c159d5; // 4.51:1
-  --c-prog-text: #e04d96; // 4.52:1
-  --c-tool-text: #948181; // 4.55:1
+  --code-chip-bg: #1b2432;
+  --code-chip-border: #2c3a4d;
+  --code-ink: #c9c0b4; // 8.69:1  AAA
+  --code-bg: #141b28;
+
+  --cal-good: #4cbf87;
+  --cal-warn: #d9a441;
+  --cal-bad: #e8695c;
+  --cal-quote: #9a938c;
+  --cal-ref: #b39ae0; // 7.56  AAA
+
 }
 
 // ── 1. Typography ──────────────────────────────────────────────────────────
@@ -228,14 +245,21 @@ pre[data-language] {
 code:not(pre code) {
   font-family: var(--codeFont);
   font-size: 0.85em;
-  background: rgba(var(--accent-rgb), 0.08);
-  color: var(--accent-code);
+  background: var(--code-chip-bg);
+  color: var(--code-ink);
   padding: 0.15em 0.4em;
   border-radius: 4px;
-  border: 1px solid rgba(var(--accent-rgb), 0.15);
+  border: 1px solid var(--code-chip-border);
 }
 
+// [2026-08-05] 배경을 사이트 톤으로 명시. config의 `keepBackground: false`가
+// Shiki 테마 배경(라이트 #eff1f5 한랭 회색)을 걷어냈고, 그 자리에 크림 계열
+// 배경을 넣어 코드블럭이 페이지와 같은 종이에 인쇄된 것처럼 보이게 한다.
+// 예전엔 색온도차가 +14라 크림 위에 푸르스름한 패치가 떠 있었다.
+// ⚠️ syntax.scss의 토큰 대비는 페이지 배경이 아니라 **이 값** 기준으로
+//    계산돼 있다. 여기를 바꾸면 syntax.scss의 6개 토큰을 재검증할 것.
 pre {
+  background: var(--code-bg);
   border-radius: 8px;
   border: 1px solid var(--lightgray);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
@@ -284,6 +308,27 @@ pre code {
   font-size: 1.05em;
 }
 
+// [2026-08-05] 수식 안 한글이 못생기던 문제.
+// KaTeX 폰트(KaTeX_Main 등)에는 한글 글리프가 없어서, `\text{인구수}` 같은
+// 표현은 브라우저 기본 폰트로 폴백된다 — Windows에선 굴림/바탕이라 본문
+// (Noto Sans KR)과 전혀 다른 얼굴이 된다. 빌드 실측 59곳에서 발생 중이었다.
+//
+// KaTeX는 이 경우를 알고 `hangul_fallback` 클래스를 자동으로 붙여준다.
+// 그 클래스만 본문 서체로 넘기면 라틴 수식 조판은 그대로 두고 한글만 고쳐진다.
+.katex .hangul_fallback {
+  font-family: var(--bodyFont);
+}
+
+// `\text{}` 안의 라틴도 본문 서체로 통일.
+// KaTeX_Main은 Computer Modern 계열 세리프라 LaTeX 관례상으론 이쪽이 정석이나,
+// 이 사이트 본문이 산세리프(Noto Sans KR)라 문장 중간에 끼면 이질적으로 보인다.
+// `\text{}`는 애초에 "수식 안의 산문"을 위한 명령이므로 산문 서체를 따르게 한다.
+// ⚠️ 수학 기호·변수(.mathnormal 등)는 건드리지 않는다 — 그건 KaTeX 폰트가 맞다.
+.katex .mord.text,
+.katex .textrm {
+  font-family: var(--bodyFont);
+}
+
 // ── 4. Callouts ────────────────────────────────────────────────────────────
 
 .callout {
@@ -313,19 +358,50 @@ pre code {
 // obsidian-flavored-markdown 플러그인은 Obsidian 표준 별칭 규칙에 따라
 // `[!summary]` 를 canonical 타입인 "abstract" 로 정규화한다
 // (빌드된 HTML에서 실측: data-callout="abstract" 로 렌더링됨, "summary" 값은 존재하지 않음).
-.callout[data-callout="abstract"] {
-  --callout-color: var(--accent-rgb);
-  background: rgba(var(--accent-rgb), 0.06);
-  border-left: 3px solid var(--secondary);
+// 좌측 accent 보더 + 옅은 틴트를 타입 색(--color)에서 끌어온다.
+// callouts.scss가 이미 타입별 --color를 정의하고 제목·아이콘에 쓰고 있으므로
+// 여기서 --color만 그룹 단위로 재정의하면 박스까지 한 번에 따라온다.
+// 나머지 세 변은 callouts.scss의 1px --border가 그대로 유지된다.
+.callout {
+  border-left: 3px solid var(--color);
+  background: color-mix(in srgb, var(--color) 7%, transparent);
 }
-.callout[data-callout="note"] {
-  --callout-color: var(--accent-rgb);
+
+// 5그룹 매핑. 실제 사용량(빌드 실측): abstract 87 · quote 70 · note 51 ·
+// warning 48 · tip 19 · success 3 · question 2 · failure 2 · 나머지 각 1.
+// 12종을 그대로 12색으로 쓰면 지각 한계를 넘으므로 가치 단위로 묶는다.
+.callout[data-callout="note"],
+.callout[data-callout="abstract"],
+.callout[data-callout="info"],
+.callout[data-callout="todo"],
+.callout[data-callout="example"] {
+  --color: var(--cal-info);
 }
-.callout[data-callout="warning"] {
-  --callout-color: 180, 100, 30;
+.callout[data-callout="tip"],
+.callout[data-callout="success"] {
+  --color: var(--cal-good);
 }
-.callout[data-callout="tip"] {
-  --callout-color: 50, 130, 80;
+.callout[data-callout="warning"],
+.callout[data-callout="question"] {
+  --color: var(--cal-warn);
+}
+.callout[data-callout="danger"],
+.callout[data-callout="failure"],
+.callout[data-callout="bug"] {
+  --color: var(--cal-bad);
+}
+.callout[data-callout="quote"] {
+  --color: var(--cal-quote);
+}
+
+// 커스텀 타입 `[!reference]` — Obsidian 표준엔 없다.
+// `example`을 쓰지 않는 이유: example은 "이 개념을 보여주는 사례"이고
+// reference는 "이건 어디서 왔나 / 더 읽으려면 여기로"다. 의도가 다르다.
+// 아이콘이 없으면 callouts.scss의 기본(note 연필)로 폴백하므로 여기서
+// 책 모양 SVG를 직접 넣는다 — mask-image 방식이라 색은 --color를 따라간다.
+.callout[data-callout="reference"] {
+  --color: var(--cal-ref);
+  --callout-icon: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path><path d="M8 7h6"></path><path d="M8 11h8"></path></svg>');
 }
 
 // Obsidian > 문법 → blockquote
@@ -333,7 +409,12 @@ pre code {
 // mdast blockquote 노드에 callout 클래스만 덧붙임), 이 규칙은 위 .callout 규칙에서
 // 지정하지 않은 속성(border-left/background/padding/color 등)에 한해 콜아웃에도 상속된다.
 // v4에서도 동일하게 발생하던 동작이라 이관 시 그대로 유지 — 회귀 아님.
-blockquote {
+// ⚠️ 반드시 `:not(.callout)`을 유지할 것.
+// 콜아웃의 루트 태그도 <blockquote>다(ofm 파서가 blockquote 노드에 클래스만
+// 덧붙인다). 이 규칙에서 :not을 빼면 custom.scss가 non-layered라 항상 이기는
+// 탓에 **모든 콜아웃의 좌측 보더와 배경이 파랑으로 납작해진다** — 타입별
+// 색이 callouts.scss에 멀쩡히 있는데도 전부 같아 보이던 원인이 이것이었다.
+blockquote:not(.callout) {
   border-left: 3px solid var(--secondary);
   background: rgba(var(--accent-rgb), 0.04);
   padding: 0.7rem 1.2rem;
@@ -572,9 +653,19 @@ thead th {
 }
 tbody tr {
   border-bottom: 1px solid var(--lightgray);
-  &:hover {
-    background: rgba(var(--accent-rgb), 0.04);
-  }
+}
+
+// 얼룩말 무늬 — 3.5%로 아주 옅게. 행 구분선을 이미 쓰고 있어 둘 다 진하면
+// 중복 장치가 되어 표가 시끄러워진다. 보더는 그대로 두고 얼룩만 옅게.
+tbody tr:nth-child(even) {
+  background: rgba(var(--accent-rgb), 0.035);
+}
+
+// hover는 얼룩보다 확실히 진해야 한다 — 예전 값(4%)을 그대로 두면 얼룩진
+// 행에서 hover가 사실상 보이지 않는다. 10%면 얼룩 대비 1.10으로 갈린다.
+// nth-child와 명시도가 같으므로 반드시 뒤에 와야 이긴다(순서 의존).
+tbody tr:hover {
+  background: rgba(var(--accent-rgb), 0.1);
 }
 tbody td {
   padding: 0.5rem 0.8rem;

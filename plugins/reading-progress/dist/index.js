@@ -1,5 +1,5 @@
 // src/components/styles/readingProgress.scss
-var readingProgress_default = "#reading-progress-bar {\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 2px;\n  width: 0%;\n  background: var(--secondary);\n  z-index: 9999;\n  transition: width 0.08s ease-out;\n  pointer-events: none;\n}";
+var readingProgress_default = "#reading-progress-bar {\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 2px;\n  width: 0%;\n  background: var(--accent-state);\n  z-index: 9999;\n  transition: width 0.08s ease-out;\n  pointer-events: none;\n}";
 
 // src/components/scripts/readingProgress.inline.ts
 var readingProgress_inline_default = 'document.addEventListener("nav",()=>{let n=document.getElementById("reading-progress-bar");if(!n)return;let e=()=>{let o=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;n.style.width=t>0?`${Math.min(o/t*100,100)}%`:"0%"};window.addEventListener("scroll",e,{passive:!0}),window.addCleanup(()=>window.removeEventListener("scroll",e)),e()});\n';

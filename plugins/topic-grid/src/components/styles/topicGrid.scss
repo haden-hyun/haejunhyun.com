@@ -53,27 +53,17 @@
     border-color 0.15s,
     transform 0.15s;
 
-  // 44px 이상 터치 영역 보장 (UI/UX 우선순위 2)
+  // 최소 터치 영역
   min-height: 108px;
 
   &:hover {
-    border-color: var(--topic-color);
+    border-color: var(--border-strong);
   }
-}
-
-.topic-card-bar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--topic-color);
 }
 
 .topic-card-label {
   font-family: var(--headerFont);
-  // [2026-08-03] 이모지 제거 후 라벨이 카드의 유일한 시각적 앵커가 되어
-  // 사용자 요청대로 키움(0.95rem → 1.15rem).
+  // 이모지가 없어 라벨이 카드의 유일한 시각적 앵커 — 그래서 크게 잡는다.
   font-size: 1.15rem;
   font-weight: 670;
   color: var(--text);
@@ -93,8 +83,9 @@
   color: var(--text-3);
 }
 
-// 카드 하단 비율 바 — 전체 대비 이 토픽의 노트 수 비중을 시각화한다
-// (원안의 균등 그리드가 지우는 분포 신호를 대신 전달).
+// 카드 하단 비율 바 — 토픽별 노트 수 비중.
+// 토픽 색은 폐지했지만 이 바는 남긴다: 색코딩이 아니라 분포라는 실제 정보를
+// 나르기 때문. 중립색이라 브랜드를 흔들지 않는다.
 .topic-card-share {
   margin-top: 0.35rem;
   height: 3px;
@@ -105,7 +96,7 @@
 
 .topic-card-share-fill {
   height: 100%;
-  background: var(--topic-color);
-  opacity: 0.75;
+  background: var(--text-3);
+  opacity: 0.55;
   border-radius: 2px;
 }

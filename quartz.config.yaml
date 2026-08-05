@@ -17,12 +17,10 @@ configuration:
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
-    # Google Fonts URL 구성 + og-image(satori) 렌더용. 실제 브라우저 표시
-    # 폰트는 아래 `fonts` 플러그인 옵션이 최종 결정하므로 두 값을 맞춰 유지.
-    #
-    # 폰트 방향: 로고(title)=Anton, 헤딩(header)=Hahmlet, 본문(body)=Noto
-    # Sans KR, 코드=JetBrains Mono. 로고를 헤딩과 분리해 브랜드 존/가독성
-    # 존을 나눈다. weights는 각 서체 실사용 굵기에 맞춰 명시.
+    # 폰트 로딩(Google Fonts URL) + og-image 렌더용.
+    # · 실제 표시 폰트는 아래 `fonts` 플러그인이 결정 — 두 곳을 같이 고칠 것
+    # · 로고=Anton / 헤딩=Hahmlet / 본문=Noto Sans KR / 코드=JetBrains Mono
+    # · 로고를 헤딩과 분리해 브랜드 존과 가독성 존을 나눈다
     typography:
       title:
         name: Anton
@@ -32,17 +30,11 @@ configuration:
         weights: [400, 700, 900]
       body: Noto Sans KR
       code: JetBrains Mono
-    # [2026-08-05] "True Midnight" — Blue Note/Blue Giant 레퍼런스 커버에서
-    # 실제 픽셀을 추출해 재구성한 팔레트. 라이트=크림 인쇄지(True Blue 커버),
-    # 다크=잉크 네이비(Blue Giant). accent hue는 True Blue(H208)와
-    # Midnight Blue(H202)의 중간값 H207.
-    #
-    # 모든 값은 WCAG 대비 계산으로 검증됨 — 본문/제목 AAA, 나머지 AA 이상.
-    # 이전 팔레트에서 고친 결함 2건(둘 다 텍스트에 쓰이는데 AA 미달이었음):
-    #   gray     #a09890 → 2.72:1  (날짜·읽기시간·Explorer·TOC·캡션)
-    #   tertiary #6a9ab8 → 2.90:1  (링크 hover 색, base.scss:96)
-    # tertiary는 "hover 시 밝아짐"에서 "진해짐"으로 방향을 바꿨다 —
-    # 라이트 배경에서 밝아지면 대비가 떨어져 AA를 만족시킬 수 없다.
+    # **사이트 색의 단일 소스.** 팔레트 "True Midnight"
+    # · 라이트 = 크림 인쇄지 / 다크 = 잉크 네이비, accent hue H207
+    # · 전 값 WCAG 검증 — 텍스트는 예외 없이 AA 4.5 이상 (DESIGN-SYSTEM.md §6)
+    # · tertiary(링크 hover)는 라이트에서 "밝아짐"이 아니라 "진해짐" —
+    #   밝은 배경에선 밝히는 방향으로 AA를 만족시킬 수 없다
     colors:
       lightMode:
         light: "#f7f5ef" # bg · 크림 인쇄지 (순백 대비 광량 91.3%)
@@ -77,10 +69,16 @@ plugins:
   - source: github:quartz-community/syntax-highlighting
     enabled: true
     options:
+      # ⚠️ 코드 색을 바꾸려면 여기가 아니라 **quartz/styles/syntax.scss**를 볼 것.
+      # 실제 토큰 색은 거기서 `[data-token-type]`으로 전부 덮는다
+      # (tokenClassification 기본값 true가 토큰마다 의미 라벨을 붙여준다).
+      # 아래 theme은 오버라이드가 없는 토큰의 폴백으로만 남는다.
       theme:
         light: catppuccin-latte
         dark: github-dark
-      keepBackground: true
+      # false = Shiki 배경 대신 Quartz 테마 배경 사용.
+      # true면 라이트에서 한랭 회색이 크림 배경 위에 푸른 패치처럼 뜬다.
+      keepBackground: false
     order: 20
   - source: github:quartz-community/obsidian-flavored-markdown
     enabled: true
@@ -101,8 +99,8 @@ plugins:
   - source: ./plugins/summary-description
     enabled: true
     options: {}
-    # `[!summary]` 콜아웃 본문을 frontmatter.description으로 추출.
-    # description(70) 플러그인보다 먼저 실행돼야 하므로 order: 35.
+    # `[!summary]` 콜아웃 본문 → frontmatter.description.
+    # order 35 = ofm(30) 이후, description(70) 이전이어야 한다.
     order: 35
   - source: github:quartz-community/github-flavored-markdown
     enabled: true
@@ -144,16 +142,22 @@ plugins:
     order: 92
   - source: github:quartz-community/fonts
     enabled: true
-    # 실제 --titleFont/--headerFont/--bodyFont/--codeFont 값은 여기서 결정된다
-    # (가장 뒤에 로드되어 최종 승리). 옵션을 비우면 플러그인 기본값(Schibsted
-    # Grotesk 등)으로 덮어써지므로 반드시 명시. fontOrigin: local = 이
-    # 플러그인은 폰트를 로드하지 않음 — 실제 로딩은 위 theme.fontOrigin이 담당.
+    # **--titleFont/--headerFont/--bodyFont/--codeFont의 최종 결정처**
+    # (가장 뒤에 로드되어 승리).
+    # · 옵션을 비우면 플러그인 기본값으로 덮어써지므로 반드시 명시
+    # · fontOrigin: local = 여기선 로드 안 함(로딩은 위 theme.fontOrigin 담당)
     options:
       fontOrigin: local
       title: '"Anton", sans-serif'
       header: '"Hahmlet", serif'
       body: '"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif'
-      code: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
+      # code 스택의 "Noto Sans KR" = 코드블럭 한글 폴백.
+      # · JetBrains Mono엔 한글 글리프가 없어 브라우저 기본 모노(Windows=굴림)로
+      #   떨어졌다. font-family 폴백은 글리프 단위라 라틴만 JetBrains Mono가 된다
+      # · body용으로 이미 로드돼 있어 추가 요청 0
+      # · ⚠️ 한계: 모노스페이스가 아니라 한글 섞인 줄의 세로 정렬이 어긋날 수 있음.
+      #   완전 해결엔 한글 모노(Nanum Gothic Coding) 별도 로딩 경로가 필요
+      code: '"JetBrains Mono", "Noto Sans KR", ui-monospace, SFMono-Regular, Menlo, monospace'
   - source: github:quartz-community/remove-draft
     enabled: true
   - source: github:quartz-community/explicit-publish
@@ -208,12 +212,9 @@ plugins:
     enabled: true
     options:
       folderClickBehavior: collapse
-      # [2026-08-05] 이전엔 true — 예전에 손으로 펼친 다른 토픽 폴더가
-      # localStorage에 계속 남아 세션 내내 트리가 길어지는 문제(사용자
-      # 피드백: "위계 구분이 어렵고 트리도 길어진다"). 현재 파일의 상위
-      # 경로는 explorer.inline.ts가 어차피 자동으로 펼쳐주므로(코드 확인:
-      # "폴더가 현재 slug의 prefix면 강제 open"), 저장 상태 없이도 탐색에
-      # 지장 없음 — 매 페이지 진입 시 현재 경로만 펼치고 나머진 항상 접힘.
+      # false = 펼침 상태를 localStorage에 저장하지 않음.
+      # true면 과거에 펼친 폴더가 계속 남아 트리가 길어져 위계가 무너진다.
+      # 현재 경로는 explorer.inline.ts가 자동으로 펼치므로 탐색에 지장 없음.
       useSavedState: false
     layout:
       position: left
@@ -252,7 +253,7 @@ plugins:
       priority: 11
   - source: ./plugins/home-hero
     enabled: true
-    # Hero + StatsStrip, 홈 전용(컴포넌트 내부 slug 가드). priority 1 = 최상단.
+    # Hero + StatsStrip. 홈 전용(컴포넌트 내부 slug 가드), priority 1 = 최상단.
     options:
       eyebrow: "blue notes. 🎷"
       headline: "어쩌다 보니 모인\n관심사의 파편들"
@@ -272,10 +273,10 @@ plugins:
       priority: 1
   - source: ./plugins/featured-notes
     enabled: true
-    # Featured, 홈 전용. priority 2 = Hero 바로 아래. featured frontmatter가
-    # 없으면 토픽 라운드로빈으로 자동 선정 — `featured: true`를 달면 우선 적용.
-    # recentExcludeCount는 아래 recent-notes-index.limit과 같은 값을 유지할 것
-    # (홈 화면 중복 노출 방지, 설정값을 나란히 맞추는 수준의 결합).
+    # Featured. 홈 전용, priority 2 = Hero 아래.
+    # `featured: true`가 없으면 토픽 라운드로빈으로 자동 선정.
+    # ⚠️ recentExcludeCount는 아래 recent-notes-index.limit과 같은 값 유지
+    #    (홈에서 Featured와 Recent가 같은 글을 중복 노출하는 것 방지).
     options:
       recentExcludeCount: 6
     order: 15
@@ -284,7 +285,7 @@ plugins:
       priority: 2
   - source: ./plugins/topic-grid
     enabled: true
-    # TopicGrid, 홈 전용. priority 3 = Featured 바로 아래.
+    # TopicGrid. 홈 전용, priority 3 = Featured 아래.
     options:
       showHeader: true
     order: 15
@@ -442,8 +443,8 @@ plugins:
       priority: 30
   - source: ./plugins/related-notes
     enabled: false
-    # 노트 하단 "연결된 노트" 섹션 — [2026-08-05] 사용자 요청으로 제거.
-    # 우측 사이드바의 backlinks는 유지(별개 컴포넌트, 그대로 남음).
+    # 노트 하단 "연결된 노트" — 비활성.
+    # 우측 사이드바 backlinks는 별개 컴포넌트라 그대로 동작한다.
     options: {}
     order: 15
     layout:
@@ -471,8 +472,8 @@ plugins:
       position: afterBody
       priority: 20
   - source: ./plugins/visitor-counter
-    # 독립 위치 없음 — footer가 npm(file:) 의존성으로 직접 렌더한다.
-    # layout 키를 비워 위치 기반 렌더 대상에서 제외.
+    # layout 키 없음 = 위치 기반 렌더 제외.
+    # home-hero가 npm(file:) 의존성으로 직접 렌더한다.
     enabled: true
     options: {}
     order: 15

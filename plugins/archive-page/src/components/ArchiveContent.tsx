@@ -8,15 +8,8 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/archiveContent.scss"
 
 /**
- * 글로벌 네비게이션의 "Archive" 라우트
- * ("연도별 타임라인"). 모든 실제 노트를 연도별로 묶어 최신 연도부터
- * 내림차순으로 나열한다.
- *
- * "topics"/"archive" 자체도 이제 allFiles에 가상 페이지로 섞여 들어오므로
- * (다른 페이지의 home-hero/topic-grid/featured-notes/recent-notes-index/
- * related-notes와 동일하게) isRealNote에서 명시적으로 제외한다 — 두 라우트
- * 모두 frontmatter.title이 채워진 채로 생성되기 때문에 title 유무만으로는
- * 걸러지지 않는다.
+ * 내비의 "Archive" 라우트 — 전체 노트를 연도별로 묶어 최신 연도부터 나열.
+ * isRealNote는 home-hero와 동일(사유는 그쪽 주석 참고).
  */
 
 type FileData = QuartzPluginData & Record<string, unknown>
@@ -78,8 +71,7 @@ export default (() => {
     const years = [...byYear.keys()].sort((a, b) => b - a)
 
     return (
-      // <h1>은 article-title 플러그인이 frontmatter.title("Archive")로 렌더 —
-      // topics-page와 동일한 이유로 여기서 중복 렌더하지 않는다.
+      // ⚠️ <h1>은 article-title이 렌더한다 — 여기서 중복 렌더 금지.
       <article class={`${displayClass ?? ""} archive-page-content popover-hint`}>
         <p class="archive-page-sub">
           전체 {files.length}개 노트 · {years.length}개 연도

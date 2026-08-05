@@ -1,13 +1,9 @@
 import { simplifySlug as utilSimplifySlug, joinSegments } from "@quartz-community/utils"
 
-// Local plain-`string` wrapper around @quartz-community/utils' branded-slug
-// helpers. `fileData`/`allFiles` entries are typed as loosely-typed
-// `QuartzPluginData & Record<string, unknown>`, so
-// `.slug` reads back as `unknown`/`string`, not the branded `FullSlug` type
-// that `@quartz-community/utils/path`'s `resolveRelative` expects. Mirrors
-// the same pattern used by plugins/recent-notes-index/src/util/path.ts and
-// the installed `recent-notes` community plugin
-// (`.quartz/plugins/recent-notes/src/util/path.ts`).
+// utils의 branded slug 헬퍼를 평범한 `string`으로 감싼 래퍼.
+// allFiles 항목의 `.slug`는 `string`으로 읽히는데 utils의 resolveRelative는
+// branded `FullSlug`를 요구해서 그대로는 안 맞는다.
+// 다른 로컬 플러그인들도 같은 파일을 복제해 쓴다.
 
 export function simplifySlug(fp: string): string {
   return utilSimplifySlug(fp)

@@ -35,7 +35,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/topicGrid.scss
-var topicGrid_default = ".topic-grid-section {\n  margin: 1.5rem 0 2rem 0;\n}\n\n.topic-grid-header {\n  display: flex;\n  align-items: baseline;\n  justify-content: space-between;\n  margin-bottom: 0.9rem;\n}\n.topic-grid-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 720;\n}\n\n.topic-grid-total {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  color: var(--text-3);\n}\n\n.topic-grid {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  gap: 12px;\n}\n@media all and (max-width: 1080px) {\n  .topic-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media all and (max-width: 480px) {\n  .topic-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.topic-card {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  gap: 0.15rem;\n  padding: 1rem 1rem 0.9rem 1.1rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  overflow: hidden;\n  transition: border-color 0.15s, transform 0.15s;\n  min-height: 108px;\n}\n.topic-card:hover {\n  border-color: var(--topic-color);\n}\n\n.topic-card-bar {\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  width: 3px;\n  background: var(--topic-color);\n}\n\n.topic-card-label {\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 670;\n  color: var(--text);\n  margin-top: 0.2rem;\n}\n\n.topic-card-subtext {\n  font-size: 0.76rem;\n  color: var(--text-2);\n  line-height: 1.4;\n}\n\n.topic-card-count {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  color: var(--text-3);\n}\n\n.topic-card-share {\n  margin-top: 0.35rem;\n  height: 3px;\n  border-radius: 2px;\n  background: var(--surface-2);\n  overflow: hidden;\n}\n\n.topic-card-share-fill {\n  height: 100%;\n  background: var(--topic-color);\n  opacity: 0.75;\n  border-radius: 2px;\n}";
+var topicGrid_default = ".topic-grid-section {\n  margin: 1.5rem 0 2rem 0;\n}\n\n.topic-grid-header {\n  display: flex;\n  align-items: baseline;\n  justify-content: space-between;\n  margin-bottom: 0.9rem;\n}\n.topic-grid-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 720;\n}\n\n.topic-grid-total {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  color: var(--text-3);\n}\n\n.topic-grid {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  gap: 12px;\n}\n@media all and (max-width: 1080px) {\n  .topic-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media all and (max-width: 480px) {\n  .topic-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.topic-card {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  gap: 0.15rem;\n  padding: 1rem 1rem 0.9rem 1.1rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  overflow: hidden;\n  transition: border-color 0.15s, transform 0.15s;\n  min-height: 108px;\n}\n.topic-card:hover {\n  border-color: var(--border-strong);\n}\n\n.topic-card-label {\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 670;\n  color: var(--text);\n  margin-top: 0.2rem;\n}\n\n.topic-card-subtext {\n  font-size: 0.76rem;\n  color: var(--text-2);\n  line-height: 1.4;\n}\n\n.topic-card-count {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  color: var(--text-3);\n}\n\n.topic-card-share {\n  margin-top: 0.35rem;\n  height: 3px;\n  border-radius: 2px;\n  background: var(--surface-2);\n  overflow: hidden;\n}\n\n.topic-card-share-fill {\n  height: 100%;\n  background: var(--text-3);\n  opacity: 0.55;\n  border-radius: 2px;\n}";
 var l;
 function S(n2) {
   return n2.children;
@@ -65,39 +65,33 @@ var TOPICS = [
   {
     key: "computer-science",
     label: "Computer Science",
-    subtext: "\uC54C\uACE0\uB9AC\uC998 \xB7 \uC790\uB8CC\uAD6C\uC870",
-    colorVar: "--c-cs"
+    subtext: "\uC54C\uACE0\uB9AC\uC998 \xB7 \uC790\uB8CC\uAD6C\uC870"
   },
   {
     key: "data-engineering",
     label: "Data Engineering",
-    subtext: "Airflow \xB7 Docker \xB7 PostgreSQL",
-    colorVar: "--c-de"
+    subtext: "Airflow \xB7 Docker \xB7 PostgreSQL"
   },
   {
     key: "data-science",
     label: "Data Science",
-    subtext: "DL \xB7 ML \xB7 \uD1B5\uACC4 \xB7 \uC2DC\uAC01\uD654",
-    colorVar: "--c-ds"
+    subtext: "DL \xB7 ML \xB7 \uD1B5\uACC4 \xB7 \uC2DC\uAC01\uD654"
   },
-  { key: "gis", label: "GIS", subtext: "\uACF5\uAC04 \uB370\uC774\uD130 \uBD84\uC11D", colorVar: "--c-gis" },
+  { key: "gis", label: "GIS", subtext: "\uACF5\uAC04 \uB370\uC774\uD130 \uBD84\uC11D" },
   {
     key: "programming",
     label: "Programming",
-    subtext: "Python \xB7 SQL",
-    colorVar: "--c-prog"
+    subtext: "Python \xB7 SQL"
   },
   {
     key: "finance-property",
     label: "Finance & Property",
-    subtext: "\uBD80\uB3D9\uC0B0 \xB7 \uAE08\uC735",
-    colorVar: "--c-fin"
+    subtext: "\uBD80\uB3D9\uC0B0 \xB7 \uAE08\uC735"
   },
   {
     key: "tools",
     label: "Tools",
-    subtext: "Obsidian \xB7 \uC6CC\uD06C\uD50C\uB85C\uC6B0",
-    colorVar: "--c-tool"
+    subtext: "Obsidian \xB7 \uC6CC\uD06C\uD50C\uB85C\uC6B0"
   }
 ];
 function isRealNote(slug) {
@@ -148,9 +142,7 @@ var TopicGrid_default = ((userOpts) => {
         {
           class: "topic-card",
           href: resolveRelative(fileData.slug, t2.key),
-          style: `--topic-color: var(${t2.colorVar});`,
           children: [
-            /* @__PURE__ */ u2("i", { class: "topic-card-bar", "aria-hidden": "true" }),
             /* @__PURE__ */ u2("b", { class: "topic-card-label", children: t2.label }),
             /* @__PURE__ */ u2("span", { class: "topic-card-subtext", children: t2.subtext }),
             /* @__PURE__ */ u2("div", { class: "topic-card-count", children: [

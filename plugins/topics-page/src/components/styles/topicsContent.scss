@@ -42,17 +42,8 @@
   min-height: 116px;
 
   &:hover {
-    border-color: var(--topic-color);
+    border-color: var(--border-strong);
   }
-}
-
-.topics-page-bar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--topic-color);
 }
 
 .topics-page-label {
@@ -87,7 +78,8 @@
 
 .topics-page-share-fill {
   height: 100%;
-  background: var(--topic-color);
-  opacity: 0.75;
+  // [2026-08-05] 토픽별 색 폐지 — 비율 바만 중립색으로 남긴다(분포는 정보).
+  background: var(--text-3);
+  opacity: 0.55;
   border-radius: 2px;
 }

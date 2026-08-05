@@ -1,7 +1,6 @@
 // Hero 레이아웃.
-// 토큰은 custom.scss §0에서 정의한 별칭(--accent, --text 등)을 그대로 참조 —
-// 값을 새로 정의하지 않는다. 플러그인이 자기 색을 병렬로 정의하면 사이트가
-// 분열된다(색의 단일 소스는 quartz.config.yaml의 theme.colors).
+// ⚠️ 색은 custom.scss §0의 토큰(--accent, --text 등)만 참조한다.
+//    플러그인에서 색 값을 새로 정의하지 말 것 — 단일 소스는 quartz.config.yaml.
 
 .home-hero {
   display: grid;
@@ -21,14 +20,12 @@
 }
 
 .hero-eyebrow {
-  // [2026-08-05] titleFont(Anton) → headerFont(Hahmlet) 재변경 — "너무
-  // 뚱뚱하다" 피드백. Anton은 로고 전용 디스플레이 서체라 두께가 과했다.
+  // Anton은 로고 전용 디스플레이 서체라 UI 텍스트엔 과하다 → headerFont 사용.
   font-family: var(--headerFont);
-  font-size: 0.95rem; // 0.72 → 0.95 (2026-08-05 사용자 요청: 확대)
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  // 목업 원본은 대문자 강제였으나, 실제 콘텐츠("blue notes. 🎷")는 소문자로
-  // 쓰도록 의도된 문구라 강제 변환을 뺐다(사용자 피드백).
+  // text-transform 없음 — 문구("blue notes. 🎷")가 소문자 의도.
   color: var(--accent);
   margin-bottom: 0.6rem;
 }
@@ -50,8 +47,7 @@
 }
 
 .hero-description {
-  // headerFont(Hahmlet) — 2026-08-05 사용자 요청. 본문 서체(Noto Sans KR)
-  // 대신 헤딩 서체로, Hero 존 전체의 브랜드 무드를 통일한다.
+  // 본문 서체가 아니라 헤딩 서체 — Hero 존 전체의 브랜드 무드를 통일한다.
   font-family: var(--headerFont);
   font-size: 1.02rem;
   line-height: 1.7;
@@ -70,9 +66,8 @@
 .hero-btn {
   display: inline-flex;
   align-items: center;
-  // [2026-08-05] titleFont(Anton) → headerFont(Hahmlet) 재변경 — "너무
-  // 뚱뚱하다" 피드백. §hero-eyebrow와 같은 이유(Anton은 로고 전용).
-  font-family: var(--headerFont);
+  font-family: var(--headerFont); // §hero-eyebrow와 같은 이유
+
   font-size: 0.9rem;
   font-weight: 600;
   padding: 0.55rem 1.1rem;
@@ -84,8 +79,8 @@
     border-color 0.15s,
     background-color 0.15s;
 
-  // 44px 이상 터치 영역 (UI/UX 우선순위 2: Touch & Interaction)
-  min-height: 44px;
+  min-height: 44px; // 최소 터치 영역
+
   box-sizing: border-box;
 
   &:hover {
@@ -94,20 +89,17 @@
   }
 }
 
-// [2026-08-05] --accent(블루) → --accent-2(Chitlins 핑크).
-// Play Notes는 이 사이트에서 유일하게 "누르는 것"인데, 본문 링크와 같은
-// 블루를 쓰면 "이동하는 것"과 위계가 구분되지 않았다. 웜 액센트를 줘서
-// 화면 전체에서 핑크가 이 버튼 한 곳에만 나타나게 한다.
-// --accent-2 정의는 quartz/styles/custom.scss §0. 대비 5.14:1 (AA).
+// 사이트 색의 세 축 중 **행위(Brick)**. 정의는 custom.scss §0, 대비 4.94:1 AA.
+// 블루(--accent)를 쓰면 "누르는 것"과 "이동하는 것"의 위계가 구분되지 않는다.
 .hero-btn-primary {
-  background: var(--accent-2);
-  border-color: var(--accent-2);
-  // --surface(=--light) = 배경색 토큰. 핑크 위에 올려 5.14:1 확보.
-  color: var(--surface);
+  background: var(--accent-action);
+  border-color: var(--accent-action);
+  color: var(--surface); // 배경색 토큰 = 브릭 위 4.94:1
+
 
   &:hover {
     opacity: 0.9;
-    background: var(--accent-2);
+    background: var(--accent-action);
   }
 }
 
@@ -130,10 +122,8 @@
   }
 }
 
-// [2026-08-04] 아바타 열 — 이미지(또는 이니셜 원) + 방문자 카운터를 세로로
-// 묶는 컨테이너. 예전엔 .home-hero 그리드의 두 번째 칸이 .hero-avatar
-// 자체였는데, 카운터가 그 아래 한 줄 더 들어오면서 wrapper가 필요해졌다
-// (자리는 동일 — 오른쪽 칸 하나, 폭만 내용에 맞춰 줄어듦).
+// 아바타 열 — .home-hero 그리드의 우측 칸. 이미지(또는 이니셜 원)와
+// 방문자 카운터를 세로로 묶는다.
 .hero-avatar-col {
   display: flex;
   flex-direction: column;
@@ -169,13 +159,8 @@
   }
 }
 
-// [2026-08-04] 사용자 요청 — avatar.png(배경 없는 캐릭터 일러스트, 세로
-// 484:894) 적용. 원(.hero-avatar)과 달리 인물 사진이 아니라 세로로 긴
-// 전신 일러스트라 원형 마스크로 자르면 손·얼굴이 잘린다 — 마스크 없이
-// object-fit:contain으로 비율만 유지해서 같은 칸(우측 컬럼)에 놓는다.
-// 높이는 이전 원(104px)보다 크게 잡아야 일러스트 디테일이 살아서
-// 220px(Hero 본문 높이에 맞춘 값)로 — "beforeBody 크기에 맞춰"라는 요청대로
-// Hero 섹션 자체 높이에 맞췄다.
+// avatar.png는 세로로 긴 전신 일러스트(484:894)라 **원형 마스크를 씌우면 안 된다**
+// (손·얼굴이 잘림). contain으로 비율만 유지하고, 높이는 Hero 섹션에 맞춘 220px.
 .hero-avatar-img {
   height: 220px;
   width: auto;
@@ -188,10 +173,8 @@
   }
 }
 
-// [2026-08-04] 방문자 카운터 — footer(afterBody, 전 페이지)에서 이전.
-// VisitorCounter 자체 CSS(margin: 0.1rem 0 0.6rem 0; 좌측 정렬 기준)는
-// 원래 footer 한 줄 레이아웃 전제라, 아바타 아래 중앙에 놓이도록 여기서
-// 리셋한다.
+// VisitorCounter 자체 CSS는 footer 한 줄 레이아웃(좌측 정렬) 전제라,
+// 아바타 아래 중앙 배치를 위해 여기서 리셋한다.
 .hero-visitor-counter {
   .visitor-counter {
     margin: 0;
