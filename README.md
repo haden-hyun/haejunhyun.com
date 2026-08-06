@@ -29,7 +29,7 @@ Cloudflare ── haejunhyun.com 서빙
 |---|---|
 | `content/` | 블로그 원고. Obsidian vault(`~/Documents/obsidian/00-Blog/content`)로의 **심볼릭 링크** — 이 저장소에는 실제 파일이 없다 |
 | `public/` | 빌드 결과물(정적 사이트). **커밋 대상**이며 Cloudflare가 이 폴더를 그대로 서빙한다 |
-| `plugins/` | 로컬 커스텀 플러그인 9종. 각각 독립 npm 패키지로, 자체 install/빌드가 필요하다 |
+| `plugins/` | 로컬 커스텀 플러그인 20종. 각각 독립 npm 패키지로, 자체 install/빌드가 필요하다 |
 | `scripts/` | 배포 스크립트 3종 (아래 참고) |
 | `quartz/` | Quartz v5 코어. `quartz/styles/custom.scss` 외에는 수정하지 않는 것이 원칙 |
 | `docs/` | Quartz 공식 문서 (upstream 그대로) |

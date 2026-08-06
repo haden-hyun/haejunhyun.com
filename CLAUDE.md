@@ -13,7 +13,7 @@ Obsidian vault를 **Quartz v5**로 빌드해 Cloudflare로 서빙하는 개인 �
 |---|---|
 | `DESIGN-SYSTEM.md` | **디자인의 현재 상태.** 색·서체를 건드리기 전 §6(고칠 때 규칙) 필독 |
 | `CHANGELOG.md` | "왜 이렇게 됐나"의 타임라인. 서사는 전부 여기 |
-| `README.md` | 배포 구조 ⚠️ 로컬 플러그인 개수가 낡음(9종 → 실제 19종) |
+| `README.md` | 배포 구조 |
 | `haejun-redesign-palette.html` | 정적 목업. **빌드 없이 열리는 유일한 시각 검증 수단** |
 
 **주석은 핵심 기능·커스텀 로직에만, 한 줄로.** `.scss`/`.yaml`/`.tsx` 어디든 동일 — "왜
@@ -40,8 +40,13 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 로컬 플러그인은 `dist/`가 커밋 대상
 
-`plugins/*` 19종. 각각 독립 npm 패키지다.
+`plugins/*` 20종. 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
+
+⚠️ **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
+9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의
+코드를 쓰고 있었다(2026-08-06 발견·교정). `plugin install`은 락파일을 따르므로 링크를
+지워도 되살아난다 — **락파일을 먼저 고칠 것.** 증상은 "고쳤는데 안 바뀐다"이다.
 
 ### `custom.scss`는 비-레이어라 항상 이긴다
 

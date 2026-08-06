@@ -3,6 +3,35 @@
 작성일: 2026-08-06
 대상 독자: 이 작업을 이어받을 개발자 / 에이전트
 
+> **상태: 구현 완료(2026-08-06).** 결과물은 `plugins/image-layouts`, 설계 결정은
+> `DESIGN-SYSTEM.md §4.9`. 아래 문서는 착수 전 계획이라 **일부가 사실과 다르다** —
+> 0장의 정정표를 먼저 읽을 것.
+
+---
+
+## 0. 구현 후 정정 (원본 소스·실측으로 확인)
+
+| 절 | 문서의 내용 | 실제 |
+|---|---|---|
+| §4.4 | ASCII 그리드 예시 `AAB` / `AAC` | **틀림.** 원본은 `line.split(/\s+/)` — 행은 **공백으로** 나눈다. `A A B` / `A A C`가 맞다. 붙여 쓰면 한 줄이 토큰 1개가 되어 1열 그리드가 된다 |
+| §4.4 | 이미지가 `A`, `B`, `C` 영역에 배정 | 영역 이름은 letter가 아니라 **`image-0`, `image-1`…**(등장 순서). 프리셋도 같은 이름을 써서 CSS 경로가 하나로 합쳐진다 |
+| §5.1 | `"category": ["transformer"]` | **문자열이다** — `"category": "transformer"`. 배열로 쓰는 플러그인은 이 저장소에 하나도 없다 |
+| §5.5 | 컨테이너를 `type: "paragraph"`로 생성 | **잘못된 mdast.** `paragraph`의 자식은 phrasing content여야 한다. OFM 콜아웃과 같이 **`type: "blockquote"` + `hName`**을 쓴다(렌더 결과는 `<div>`라 `blockquote:not(.callout)` 규칙과 무관) |
+| §5.6 | `prenav`를 직접 구독해 cleanup 배열 관리 | 불필요. Quartz 전역 **`window.addCleanup(fn)`** 하나면 된다 — 이 저장소 스크립트 5종이 전부 그렇게 쓴다 |
+| §6 | `order: 20` | 20은 syntax-highlighting이 점유. 실제 채택 **55**(GFM 40 다음, CrawlLinks 60 앞) |
+| §5.4 | 블록 프런트매터를 YAML로 파싱 | `yaml` 패키지는 **쓰면 안 된다.** node 조건에서 CJS로 해석돼 번들에 `__require("process")` 셰임이 남고 런타임에 플러그인이 통째로 죽는다. 필요한 문법이 `key: 스칼라`와 블록 스칼라뿐이라 `parse-options.ts`로 직접 파싱한다 |
+| §10 | masonry는 `grid-template-rows: masonry` | 어느 브라우저도 지원하지 않는 잔재. 원본도 실제로는 **modulo 분배**로 그린다. 우리는 빌드 타임에 분배하므로 JS가 0이다 |
+
+**§4.5 파이프 판별 규칙은 문서가 맞았다** — `/^(\d+)(?:x(\d+))?$/`. 다만 파이프는
+여러 개 누적된다(`![[a.png|300|캡션]]` → width 300 + 캡션).
+
+구현 중 추가로 드러난 함정 둘:
+
+- **`scroll-behavior: smooth`를 `.il-viewport`에 넣으면 안 된다.** `scroll-snap: mandatory`
+  스크롤러에서 애니메이션이 스냅에 먹혀 프로그램적 스크롤이 통째로 무시된다(실측).
+- **프로그램적 스크롤은 `scroll` 이벤트를 보장받지 못한다.** 썸네일 활성 표시를
+  scroll 리스너에만 맡기면 갱신이 끊긴다 — `goTo()`에서 직접 동기화한다.
+
 ---
 
 ## 1. 목적
