@@ -47,8 +47,9 @@ configuration:
         highlight: rgba(28,95,149,0.10)
         # `==강조==` 밑줄 밴드. 세 축(공간/행위/시간)에 속하지 않는 신호라
         # 색상이 아니라 명도로만 구분한다 — 인라인 코드와 같은 "재질" 해법.
-        # 밴드 위 본문(#323e4c) 대비 7.99:1 AAA
-        textHighlight: "#e5dcc4"
+        # ⚠️ 배경(#f7f5ef)과의 대비도 함께 볼 것 — 밴드가 안 보이면 기능이 없다.
+        # 배경 대비 1.82 / 밴드 위 본문(#323e4c) 5.49 AA
+        textHighlight: "#ccb684"
       darkMode:
         light: "#0e1420" # bg · 잉크 네이비 (Blue Giant #0c0c24 계열)
         lightgray: "#1e2836" # border
@@ -58,7 +59,7 @@ configuration:
         secondary: "#6fb2e0" # accent        8.00:1  AAA
         tertiary: "#9dcdec" # accent hover 10.86:1  AAA
         highlight: rgba(111,178,224,0.15)
-        textHighlight: "#2a3444" # 밴드 위 본문(#bcc9d9) 대비 7.40:1 AAA
+        textHighlight: "#36435a" # 배경 대비 1.85 / 밴드 위 본문(#bcc9d9) 5.93 AA
 plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true

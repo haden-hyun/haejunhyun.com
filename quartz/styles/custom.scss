@@ -224,22 +224,27 @@ article strong {
 }
 
 // Noto Sans KR엔 진짜 이탤릭이 없어 브라우저가 합성 오블리크를 만든다.
-// 한글엔 이탤릭 관습 자체가 없으므로 기울임 대신 톤 다운으로 "방백"을 낸다.
-// 잉크는 인용/출처 계열(--cal-quote)과 공유한다 — 둘 다 "다른 목소리"다.
+// 한글엔 이탤릭 관습 자체가 없으므로 기울임 대신 자간으로 "다른 목소리"를 낸다.
+// ⚠️ --cal-quote로 되돌리지 말 것 — 그 값(6.08)은 본문 p(10.96)보다 **연해서**
+//    강조인데 오히려 물러나 보였다. 본문과 같은 잉크로 올려 역전을 없앤다.
 article em {
   font-style: normal;
-  color: var(--cal-quote);
+  color: var(--darkgray);
   letter-spacing: 0.02em;
 }
 
 // `==강조==` — 채움이 아니라 밑줄 밴드. 채움으로 두면 인라인 코드 칩
 // (--code-chip-bg #eae4d6 + 보더)과 값이 가까워 혼동된다. 칩=박스,
 // 하이라이트=밑줄로 형태를 갈라둔다. 색은 --textHighlight(웜 뉴트럴) 단일 소스.
-.text-highlight {
+// ⚠️ `<mark>`를 같이 잡을 것 — ofm은 `==...==`에만 .text-highlight를 붙여서,
+//    원고가 직접 쓴 <mark>는 브라우저 기본 형광 노랑(#ffff00)으로 샜다.
+.text-highlight,
+article mark {
   background-color: transparent;
   box-shadow: inset 0 -0.45em 0 var(--textHighlight);
   border-radius: 0;
   padding: 0;
+  color: inherit;
 }
 
 // 본문 내부 링크만 하단선 (사이드바 링크 오염 방지)
