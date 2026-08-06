@@ -19,6 +19,7 @@ document.addEventListener("nav", () => {
 
   for (const el of document.querySelectorAll("article img")) {
     const img = el as HTMLImageElement
+    if (img.closest(".il-thumb")) continue // 캐러셀 썸네일은 감상 대상이 아니라 네비게이션 컨트롤
     img.style.cursor = "zoom-in"
     const open = () => {
       const lightboxImg = document.getElementById("lightbox-img") as HTMLImageElement

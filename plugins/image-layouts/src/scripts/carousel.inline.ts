@@ -13,14 +13,18 @@ document.addEventListener("nav", () => {
     const thumbs = Array.from(carousel.querySelectorAll<HTMLElement>(".il-thumb"))
     const current = () => Math.round(viewport.scrollLeft / viewport.clientWidth)
 
-    const goTo = (index: number) => {
-      const slide = slides[Math.max(0, Math.min(slides.length - 1, index))]
-      if (slide) viewport.scrollTo({ left: slide.offsetLeft - viewport.offsetLeft })
-    }
-
     const syncThumbs = () => {
       const active = current()
       thumbs.forEach((thumb, i) => thumb.classList.toggle("is-active", i === active))
+    }
+
+    const goTo = (index: number) => {
+      const slide = slides[Math.max(0, Math.min(slides.length - 1, index))]
+      if (!slide) return
+      // ⚠️ behavior:"smooth"를 쓰지 말 것 — scroll-snap:mandatory 스크롤러에서는
+      //    애니메이션이 스냅에 먹혀 스크롤이 통째로 무시된다(즉시 이동은 정상 동작).
+      viewport.scrollTo({ left: slide.offsetLeft - viewport.offsetLeft })
+      syncThumbs() // 프로그램적 이동은 scroll 이벤트를 보장받지 못한다
     }
 
     const addButton = (cls: string, label: string, glyph: string, onClick: () => void) => {

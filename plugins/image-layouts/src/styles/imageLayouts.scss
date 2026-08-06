@@ -81,8 +81,9 @@
     height: var(--il-carousel-height, 24rem);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
     scrollbar-width: none;
+    // ⚠️ scroll-behavior: smooth를 여기 두지 말 것 — 화면 밖에서는 애니메이션이 돌지 않아
+    //    프로그램적 스크롤이 통째로 무시된다. 애니메이션은 JS의 scrollTo에서 지정한다.
 
     &::-webkit-scrollbar { display: none; }
   }
