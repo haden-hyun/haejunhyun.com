@@ -567,9 +567,10 @@ a.tag-link {
   color: var(--secondary) !important;
 }
 
-// 좌측 사이드바 섹션 간 상하 간격 (base는 1.2rem — 사용자 요청으로 축소)
+// 좌측 사이드바 섹션 간 상하 간격. SPECS(사양)와 CATALOG(수록곡)는 성격이 다른
+// 두 블록이라 확실히 갈려야 한다 — CATALOG 단독이던 시절의 0.8rem으로는 붙어 보였다.
 .sidebar.left {
-  gap: 0.8rem;
+  gap: 1.6rem;
 }
 
 // ── 6.5 노트 본문 표 헤더만 본문 서체 ──────────────────────────────────────
@@ -698,20 +699,28 @@ button.toc-header h3,
 // 예전엔 CATALOG 0.82 / TOC 0.78 / Backlinks 미지정(본문 크기 상속)이라
 // 백링크만 유독 커 보였다.
 // ⚠️ CATALOG 항목 규칙은 플러그인의 noteCatalog.scss에도 있다 — 둘을 같이 고칠 것.
-// 색도 하나로 — 넷 다 링크이므로 공간 축(블루)이 맞는 부호다.
-// ⚠️ 웜 액센트로 바꾸지 말 것: Chitlins는 TOC 활성 표시와 같은 색이라 "지금 읽는
-//    위치"가 사라지고, Brick은 페이지당 1회인 CTA 색이라 사이드바 수십 줄에 깔면
-//    CTA를 찾을 수 없게 된다. SPECS의 topic이 이미 블루라 변경도 가장 적다.
+// 기본은 --gray, **현재 위치만** 블루로 칠한다.
+// ⚠️ 항목 전체를 --secondary로 채우지 말 것(2026-08-07 시도 후 되돌림) — 사이드바가
+//    통째로 파래져 "지금 여기"가 묻힌다. 색은 목록 전체가 아니라 한 줄에만 쓴다.
+// ⚠️ 웜 액센트도 쓰지 말 것: Chitlins는 읽기 진행바와, Brick은 CTA와 신호가 겹친다.
 .note-catalog .note-catalog-link,
 .toc-content li > a,
 .backlinks ul li a {
   font-family: var(--headerFont);
   font-size: 0.8rem;
-  color: var(--secondary);
+  color: var(--gray);
 
   &:hover {
-    color: var(--tertiary);
+    color: var(--secondary);
   }
+}
+
+// CATALOG 현재 노트 — "지금 여기"를 칠하는 유일한 한 줄.
+// ⚠️ 이 줄을 지우지 말 것. 플러그인의 `.active` 규칙은 `@layer quartz-base` **안**에
+//    있고 위 규칙은 레이어 밖이라, 명시도(0,3,0 > 0,2,0)와 무관하게 --gray가 이겨
+//    현재 노트까지 회색이 된다. 비-레이어끼리 다시 붙여야 명시도가 작동한다.
+.note-catalog .note-catalog-link.active {
+  color: var(--secondary);
 }
 
 // ⚠️ `opacity: 1`을 되돌리지 말 것. base(table-of-contents 플러그인)는 비활성
@@ -735,11 +744,15 @@ button.toc-header h3,
   line-height: 1.5;
 }
 
-// 활성 표시는 시간 축(--accent-state) — "지금 읽고 있는 위치"라 읽기 진행바와
-// 같은 질문에 답한다. 블루(공간 축)를 쓰면 링크와 신호가 겹친다.
+// 활성 표시는 공간 축(--secondary) — 좌측 CATALOG의 현재 노트와 **같은 색**이어야
+// "지금 여기"가 사이드바 전체에서 한 부호로 읽힌다. 나머지 항목이 --gray라
+// 링크와 겹칠 여지도 없다(색이 목록 전체가 아니라 한 줄에만 있다).
+// ⚠️ --accent-state로 되돌리지 말 것 — 그러면 CATALOG 현재 노트와 TOC 현재 절이
+//    다른 색이 되어 같은 질문에 두 부호로 답하게 된다. 읽기 진행바는 위치가 아니라
+//    진행률이므로 --accent-state를 그대로 쓴다.
 .toc-content.overflow > li > a.in-view,
 .toc-content li.depth-0 > a.in-view {
-  color: var(--accent-state);
+  color: var(--secondary);
   opacity: 1;
   font-weight: 600;
 }
@@ -751,8 +764,8 @@ button.toc-header h3,
   padding-left: 0.7rem;
 
   &.in-view {
-    color: var(--accent-state);
-    border-left-color: var(--accent-state);
+    color: var(--secondary);
+    border-left-color: var(--secondary);
     font-weight: 600;
   }
 }

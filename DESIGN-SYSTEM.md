@@ -335,18 +335,26 @@ Backlinks · Graph View 전부 헤딩 기본값(Hahmlet 700 / 1rem / `--darkgray
 라벨이 콘텐츠보다 시끄러워지고 "Table of Contents"가 대문자로 뭉갠다. 다시 하지 말 것.
 
 **패널 항목도 한 규칙으로 통일한다** (2026-08-07) — CATALOG 노트 · TOC 절 ·
-Backlinks 노트 전부 **Hahmlet / 0.8rem / `--secondary`**, hover `--tertiary`.
+Backlinks 노트 전부 **Hahmlet / 0.8rem / `--gray`**, hover `--secondary`.
 셋 다 "다른 곳으로 가는 링크"라 같은 물건이다. 예전엔 CATALOG 0.82 / TOC 0.78 /
 Backlinks **미지정(본문 크기 상속)** 이라 백링크만 유독 커 보였다.
 
-| 후보 | 기각 사유 |
-|---|---|
-| Chitlins | **TOC 활성 표시와 같은 색** — 전체가 이 색이면 "지금 읽는 위치"가 사라진다 |
-| Brick | 페이지당 1회인 **CTA 색** — 사이드바 수십 줄에 깔면 CTA를 찾을 수 없다 |
-| **Blue ✅** | 넷 다 링크이므로 공간 축이 맞고, SPECS의 topic이 이미 블루라 변경이 가장 적다 |
+**색은 목록이 아니라 "지금 여기" 한 줄에만 쓴다.** CATALOG의 현재 노트와 TOC의 현재
+절만 `--secondary`, 나머지는 전부 `--gray`. 둘이 같은 색이어야 "지금 여기"가 사이드바
+전체에서 한 부호로 읽힌다.
 
-⚠️ 항목 색 규칙은 `custom.scss` 한 곳에 둔다. `noteCatalog.scss`에도 `--gray`
-지정이 남아 있으면 명시도·순서로 되살아난다 — 플러그인 쪽엔 **형태만** 남긴다.
+⚠️ 항목 전체를 `--secondary`로 채우는 안은 2026-08-07에 시도했다 되돌렸다 —
+사이드바가 통째로 파래져 정작 현재 위치가 묻힌다.
+⚠️ TOC 활성을 `--accent-state`(chitlins)로 되돌리지 말 것 — 그러면 CATALOG 현재 노트와
+TOC 현재 절이 서로 다른 색이 되어 같은 질문에 두 부호로 답한다. 읽기 진행바는 위치가
+아니라 **진행률**이므로 `--accent-state`를 그대로 쓴다.
+⚠️ 웜 액센트는 둘 다 못 쓴다 — Chitlins는 읽기 진행바와, Brick은 CTA(페이지당 1회)와
+신호가 겹친다.
+
+⚠️ **`.note-catalog-link.active` 색은 `custom.scss`에도 반드시 있어야 한다.**
+플러그인의 `.active` 규칙은 `@layer quartz-base` **안**이고 항목 기본 규칙은 레이어
+밖이라, 명시도(0,3,0 > 0,2,0)와 무관하게 `--gray`가 이겨 **현재 노트까지 회색이 된다.**
+비-레이어끼리 다시 붙여야 명시도가 작동한다. 플러그인 쪽엔 **형태만** 남긴다.
 
 **SPECS 블록** — 제목 바로 아래에 뭉쳐 있던 날짜·읽기시간·태그를 **좌측 최상단**
 음반 사양 표기로 옮겼다(`plugins/note-specs`). 제목에서 본문으로 가는 길이 비워진다.
