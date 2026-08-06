@@ -588,9 +588,19 @@ body:not([data-slug="index"]) article thead {
 // 렌더되었고, useSavedState 옵션이 동작하지 않아 열었던 폴더가
 // localStorage에 영구 누적됐다. 상세는 CHANGELOG.md.
 
+// SPECS(priority 10) → CATALOG(50) 순. SPECS는 자연 높이로 고정하고
+// 목록인 CATALOG만 남는 높이를 받아 스크롤한다.
 .sidebar.left > .note-catalog,
 .sidebar.left > .desktop-only > .note-catalog {
   min-height: 0;
+}
+
+.sidebar.left {
+  > .note-specs,
+  > .desktop-only > .note-specs {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
 }
 
 // ── 8. 우측 사이드바 — TOC / Backlinks / Graph ────────────────────────────
@@ -625,12 +635,6 @@ button.toc-header h3,
 }
 
 .sidebar.right {
-  // SPECS는 최상단 고정 — 사양 표기는 스크롤되지 않는다.
-  .note-specs {
-    flex: 0 0 auto;
-    min-height: 0;
-  }
-
   .toc {
     flex: 1 1 0;
     min-height: 4rem;
@@ -689,18 +693,35 @@ button.toc-header h3,
   }
 }
 
+// 패널 **항목** 3종(CATALOG 노트 · TOC 절 · Backlinks 노트)도 라벨과 같은
+// 논리로 한 규칙에 둔다 — 셋 다 "다른 곳으로 가는 링크"라 같은 물건이다.
+// 예전엔 CATALOG 0.82 / TOC 0.78 / Backlinks 미지정(본문 크기 상속)이라
+// 백링크만 유독 커 보였다.
+// ⚠️ CATALOG 항목 규칙은 플러그인의 noteCatalog.scss에도 있다 — 둘을 같이 고칠 것.
+// 색도 하나로 — 넷 다 링크이므로 공간 축(블루)이 맞는 부호다.
+// ⚠️ 웜 액센트로 바꾸지 말 것: Chitlins는 TOC 활성 표시와 같은 색이라 "지금 읽는
+//    위치"가 사라지고, Brick은 페이지당 1회인 CTA 색이라 사이드바 수십 줄에 깔면
+//    CTA를 찾을 수 없게 된다. SPECS의 topic이 이미 블루라 변경도 가장 적다.
+.note-catalog .note-catalog-link,
+.toc-content li > a,
+.backlinks ul li a {
+  font-family: var(--headerFont);
+  font-size: 0.8rem;
+  color: var(--secondary);
+
+  &:hover {
+    color: var(--tertiary);
+  }
+}
+
 // ⚠️ `opacity: 1`을 되돌리지 말 것. base(table-of-contents 플러그인)는 비활성
 // 항목에 `opacity: .35`를 거는데, --gray(4.65:1) 위에 곱해지면 크림 배경 기준
 // 실효 대비가 약 1.6:1로 떨어진다 — AA 4.5 예외 없음(CLAUDE.md §1) 위반이다.
 // 활성/비활성 구분은 투명도가 아니라 색과 굵기가 맡는다.
+// 색은 위 "패널 항목 3종" 규칙이 정한다 — 여긴 opacity만 되돌린다.
 .toc-content.overflow > li > a,
 .toc li a {
-  font-size: 0.78rem;
-  color: var(--gray);
   opacity: 1;
-  &:hover {
-    color: var(--secondary);
-  }
 }
 
 // [2026-08-05] 최상위 섹션(depth-0, h2)엔 보더를 안 준다 — maxDepth:2라

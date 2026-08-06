@@ -124,13 +124,15 @@ plugins:
     order: 55
   - source: ./plugins/note-specs
     enabled: true
-    # 우측 최상단 SPECS — 음반 슬리브 사양 표기(날짜·읽기시간·토픽).
+    # 좌측 최상단 SPECS — 음반 슬리브 사양 표기(날짜·읽기시간·토픽).
     # 제목 바로 아래에 뭉쳐 있던 메타를 여기로 옮겨 본문 진입을 비운다.
+    # SPECS(사양) → CATALOG(수록곡)로, 좌측이 "이 음반은 무엇인가"를 위에서
+    # 아래로 답한다. 우측은 본문 탐색(TOC·백링크·그래프)만 맡는다.
     options: {}
     order: 15
     layout:
-      position: right
-      priority: 5
+      position: left
+      priority: 10
       display: desktop-only
       condition: not-index
   - source: github:quartz-community/table-of-contents
