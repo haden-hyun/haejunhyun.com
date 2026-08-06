@@ -102,6 +102,10 @@ export default defineConfig({
   esbuildOptions(options) {
     options.jsx = "automatic";
     options.jsxImportSource = "preact";
+    // ⚠️ `node` 조건에서 yaml이 CJS(dist/)로 해석돼 `__require("process")` 셰임이 남고,
+    //    런타임에 "Dynamic require of process is not supported"로 플러그인이 통째로 죽는다.
+    //    ESM 빌드를 고르게 조건을 바꾼다.
+    options.conditions = ["import", "browser", "default"];
   },
   esbuildPlugins: [inlineScriptPlugin],
 });

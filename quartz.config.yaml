@@ -111,6 +111,16 @@ plugins:
   - source: github:quartz-community/github-flavored-markdown
     enabled: true
     order: 40
+  - source: ./plugins/image-layouts
+    enabled: true
+    # ```image-layout 코드펜스 → 그리드/메이슨리/캐러셀.
+    # ⚠️ order는 CrawlLinks(60)보다 **앞서야** 한다 — 이 플러그인이 만든 mdast image
+    #    노드의 경로를 CrawlLinks가 슬러그 기준으로 고쳐줘야 중첩 노트에서 404가 안 난다.
+    options:
+      defaultLayout: single
+      carouselHeight: 24rem
+      gap: 0.5rem
+    order: 55
   - source: ./plugins/note-specs
     enabled: true
     # 우측 최상단 SPECS — 음반 슬리브 사양 표기(날짜·읽기시간·토픽).

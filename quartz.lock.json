@@ -15,7 +15,7 @@
     },
     "back-to-top": {
       "source": "./plugins/back-to-top",
-      "resolved": "/Users/haejun/Developer/haejunhyun-v5-test/plugins/back-to-top",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/back-to-top",
       "commit": "local",
       "installedAt": "2026-07-18T15:18:38.765Z"
     },
@@ -141,7 +141,7 @@
     },
     "footer": {
       "source": "./plugins/footer",
-      "resolved": "/Users/haejun/Developer/haejunhyun-v5-test/plugins/footer",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/footer",
       "commit": "local",
       "installedAt": "2026-07-19T04:16:54.084Z"
     },
@@ -153,7 +153,7 @@
     },
     "goatcounter-tracking": {
       "source": "./plugins/goatcounter-tracking",
-      "resolved": "/Users/haejun/Developer/haejunhyun-v5-test/plugins/goatcounter-tracking",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/goatcounter-tracking",
       "commit": "local",
       "installedAt": "2026-07-18T17:41:43.621Z"
     },
@@ -171,7 +171,7 @@
     },
     "image-lightbox": {
       "source": "./plugins/image-lightbox",
-      "resolved": "/Users/haejun/Developer/haejunhyun-v5-test/plugins/image-lightbox",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/image-lightbox",
       "commit": "local",
       "installedAt": "2026-07-18T15:27:12.034Z"
     },
@@ -219,7 +219,7 @@
     },
     "prev-next": {
       "source": "./plugins/prev-next",
-      "resolved": "/Users/haejun/Developer/haejunhyun-v5-test/plugins/prev-next",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/prev-next",
       "commit": "local",
       "installedAt": "2026-07-18T14:23:02.998Z"
     },
@@ -242,7 +242,7 @@
     },
     "reading-progress": {
       "source": "./plugins/reading-progress",
-      "resolved": "/Users/haejun/Developer/haejunhyun-v5-test/plugins/reading-progress",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/reading-progress",
       "commit": "local",
       "installedAt": "2026-07-18T14:33:01.116Z"
     },
@@ -254,7 +254,7 @@
     },
     "recent-notes-index": {
       "source": "./plugins/recent-notes-index",
-      "resolved": "/Users/haejun/Developer/haejunhyun-v5-test/plugins/recent-notes-index",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/recent-notes-index",
       "commit": "local",
       "installedAt": "2026-07-18T14:12:37.917Z"
     },
@@ -278,7 +278,7 @@
     },
     "social-links": {
       "source": "./plugins/social-links",
-      "resolved": "/Users/haejun/Developer/haejunhyun-v5-test/plugins/social-links",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/social-links",
       "commit": "local",
       "installedAt": "2026-07-18T13:58:26.872Z"
     },
@@ -326,7 +326,7 @@
     },
     "visitor-counter": {
       "source": "./plugins/visitor-counter",
-      "resolved": "/Users/haejun/Developer/haejunhyun-v5-test/plugins/visitor-counter",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/visitor-counter",
       "commit": "local",
       "installedAt": "2026-07-18T15:44:59.222Z"
     }

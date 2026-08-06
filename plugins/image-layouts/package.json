@@ -25,8 +25,7 @@
   },
   "dependencies": {
     "@quartz-community/types": "github:quartz-community/types",
-    "unist-util-visit": "^5.1.0",
-    "yaml": "^2.9.0"
+    "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
     "@types/mdast": "^4.0.4",

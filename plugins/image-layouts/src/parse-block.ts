@@ -1,4 +1,4 @@
-import { parse as parseYaml } from "yaml"
+import { parseOptions } from "./parse-options"
 
 export interface ParsedImage {
   url: string
@@ -46,20 +46,12 @@ export function parseBlock(lang: string, value: string): ParsedBlock | null {
   const legacyLayout = lang.slice(FENCE_PREFIX.length).replace(/^-/, "").trim()
 
   let body = value
-  let raw: Record<string, unknown> = {}
+  let opts: Record<string, unknown> = {}
   const frontmatter = value.match(BLOCK_FRONTMATTER)
   if (frontmatter) {
     body = value.slice(frontmatter[0].length)
-    try {
-      const parsed = parseYaml(frontmatter[1]!)
-      if (parsed && typeof parsed === "object") raw = parsed as Record<string, unknown>
-    } catch {
-      // 깨진 YAML로 사이트 빌드를 멈추지 않는다
-    }
+    opts = parseOptions(frontmatter[1]!)
   }
-
-  const opts: Record<string, unknown> = {}
-  for (const [key, val] of Object.entries(raw)) opts[key.toLowerCase()] = val
 
   const images: ParsedImage[] = []
   for (const line of body.split("\n")) {

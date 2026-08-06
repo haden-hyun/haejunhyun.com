@@ -1,0 +1,169 @@
+.image-layout {
+  margin: 1.5rem 0;
+
+  &.il-grid,
+  &.il-masonry {
+    display: grid;
+    gap: var(--il-gap, 0.5rem);
+    // 미지원 layout·깨진 grid의 자동배치 폴백. 인라인 style이 있으면 그쪽이 이긴다.
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+
+  &.il-align-left { justify-items: start; }
+  &.il-align-center { justify-items: center; }
+  &.il-align-right { justify-items: end; }
+}
+
+.il-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--il-gap, 0.5rem);
+}
+
+// 캡션이 아래로 흐르므로 figure는 세로 flex — 프레임이 남는 높이를 채운다.
+.il-item {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  min-width: 0;
+}
+
+.il-frame {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 4px;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin: 0;
+  }
+}
+
+.il-fit-contain .il-frame img { object-fit: contain; }
+.il-fit-natural {
+  align-items: start;
+
+  .il-frame { flex: 0 0 auto; }
+  .il-frame img { height: auto; object-fit: contain; }
+}
+
+// 캡션은 항상 이미지 아래. 사진 위에 얹지 않으므로 테마 변수만으로 AA가 성립한다.
+.il-caption {
+  margin: 0.35rem 0 0;
+  padding: 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--gray);
+}
+
+// overlay: never만 살린다 — Obsidian에서도 캡션이 안 보이므로 결과가 일치한다.
+.il-overlay-never .il-caption { display: none; }
+
+.il-block-caption {
+  margin: 0.6rem 0 0;
+  font-size: 0.85rem;
+  color: var(--gray);
+  text-align: center;
+}
+
+.il-carousel {
+  position: relative;
+  background: var(--il-carousel-bg, var(--lightgray));
+  border-radius: 4px;
+
+  .il-viewport {
+    display: flex;
+    height: var(--il-carousel-height, 24rem);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .il-item {
+    flex: 0 0 100%;
+    height: 100%;
+    scroll-snap-align: center;
+  }
+
+  .il-frame {
+    border-radius: 0;
+
+    img { object-fit: contain; }
+  }
+
+  .il-caption {
+    padding: 0 0.6rem 0.4rem;
+    text-align: center;
+  }
+}
+
+.il-thumbs {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  overflow-x: auto;
+}
+
+.il-thumb {
+  flex: 0 0 auto;
+  margin: 0;
+  cursor: pointer;
+
+  img {
+    display: block;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0;
+    object-fit: cover;
+    border-radius: 3px;
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+  }
+
+  &:hover img,
+  &.is-active img { opacity: 1; }
+}
+
+// 화살표는 JS가 만든다 — 없어도 스크롤로 넘어간다(점진적 향상)
+.il-nav {
+  position: absolute;
+  top: calc(var(--il-carousel-height, 24rem) / 2);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  opacity: 0.85;
+
+  &:hover { opacity: 1; }
+  &.il-prev { left: 0.5rem; }
+  &.il-next { right: 0.5rem; }
+}
+
+@media (max-width: 600px) {
+  .image-layout.il-grid,
+  .image-layout.il-masonry {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: none !important;
+  }
+
+  .il-grid .il-item,
+  .il-masonry .il-item { grid-area: auto !important; }
+}

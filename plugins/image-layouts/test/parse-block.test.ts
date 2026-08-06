@@ -68,6 +68,6 @@ describe("parseBlock", () => {
       "image-layout",
       "---\nlayout: custom\ngrid: |\n  A A B\n  A A C\n---\n![[a.png]]",
     )
-    expect(block?.opts.grid).toBe("A A B\nA A C\n")
+    expect(block?.opts.grid).toBe("A A B\nA A C")
   })
 })
