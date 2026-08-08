@@ -2,6 +2,34 @@
 
 > "지금 상태"는 `DESIGN-SYSTEM.md`. 여기는 "왜 이렇게 됐는가"의 타임라인만.
 
+## 2026-08-08 — 상단 내비를 `Home · Topics · Archive · Notes`로, Notes에 목적지를 주다
+
+**순서가 바뀌었다** (`Home | Notes | Topics | Archive` → `Home | Topics | Archive | Notes`).
+Notes가 둘째 자리에 있으면서 목적지가 없는 게 앞줄의 모순이었다. 넓은 것에서 좁은 것으로
+가는 순서로 놓고, 목적지 없는 항목을 끝으로 뺐다.
+
+**Notes의 "전용 페이지가 없다"를 페이지를 만들지 않고 해결했다.** 예전 규칙은
+"Home/Topics/Archive 중 무엇도 아니면 Notes가 활성"이라는 **부정 판정**이었고, 링크는
+`/archive`로 보냈다. 그래서 태그 페이지·폴더 인덱스·404까지 Notes로 뭉뚱그려졌다 —
+노트가 아닌 곳에서 "노트"라고 표시하고 있었던 것이다.
+
+지금은 두 줄이다. **노트 위에 있으면 링크가 아닌 `<span aria-current="page">`, 그 밖에서는
+가장 최근 노트로 보낸다.** 노트 페이지에서 자기 자신을 가리키는 href를 쓰지 않은 건
+스크롤이 튀고 히스토리만 쌓이기 때문이다. "아무 기능 없음"이 요구였으니 링크 자체를 없앴다.
+
+부작용으로 **태그·폴더 인덱스 페이지에서는 네 항목 모두 비활성**이 됐다. 그 페이지들이
+네 목적지 중 어디에도 속하지 않는다는 사실을 그대로 표시하는 쪽을 골랐다.
+
+최신 노트 정렬은 `modified → created` 폴백 — `recent-notes-index`의 `getSortTime`과
+같은 체인이다. 다르게 잡으면 **Notes가 보내는 노트와 홈 Recent Notes 맨 윗줄이 어긋난다.**
+
+⚠️ SCSS는 손대지 않았다. `<span>`이 섞이니 hover를 `a`로 좁혀야 할 것 같았지만, 재보니
+`.global-nav-link:hover`와 `.global-nav-link.active`는 명시도가 같고(0,2,0) `.active`가
+뒤에 선언돼 이미 이긴다. span은 항상 `.active`를 달고 있어 hover 색이 먹지 않는다.
+**증상을 예상해서 고치려 한 자리가 실제로는 이미 맞았다.**
+
+설계 문서: `docs/superpowers/specs/2026-08-08-global-nav-notes-design.md`
+
 ## 2026-08-07 — SPECS를 좌측으로, 패널 항목을 한 규칙으로
 
 **SPECS가 좌측 최상단으로 갔다** (SPECS → CATALOG). 우측이 "메타(SPECS) + 탐색
