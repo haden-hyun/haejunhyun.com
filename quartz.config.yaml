@@ -18,9 +18,7 @@ configuration:
     fontOrigin: googleFonts
     cdnCaching: true
     # 폰트 로딩(Google Fonts URL) + og-image 렌더용.
-    # · 실제 표시 폰트는 아래 `fonts` 플러그인이 결정 — 두 곳을 같이 고칠 것
-    # · 로고=Anton / 헤딩=Hahmlet / 본문=Noto Sans KR / 코드=JetBrains Mono
-    # · 로고를 헤딩과 분리해 브랜드 존과 가독성 존을 나눈다
+    # 실제 표시 폰트는 아래 `fonts` 플러그인이 결정한다 — 두 곳을 같이 고칠 것.
     typography:
       title:
         name: Anton
@@ -30,11 +28,8 @@ configuration:
         weights: [400, 700, 900]
       body: Noto Sans KR
       code: JetBrains Mono
-    # **사이트 색의 단일 소스.** 팔레트 "True Midnight"
-    # · 라이트 = 크림 인쇄지 / 다크 = 잉크 네이비, accent hue H207
-    # · 전 값 WCAG 검증 — 텍스트는 예외 없이 AA 4.5 이상 (DESIGN-SYSTEM.md §6)
-    # · tertiary(링크 hover)는 라이트에서 "밝아짐"이 아니라 "진해짐" —
-    #   밝은 배경에선 밝히는 방향으로 AA를 만족시킬 수 없다
+    # 사이트 색의 단일 소스. 팔레트 "True Midnight" (DESIGN-SYSTEM.md).
+    # 텍스트로 렌더되는 모든 값은 AA 4.5 이상을 유지할 것.
     colors:
       lightMode:
         light: "#f7f5ef" # bg · 크림 인쇄지 (순백 대비 광량 91.3%)
@@ -45,10 +40,8 @@ configuration:
         secondary: "#1c5f95" # accent        6.17:1  AA
         tertiary: "#17527f" # accent hover  7.55:1  AAA
         highlight: rgba(28,95,149,0.10)
-        # `==강조==` 밑줄 밴드. 세 축(공간/행위/시간)에 속하지 않는 신호라
-        # 색상이 아니라 명도로만 구분한다 — 인라인 코드와 같은 "재질" 해법.
-        # ⚠️ 배경(#f7f5ef)과의 대비도 함께 볼 것 — 밴드가 안 보이면 기능이 없다.
-        # 배경 대비 1.82 / 밴드 위 본문(#323e4c) 5.49 AA
+        # `==강조==` 밑줄 밴드. 색상이 아니라 명도로만 구분한다.
+        # 주의: 배경 대비도 함께 볼 것 — 밴드가 안 보이면 기능이 없다.
         textHighlight: "#ccb684"
       darkMode:
         light: "#0e1420" # bg · 잉크 네이비 (Blue Giant #0c0c24 계열)
@@ -64,9 +57,8 @@ plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
     options:
-      # ⚠️ published를 쓰지 말 것 — `published:` 프론트매터를 가진 노트가 0개라
-      # 항상 filesystem mtime으로 폴백하고, 그 값은 동기화·체크아웃마다 바뀐다
-      # (수정한 적 없는 노트가 빌드 날짜로 찍혔다). `updated:`는 89개 노트에 있다.
+      # 주의: published를 쓰지 말 것. 해당 프론트매터를 가진 노트가 0개라
+      # 항상 filesystem mtime으로 폴백하고, 그 값은 동기화마다 바뀐다.
       defaultDateType: modified
       priority:
         - frontmatter
@@ -76,15 +68,12 @@ plugins:
   - source: github:quartz-community/syntax-highlighting
     enabled: true
     options:
-      # ⚠️ 코드 색을 바꾸려면 여기가 아니라 **quartz/styles/syntax.scss**를 볼 것.
-      # 실제 토큰 색은 거기서 `[data-token-type]`으로 전부 덮는다
-      # (tokenClassification 기본값 true가 토큰마다 의미 라벨을 붙여준다).
-      # 아래 theme은 오버라이드가 없는 토큰의 폴백으로만 남는다.
+      # 주의: 코드 색은 quartz/styles/syntax.scss에서 바꾼다.
+      # 아래 theme은 오버라이드가 없는 토큰의 폴백일 뿐이다.
       theme:
         light: catppuccin-latte
         dark: github-dark
       # false = Shiki 배경 대신 Quartz 테마 배경 사용.
-      # true면 라이트에서 한랭 회색이 크림 배경 위에 푸른 패치처럼 뜬다.
       keepBackground: false
     order: 20
   - source: github:quartz-community/obsidian-flavored-markdown
@@ -115,8 +104,8 @@ plugins:
   - source: ./plugins/image-layouts
     enabled: true
     # ```image-layout 코드펜스 → 그리드/메이슨리/캐러셀.
-    # ⚠️ order는 CrawlLinks(60)보다 **앞서야** 한다 — 이 플러그인이 만든 mdast image
-    #    노드의 경로를 CrawlLinks가 슬러그 기준으로 고쳐줘야 중첩 노트에서 404가 안 난다.
+    # 주의: order는 CrawlLinks(60)보다 앞서야 한다. 이 플러그인이 만든 image 노드의
+    # 경로를 CrawlLinks가 고쳐줘야 중첩 노트에서 404가 안 난다.
     options:
       defaultLayout: single
       carouselHeight: 24rem
@@ -124,10 +113,7 @@ plugins:
     order: 55
   - source: ./plugins/note-specs
     enabled: true
-    # 좌측 최상단 SPECS — 음반 슬리브 사양 표기(날짜·읽기시간·토픽).
-    # 제목 바로 아래에 뭉쳐 있던 메타를 여기로 옮겨 본문 진입을 비운다.
-    # SPECS(사양) → CATALOG(수록곡)로, 좌측이 "이 음반은 무엇인가"를 위에서
-    # 아래로 답한다. 우측은 본문 탐색(TOC·백링크·그래프)만 맡는다.
+    # 좌측 최상단 SPECS — 날짜·읽기시간·토픽. CATALOG보다 위에 온다.
     options: {}
     order: 15
     layout:
@@ -172,21 +158,15 @@ plugins:
     order: 92
   - source: github:quartz-community/fonts
     enabled: true
-    # **--titleFont/--headerFont/--bodyFont/--codeFont의 최종 결정처**
-    # (가장 뒤에 로드되어 승리).
-    # · 옵션을 비우면 플러그인 기본값으로 덮어써지므로 반드시 명시
-    # · fontOrigin: local = 여기선 로드 안 함(로딩은 위 theme.fontOrigin 담당)
+    # --titleFont/--headerFont/--bodyFont/--codeFont의 최종 결정처.
+    # 옵션을 비우면 플러그인 기본값으로 덮어써지므로 반드시 명시할 것.
     options:
       fontOrigin: local
       title: '"Anton", sans-serif'
       header: '"Hahmlet", serif'
       body: '"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif'
-      # code 스택의 "Noto Sans KR" = 코드블럭 한글 폴백.
-      # · JetBrains Mono엔 한글 글리프가 없어 브라우저 기본 모노(Windows=굴림)로
-      #   떨어졌다. font-family 폴백은 글리프 단위라 라틴만 JetBrains Mono가 된다
-      # · body용으로 이미 로드돼 있어 추가 요청 0
-      # · ⚠️ 한계: 모노스페이스가 아니라 한글 섞인 줄의 세로 정렬이 어긋날 수 있음.
-      #   완전 해결엔 한글 모노(Nanum Gothic Coding) 별도 로딩 경로가 필요
+      # code 스택의 "Noto Sans KR" = 코드블럭 한글 폴백(JetBrains Mono엔 한글 글리프가 없다).
+      # 한계: 모노스페이스가 아니라 한글 섞인 줄의 세로 정렬이 어긋날 수 있다.
       code: '"JetBrains Mono", "Noto Sans KR", ui-monospace, SFMono-Regular, Menlo, monospace'
   - source: github:quartz-community/remove-draft
     enabled: true
@@ -239,17 +219,14 @@ plugins:
     # /archive 가상 페이지, topics-page와 동일한 패턴.
     options: {}
   # ./plugins/note-catalog로 대체됨.
-  # ⚠️ useSavedState 옵션은 동작하지 않는다 — Explorer.tsx가 data-savestate를
-  # 내보내지만 explorer.inline.ts는 그 속성을 읽지 않고 localStorage("fileTree")를
-  # 무조건 읽고 쓴다. 한 번 연 폴더가 영구 누적되는 원인이었다.
+  # 주의: useSavedState 옵션은 no-op이다. explorer.inline.ts가 그 속성을 읽지 않고
+  # localStorage를 무조건 쓴다.
   - source: github:quartz-community/explorer
     enabled: false
   - source: ./plugins/note-catalog
     enabled: true
-    # 좌측 CATALOG — 전체 트리 대신 현재 노트의 형제 노트만. 길이가 형제 수에만
-    # 비례하고 펼침 상태가 없어 explorer의 누적 문제가 구조적으로 사라진다.
-    # ⚠️ 우측 graph 기본 접힘 스크립트도 이 컴포넌트가 싣는다 — 엔트리당
-    #    컴포넌트 1개 제약(config-loader.ts:753) 때문.
+    # 좌측 CATALOG — 전체 트리 대신 현재 노트의 형제 노트만.
+    # 주의: 우측 graph 기본 접힘 스크립트도 이 컴포넌트가 싣는다(엔트리당 컴포넌트 1개 제약).
     options:
       title: "CATALOG"
       moreHref: "topics"
@@ -286,8 +263,7 @@ plugins:
       priority: 30
   - source: ./plugins/global-nav
     enabled: true
-    # Home|Topics|Archive 내비. topbar 포지션 — PageTitle과 같은 줄(.topbar)에
-    # 렌더돼 모든 페이지에서 브랜드+내비가 한 줄로 보인다(custom.scss §10.5).
+    # Home|Topics|Archive|Notes 내비. topbar 포지션 = PageTitle과 같은 줄.
     options: {}
     order: 15
     layout:
@@ -318,12 +294,14 @@ plugins:
     # Featured. 홈 전용, priority 2 = Hero 아래. 슬롯 4개(대형 1 + 소형 3).
     # slugs가 유일한 지정 수단이다 — 쓴 순서가 표시 순서고 첫 항목이 대형 카드.
     # 비워두면 토픽 라운드로빈으로 자동 선정. 못 찾은 슬러그는 빌드 로그에 경고.
-    # ⚠️ recentExcludeCount는 아래 recent-notes-index.limit과 같은 값 유지
-    #    (홈에서 Featured와 Recent가 같은 글을 중복 노출하는 것 방지).
+    # 주의: recentExcludeCount는 아래 recent-notes-index.limit과 같은 값으로 유지할 것.
     options:
       recentExcludeCount: 6
-      # 예: - data-science/statistics/descriptive-statistics-and-scaling
-      slugs: []
+      slugs:
+        - data-engineering/infra/gpu-fundamentals-and-practical-usage
+        - data-science/deep-learning/neural-network
+        - finance-property/real-estate/auction-rights-analysis
+        - gis/python-gis/geopandas-overlay
     order: 15
     layout:
       position: beforeBody
@@ -344,8 +322,7 @@ plugins:
       priority: 10
       # 홈은 HomeHero가 헤드라인을 대신 보여주므로 제외 (중복 방지).
       condition: not-index
-  # 데스크톱에선 우측 note-specs가 날짜·읽기시간·토픽을 대신하므로 모바일만 남긴다
-  # (모바일엔 우측 사이드바가 본문 아래로 밀려 상단 메타 역할을 못 한다).
+  # 데스크톱은 우측 note-specs가 대신하므로 모바일만 남긴다.
   - source: github:quartz-community/content-meta
     enabled: true
     layout:

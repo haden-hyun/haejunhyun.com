@@ -14,7 +14,7 @@ function concatenateResources(...resources: StringResource[]): string | string[]
   return resources.filter((r): r is string | string[] => r !== undefined).flat()
 }
 
-// ⚠️ `@quartz-community/utils`를 쓰지 않고 인라인한 것은 의도적이다.
+// 주의: `@quartz-community/utils`를 쓰지 않고 인라인한 것은 의도적이다.
 // github: 참조 의존성이라 fresh npm install에서 dist 없이 설치돼 빌드가 깨진다.
 // 동작은 utils/dist/{lang,date}.js와 동일.
 function classNames(...classes: (string | undefined | false)[]): string {
@@ -28,10 +28,8 @@ function formatDate(d: Date, locale = "en-US"): string {
 /**
  * Hero + StatsStrip + 방문자 카운터 — 홈 전용.
  *
- * · StatsStrip은 Hero 하단에 붙어 있어 같은 패키지로 묶었다(패키지 수 = 빌드 수)
- * · 홈 전용 렌더는 내부 slug 가드. `condition: is-index`는 내장에 없고,
- *   등록 실패 시 "항상 렌더"로 폴백해 모든 노트에 Hero가 뜬다
- * · ⚠️ 통계는 전부 allFiles 런타임 집계 — **하드코딩 금지**
+ * - 홈 전용 렌더는 내부 slug 가드. `condition: is-index`는 내장에 없다
+ * - 통계는 전부 allFiles 런타임 집계. 하드코딩 금지
  */
 
 type Link = { label: string; href: string; primary?: boolean }
@@ -56,12 +54,7 @@ const defaultOptions: HomeHeroOptions = {
   avatarInitial: "?",
 }
 
-/**
- * ⚠️ **반드시 슬러그 패턴으로 걸러야 한다.** `frontmatter.title` 유무로는 안 된다 —
- * folder-page / tag-page가 자동 생성한 페이지, 404, topics/archive 가상 페이지
- * 모두 title이 채워진 채로 allFiles에 섞여 들어온다(전체의 약 40%).
- * 이 로직은 topic-grid / featured-notes / archive-page 등에도 같은 형태로 있다.
- */
+/** 슬러그 패턴으로 거른다. 자동 생성 페이지도 title이 있어 title 유무로는 안 된다. */
 function isRealNote(f: QuartzPluginData & Record<string, unknown>): boolean {
   const slug = (f.slug as string | undefined) ?? ""
   if (slug.startsWith("tags/")) return false
@@ -146,7 +139,7 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
               {opts.avatarInitial}
             </div>
           )}
-          {/* ⚠️ JSX 태그(`<VisitorCounter />`)로 쓰면 dts 빌드가 실패한다 —
+          {/* 주의: JSX 태그(`<VisitorCounter />`)로 쓰면 dts 빌드가 실패한다 —
               preact가 QuartzComponent를 유효한 JSX 엘리먼트로 인식하지 못한다.
               함수 호출 + 캐스트가 유일하게 통과하는 형태. */}
           <div class="hero-visitor-counter">

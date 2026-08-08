@@ -8,27 +8,13 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/featured.scss"
 
 /**
- * Featured — 홈 전용. 대형 카드 1개 + 소형 카드 3개.
+ * Featured — 홈 전용. 대형 카드 1 + 소형 카드 3.
  *
- * 선정 순서
- *   1. `options.slugs` 목록을 **쓴 순서 그대로** — 첫 항목이 대형 카드
- *   2. 부족분은 **토픽 라운드로빈**(토픽별 최신 1개씩) 후 최신순 — 전체 최신순으로
- *      뽑으면 노트가 많은 토픽이 슬롯을 독식한다
+ * - `options.slugs`가 유일한 지정 수단. 쓴 순서가 표시 순서, 첫 항목이 대형 카드
+ * - 부족분은 토픽 라운드로빈으로 채운다 (전체 최신순은 큰 토픽이 슬롯을 독식)
+ * - 중복 노출 방지(`recentExcludeCount`)는 자동 채움에만 적용
  *
- * ⚠️ `slugs`가 유일한 지정 수단이다. `frontmatter.featured`는 지원하지 않는다 —
- *    지정하는 곳이 두 군데면 "어디서 정해졌는지"를 매번 추적해야 한다.
- * ⚠️ 목록 순서를 뒤에서 최신순으로 다시 정렬하지 말 것. 순서 제어가 목록 방식의
- *    존재 이유다. 자동 채움분만 최신순으로 정렬한다.
- * ⚠️ 중복 노출 방지: 자동 채움에서만 Recent Notes 상위 N개를 후보에서 뺀다.
- *    목록 지정분은 빼지 않는다(작성자 의도 우선).
- *    N = `recentExcludeCount`, quartz.config.yaml의 recent-notes-index.limit과
- *    같은 값으로 유지할 것.
- *
- * 기타
- *   · 읽기 시간은 별도 필드가 없어 단어 수 / 200wpm으로 산출(og-image와 동일)
- *   · 카테고리 라벨에 색을 쓰지 않는다 — 토픽 컬러 체계 폐지(DESIGN-SYSTEM.md).
- *     위계는 대문자 + 자간으로, 색은 중립(--text-3)
- *   · 홈 전용 렌더는 내부 slug 가드 (`is-index` layout condition은 없음)
+ * 주의: 목록 순서를 최신순으로 다시 정렬하지 말 것. 순서 제어가 이 방식의 목적이다.
  */
 
 const MAX_SLOTS = 4
@@ -74,8 +60,7 @@ function getReadingMinutes(f: FileData): number {
   return Math.max(1, Math.ceil(wordCount / 200))
 }
 
-/** 토픽별 최신 노트를 하나씩, "자신의 최신 노트가 더 최근인 토픽" 순으로
- * 순회하며 뽑는다. count를 못 채우면 각 토픽의 다음 노트로 라운드를 더 돈다. */
+/** 토픽별 최신 노트를 하나씩, 최신 토픽 순으로 순회하며 뽑는다. */
 function pickRoundRobin(files: FileData[], count: number, exclude: Set<string>): FileData[] {
   const byTopic = new Map<string, FileData[]>()
   for (const f of files) {
@@ -123,10 +108,7 @@ const defaultOptions: FeaturedNotesOptions = {
   slugs: [],
 }
 
-/**
- * 목록의 슬러그를 실제 노트로 해석한다. 못 찾은 슬러그는 **빌드 로그에 경고**를
- * 남기고 건너뛴다 — 오타가 조용히 무시되면 "설정했는데 안 나온다"가 된다.
- */
+/** 슬러그를 노트로 해석한다. 미해결·중복·초과는 빌드 로그에 경고를 남긴다. */
 function resolveSlugs(slugs: string[], files: FileData[]): FileData[] {
   const bySlug = new Map(files.map((f) => [f.slug as string, f]))
   const resolved: FileData[] = []

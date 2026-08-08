@@ -71,7 +71,7 @@ export default (() => {
     const years = [...byYear.keys()].sort((a, b) => b - a)
 
     return (
-      // ⚠️ <h1>은 article-title이 렌더한다 — 여기서 중복 렌더 금지.
+      // 주의: <h1>은 article-title이 렌더한다 — 여기서 중복 렌더 금지.
       <article class={`${displayClass ?? ""} archive-page-content popover-hint`}>
         <p class="archive-page-sub">
           전체 {files.length}개 노트 · {years.length}개 연도

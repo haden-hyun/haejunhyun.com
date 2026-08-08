@@ -1,21 +1,11 @@
 import { QuartzTransformerPlugin } from '@quartz-community/types';
 
 /**
- * v4 parity: v4's `quartz/components/Head.tsx` hardcoded a GoatCounter tracking
- * `<script>` tag directly into `<head>`, in addition to (not instead of) the
- * `analytics.provider: "google"` config already handled by the built-in Head
- * component + `componentResources.ts` (v5 has native `provider: "goatcounter"`
- * support too, but `analytics:` only accepts a single provider, and this site
- * already runs Google Analytics — so the GoatCounter script has to be added as
- * an *extra* head resource rather than by switching providers).
+ * GoatCounter 트래킹 스크립트를 `<head>`에 주입한다.
  *
- * The VisitorCounter local plugin (Task 10) reads visit counts from the
- * GoatCounter API independently of this script, but the counts it reads are
- * only accurate if this tracking script is actually recording pageviews.
- *
- * This is a plain transformer plugin (no layout/component) that injects the
- * exact static script tag v4 used, via the `externalResources().additionalHead`
- * extension point in `quartz/components/Head.tsx` — no core file edits needed.
+ * - native provider가 있지만 `analytics:`는 provider를 하나만 받는다.
+ *   이 사이트는 Google Analytics를 쓰므로 추가 head 리소스로 넣는다
+ * - visitor-counter가 읽는 방문 수의 출처다. 함께 유지할 것
  */
 interface GoatcounterTrackingOptions {
     /** GoatCounter site subdomain, e.g. "haejunhyun" for haejunhyun.goatcounter.com */

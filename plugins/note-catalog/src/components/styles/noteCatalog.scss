@@ -34,7 +34,7 @@
     overflow-y: auto;
   }
 
-  // ⚠️ 서체·크기는 custom.scss가 TOC·Backlinks 항목과 함께 한 규칙으로 정한다
+  // 주의: 서체·크기는 custom.scss가 TOC·Backlinks 항목과 함께 한 규칙으로 정한다
   //    (셋 다 "다른 곳으로 가는 링크"라 같은 물건이다). 여긴 형태만.
   .note-catalog-link {
     display: block;

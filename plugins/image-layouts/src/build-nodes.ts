@@ -6,7 +6,7 @@ import type { ParsedBlock, ParsedImage } from "./parse-block"
 type Props = Record<string, unknown>
 
 // mdast에 div/figure 노드 타입이 없어 블록 컨테이너에 hName을 씌운다 (OFM 콜아웃과 동일한 방식).
-// ⚠️ paragraph를 쓰면 안 된다 — 자식이 phrasing content여야 해서 중첩이 잘못된 mdast가 된다.
+// 주의: paragraph를 쓰면 안 된다 — 자식이 phrasing content여야 해서 중첩이 잘못된 mdast가 된다.
 const container = (hName: string, hProperties: Props, children: RootContent[]): Blockquote =>
   ({ type: "blockquote", data: { hName, hProperties }, children }) as unknown as Blockquote
 

@@ -1,5 +1,5 @@
 // Hero 레이아웃.
-// ⚠️ 색은 custom.scss §0의 토큰(--accent, --text 등)만 참조한다.
+// 주의: 색은 custom.scss §0의 토큰(--accent, --text 등)만 참조한다.
 //    플러그인에서 색 값을 새로 정의하지 말 것 — 단일 소스는 quartz.config.yaml.
 
 .home-hero {
@@ -89,7 +89,7 @@
   }
 }
 
-// 사이트 색의 세 축 중 **행위(Brick)**. 정의는 custom.scss §0, 대비 4.94:1 AA.
+// 사이트 색의 세 축 중 행위(Brick). 정의는 custom.scss §0, 대비 4.94:1 AA.
 // 블루(--accent)를 쓰면 "누르는 것"과 "이동하는 것"의 위계가 구분되지 않는다.
 .hero-btn-primary {
   background: var(--accent-action);
@@ -159,7 +159,7 @@
   }
 }
 
-// avatar.png는 세로로 긴 전신 일러스트(484:894)라 **원형 마스크를 씌우면 안 된다**
+// avatar.png는 세로로 긴 전신 일러스트(484:894)라 원형 마스크를 씌우면 안 된다
 // (손·얼굴이 잘림). contain으로 비율만 유지하고, 높이는 Hero 섹션에 맞춘 220px.
 .hero-avatar-img {
   height: 220px;

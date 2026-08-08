@@ -10,9 +10,9 @@ import style from "./styles/topicsContent.scss"
 /**
  * 내비의 "Topics" 라우트 — 홈 TopicGrid와 같은 데이터·카드를 독립 페이지로.
  *
- * ⚠️ topic-grid의 TopicGrid.tsx와 **의도적으로 중복**되어 있다(TOPICS 상수,
+ * 주의: topic-grid의 TopicGrid.tsx와 의도적으로 중복되어 있다(TOPICS 상수,
  *    집계 로직, 카드 마크업 전부). 서로 import하려면 워크스페이스 링크가 필요해
- *    복잡도 대비 이득이 없다고 판단. **토픽을 바꾸면 두 파일을 함께 고칠 것.**
+ *    복잡도 대비 이득이 없다고 판단. 토픽을 바꾸면 두 파일을 함께 고칠 것.
  */
 
 type FileData = QuartzPluginData & Record<string, unknown>
@@ -89,7 +89,7 @@ export default (() => {
     const totalCount = topicsWithCounts.reduce((sum, t) => sum + t.count, 0)
 
     return (
-      // ⚠️ <h1>을 여기서 렌더하면 안 된다 — article-title 플러그인이 이미
+      // 주의: <h1>을 여기서 렌더하면 안 된다 — article-title 플러그인이 이미
       // frontmatter.title로 렌더한다(중복 방지, folder-page와 동일 패턴).
       <article class={`${displayClass ?? ""} topics-page-content popover-hint`}>
         <p class="topics-page-sub">

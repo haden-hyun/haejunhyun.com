@@ -4,11 +4,9 @@ import type { QuartzTransformerPlugin } from "@quartz-community/types"
 /**
  * GoatCounter 트래킹 스크립트를 `<head>`에 주입한다.
  *
- * · v5에 native `provider: "goatcounter"`가 있지만 `analytics:`는 provider를
- *   **하나만** 받는다. 이 사이트는 Google Analytics를 쓰므로 GoatCounter는
- *   추가 head 리소스로 넣어야 한다
- * · ⚠️ visitor-counter 플러그인이 읽는 방문 수는 이 스크립트가 실제로
- *   페이지뷰를 기록해야만 맞는다 — 함께 유지할 것
+ * - native provider가 있지만 `analytics:`는 provider를 하나만 받는다.
+ *   이 사이트는 Google Analytics를 쓰므로 추가 head 리소스로 넣는다
+ * - visitor-counter가 읽는 방문 수의 출처다. 함께 유지할 것
  */
 
 export interface GoatcounterTrackingOptions {
@@ -30,7 +28,7 @@ const GoatcounterTracking: QuartzTransformerPlugin<Partial<GoatcounterTrackingOp
 
   return {
     name: "GoatcounterTracking",
-    // ⚠️ no-op이지만 지우면 안 된다 — Quartz의 transformer 검증이
+    // 주의: no-op이지만 지우면 안 된다 — Quartz의 transformer 검증이
     // textTransform/markdownPlugins/htmlPlugins 중 하나를 요구한다.
     htmlPlugins() {
       return []

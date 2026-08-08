@@ -31,9 +31,8 @@ var GoatcounterTracking = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
   return {
     name: "GoatcounterTracking",
-    // No-op: only `externalResources` is used, but Quartz's transformer-category
-    // validation requires at least one of textTransform/markdownPlugins/htmlPlugins
-    // to be present on the instance (see config-loader.ts's `validateCategory`).
+    // 주의: no-op이지만 지우면 안 된다 — Quartz의 transformer 검증이
+    // textTransform/markdownPlugins/htmlPlugins 중 하나를 요구한다.
     htmlPlugins() {
       return [];
     },

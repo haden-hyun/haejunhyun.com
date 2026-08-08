@@ -136,8 +136,7 @@ var RecentNotesForIndex_default = ((userOpts) => {
     ).sort(opts.sort).slice(0, opts.limit);
     const locale = cfg.locale ?? "en-US";
     return (
-      // [2026-08-03] id="recent" — home-hero의 "노트 둘러보기" CTA(href="#recent")가
-      // 스크롤 대상으로 참조한다.
+      // id="recent" — home-hero의 CTA(href="#recent") 스크롤 대상. 지우지 말 것.
       /* @__PURE__ */ u2("div", { id: "recent", class: classNames(displayClass, "recent-notes"), children: [
         /* @__PURE__ */ u2("div", { class: "recent-notes-header", children: [
           /* @__PURE__ */ u2("h2", { children: opts.title ?? "Recent Notes" }),

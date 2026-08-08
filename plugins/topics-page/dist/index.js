@@ -120,9 +120,8 @@ var TopicsContent_default = (() => {
     const maxCount = Math.max(1, ...topicsWithCounts.map((t2) => t2.count));
     const totalCount = topicsWithCounts.reduce((sum, t2) => sum + t2.count, 0);
     return (
-      // <h1>은 여기서 렌더하지 않는다 — article-title 플러그인이 이미
-      // frontmatter.title("Topics", pageType.ts의 VirtualPage.title)로 페이지
-      // 상단에 렌더한다(folder-page의 FolderContent와 동일 패턴, h1 중복 방지).
+      // 주의: <h1>을 여기서 렌더하면 안 된다 — article-title 플러그인이 이미
+      // frontmatter.title로 렌더한다(중복 방지, folder-page와 동일 패턴).
       /* @__PURE__ */ u2("article", { class: `${displayClass ?? ""} topics-page-content popover-hint`, children: [
         /* @__PURE__ */ u2("p", { class: "topics-page-sub", children: [
           "\uC804\uCCB4 ",

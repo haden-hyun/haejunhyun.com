@@ -1,5 +1,5 @@
 // 캐러셀 화살표·썸네일. CSS scroll-snap이 이미 스와이프를 처리하므로 이건 순수 향상이다.
-// ⚠️ 정리는 window.addCleanup에 맡긴다 — Quartz가 prenav에서 호출한다.
+// 주의: 정리는 window.addCleanup에 맡긴다 — Quartz가 prenav에서 호출한다.
 document.addEventListener("nav", () => {
   const carousels = document.querySelectorAll<HTMLElement>('.il-carousel[data-needs-init="true"]')
 
@@ -21,7 +21,7 @@ document.addEventListener("nav", () => {
     const goTo = (index: number) => {
       const slide = slides[Math.max(0, Math.min(slides.length - 1, index))]
       if (!slide) return
-      // ⚠️ behavior:"smooth"를 쓰지 말 것 — scroll-snap:mandatory 스크롤러에서는
+      // 주의: behavior:"smooth"를 쓰지 말 것 — scroll-snap:mandatory 스크롤러에서는
       //    애니메이션이 스냅에 먹혀 스크롤이 통째로 무시된다(즉시 이동은 정상 동작).
       viewport.scrollTo({ left: slide.offsetLeft - viewport.offsetLeft })
       syncThumbs() // 프로그램적 이동은 scroll 이벤트를 보장받지 못한다

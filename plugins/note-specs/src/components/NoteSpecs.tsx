@@ -7,11 +7,10 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/noteSpecs.scss"
 
 /**
- * `reading-time`(content-meta가 쓰는 패키지)의 알고리즘을 그대로 옮긴 것.
- * 모바일(content-meta)과 데스크톱(SPECS)이 다른 숫자를 내면 안 되므로
- * 근사가 아니라 이식이다 — 카타카나 제외 같은 세부까지 같아야 값이 맞는다.
- * ⚠️ 패키지를 의존성으로 넣지 말 것: CJS라 ESM 번들에서
- * `Dynamic require of "stream" is not supported`로 컴포넌트 로드가 통째로 죽는다.
+ * `reading-time` 패키지 알고리즘의 이식. content-meta(모바일)와 SPECS(데스크톱)가
+ * 같은 숫자를 내야 해서 근사가 아니라 이식이다.
+ *
+ * 주의: 패키지를 의존성으로 넣지 말 것. CJS라 ESM 번들에서 컴포넌트 로드가 죽는다.
  */
 function inRanges(code: number, ranges: [number, number][]): boolean {
   return ranges.some(([lo, hi]) => lo <= code && code <= hi)

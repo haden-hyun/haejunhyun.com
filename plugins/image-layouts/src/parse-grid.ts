@@ -7,7 +7,7 @@ export interface CustomGrid {
 
 const MAX_SLOTS = 20
 
-// ASCII 그리드 → grid-template-areas. 원 플러그인과 동일하게 행은 **공백**으로 나눈다.
+// ASCII 그리드 → grid-template-areas. 원 플러그인과 동일하게 행은 공백으로 나눈다.
 // 실패는 전부 null — 빌드를 멈추지 않는다.
 export function parseCustomGrid(spec: unknown): CustomGrid | null {
   if (typeof spec !== "string" || spec.trim() === "") return null
@@ -30,7 +30,7 @@ export function parseCustomGrid(spec: unknown): CustomGrid | null {
   }
   if (order.length === 0 || order.length > MAX_SLOTS) return null
 
-  // ⚠️ 각 영역이 꽉 찬 직사각형이 아니면 브라우저가 템플릿을 통째로 버린다
+  // 주의: 각 영역이 꽉 찬 직사각형이 아니면 브라우저가 템플릿을 통째로 버린다
   for (const token of order) {
     let minRow = Infinity
     let maxRow = -1

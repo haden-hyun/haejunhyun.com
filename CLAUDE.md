@@ -14,10 +14,13 @@ Obsidian vault를 **Quartz v5**로 빌드해 Cloudflare로 서빙하는 개인 �
 | `DESIGN-SYSTEM.md` | **디자인의 현재 상태.** 색·서체를 건드리기 전 §6(고칠 때 규칙) 필독 |
 | `CHANGELOG.md` | "왜 이렇게 됐나"의 타임라인. 서사는 전부 여기 |
 | `README.md` | 배포 구조 |
-| `haejun-redesign-palette.html` | 정적 목업. **빌드 없이 열리는 유일한 시각 검증 수단** |
+| `haejun-redesign-palette.html` | 정적 목업. 빌드 없이 열리는 시각 검증 수단 |
+
+이 넷이 전부다. 계획서·핸드오프 문서를 새로 만들지 않는다 — 현재 상태는
+`DESIGN-SYSTEM.md`, 경위는 `CHANGELOG.md`로 보낸다.
 
 **주석은 핵심 기능·커스텀 로직에만, 한 줄로.** `.scss`/`.yaml`/`.tsx` 어디든 동일 — "왜
-이 값을 골랐는지" 서사·비교·근거 나열은 쓰지 않는다. 함정만 `⚠️` 한 줄. 히스토리·날짜·
+이 값을 골랐는지" 서사·비교·근거 나열은 쓰지 않는다. 함정만 `주의:` 한 줄. 히스토리·날짜·
 세션 서사·디자인 근거는 주석에 남기지 말고 CHANGELOG.md/DESIGN-SYSTEM.md로 보낸다.
 
 ---
@@ -43,7 +46,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 `plugins/*` 20종. 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
-⚠️ **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
+주의: **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
 9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의
 코드를 쓰고 있었다(2026-08-06 발견·교정). `plugin install`은 락파일을 따르므로 링크를
 지워도 되살아난다 — **락파일을 먼저 고칠 것.** 증상은 "고쳤는데 안 바뀐다"이다.
@@ -70,8 +73,8 @@ npx quartz build
 `.quartz/`가 없으면 `quartz.ts:2`, `quartz/components/Head.tsx:7`의
 `./.quartz/plugins` import가 해결되지 않는다 — 그때 첫 명령이 해결책이다.
 
-- ⚠️ `npm run install-plugins`는 **YAML 설정 이전의 레거시 경로** — 쓰지 말 것.
-- ⚠️ `.quartz/plugins/`에 **끊어진 symlink가 남으면 `plugin install`이 ENOENT로 죽는다**
+- 주의: `npm run install-plugins`는 **YAML 설정 이전의 레거시 경로** — 쓰지 말 것.
+- 주의: `.quartz/plugins/`에 **끊어진 symlink가 남으면 `plugin install`이 ENOENT로 죽는다**
   (`plugins/`에서 지운 플러그인의 링크가 남는다). 해당 링크만 지우면 된다.
 - **사용자가 로컬 npm 실행을 원하지 않을 수 있다.** 빌드·설치를 돌리기 전에 확인할 것.
 
@@ -82,7 +85,7 @@ cd public && python3 -m http.server 8899   # 빌드본을 띄우고 computed sty
 ```
 
 SCSS에 규칙을 썼다고 적용된 게 아니다(§사실 확인 원칙). 색·크기·대비는
-브라우저 computed style로 확인한다. ⚠️ 탭이 백그라운드면 IntersectionObserver가
+브라우저 computed style로 확인한다. 주의: 탭이 백그라운드면 IntersectionObserver가
 안 돌아 TOC `in-view` 같은 게 "깨진 것처럼" 보인다 — 스크린샷으로 탭을 활성화한
 뒤 재측정할 것. 색은 `transition` 진행 중에 재면 중간값이 나오므로 테마를 바꿀 땐
 토글이 아니라 **새로 로드**해서 잰다.
@@ -94,7 +97,7 @@ npx sass --no-source-map quartz/styles/custom.scss <임시경로>   # SCSS 컴�
 python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
 ```
 
-⚠️ Windows Git Bash에서 `sass ... /dev/null`을 쓰면 저장소 루트에 `nul` **파일이 생긴다.**
+주의: Windows Git Bash에서 `sass ... /dev/null`을 쓰면 저장소 루트에 `nul` **파일이 생긴다.**
 임시 디렉터리를 쓸 것.
 
 ---
@@ -156,12 +159,12 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
 - 팔레트 "True Midnight" — 라이트 = 크림 인쇄지 `#f7f5ef` / 다크 = 잉크 네이비 `#0e1420`, accent H207.
 - **색의 세 축**: 공간(블루 `#1c5f95`, 링크·백링크·breadcrumb·CATALOG·h2) / 행위(브릭 `#b8442a`, CTA) /
   시간(Chitlins `#b03a7d`, 읽기 진행바·TOC 활성). 각 색이 답하는 질문이 달라 역할 침범이 없다.
-- ⚠️ 팔레트의 블루는 **2색 × 2모드**다(True Midnight/Deeper Cut = 라이트, Stage Light/Rim Light = 다크).
+- 주의: 팔레트의 블루는 **2색 × 2모드**다(True Midnight/Deeper Cut = 라이트, Stage Light/Rim Light = 다크).
   한 테마에서 쓸 수 있는 블루는 2개뿐. `--dark`(#141d28)는 검정이 아니라 H213의 가장 깊은 잉크다.
 - **하이라이트·인라인 코드·bold는 색이 아니라 재질/무게로 구분한다.** 세 축에 속하지 않는
   신호라 네 번째 색을 만들면 축 체계가 무너진다.
 - 서체: 로고 Anton / 헤딩 Hahmlet / 본문 Noto Sans KR / 코드 JetBrains Mono.
-  ⚠️ `theme.typography`와 `fonts` 플러그인 옵션 **두 곳을 항상 같게** 유지(후자가 최종 결정).
+  주의: `theme.typography`와 `fonts` 플러그인 옵션 **두 곳을 항상 같게** 유지(후자가 최종 결정).
 - **토픽 컬러는 폐지됐다.** 색은 그룹핑엔 강하나 명명엔 약한데 토픽은 명명 문제다.
   식별은 라벨 타이포가 하고, 색은 현재 위치에만 쓴다. 되살리지 말 것.
 - 콜아웃은 색을 쓴다 — 토픽(명명)과 달리 콜아웃은 *가치*라서 색이 맞는 부호다.

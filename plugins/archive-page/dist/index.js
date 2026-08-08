@@ -105,8 +105,7 @@ var ArchiveContent_default = (() => {
     }
     const years = [...byYear.keys()].sort((a2, b2) => b2 - a2);
     return (
-      // <h1>은 article-title 플러그인이 frontmatter.title("Archive")로 렌더 —
-      // topics-page와 동일한 이유로 여기서 중복 렌더하지 않는다.
+      // 주의: <h1>은 article-title이 렌더한다 — 여기서 중복 렌더 금지.
       /* @__PURE__ */ u2("article", { class: `${displayClass ?? ""} archive-page-content popover-hint`, children: [
         /* @__PURE__ */ u2("p", { class: "archive-page-sub", children: [
           "\uC804\uCCB4 ",

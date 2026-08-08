@@ -19,7 +19,7 @@ vault 안 큐레이션 노트(위키링크 목록) 안은 기각했다. `file.li
 오타는 **빌드 로그 경고**로 잡는다. 이 저장소가 반복적으로 당한 게 "선언했는데 동작
 안 함"이라, 조용히 무시되는 경로를 남기지 않았다.
 
-⚠️ 작업 중 **자동 선정 결과가 빌드마다 달라지는 것**을 발견했다. 원인은 Featured가
+주의: 작업 중 **자동 선정 결과가 빌드마다 달라지는 것**을 발견했다. 원인은 Featured가
 아니라 날짜다 — `created-modified-date`는 `frontmatter.created/modified/published`만
 읽는데 노트 91개 중 **90개가 `updated:`** 를 쓴다. `modified`가 frontmatter에서
 해석되지 않고 파일 mtime으로 떨어져, Obsidian이 파일을 건드릴 때마다 순서가 흔들린다.
@@ -47,12 +47,10 @@ Notes가 둘째 자리에 있으면서 목적지가 없는 게 앞줄의 모순�
 최신 노트 정렬은 `modified → created` 폴백 — `recent-notes-index`의 `getSortTime`과
 같은 체인이다. 다르게 잡으면 **Notes가 보내는 노트와 홈 Recent Notes 맨 윗줄이 어긋난다.**
 
-⚠️ SCSS는 손대지 않았다. `<span>`이 섞이니 hover를 `a`로 좁혀야 할 것 같았지만, 재보니
+주의: SCSS는 손대지 않았다. `<span>`이 섞이니 hover를 `a`로 좁혀야 할 것 같았지만, 재보니
 `.global-nav-link:hover`와 `.global-nav-link.active`는 명시도가 같고(0,2,0) `.active`가
 뒤에 선언돼 이미 이긴다. span은 항상 `.active`를 달고 있어 hover 색이 먹지 않는다.
 **증상을 예상해서 고치려 한 자리가 실제로는 이미 맞았다.**
-
-설계 문서: `docs/superpowers/specs/2026-08-08-global-nav-notes-design.md`
 
 ## 2026-08-07 — SPECS를 좌측으로, 패널 항목을 한 규칙으로
 
@@ -80,7 +78,7 @@ brick·chitlins를 항목 색으로 쓰는 안은 기각했다. 대비는 셋 �
 각각 다른 것을 망가뜨린다 — chitlins는 읽기 진행바와, brick은 페이지당 1회여야 할 CTA와
 신호가 겹친다.
 
-⚠️ **캐스케이드 레이어 함정을 하나 더 잡았다.** 플러그인의 `.note-catalog-link.active`는
+주의: **캐스케이드 레이어 함정을 하나 더 잡았다.** 플러그인의 `.note-catalog-link.active`는
 `@layer quartz-base` 안에 있고 새 항목 규칙은 레이어 밖이라, 명시도가 더 높은데도(0,3,0
 > 0,2,0) `--gray`가 이겨 **현재 노트까지 회색이 될 상태**였다. 레이어 밖에 `.active`를
 다시 선언해야 명시도가 작동한다. `noteCatalog.scss`의 `--gray` 지정도 함께 제거했다 —
@@ -136,7 +134,7 @@ CrawlLinks보다 **앞서야** 한다는 제약이 생긴다. 중첩 노트에�
 규칙이 깨진다. 아래로 내리니 `--gray`로 이미 검증된 대비를 그대로 쓰게 됐고 예외가
 사라졌다. 색 규칙이 형태를 결정한 사례다.
 
-계획 문서(`image-layout-handoff.md`)를 원본 소스와 대조해 **7건을 정정했다.** ASCII
+계획 문서를 원본 소스와 대조해 **7건을 정정했다.** ASCII
 그리드가 공백 구분이라는 것(문서 예시 `AAB`는 1열 그리드가 된다), 영역 이름이 letter가
 아니라 `image-{n}`이라는 것, 컨테이너를 `paragraph`로 만들면 잘못된 mdast라는 것 등.
 **설계 전에 원고와 원본을 세어본다**는 이 저장소의 원칙이 또 값을 했다.
@@ -216,7 +214,7 @@ CLAUDE.md §7("대비는 코드블럭 배경 기준으로 잰다")이 콜아웃�
 제목에서 본문으로 가는 길을 막고 있었다. 우측 최상단 음반 사양 표기로 옮기고,
 모바일은 기존 content-meta/tag-list를 `display: mobile-only`로 남겼다.
 
-⚠️ 두 함정: ① `reading-time` 패키지를 의존성으로 넣으면 CJS라 ESM 번들에서
+주의: 두 함정: ① `reading-time` 패키지를 의존성으로 넣으면 CJS라 ESM 번들에서
 `Dynamic require of "stream"`으로 **컴포넌트 로드가 통째로 실패**한다(에러가 아니라
 경고 한 줄로 지나가서 "렌더는 되는데 안 보임"으로 나타난다) — 알고리즘을 이식했다.
 ② `defaultDateType: published`는 `published:` 프론트매터를 가진 노트가 0개라 항상
@@ -279,7 +277,7 @@ graph는 기본 접힘. graph는 노드가 1~2개뿐인 노트가 많아 250px�
 **bold/italic.** `strong`이 헤딩과 같은 `--dark`라 "강조"와 "구조"가 같은 신호를
 썼다 — 색을 빼고 무게만 남겼다. `em`은 Noto Sans KR에 진짜 이탤릭이 없어
 브라우저가 합성 오블리크를 만들고 한글엔 이탤릭 관습도 없으므로 톤 다운으로 바꿨다.
-⚠️ 두 규칙은 레이어 밖 + `article` 스코프여야 한다 — 레이어 안에선 base의
+주의: 두 규칙은 레이어 밖 + `article` 스코프여야 한다 — 레이어 안에선 base의
 `p > strong { color: var(--dark) }`가 명시도로 이기고, 전역 요소 선택자를
 레이어 밖에 두면 플러그인 UI가 깨진다.
 
@@ -324,7 +322,7 @@ catppuccin-latte `#4C4F69`(6.70)로 떨어져 punct(5.88)·alert(6.64) 사이에
 
 주석 428줄 → 252줄(-41%). 날짜·세션 히스토리·목업 라인 참조·자기 정정
 기록을 걷어내고 핵심 기능과 함정만 개조식으로 남겼다. **경고성 내용은
-전부 보존**하고 `⚠️` 마커를 붙였다(예: "통계 하드코딩 금지", "플러그인에서
+전부 보존**하고 `주의:` 마커를 붙였다(예: "통계 하드코딩 금지", "플러그인에서
 색 값 정의 금지", "position: header는 조용히 버려짐").
 
 위의 "근거는 코드 주석으로 이관"(아래 항목)과 상충하지 않는다 — 이관된
@@ -425,6 +423,3 @@ design-handoff.md가 가정한 아키텍처(Quartz v4)와 실제(v5 플러그인
 | `design-bluenote-handoff.md` | Gothic A1/IBM Plex Sans KR 제안 기각(2026-08-04 항목). 이미 삭제돼 있었음 |
 | `CODE_OF_CONDUCT.md` | fork 잔재, 이 저장소와 무관 — 대체 없이 삭제 |
 
-`docs/superpowers/plans/2026-07-18-quartz-v5-migration.md`에 남은
-`MIGRATION-NOTES.md` 언급은 완료된 계획서의 기록이고 외부 경로
-(`~/Developer/haejunhyun-v5-test/`)를 가리키므로 그대로 둔다.

@@ -4,17 +4,14 @@ import { toString as mdastToString } from "mdast-util-to-string"
 import { visit } from "unist-util-visit"
 
 /**
- * `[!summary]` 콜아웃 **본문만** frontmatter.description으로 추출.
- * 없으면 description 플러그인이 렌더 텍스트를 앞에서부터 잘라 쓰는데,
- * 그러면 타이틀 리터럴("Summary"/"요약")이 카드·RSS·OG 이미지에 노출된다.
+ * `[!summary]` 콜아웃 본문을 frontmatter.description으로 추출한다.
+ * 없으면 타이틀 리터럴("Summary")이 카드·RSS·OG 이미지에 노출된다.
  *
- * order 35 = ofm(30) 이후, description(70) 이전. "아직 없을 때만 채운다"만
- * 지키면 우선순위가 자동 성립한다:
- *   수동 frontmatter > 이 플러그인 > description 자동 생성
+ * - order 35 = ofm(30) 이후, description(70) 이전
+ * - 이미 있으면 덮지 않는다: 수동 frontmatter > 이 플러그인 > 자동 생성
  *
- * ⚠️ 반드시 `data-callout="abstract"`로 매칭할 것. Obsidian이 summary/tldr을
- *    전부 "abstract"로 캐너니컬라이즈하므로 `"summary"`는 **존재하지 않는다.**
- * ※ 타이틀 문구는 무엇이든 상관없다 — callout-content 안쪽만 읽는다.
+ * 주의: `data-callout="abstract"`로 매칭할 것. Obsidian이 summary/tldr을 전부
+ * abstract로 캐너니컬라이즈해서 "summary"는 존재하지 않는다.
  */
 
 interface HastData {
@@ -36,8 +33,7 @@ function normalize(text: string): string {
   return text.replace(WHITESPACE, " ").trim()
 }
 
-/** 불릿 리스트면 **첫 항목만**(전체를 이어붙이면 한 문장처럼 뭉친다).
- *  단락형이면 본문 전체. */
+/** 불릿 리스트면 첫 항목만, 단락형이면 본문 전체. */
 function extractCardSummary(contentNode: MdastParent): string {
   const firstList = contentNode.children.find((child): child is List => child.type === "list")
   const source = firstList?.children[0] ?? contentNode
