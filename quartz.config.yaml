@@ -315,12 +315,15 @@ plugins:
       priority: 1
   - source: ./plugins/featured-notes
     enabled: true
-    # Featured. 홈 전용, priority 2 = Hero 아래.
-    # `featured: true`가 없으면 토픽 라운드로빈으로 자동 선정.
+    # Featured. 홈 전용, priority 2 = Hero 아래. 슬롯 4개(대형 1 + 소형 3).
+    # slugs가 유일한 지정 수단이다 — 쓴 순서가 표시 순서고 첫 항목이 대형 카드.
+    # 비워두면 토픽 라운드로빈으로 자동 선정. 못 찾은 슬러그는 빌드 로그에 경고.
     # ⚠️ recentExcludeCount는 아래 recent-notes-index.limit과 같은 값 유지
     #    (홈에서 Featured와 Recent가 같은 글을 중복 노출하는 것 방지).
     options:
       recentExcludeCount: 6
+      # 예: - data-science/statistics/descriptive-statistics-and-scaling
+      slugs: []
     order: 15
     layout:
       position: beforeBody

@@ -11,13 +11,16 @@ import style from "./styles/featured.scss"
  * Featured — 홈 전용. 대형 카드 1개 + 소형 카드 3개.
  *
  * 선정 순서
- *   1. `frontmatter.featured: true` 우선
- *   2. 부족분은 **토픽 라운드로빈**(토픽별 최신 1개씩) — 전체 최신순으로 뽑으면
- *      노트가 많은 토픽이 슬롯을 독식한다
- *   3. 메인 = 선정분 중 가장 최근, 나머지 3개는 사이드에 최신순
+ *   1. `options.slugs` 목록을 **쓴 순서 그대로** — 첫 항목이 대형 카드
+ *   2. 부족분은 **토픽 라운드로빈**(토픽별 최신 1개씩) 후 최신순 — 전체 최신순으로
+ *      뽑으면 노트가 많은 토픽이 슬롯을 독식한다
  *
+ * ⚠️ `slugs`가 유일한 지정 수단이다. `frontmatter.featured`는 지원하지 않는다 —
+ *    지정하는 곳이 두 군데면 "어디서 정해졌는지"를 매번 추적해야 한다.
+ * ⚠️ 목록 순서를 뒤에서 최신순으로 다시 정렬하지 말 것. 순서 제어가 목록 방식의
+ *    존재 이유다. 자동 채움분만 최신순으로 정렬한다.
  * ⚠️ 중복 노출 방지: 자동 채움에서만 Recent Notes 상위 N개를 후보에서 뺀다.
- *    수동 featured는 빼지 않는다(작성자 의도 우선).
+ *    목록 지정분은 빼지 않는다(작성자 의도 우선).
  *    N = `recentExcludeCount`, quartz.config.yaml의 recent-notes-index.limit과
  *    같은 값으로 유지할 것.
  *
@@ -27,6 +30,8 @@ import style from "./styles/featured.scss"
  *     위계는 대문자 + 자간으로, 색은 중립(--text-3)
  *   · 홈 전용 렌더는 내부 slug 가드 (`is-index` layout condition은 없음)
  */
+
+const MAX_SLOTS = 4
 
 type FileData = QuartzPluginData & Record<string, unknown>
 
@@ -109,10 +114,45 @@ function pickRoundRobin(files: FileData[], count: number, exclude: Set<string>):
 export interface FeaturedNotesOptions {
   /** recent-notes-index의 options.limit과 같은 값으로 유지할 것. */
   recentExcludeCount: number
+  /** Featured 노트 슬러그. 쓴 순서가 표시 순서고, 첫 항목이 대형 카드다. */
+  slugs: string[]
 }
 
 const defaultOptions: FeaturedNotesOptions = {
   recentExcludeCount: 6,
+  slugs: [],
+}
+
+/**
+ * 목록의 슬러그를 실제 노트로 해석한다. 못 찾은 슬러그는 **빌드 로그에 경고**를
+ * 남기고 건너뛴다 — 오타가 조용히 무시되면 "설정했는데 안 나온다"가 된다.
+ */
+function resolveSlugs(slugs: string[], files: FileData[]): FileData[] {
+  const bySlug = new Map(files.map((f) => [f.slug as string, f]))
+  const resolved: FileData[] = []
+  const seen = new Set<string>()
+
+  for (const slug of slugs) {
+    if (seen.has(slug)) {
+      console.warn(`[featured-notes] 중복된 슬러그를 건너뜁니다: "${slug}"`)
+      continue
+    }
+    seen.add(slug)
+    const file = bySlug.get(slug)
+    if (!file) {
+      console.warn(`[featured-notes] 슬러그를 찾을 수 없어 건너뜁니다: "${slug}"`)
+      continue
+    }
+    resolved.push(file)
+  }
+
+  if (resolved.length > MAX_SLOTS) {
+    console.warn(
+      `[featured-notes] 슬롯은 ${MAX_SLOTS}개인데 ${resolved.length}개가 지정됐습니다. ` +
+        `뒤 ${resolved.length - MAX_SLOTS}개는 표시되지 않습니다.`,
+    )
+  }
+  return resolved.slice(0, MAX_SLOTS)
 }
 
 export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
@@ -127,9 +167,7 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
 
     const files = (allFiles as FileData[]).filter((f) => isRealNote((f.slug as string) ?? ""))
 
-    const manuallyFeatured = files
-      .filter((f) => (f.frontmatter as { featured?: boolean } | undefined)?.featured === true)
-      .sort((a, b) => getTime(b) - getTime(a))
+    const curated = resolveSlugs(opts.slugs, files)
 
     // recent-notes-index와 같은 정렬 기준(최신순)으로 상위 N개를 재현해 제외.
     const recentPostsSlugs = new Set(
@@ -139,11 +177,15 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
         .map((f) => f.slug as string),
     )
 
-    const exclude = new Set([...manuallyFeatured.map((f) => f.slug as string), ...recentPostsSlugs])
-    const needed = Math.max(0, 4 - manuallyFeatured.length)
-    const autoFilled = needed > 0 ? pickRoundRobin(files, needed, exclude) : []
+    const exclude = new Set([...curated.map((f) => f.slug as string), ...recentPostsSlugs])
+    const needed = MAX_SLOTS - curated.length
+    // 자동 채움분만 최신순으로 정렬한다 — curated의 순서는 그대로 둔다.
+    const autoFilled =
+      needed > 0
+        ? pickRoundRobin(files, needed, exclude).sort((a, b) => getTime(b) - getTime(a))
+        : []
 
-    const selected = [...manuallyFeatured, ...autoFilled].sort((a, b) => getTime(b) - getTime(a))
+    const selected = [...curated, ...autoFilled]
     if (selected.length === 0) return <></>
 
     const [main, ...rest] = selected

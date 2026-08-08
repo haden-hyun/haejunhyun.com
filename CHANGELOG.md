@@ -2,6 +2,30 @@
 
 > "지금 상태"는 `DESIGN-SYSTEM.md`. 여기는 "왜 이렇게 됐는가"의 타임라인만.
 
+## 2026-08-08 — Featured를 큐레이션 목록 하나로 통일
+
+`frontmatter.featured: true`를 없애고 `quartz.config.yaml`의 `slugs` 배열로 통일했다.
+그 값을 쓰는 노트가 0개였으니 정리 비용이 가장 싼 시점이었다.
+
+**진짜 이득은 중앙 관리가 아니라 순서 제어였다.** 예전엔 featured를 달아도 선정분을
+다시 최신순으로 정렬해서 **어느 것이 대형 카드가 될지 고를 수 없었다.** 목록 방식은
+"쓴 순서 = 표시 순서"가 자연스러워서 그 제약이 사라진다. 그래서 자동 채움분만
+최신순으로 정렬하고, 목록 순서는 뒤에서 건드리지 않는다.
+
+vault 안 큐레이션 노트(위키링크 목록) 안은 기각했다. `file.links`로 읽는 건 되지만
+그 노트가 `allFiles`에 남아야 해서 Recent·Archive·CATALOG에 노출되고 홈 통계가 1 는다.
+`unlisted`를 보는 플러그인이 20종 중 하나뿐이라 제외 처리를 여러 곳에 심어야 했다.
+
+오타는 **빌드 로그 경고**로 잡는다. 이 저장소가 반복적으로 당한 게 "선언했는데 동작
+안 함"이라, 조용히 무시되는 경로를 남기지 않았다.
+
+⚠️ 작업 중 **자동 선정 결과가 빌드마다 달라지는 것**을 발견했다. 원인은 Featured가
+아니라 날짜다 — `created-modified-date`는 `frontmatter.created/modified/published`만
+읽는데 노트 91개 중 **90개가 `updated:`** 를 쓴다. `modified`가 frontmatter에서
+해석되지 않고 파일 mtime으로 떨어져, Obsidian이 파일을 건드릴 때마다 순서가 흔들린다.
+Featured는 목록으로 고정됐지만 Recent Notes 정렬·표시 날짜·"최신 노트" 링크는 그대로
+영향을 받는다. 별도 과제.
+
 ## 2026-08-08 — 상단 내비를 `Home · Topics · Archive · Notes`로, Notes에 목적지를 주다
 
 **순서가 바뀌었다** (`Home | Notes | Topics | Archive` → `Home | Topics | Archive | Notes`).

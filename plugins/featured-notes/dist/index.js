@@ -61,6 +61,7 @@ function u2(e2, t2, n2, o2, i2, u3) {
 }
 
 // src/components/FeaturedNotes.tsx
+var MAX_SLOTS = 4;
 var CATEGORY_NAMES = {
   "computer-science": "Computer Science",
   "data-engineering": "Data Engineering",
@@ -127,8 +128,33 @@ function pickRoundRobin(files, count, exclude) {
   return picked;
 }
 var defaultOptions = {
-  recentExcludeCount: 6
+  recentExcludeCount: 6,
+  slugs: []
 };
+function resolveSlugs(slugs, files) {
+  const bySlug = new Map(files.map((f3) => [f3.slug, f3]));
+  const resolved = [];
+  const seen = /* @__PURE__ */ new Set();
+  for (const slug of slugs) {
+    if (seen.has(slug)) {
+      console.warn(`[featured-notes] \uC911\uBCF5\uB41C \uC2AC\uB7EC\uADF8\uB97C \uAC74\uB108\uB701\uB2C8\uB2E4: "${slug}"`);
+      continue;
+    }
+    seen.add(slug);
+    const file = bySlug.get(slug);
+    if (!file) {
+      console.warn(`[featured-notes] \uC2AC\uB7EC\uADF8\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC5B4 \uAC74\uB108\uB701\uB2C8\uB2E4: "${slug}"`);
+      continue;
+    }
+    resolved.push(file);
+  }
+  if (resolved.length > MAX_SLOTS) {
+    console.warn(
+      `[featured-notes] \uC2AC\uB86F\uC740 ${MAX_SLOTS}\uAC1C\uC778\uB370 ${resolved.length}\uAC1C\uAC00 \uC9C0\uC815\uB410\uC2B5\uB2C8\uB2E4. \uB4A4 ${resolved.length - MAX_SLOTS}\uAC1C\uB294 \uD45C\uC2DC\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.`
+    );
+  }
+  return resolved.slice(0, MAX_SLOTS);
+}
 var FeaturedNotes_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
   const FeaturedNotes = ({
@@ -138,14 +164,14 @@ var FeaturedNotes_default = ((userOpts) => {
   }) => {
     if (fileData.slug !== "index") return /* @__PURE__ */ u2(S, {});
     const files = allFiles.filter((f3) => isRealNote(f3.slug ?? ""));
-    const manuallyFeatured = files.filter((f3) => f3.frontmatter?.featured === true).sort((a2, b2) => getTime(b2) - getTime(a2));
+    const curated = resolveSlugs(opts.slugs, files);
     const recentPostsSlugs = new Set(
       [...files].sort((a2, b2) => getTime(b2) - getTime(a2)).slice(0, opts.recentExcludeCount).map((f3) => f3.slug)
     );
-    const exclude = /* @__PURE__ */ new Set([...manuallyFeatured.map((f3) => f3.slug), ...recentPostsSlugs]);
-    const needed = Math.max(0, 4 - manuallyFeatured.length);
-    const autoFilled = needed > 0 ? pickRoundRobin(files, needed, exclude) : [];
-    const selected = [...manuallyFeatured, ...autoFilled].sort((a2, b2) => getTime(b2) - getTime(a2));
+    const exclude = /* @__PURE__ */ new Set([...curated.map((f3) => f3.slug), ...recentPostsSlugs]);
+    const needed = MAX_SLOTS - curated.length;
+    const autoFilled = needed > 0 ? pickRoundRobin(files, needed, exclude).sort((a2, b2) => getTime(b2) - getTime(a2)) : [];
+    const selected = [...curated, ...autoFilled];
     if (selected.length === 0) return /* @__PURE__ */ u2(S, {});
     const [main, ...rest] = selected;
     const sideItems = rest.slice(0, 3);
