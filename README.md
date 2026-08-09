@@ -25,18 +25,17 @@ Cloudflare ── haejunhyun.com 서빙
 
 ## 디렉토리 구조
 
-| 경로 | 역할 |
-|---|---|
-| `content/` | 블로그 원고. Obsidian vault(`~/Documents/obsidian/00-Blog/content`)로의 **심볼릭 링크** — 이 저장소에는 실제 파일이 없다 |
-| `public/` | 빌드 결과물(정적 사이트). **커밋 대상**이며 Cloudflare가 이 폴더를 그대로 서빙한다 |
-| `plugins/` | 로컬 커스텀 플러그인 20종. 각각 독립 npm 패키지로, 자체 install/빌드가 필요하다 |
-| `scripts/` | 배포 스크립트 3종 (아래 참고) |
-| `quartz/` | Quartz v5 코어. `quartz/styles/custom.scss` 외에는 수정하지 않는 것이 원칙 |
-| `docs/` | Quartz 공식 문서 (upstream 그대로) |
-| `quartz.config.yaml` | **설정의 중심.** 테마(폰트·컬러)·플러그인·레이아웃이 전부 이 파일에 있다 |
-| `quartz.ts` / `og-image.overrides.tsx` | YAML로 표현할 수 없는 고급 오버라이드 (OG 이미지 등) |
-| `DESIGN-SYSTEM.md` | 타이포그래피·컬러 등 디자인 시스템의 현재 상태 |
-| `CHANGELOG.md` | 디자인·구조 결정의 이력 ("왜 이렇게 됐는가") |
+| 경로                                   | 역할                                                                                                                     |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `content/`                             | 블로그 원고. Obsidian vault(`~/Documents/obsidian/00-Blog/content`)로의 **심볼릭 링크** — 이 저장소에는 실제 파일이 없다 |
+| `public/`                              | 빌드 결과물(정적 사이트). **커밋 대상**이며 Cloudflare가 이 폴더를 그대로 서빙한다                                       |
+| `plugins/`                             | 로컬 커스텀 플러그인 20종. 각각 독립 npm 패키지로, 자체 install/빌드가 필요하다                                          |
+| `scripts/`                             | 배포 스크립트 3종 (아래 참고)                                                                                            |
+| `quartz/`                              | Quartz v5 코어. `quartz/styles/custom.scss` 외에는 수정하지 않는 것이 원칙                                               |
+| `docs/`                                | Quartz 공식 문서 (upstream 그대로)                                                                                       |
+| `quartz.config.yaml`                   | **설정의 중심.** 테마(폰트·컬러)·플러그인·레이아웃이 전부 이 파일에 있다                                                 |
+| `quartz.ts` / `og-image.overrides.tsx` | YAML로 표현할 수 없는 고급 오버라이드 (OG 이미지 등)                                                                     |
+| `DESIGN-SYSTEM.md`                     | 타이포그래피·컬러·컴포넌트 등 디자인 시스템의 현재 상태 (디자인 문서는 이 하나)                                          |
 
 ### 로컬 플러그인 (`plugins/`)
 
@@ -51,11 +50,11 @@ Cloudflare ── haejunhyun.com 서빙
 
 ### 배포 스크립트 (`scripts/`)
 
-| 스크립트 | 용도 |
-|---|---|
-| `deploy-dev.sh` | 로컬 프리뷰 (localhost:8080) |
-| `deploy.sh` | Quick Publish — 플러그인 install → 빌드 → `public/` 커밋 → push |
-| `deploy-clean.sh` | Clean Publish — 캐시 삭제 후 전체 재빌드 배포 |
+| 스크립트          | 용도                                                            |
+| ----------------- | --------------------------------------------------------------- |
+| `deploy-dev.sh`   | 로컬 프리뷰 (localhost:8080)                                    |
+| `deploy.sh`       | Quick Publish — 플러그인 install → 빌드 → `public/` 커밋 → push |
+| `deploy-clean.sh` | Clean Publish — 캐시 삭제 후 전체 재빌드 배포                   |
 
 Obsidian 단축키에 연결해 에디터에서 바로 실행합니다.
 
