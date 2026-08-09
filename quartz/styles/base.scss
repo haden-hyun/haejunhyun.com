@@ -223,8 +223,7 @@ a {
       margin: 0 auto;
     }
 
-    // 전 페이지 공통 상단 바 — 브랜드/내비/검색/다크모드. 항상 페이지 최상단에
-    // 고정되어 좌우 사이드바(트리/TOC)와 무관하게 동일한 폭·높이를 유지한다.
+    // 전 페이지 공통 상단 바 — 사이드바 유무와 무관하게 같은 폭·높이를 유지한다.
     & .topbar {
       grid-area: grid-topbar;
       position: sticky;
@@ -248,9 +247,7 @@ a {
       display: flex;
       height: calc(100vh - var(--topbar-h));
       position: sticky;
-      // topbar가 생기며 세로 공간이 줄어든 만큼, 트리/TOC/백링크가 길면
-      // 넘치는 대신 사이드바 자체가 스크롤되게 한다(overflow: visible이면
-      // 넘친 내용이 잘리거나 center 컬럼에 가려짐).
+      // 내용이 길면 잘리거나 center 컬럼에 가려지는 대신 사이드바 자체가 스크롤되게.
       overflow-y: auto;
       overflow-x: hidden;
     }

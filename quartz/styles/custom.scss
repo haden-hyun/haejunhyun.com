@@ -1,133 +1,62 @@
-// ═══════════════════════════════════════════════════════════════════════════
-//  quartz/styles/custom.scss — Theme B
-//  [2026-08-04] Anton (logo, title 슬롯) + Hahmlet (heading) + Noto Sans KR (body) + Slate Blue
-//  v4 → v5 이관 메모:
-//  v4는 `@use "base";` 로 base.scss(+variables/syntax/callouts)를 이 파일 안에서
-//  직접 끌어왔다 (v4 componentResources.ts가 custom.scss만 import했기 때문).
-//  v5는 componentResources.ts가 baseStyles와 customStyles를 "따로" import해서
-//  `@layer quartz-base { ...baseStyles }` 로 감싼 뒤 뒤에 customStyles(비-layer)를
-//  붙이는 구조 — base.scss를 여기서 또 @use하면 전체가 중복 컴파일된다.
-//  그래서 @use "base" 는 삭제하고, v5 스캐폴드가 이미 갖춘
-//  `@use "./variables.scss" as *;` 만 유지한다 (이관된 규칙들은 $mobile 등의
-//  breakpoint 변수를 쓰지 않아 당장은 실질적으로 미사용이지만 향후 대비 유지).
-//  참고: custom.scss가 non-layered로 출력되므로, 선택자 명시도(specificity)와
-//  무관하게 @layer quartz-base 안의 base/플러그인 스타일보다 항상 우선한다.
-// ═══════════════════════════════════════════════════════════════════════════
+// custom.scss — 사이트 커스텀 스타일.
+//
+// 주의: 이 파일 출력은 @layer quartz-base 밖이라, 명시도와 무관하게 base·플러그인
+//       스타일을 항상 이긴다. 전역 요소 선택자는 레이어 안에 둘 것.
+// 주의: base.scss를 여기서 @use하면 전체가 중복 컴파일된다.
 
 @use "sass:map";
 @use "./variables.scss" as *;
 
-// base.scss `.page { max-width: calc($desktop + 300px) }`와 반드시 같은 값 —
-// topbar full-bleed 계산(§10.5)이 이 값을 기준으로 여백을 맞춘다.
+// 주의: base.scss `.page`의 max-width와 같은 값이어야 한다 — §10.5 topbar full-bleed 기준값.
 $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 
-// put your custom CSS here!
-
 // ── 0. 브랜드 토큰 ──────────────────────────────────────────────────────────
-// --accent/--text/--border 등은 값을 새로 정의하지 않고 quartz.config.yaml
-// theme.colors의 별칭으로만 둔다 — 색의 단일 소스를 하나로 유지해 신규
-// 컴포넌트와 기존 30여 개 플러그인이 항상 같은 색을 쓰게 한다.
-// 액센트는 슬레이트 블루 유지 (라이트/다크 모두 AA 대비 통과).
+// 색은 새로 정의하지 않고 quartz.config.yaml theme.colors의 별칭만 둔다.
 
 :root {
   --accent: var(--secondary);
 
-  // [2026-08-05] accent의 RGB 삼원색 — rgba()로 투명도를 섞어야 하는 자리
-  // (태그 배경, 테이블 헤더, 콜아웃, 블록쿼트, 카드 hover 등)를 위해 둔다.
-  // 이전엔 이 자리에 `rgba(61, 107, 142, ·)` 리터럴이 15곳 하드코딩돼 있어,
-  // theme.colors에서 accent를 바꿔도 그 15곳만 옛 색으로 남는 구조였다
-  // ("색의 단일 소스는 config.yaml"이라는 §0 원칙이 실제로는 깨져 있었음).
-  // CSS 변수는 rgba() 안에서 값 치환으로 동작하므로 삼원색만 따로 보관한다.
-  // secondary(#1c5f95)를 바꿀 땐 이 값도 반드시 같이 바꿀 것 — 두 값이
-  // 같은 색을 가리킨다는 보장이 문법 차원엔 없다.
+  // rgba()에 투명도를 섞어야 하는 자리(태그·테이블 헤더·콜아웃·카드 hover)용 삼원색.
+  // 주의: secondary를 바꾸면 이 값도 같이 바꿀 것 — 두 값이 같은 색이라는 보장이 문법에 없다.
   --accent-rgb: 28, 95, 149;
 
-  // ── 웜 액센트 2종 ──
-  // Blue Note의 원래 정체성이 블랙+시안+브릭 3색이었던 것처럼, 웜 계열을
-  // 둘 둔다. 다만 둘을 "그냥 예쁜 색 두 개"로 쓰면 화면이 산만해지므로
-  // 역할을 고정한다 — 색이 곧 의미가 되도록.
-  //
-  //   accent-action (Brick 오렌지)  = 행위. 누르는 것 — Play Notes CTA.
-  //   accent-state  (Chitlins 핑크) = 시간. 읽는 중 — 읽기 진행바.
-  //
-  //   [2026-08-05 교체] 원래는 Chitlins=CTA, Brick=인라인 코드였다. 바꾼 이유:
-  //     ① 채도·빈도가 역전 — Brick(S77)이 문단마다 나오는 인라인 코드에,
-  //        Chitlins(S67)가 페이지당 1회인 CTA에 있었다. 강도는 중요도에
-  //        비례하고 빈도에 반비례해야 한다.
-  //     ② 원전 — blue-note.jpeg의 브릭은 "uncompromising expression"이라는
-  //        선언 문구의 색(드물게·강하게)이고, blue-midnight의 마젠타는
-  //        듀오톤 조명 wash(앰비언트)다.
-  //   인라인 코드는 무채색(--code-ink)으로 빠졌다 — 색은 네 번째 중복 채널.
-  //
-  // 두 색은 색상환에서 45° 떨어져 있어 서로 다른 색으로 읽힌다(H326 vs H11).
-  // 이 간격이 좁아지면 역할 구분이 무너지므로, 값을 조정할 땐 대비뿐 아니라
-  // 상호 색상차도 함께 확인할 것.
-  //
-  // 출처: Chitlins = blue-midnight.jpeg 마젠타, Brick = blue-note.jpeg의
-  // "uncompromising expression" 브릭. 둘 다 커버에서 실제 추출한 값이다.
-  // 이전 인라인 코드 색(#8b4513 브라운)을 대체한다 — 그 값은 팔레트
-  // 어디에도 근거가 없는 고립된 하드코딩이었다.
+  // 웜 액센트 2종 — 역할 고정. action = 행위(누르는 것), state = 시간(읽는 중).
+  // 주의: 두 색은 H11 / H326으로 45° 벌려 둔다. 좁히면 역할 구분이 무너진다.
   --accent-action: #b8442a; // 4.94:1  AA — CTA
   --accent-state: #b03a7d; // 5.14:1  AA — 읽기 진행바
 
-  // ── 인라인 코드 칩 ──
-  // 코드는 세 축(공간/행위/시간) 어디에도 속하지 않으므로 색을 주지 않고
-  // "재질"로 구분한다 — 활자가 눌린 자국처럼. 예전엔 배경/보더가 accent
-  // 7%/14%라 보더 대비가 1.11로 사실상 보이지 않았고, 그래서 칩이 본문에
-  // 묻혔다. 보더를 1.47로 올려 윤곽을 만든다(글자색이 아니라 보더가 원인).
+  // 인라인 코드 칩 — 세 축(공간/행위/시간)에 속하지 않아 색이 아닌 재질로 구분한다.
   --code-chip-bg: #eae4d6;
   --code-chip-border: #c6bda8;
   --code-ink: #443e36; // 8.33:1  AAA
   --code-bg: #efebe0; // 코드블럭 배경 — syntax.scss 대비 계산의 기준
 
-  // ── 콜아웃 시맨틱 5그룹 ──
-  // 토픽 컬러는 폐지하면서 콜아웃은 색을 쓰는 이유: 토픽은 "명명"이고
-  // 콜아웃은 "가치(valence)"다. 색은 명명엔 약하고 가치 전달엔 강하며,
-  // 빨강=위험 같은 보편 관습이 이미 있다. 또 콜아웃은 읽기 흐름에서
-  // 하나씩 나오지, 토픽처럼 10개가 그리드에서 경쟁하지 않는다.
-  //
-  // 값 보정 2건:
-  //  · bad — 통상적인 #c0392b(H6)는 Brick CTA(H11)와 5°라 구분이 안 돼
-  //    크림슨(H349)으로 밀었다. 22° 확보.
-  //  · warn — 흔한 앰버 #a86a12는 크림 배경에서 4.07로 AA 미달. 명도를 낮췄다.
-  // quote(#6b6560)는 warn과 색상차 12°지만 채도가 S10 vs S89라 회색과
-  // 앰버로 명확히 갈린다 — 색상차 규칙은 채도가 비슷할 때만 의미가 있다.
-  // ⚠️ 대비는 페이지 배경이 아니라 **콜아웃 틴트 배경** 기준으로 잰다(CLAUDE.md §7).
-  //    옛 #1a7f5a는 페이지 배경에선 4.56이지만 자기 틴트(7%) 위에선 4.28로 미달이었다
-  //    (#8f6410도 4.42로 같은 문제). 아래 값은 전부 틴트 배경 기준으로 잰 것이다.
+  // 콜아웃 시맨틱 5그룹 — 12종 타입을 가치 단위로 묶는다.
+  // 주의: 대비는 페이지 배경이 아니라 콜아웃 틴트(7%) 배경 기준으로 잰다.
   --cal-info: var(--secondary); // 5.57  AA
   --cal-good: #187755; // 4.60  AA
   --cal-warn: #8a600f; // 4.69  AA
   --cal-bad: #b8324a; // 4.83  AA
   --cal-quote: #6b6560; // 4.82  AA · article em과 공유
-  // reference — Obsidian 표준에 없는 커스텀 타입(`[!reference]`). ofm 파서는
-  // 미지의 타입도 data-callout에 그대로 실어 보내므로 CSS만으로 추가된다.
-  // 보라(H267)를 쓴 이유: 기존 5그룹과 최소 60° 떨어져 있고, callouts.scss가
-  // example에 쓰던 보라 계열이 우리 매핑에선 info로 흡수돼 비어 있었다.
-  // quote(인용문)와 나누는 이유 — "누가 한 말"과 "어디서 왔나"는 다른 정보다.
+  // reference — Obsidian 비표준 커스텀 타입. ofm은 미지의 타입도 data-callout에
+  // 그대로 실어 보내므로 CSS만으로 추가된다. 보라(H267)는 5그룹과 최소 60° 이격.
   --cal-ref: #6b3fa0; // 6.77  AA
 
   --bg: var(--light);
   --surface: var(--light);
   --surface-2: var(--lightgray);
   --border: var(--lightgray);
-  // [2026-08-03] 원안의 토큰(`--border-strong: #d4d3ce`,
-  // `--border: #e6e5e1` — 둘 다 연한 회색, 한 단계 차이)에 있었으나 이관
-  // 초기(§0)에서 누락됨 — featured-notes 작업 중 목업의 `.feat-item:hover
-  // {border-color: var(--border-strong)}` 재확인하며 발견. --darkgray(=
-  // --text-2와 동일 톤, 진한 텍스트색)를 쓰면 원본 의도보다 훨씬 무거운
-  // 테두리가 되므로, 중간 톤인 --gray로 "한 단계만 진하게"를 재현한다.
+  // --border보다 한 단계만 진한 테두리(카드 hover 등).
+  // 주의: --darkgray는 본문 텍스트색이라 테두리로 쓰면 과해진다.
   --border-strong: var(--gray);
   --text: var(--dark);
   --text-2: var(--darkgray);
   --text-3: var(--gray);
-
 }
 
-// 다크모드 — Quartz는 documentElement의 `saved-theme` 속성으로 제어한다.
-// hue/채도는 라이트와 동일, 명도만 다크 배경 기준 AA로 재조정.
+// 다크모드 — documentElement의 `saved-theme` 속성으로 제어된다.
+// hue·채도는 라이트와 동일, 명도만 다크 배경 기준 AA로 재조정한 값.
 :root[saved-theme="dark"] {
-  // 라이트와 짝을 이루는 다크 값 — 위 :root 주석 참고.
   --accent-rgb: 111, 178, 224; // = secondary #6fb2e0
   --accent-action: #e87256; // 6.12:1  AA
   --accent-state: #dd7ab0; // 6.57:1  AA
@@ -142,17 +71,14 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --cal-bad: #e8695c;
   --cal-quote: #9a938c;
   --cal-ref: #b39ae0; // 7.56  AAA
-
 }
 
 // ── 1. Typography ──────────────────────────────────────────────────────────
-// 전역 요소 선택자(h1~h6, p, strong)는 반드시 @layer quartz-base 안에 둔다.
-// custom.scss는 non-layered라 밖에 두면 명시도와 무관하게 Explorer/breadcrumb
-// 등 플러그인 스타일을 깨뜨린다.
+// 주의: 전역 요소 선택자(h1~h6, p, strong)는 반드시 레이어 안에 둔다. 밖에 두면
+//       Explorer·breadcrumb 등 플러그인 스타일을 깨뜨린다.
 
 @layer quartz-base {
-  // h1만 소폭 음수 자간, h2 이하는 0 — Hahmlet은 자소 간격이 넉넉한
-  // 서체라 작은 헤딩까지 조이면 한글 자소가 붙는다.
+  // 주의: 자간은 h1만 음수. Hahmlet은 자소 간격이 넉넉해 작은 헤딩을 조이면 한글이 붙는다.
   h1,
   h2,
   h3,
@@ -171,8 +97,7 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
     letter-spacing: -0.02em;
   }
 
-  // h2만 액센트 블루 — 헤딩은 항상 블록 단독이고 링크는 항상 문단 안(인라인)이라
-  // 같은 흐름에서 경쟁하지 않는다. 색이 아니라 위치가 둘을 가른다.
+  // h2만 액센트 블루 — 헤딩은 블록 단독, 링크는 인라인이라 같은 흐름에서 경쟁하지 않는다.
   h2 {
     font-weight: 700;
     font-size: 1.2rem;
@@ -183,10 +108,8 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
     margin-bottom: 0.8rem;
   }
 
-  // h1과 같은 잉크. ⚠️ --darkgray로 되돌리지 말 것 — 그 값은 본문 p와
-  // **완전히 같은 색**이라 h3가 색으로는 본문과 구분되지 않았다.
-  // 블루로도 갈 수 없다: 라이트 모드의 블루는 2개뿐인데 더 깊은
-  // Deeper Cut(7.55)이 h2의 True Midnight(6.17)보다 강해 위계가 뒤집힌다.
+  // 주의: --darkgray는 본문 p와 같은 색이라 h3가 구분되지 않는다. 블루도 안 된다 —
+  //       남은 블루(Deeper Cut 7.55)가 h2(6.17)보다 강해 위계가 뒤집힌다.
   h3 {
     font-weight: 700;
     font-size: 1rem;
@@ -210,34 +133,25 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   }
 }
 
-// 강조 두 종 — 레이어 밖 + `article` 스코프.
-// ⚠️ 레이어 안에 두면 안 된다: base.scss의 `p > strong { color: var(--dark) }`가
-//    같은 레이어에서 명시도로 이긴다. 그렇다고 전역 요소 선택자를 레이어 밖에
-//    두면 플러그인 UI가 깨지므로(CLAUDE.md), 본문만 잡는 `article`로 가둔다.
-//
-// bold가 --dark를 써도 되는 이유: 헤딩이 Hahmlet, 본문이 Noto Sans KR이라
-// **서체가 이미 둘을 가른다.** 예전엔 헤딩까지 본문 서체여서 같은 색·같은 흐름·
-// 같은 서체가 겹쳐 굵은 문장이 소제목처럼 읽혔다 — 그 조건이 사라졌다.
+// 본문 강조 2종 — 레이어 밖 + `article` 스코프.
+// 주의: 레이어 안에 두면 base.scss의 `p > strong`이 명시도로 이긴다. 그렇다고
+//       전역 선택자를 레이어 밖에 두면 플러그인 UI가 깨지므로 article로 가둔다.
 article strong {
   color: var(--dark);
   font-weight: 700;
 }
 
-// Noto Sans KR엔 진짜 이탤릭이 없어 브라우저가 합성 오블리크를 만든다.
-// 한글엔 이탤릭 관습 자체가 없으므로 기울임 대신 자간으로 "다른 목소리"를 낸다.
-// ⚠️ --cal-quote로 되돌리지 말 것 — 그 값(6.08)은 본문 p(10.96)보다 **연해서**
-//    강조인데 오히려 물러나 보였다. 본문과 같은 잉크로 올려 역전을 없앤다.
+// Noto Sans KR엔 진짜 이탤릭이 없어 합성 오블리크가 된다 — 기울임 대신 자간으로 구분한다.
+// 주의: --cal-quote(6.08)는 본문 p(10.96)보다 연해서 강조가 물러나 보인다.
 article em {
   font-style: normal;
   color: var(--darkgray);
   letter-spacing: 0.02em;
 }
 
-// `==강조==` — 채움이 아니라 밑줄 밴드. 채움으로 두면 인라인 코드 칩
-// (--code-chip-bg #eae4d6 + 보더)과 값이 가까워 혼동된다. 칩=박스,
-// 하이라이트=밑줄로 형태를 갈라둔다. 색은 --textHighlight(웜 뉴트럴) 단일 소스.
-// ⚠️ `<mark>`를 같이 잡을 것 — ofm은 `==...==`에만 .text-highlight를 붙여서,
-//    원고가 직접 쓴 <mark>는 브라우저 기본 형광 노랑(#ffff00)으로 샜다.
+// `==강조==` — 채움이 아니라 밑줄 밴드. 칩=박스 / 하이라이트=밑줄로 형태를 갈라둔다.
+// 주의: `<mark>`를 같이 잡을 것 — ofm은 `==...==`에만 .text-highlight를 붙여서,
+//       원고가 직접 쓴 <mark>는 브라우저 기본 형광 노랑으로 샌다.
 .text-highlight,
 article mark {
   background-color: transparent;
@@ -260,14 +174,12 @@ article a {
 
 // ── 2. Code Blocks ─────────────────────────────────────────────────────────
 
-// 행 번호 숨김 (base.scss counter 오버라이드)
-// v5 base.scss도 동일한 `pre > code > [data-line]` 구조 + counter(line)를 그대로 사용 — 선택자 검증 완료.
+// 행 번호 숨김 — base.scss의 counter(line) 오버라이드.
 pre > code > [data-line]::before {
   display: none;
 }
 
-// 언어 배지 — pre[data-language] 우상단에 표시
-// v5 syntax-highlighting 플러그인도 <pre data-language="...">를 그대로 렌더링 — 선택자 검증 완료.
+// 언어 배지 — pre[data-language] 우상단.
 pre[data-language] {
   position: relative;
   &::before {
@@ -296,12 +208,8 @@ code:not(pre code) {
   border: 1px solid var(--code-chip-border);
 }
 
-// [2026-08-05] 배경을 사이트 톤으로 명시. config의 `keepBackground: false`가
-// Shiki 테마 배경(라이트 #eff1f5 한랭 회색)을 걷어냈고, 그 자리에 크림 계열
-// 배경을 넣어 코드블럭이 페이지와 같은 종이에 인쇄된 것처럼 보이게 한다.
-// 예전엔 색온도차가 +14라 크림 위에 푸르스름한 패치가 떠 있었다.
-// ⚠️ syntax.scss의 토큰 대비는 페이지 배경이 아니라 **이 값** 기준으로
-//    계산돼 있다. 여기를 바꾸면 syntax.scss의 6개 토큰을 재검증할 것.
+// config의 `keepBackground: false`가 걷어낸 Shiki 배경 자리에 사이트 톤을 넣는다.
+// 주의: syntax.scss의 토큰 대비가 이 값 기준으로 계산돼 있다 — 바꾸면 전부 재검증할 것.
 pre {
   background: var(--code-bg);
   border-radius: 8px;
@@ -317,11 +225,7 @@ pre code {
   line-height: 1.65;
 }
 
-// 어댑트: v4는 `.code-title` 클래스를 썼지만, v5 syntax-highlighting 플러그인은
-// rehype-pretty-code 표준 구조(`figure[data-rehype-pretty-code-figure] > [data-rehype-pretty-code-title]`)를
-// 쓴다 (v5 base.scss:473 참조, 이미 자체 스타일 보유). 클래스명을 속성 선택자로 교체해 이관.
-// 현재 테스트 컨텐츠에 코드블록 타이틀(```lang title="..."```) 사용 예가 없어 렌더링 실물 확인은 못했지만,
-// base.scss가 동일 선택자를 이미 스타일링하고 있어 구조 자체는 확인됨 — non-layered 우선순위로 여기 값이 이긴다.
+// 코드블록 타이틀(```lang title="...") — rehype-pretty-code 표준 구조.
 [data-rehype-pretty-code-title] {
   font-family: var(--codeFont);
   font-size: 0.68rem;
@@ -349,42 +253,28 @@ pre code {
   text-align: center;
 }
 
-// ⚠️ 반드시 `body`를 붙여둘 것 — 명시도 (0,1,1)로 올리기 위한 것이지 스코프가
-// 목적이 아니다. latex 플러그인이 externalResources()로 주입하는 KaTeX CDN CSS는
-// index.css **뒤에** 링크되고, KaTeX의 `.katex{font-size:1.21em}`와 명시도가
-// 같아(0,1,0) 소스 순서로 CDN이 이긴다. `body`를 빼면 이 블록 전체가 죽는다.
-//
-// KaTeX의 1.21은 KaTeX_Main(x-height/em ≈ 0.43)이 **세리프 본문** 옆에서
-// 작아 보이는 걸 보정하는 값이다. 우리 본문은 Noto Sans KR(≈ 0.53)이라
-// 보정이 필요 없는 자리에 보정이 들어가 이중으로 커져 있었다.
-// 1.21 × (0.43/0.53) ≈ 1.0 — 인라인 수식이 본문과 x-height가 맞는 값이다.
+// 인라인 수식을 본문 x-height에 맞춘다(KaTeX 기본 1.21은 세리프 본문 기준 보정값).
+// 주의: `body`는 스코프가 아니라 명시도용이다. KaTeX CDN CSS가 index.css 뒤에
+//       링크되므로, 빼면 명시도가 같아져 소스 순서로 밀리고 이 블록이 죽는다.
 body .katex {
   font-size: 1em;
   line-height: inherit;
 }
 
-// 디스플레이 수식은 독립 블록이라 본문보다 커도 되고 오히려 낫다.
+// 디스플레이 수식은 독립 블록이라 본문보다 크게 둔다.
 body .katex-display .katex {
   font-size: 1.15em;
   line-height: normal;
 }
 
-// [2026-08-05] 수식 안 한글이 못생기던 문제.
-// KaTeX 폰트(KaTeX_Main 등)에는 한글 글리프가 없어서, `\text{인구수}` 같은
-// 표현은 브라우저 기본 폰트로 폴백된다 — Windows에선 굴림/바탕이라 본문
-// (Noto Sans KR)과 전혀 다른 얼굴이 된다. 빌드 실측 59곳에서 발생 중이었다.
-//
-// KaTeX는 이 경우를 알고 `hangul_fallback` 클래스를 자동으로 붙여준다.
-// 그 클래스만 본문 서체로 넘기면 라틴 수식 조판은 그대로 두고 한글만 고쳐진다.
+// KaTeX 폰트엔 한글 글리프가 없어 `\text{한글}`이 시스템 폰트로 폴백된다.
+// KaTeX가 자동으로 붙이는 hangul_fallback만 본문 서체로 넘긴다.
 .katex .hangul_fallback {
   font-family: var(--bodyFont);
 }
 
-// `\text{}` 안의 라틴도 본문 서체로 통일.
-// KaTeX_Main은 Computer Modern 계열 세리프라 LaTeX 관례상으론 이쪽이 정석이나,
-// 이 사이트 본문이 산세리프(Noto Sans KR)라 문장 중간에 끼면 이질적으로 보인다.
-// `\text{}`는 애초에 "수식 안의 산문"을 위한 명령이므로 산문 서체를 따르게 한다.
-// ⚠️ 수학 기호·변수(.mathnormal 등)는 건드리지 않는다 — 그건 KaTeX 폰트가 맞다.
+// `\text{}`는 "수식 안의 산문"이라 본문 서체를 따르게 한다.
+// 주의: 수학 기호·변수(.mathnormal 등)는 건드리지 않는다 — 그건 KaTeX 폰트가 맞다.
 .katex .mord.text,
 .katex .textrm {
   font-family: var(--bodyFont);
@@ -393,14 +283,13 @@ body .katex-display .katex {
 // ── 4. Callouts ────────────────────────────────────────────────────────────
 
 // Obsidian 형태(아이콘 + 둥근 박스 + 좌측 바)를 유지하고 색만 우리 것을 쓴다.
-// ⚠️ 아이콘 제거 + 위아래 괘선으로 바꾸는 "인쇄 조판" 안은 시도 후 되돌렸다
-//    (2026-08-06) — 형태가 낯설어져 읽기가 더 나빠졌다.
+// 주의: 우리가 정의하는 건 색이지 형태가 아니다 — 아이콘·둥근 모서리를 걷어내지 말 것.
 .callout {
   border-radius: 6px;
   margin: 1.2rem 0;
   line-height: 1.75;
 
-  // 상단 여백 균일화: v5 callouts.scss의 `.callout-title { padding: 1rem 0 }` 상쇄
+  // callouts.scss의 `.callout-title { padding: 1rem 0 }` 상쇄
   & > .callout-title {
     font-family: var(--headerFont);
     font-weight: 700;
@@ -417,30 +306,16 @@ body .katex-display .katex {
   }
 }
 
-// 어댑트: v4 원본은 data-callout="summary" 를 대상으로 했으나, v5의
-// obsidian-flavored-markdown 플러그인은 Obsidian 표준 별칭 규칙에 따라
-// `[!summary]` 를 canonical 타입인 "abstract" 로 정규화한다
-// (빌드된 HTML에서 실측: data-callout="abstract" 로 렌더링됨, "summary" 값은 존재하지 않음).
-// 좌측 accent 보더 + 옅은 틴트를 타입 색(--color)에서 끌어온다.
-// callouts.scss가 이미 타입별 --color를 정의하고 제목·아이콘에 쓰고 있으므로
-// 여기서 --color만 그룹 단위로 재정의하면 박스까지 한 번에 따라온다.
-// 나머지 세 변은 callouts.scss의 1px --border가 그대로 유지된다.
-// ⚠️ 네 변을 모두 --color에서 파생시킬 것. 예전엔 좌측 3px만 여기서 지정하고
-// 나머지 3면은 base callouts.scss의 `border: 1px solid var(--border)`가 그대로
-// 남아, **타입마다 Obsidian 하드코딩 색이 나왔다** (note는 #448aff44 콘플라워,
-// warning은 #db894244 오렌지, quote만 중립 --lightgray). 좌측 바와 테두리가
-// 다른 색 계열이라 "콜아웃 정의가 안 먹는다"로 보이던 원인이 이것이다.
-// 여기서 파생시켜 두면 신규 타입도 --color 하나만 주면 네 변이 따라온다.
-// (base의 --border/--bg 선언은 이 규칙에 가려져 더 이상 쓰이지 않는다.)
+// 보더·배경을 전부 타입 색(--color)에서 파생시킨다 — 신규 타입도 --color만 주면 따라온다.
+// 주의: 네 변을 모두 파생시킬 것. 일부만 지정하면 나머지 변에 callouts.scss의
+//       Obsidian 하드코딩 색이 남아 좌측 바와 테두리가 다른 계열이 된다.
 .callout {
   border-color: color-mix(in srgb, var(--color) 28%, transparent);
   border-left: 3px solid var(--color);
   background: color-mix(in srgb, var(--color) 7%, transparent);
 }
 
-// 5그룹 매핑. 실제 사용량(빌드 실측): abstract 87 · quote 70 · note 51 ·
-// warning 48 · tip 19 · success 3 · question 2 · failure 2 · 나머지 각 1.
-// 12종을 그대로 12색으로 쓰면 지각 한계를 넘으므로 가치 단위로 묶는다.
+// 12종 타입 → 5색 매핑. 12색은 지각 한계를 넘으므로 가치 단위로 묶는다.
 .callout[data-callout="note"],
 .callout[data-callout="abstract"],
 .callout[data-callout="info"],
@@ -465,26 +340,16 @@ body .katex-display .katex {
   --color: var(--cal-quote);
 }
 
-// 커스텀 타입 `[!reference]` — Obsidian 표준엔 없다.
-// `example`을 쓰지 않는 이유: example은 "이 개념을 보여주는 사례"이고
-// reference는 "이건 어디서 왔나 / 더 읽으려면 여기로"다. 의도가 다르다.
-// 아이콘이 없으면 callouts.scss의 기본(note 연필)로 폴백하므로 여기서
-// 책 모양 SVG를 직접 넣는다 — mask-image 방식이라 색은 --color를 따라간다.
+// 커스텀 타입 `[!reference]` — 출처·더 읽을 곳. 아이콘을 안 주면 note 연필로
+// 폴백하므로 책 SVG를 직접 넣는다(mask-image라 색은 --color를 따라간다).
 .callout[data-callout="reference"] {
   --color: var(--cal-ref);
   --callout-icon: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path><path d="M8 7h6"></path><path d="M8 11h8"></path></svg>');
 }
 
-// Obsidian > 문법 → blockquote
-// 참고: .callout 요소의 실제 루트 태그도 <blockquote> 이므로(v4/v5 동일 — ofm.ts 파서가
-// mdast blockquote 노드에 callout 클래스만 덧붙임), 이 규칙은 위 .callout 규칙에서
-// 지정하지 않은 속성(border-left/background/padding/color 등)에 한해 콜아웃에도 상속된다.
-// v4에서도 동일하게 발생하던 동작이라 이관 시 그대로 유지 — 회귀 아님.
-// ⚠️ 반드시 `:not(.callout)`을 유지할 것.
-// 콜아웃의 루트 태그도 <blockquote>다(ofm 파서가 blockquote 노드에 클래스만
-// 덧붙인다). 이 규칙에서 :not을 빼면 custom.scss가 non-layered라 항상 이기는
-// 탓에 **모든 콜아웃의 좌측 보더와 배경이 파랑으로 납작해진다** — 타입별
-// 색이 callouts.scss에 멀쩡히 있는데도 전부 같아 보이던 원인이 이것이었다.
+// Obsidian `>` 인용문.
+// 주의: `:not(.callout)`을 빼지 말 것 — 콜아웃 루트 태그도 <blockquote>라,
+//       빼면 모든 콜아웃의 보더·배경이 파랑으로 납작해진다.
 blockquote:not(.callout) {
   border-left: 3px solid var(--secondary);
   background: rgba(var(--accent-rgb), 0.04);
@@ -521,10 +386,8 @@ a.tag-link {
 }
 
 // ── 5.5 Breadcrumb — 카탈로그 번호 스트립 ──────────────────────────────────
-// "이 판이 어느 시리즈 몇 번인가"라는 좌표라 음반 카탈로그 번호처럼 조판한다.
-// 로고(Anton) → breadcrumb(Mono) → 제목(Noto)으로 세 층의 목소리가 갈린다.
-// 마지막 크럼은 자기 자신을 가리키는 링크(href 빈 값)라 링크처럼 파랗게
-// 보였다 — `:last-child`로 링크 표시를 걷어낸다.
+// 음반 카탈로그 번호처럼 모노로 조판한다. 마지막 크럼은 자기 자신을 가리키는
+// 링크라 `:last-child`로 링크 표시를 걷어낸다.
 
 .breadcrumb-container {
   font-family: var(--codeFont);
@@ -542,7 +405,7 @@ a.tag-link {
     }
   }
 
-  // 구분자 — 위계를 나누는 장식이라 크럼보다 옅게.
+  // 구분자 — 장식이라 크럼보다 옅게.
   .breadcrumb-element p {
     color: var(--lightgray);
     margin: 0 0 0 0.3rem;
@@ -555,42 +418,32 @@ a.tag-link {
 }
 
 // ── 6. PageTitle ───────────────────────────────────────────────────────────
-// .page-title = 사이드바 사이트 타이틀. 로고는 헤딩(Hahmlet)이 아니라
-// title 슬롯(--titleFont=Anton)을 써서 브랜드 존을 본문과 분리한다.
-// Anton은 400 weight만 존재 — 800을 걸면 합성 볼드로 획이 뭉갠다.
+// 로고는 헤딩이 아니라 title 슬롯(--titleFont)을 써서 브랜드 존을 본문과 분리한다.
+// 주의: Anton은 400 weight만 존재한다 — 더 굵게 걸면 합성 볼드로 획이 뭉갠다.
 .page-title {
   font-family: var(--titleFont) !important;
-  font-size: 1.75rem !important; // 1.5 → 1.75 (2026-07-19 사용자 요청)
+  font-size: 1.75rem !important;
   font-weight: 400 !important;
   letter-spacing: 0.02em !important;
   text-transform: uppercase !important;
   color: var(--secondary) !important;
 }
 
-// 좌측 사이드바 섹션 간 상하 간격. SPECS(사양)와 CATALOG(수록곡)는 성격이 다른
-// 두 블록이라 확실히 갈려야 한다 — CATALOG 단독이던 시절의 0.8rem으로는 붙어 보였다.
+// SPECS와 CATALOG는 성격이 다른 블록이라 간격을 확실히 벌린다.
 .sidebar.left {
   gap: 1.6rem;
 }
 
 // ── 6.5 노트 본문 표 헤더만 본문 서체 ──────────────────────────────────────
-// 헤딩(h1~h6, .article-title)은 Hahmlet(--headerFont)을 쓴다 — 본문(Noto Sans KR)과
-// 서체가 갈려야 "구조"와 "강조"가 다른 채널이 된다(§1 article strong 주석 참고).
-// 표 헤더는 헤딩이 아니라 데이터 라벨이라 본문 서체가 맞다.
+// 표 헤더는 헤딩이 아니라 데이터 라벨이라 --headerFont가 아니라 본문 서체를 쓴다.
 body:not([data-slug="index"]) article thead {
   font-family: var(--bodyFont);
 }
 
 // ── 7. 좌측 CATALOG 패널 ──────────────────────────────────
-// 패널 자체 스타일은 plugins/note-catalog의 noteCatalog.scss가 가지고 있다
-// (플러그인 단위 자기완결성 유지). 여긴 사이드바 컨테이너 맥락만 둔다.
-//
-// 구 전체 트리(explorer)는 폐기됐다 — 폴더 32/파일 89개가 전부 DOM에
-// 렌더되었고, useSavedState 옵션이 동작하지 않아 열었던 폴더가
-// localStorage에 영구 누적됐다. 상세는 CHANGELOG.md.
-
-// SPECS(priority 10) → CATALOG(50) 순. SPECS는 자연 높이로 고정하고
-// 목록인 CATALOG만 남는 높이를 받아 스크롤한다.
+// 패널 자체 스타일은 plugins/note-catalog의 noteCatalog.scss가 갖는다.
+// 여긴 사이드바 컨테이너 맥락만 — SPECS는 자연 높이로 고정하고 목록인
+// CATALOG만 남는 높이를 받아 스크롤한다.
 .sidebar.left > .note-catalog,
 .sidebar.left > .desktop-only > .note-catalog {
   min-height: 0;
@@ -605,22 +458,15 @@ body:not([data-slug="index"]) article thead {
 }
 
 // ── 8. 우측 사이드바 — TOC / Backlinks / Graph ────────────────────────────
-// 순서는 quartz.config.yaml의 layout priority가 정한다(TOC 10 → Backlinks 30
-// → Graph 50). 여기선 셋의 높이 배분만 고정한다.
+// 순서는 quartz.config.yaml의 layout priority가 정하고, 여기선 높이 배분만 고정한다.
 //
-// 예전엔 셋 다 `flex: 0 1 auto`라 TOC가 자연 높이를 다 먹고 남는 것만 백링크가
-// 받아, 861px 사이드바에서 백링크가 52px(한 줄)이었다. base가 백링크 목록에
-// 건 `max-height: calc(100% - 2rem)`도 부모 높이가 auto라 해석되지 않고 무시됐다.
-//
-// ⚠️ `min-height: 0`을 빼지 말 것 — flex 자식의 기본값은 `min-height: auto`라
-//    내용보다 작아지지 않는다. 이게 없으면 flex 값을 뭘 주든 줄지 않는다.
-// ⚠️ TOC를 감싼 `.desktop-only`는 base.scss에서 `display: contents`다. flex에
-//    투명하므로 래퍼가 아니라 .toc/.backlinks/.graph를 직접 타겟해야 한다.
+// 주의: `min-height: 0`을 빼지 말 것 — flex 자식 기본값이 `min-height: auto`라
+//       내용보다 작아지지 않고, 이게 없으면 flex 값을 뭘 주든 줄지 않는다.
+// 주의: TOC를 감싼 `.desktop-only`는 `display: contents`라 flex에 투명하다 —
+//       래퍼가 아니라 .toc/.backlinks/.graph를 직접 타겟할 것.
 
-// 패널 라벨 5종은 **한 규칙으로 통일한다** — 넷이 서로 다른 조판이면 같은
-// 종류의 물건으로 읽히지 않는다. 기준은 SPECS(헤딩 기본값: Hahmlet 700 / 1rem).
-// ⚠️ 모노 대문자·패널별 색으로 나누지 말 것(2026-08-06 시도 후 되돌림) —
-//    라벨이 콘텐츠보다 시끄러워지고 "Table of Contents"가 대문자로 뭉갠다.
+// 패널 라벨 5종은 한 규칙으로 통일한다 — 기준은 SPECS(Hahmlet 700 / 1rem).
+// 주의: 패널별 색·조판으로 나누지 말 것. 라벨이 콘텐츠보다 시끄러워진다.
 .note-specs-title,
 .note-catalog-title,
 button.toc-header h3,
@@ -664,7 +510,6 @@ button.toc-header h3,
 }
 
 // graph는 note-catalog의 graphFold 스크립트가 페이지마다 기본 접힘으로 되돌린다.
-// 노드가 1~2개뿐인 노트가 많아 250px를 상시 점유할 값어치가 없다.
 .graph > h3 {
   cursor: pointer;
   user-select: none;
@@ -694,15 +539,11 @@ button.toc-header h3,
   }
 }
 
-// 패널 **항목** 3종(CATALOG 노트 · TOC 절 · Backlinks 노트)도 라벨과 같은
-// 논리로 한 규칙에 둔다 — 셋 다 "다른 곳으로 가는 링크"라 같은 물건이다.
-// 예전엔 CATALOG 0.82 / TOC 0.78 / Backlinks 미지정(본문 크기 상속)이라
-// 백링크만 유독 커 보였다.
-// ⚠️ CATALOG 항목 규칙은 플러그인의 noteCatalog.scss에도 있다 — 둘을 같이 고칠 것.
-// 기본은 --gray, **현재 위치만** 블루로 칠한다.
-// ⚠️ 항목 전체를 --secondary로 채우지 말 것(2026-08-07 시도 후 되돌림) — 사이드바가
-//    통째로 파래져 "지금 여기"가 묻힌다. 색은 목록 전체가 아니라 한 줄에만 쓴다.
-// ⚠️ 웜 액센트도 쓰지 말 것: Chitlins는 읽기 진행바와, Brick은 CTA와 신호가 겹친다.
+// 패널 항목 3종(CATALOG 노트 · TOC 절 · Backlinks 노트) — 셋 다 "다른 곳으로 가는
+// 링크"라 한 규칙에 둔다. 기본은 --gray, 현재 위치만 블루로 칠한다.
+// 주의: 항목 전체를 --secondary로 채우지 말 것 — 사이드바가 통째로 파래져 "지금
+//       여기"가 묻힌다. 웜 액센트도 안 된다(읽기 진행바·CTA와 신호가 겹친다).
+// 주의: CATALOG 항목 규칙은 플러그인의 noteCatalog.scss에도 있다 — 둘을 같이 고칠 것.
 .note-catalog .note-catalog-link,
 .toc-content li > a,
 .backlinks ul li a {
@@ -716,40 +557,31 @@ button.toc-header h3,
 }
 
 // CATALOG 현재 노트 — "지금 여기"를 칠하는 유일한 한 줄.
-// ⚠️ 이 줄을 지우지 말 것. 플러그인의 `.active` 규칙은 `@layer quartz-base` **안**에
-//    있고 위 규칙은 레이어 밖이라, 명시도(0,3,0 > 0,2,0)와 무관하게 --gray가 이겨
-//    현재 노트까지 회색이 된다. 비-레이어끼리 다시 붙여야 명시도가 작동한다.
+// 주의: 지우지 말 것. 플러그인의 `.active`는 레이어 안이고 위 규칙은 레이어 밖이라,
+//       명시도와 무관하게 --gray가 이겨 현재 노트까지 회색이 된다.
 .note-catalog .note-catalog-link.active {
   color: var(--secondary);
 }
 
-// ⚠️ `opacity: 1`을 되돌리지 말 것. base(table-of-contents 플러그인)는 비활성
-// 항목에 `opacity: .35`를 거는데, --gray(4.65:1) 위에 곱해지면 크림 배경 기준
-// 실효 대비가 약 1.6:1로 떨어진다 — AA 4.5 예외 없음(CLAUDE.md §1) 위반이다.
-// 활성/비활성 구분은 투명도가 아니라 색과 굵기가 맡는다.
-// 색은 위 "패널 항목 3종" 규칙이 정한다 — 여긴 opacity만 되돌린다.
+// 주의: `opacity: 1`을 되돌리지 말 것. 플러그인이 비활성 항목에 거는 `opacity: .35`가
+//       --gray(4.65:1)에 곱해지면 실효 대비 약 1.6:1로 AA 위반이 된다. 활성/비활성
+//       구분은 투명도가 아니라 색과 굵기가 맡는다.
 .toc-content.overflow > li > a,
 .toc li a {
   opacity: 1;
 }
 
-// [2026-08-05] 최상위 섹션(depth-0, h2)엔 보더를 안 준다 — maxDepth:2라
-// 하위 섹션(h3) 없는 짧은 노트는 depth-0만 나열되는데, 그런 노트에서
-// 모든 줄에 보더를 달면 위계 없이 그냥 줄만 늘어선 것처럼 산만해 보였다
-// (사용자 피드백). 보더는 실제로 위계가 생기는 depth-1+(h3)에만 주고,
-// depth-0은 텍스트 색·굵기만으로 활성 상태를 표현한다.
+// depth-0(h2)엔 보더를 주지 않는다 — 하위 섹션 없는 노트에서 모든 줄에 보더가
+// 달리면 위계 없이 줄만 늘어선 것처럼 보인다. 보더는 depth-1+에만.
 .toc-content li > a {
   display: block;
   padding: 3px 0;
   line-height: 1.5;
 }
 
-// 활성 표시는 공간 축(--secondary) — 좌측 CATALOG의 현재 노트와 **같은 색**이어야
-// "지금 여기"가 사이드바 전체에서 한 부호로 읽힌다. 나머지 항목이 --gray라
-// 링크와 겹칠 여지도 없다(색이 목록 전체가 아니라 한 줄에만 있다).
-// ⚠️ --accent-state로 되돌리지 말 것 — 그러면 CATALOG 현재 노트와 TOC 현재 절이
-//    다른 색이 되어 같은 질문에 두 부호로 답하게 된다. 읽기 진행바는 위치가 아니라
-//    진행률이므로 --accent-state를 그대로 쓴다.
+// 활성 표시는 CATALOG 현재 노트와 같은 --secondary — "지금 여기"가 사이드바
+// 전체에서 한 부호로 읽혀야 한다.
+// 주의: --accent-state로 바꾸지 말 것 — 같은 질문에 두 부호로 답하게 된다.
 .toc-content.overflow > li > a.in-view,
 .toc-content li.depth-0 > a.in-view {
   color: var(--secondary);
@@ -757,8 +589,7 @@ button.toc-header h3,
   font-weight: 600;
 }
 
-// 하위 섹션만 좌측 보더로 위계 표시 — 목차가 길어져도(overflow-y: auto)
-// 각 항목이 항상 자기 보더를 갖고 있어 시각적으로 안정적이다.
+// 하위 섹션만 좌측 보더로 위계 표시.
 .toc-content li:not(.depth-0) > a {
   border-left: 2px solid var(--border);
   padding-left: 0.7rem;
@@ -793,15 +624,13 @@ tbody tr {
   border-bottom: 1px solid var(--lightgray);
 }
 
-// 얼룩말 무늬 — 3.5%로 아주 옅게. 행 구분선을 이미 쓰고 있어 둘 다 진하면
-// 중복 장치가 되어 표가 시끄러워진다. 보더는 그대로 두고 얼룩만 옅게.
+// 얼룩말 무늬 — 행 구분선을 이미 쓰고 있어 아주 옅게만.
 tbody tr:nth-child(even) {
   background: rgba(var(--accent-rgb), 0.035);
 }
 
-// hover는 얼룩보다 확실히 진해야 한다 — 예전 값(4%)을 그대로 두면 얼룩진
-// 행에서 hover가 사실상 보이지 않는다. 10%면 얼룩 대비 1.10으로 갈린다.
-// nth-child와 명시도가 같으므로 반드시 뒤에 와야 이긴다(순서 의존).
+// hover는 얼룩보다 진해야 얼룩진 행에서도 보인다.
+// 주의: nth-child와 명시도가 같아 순서 의존이다 — 반드시 뒤에 와야 이긴다.
 tbody tr:hover {
   background: rgba(var(--accent-rgb), 0.1);
 }
@@ -811,9 +640,7 @@ tbody td {
 }
 
 // ── 10. Card List (folder/tag 목록 페이지) ─────────────────────────────────
-// v5 tag/folder-page 플러그인의 listPage.scss 기본값(display:grid, opacity:0.6인 .meta 등)을
-// flex 세로 카드형 레이아웃으로 오버라이드 — v4와 동일한 목적, 선택자(.page-listing/.section-li/
-// .section/.meta/.desc/.tags) 모두 v5 빌드 HTML에서 실측 확인됨 (tags/*.html).
+// tag/folder-page 플러그인의 listPage.scss 기본 그리드를 flex 세로 카드형으로 덮는다.
 
 .page-listing ul.section-ul {
   padding-left: 0;
@@ -868,38 +695,27 @@ tbody td {
 }
 
 // ── 10.5 전역 상단 바 (topbar) ────────────────────────────────────────────
-// 브랜드·내비·검색·다크모드는 이제 quartz.config.yaml에서 별도 layout
-// position("topbar")으로 분리되어 모든 페이지에서 동일한 전체 폭 가로 바로
-// 렌더된다(quartz/components/frames/DefaultFrame.tsx). 노트 상세 페이지도
-// 홈과 완전히 같은 바 스타일을 공유 — 페이지 이동 시 크기가 달라지지 않는다.
-// 렌더 순서: PageTitle → GlobalNav → SocialLinks → 검색+다크모드.
-// 브랜드+내비는 왼쪽, 나머지는 오른쪽으로 밀어 좌우 그룹을 나눈다.
+// 브랜드·내비·검색·다크모드를 모든 페이지에서 같은 전체 폭 가로 바로 렌더한다.
+// 렌더 순서 PageTitle → GlobalNav → SocialLinks → 검색+다크모드, 브랜드+내비는
+// 왼쪽 / 나머지는 오른쪽 정렬.
 //
-// full-bleed: .topbar는 `.page`(max-width 제한 + 중앙 정렬) 안의 그리드
-// 아이템이라 넓은 화면에서 로고 왼쪽에 빈 여백이 보였다(사용자 피드백).
-// `left:50% + margin-left:-50vw` 조합의 원리: left:50%는 부모(그리드 셀)
-// 폭의 절반만큼 오른쪽으로 밀어 박스 왼쪽 끝을 부모의 가로 중앙에 놓고,
-// margin-left:-50vw는 뷰포트 폭의 절반만큼 다시 왼쪽으로 당긴다. .page가
-// margin:0 auto로 뷰포트 중앙에 있으므로 "부모의 가로 중앙" = "뷰포트
-// 가로 중앙" — 두 이동이 상쇄되며 결과적으로 항상 뷰포트 왼쪽 끝에 붙는다.
-// 안쪽 내용(로고 등)은 padding으로 다시 본문 컬럼과 같은 위치로 맞춘다 —
-// 막대만 끝까지, 내용은 그대로 정렬 유지.
+// full-bleed: `.page`(max-width + 중앙 정렬) 안의 그리드 아이템이라 그냥 두면
+// 로고 왼쪽에 여백이 생긴다. 막대만 뷰포트 끝까지 늘리고, 안쪽 내용은 padding으로
+// 본문 컬럼과 같은 위치에 맞춘다.
 .topbar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   width: 100vw;
-  // ⚠️ relative로 바꾸지 말 것 — non-layered라 base.scss의 sticky를 덮어써 고정이 깨진다.
-  // ⚠️ left:50%+margin-left:-50vw 쓰지 말 것 — sticky에서 퍼센트 기준이 달라져 밀린다.
+  // 주의: relative로 바꾸지 말 것 — non-layered라 base.scss의 sticky를 덮어써 고정이 깨진다.
+  // 주의: left:50%+margin-left:-50vw는 쓰지 말 것 — sticky에서 퍼센트 기준이 달라져 밀린다.
   position: sticky;
   top: 0;
   margin-left: calc(50% - 50vw);
   gap: 1.5rem;
-  // 안쪽 좌우 여백은 홈 히어로("blue notes." 시작점)와 정확히 같은 위치가
-  // 되도록 base.scss `#quartz-body`의 반응형 padding(데스크톱 0 / 태블릿·
-  // 모바일 1rem)과 `.page`의 중앙 정렬 여백을 그대로 재현한다 — 임의의
-  // 여백값(예전엔 +2rem)을 더하면 실측했을 때 어긋난다(사용자 피드백:
-  // 로고가 히어로보다 32px 더 안쪽에서 시작).
+  // 안쪽 여백은 base.scss `#quartz-body`의 반응형 padding과 `.page`의 중앙 정렬
+  // 여백을 그대로 재현해 홈 히어로 시작점과 정확히 맞춘다.
+  // 주의: 임의의 여백값을 더하면 로고가 히어로보다 안쪽에서 시작한다.
   padding: 1.2rem max(0px, calc((100vw - #{$pageMaxWidth}) / 2)) 1rem
     max(0px, calc((100vw - #{$pageMaxWidth}) / 2));
   border-bottom: 1px solid var(--border);
@@ -914,23 +730,18 @@ tbody td {
   }
 
   .social-links {
-    margin: 0 0 0 auto; // left만 auto → 오른쪽 정렬. 원래 세로형 top/bottom margin 리셋.
+    margin: 0 0 0 auto; // left만 auto → 오른쪽 정렬
 
-    // 브랜드 컬러 배경 대신 hover 중립 칩만 — 상시 배경은 플러그인에서 의도적으로 제거된 자리.
+    // 상시 배경 없이 hover 중립 칩만.
     ul li a:hover {
       background-color: var(--surface-2);
     }
   }
 
-  // 바 안에서는 세로 사이드바 시절 기준값(1.75rem) 그대로 사용 — 가로
-  // 바는 세로 사이드바보다 여유가 많아 축소할 이유가 없다(사용자 피드백:
-  // 로고가 작다). !important — 전역 .page-title 규칙(§6)이 이미
-  // !important라 specificity만으론 못 이긴다.
+  // 주의: !important는 §6의 전역 .page-title 규칙이 이미 !important라 필요하다.
   .page-title {
     font-size: 1.75rem !important;
-    // 플러그인 기본 스타일이 페이지 타이틀에 border-bottom을 붙여 세로
-    // 사이드바에선 안 보이던 밑줄이 가로 바에선 로고 바로 아래 선으로
-    // 드러났다(사용자 피드백: "구분선이 아닌 글자 밑에 줄이 생긴다").
+    // 플러그인 기본 border-bottom이 가로 바에선 로고 밑줄로 드러난다.
     border-bottom: none !important;
 
     a {
@@ -938,8 +749,7 @@ tbody td {
     }
   }
 
-  // 검색·다크모드 wrapper 수직 정렬 보정 — 다크모드 쪽 익명 wrapper가 검색
-  // wrapper보다 커서 :has()로 구조적으로 찾아 내부 정렬까지 맞춘다.
+  // 검색·다크모드 수직 정렬 보정 — 다크모드 쪽 익명 wrapper를 :has()로 찾아 맞춘다.
   .flex-component {
     align-items: center !important;
     gap: 0.75rem !important;
@@ -950,13 +760,12 @@ tbody td {
     }
   }
 
-  // .global-nav-link 기본 font-size(0.82rem)와 위 gap(1.5rem)을 맞추기
-  // 위해 내비 링크 사이 간격도 같은 값으로 통일.
+  // 내비 링크 간격은 바 자체의 gap과 같은 값으로 통일.
   .global-nav {
     gap: 1.5rem;
   }
 
-  // 검색창 확장 + ⌘K 힌트(단축키는 search 플러그인에 이미 내장).
+  // 검색창 확장 + ⌘K 힌트(단축키 자체는 search 플러그인에 내장).
   .search {
     width: 220px;
     max-width: none;
@@ -978,11 +787,10 @@ tbody td {
   }
 }
 
-// ── 10.6 홈 레이아웃 — 좌우 트리/TOC 컬럼 제거, topbar 아래 센터 컬럼만 ──
-// 홈도 일반 노트와 같은 "content" pageType이라 layout.byPageType으로는
-// 분기할 수 없어, body의 `data-slug="index"`로 홈만 타겟팅한다. Explorer는
-// not-index 조건으로 이미 렌더되지 않지만 빈 그리드 컬럼이 남으므로 컬럼
-// 자체를 접는다. 그래프·TOC·백링크가 빈 채로 렌더되던 우측 컬럼도 제거.
+// ── 10.6 홈 레이아웃 — 좌우 사이드바 컬럼 제거, 센터 컬럼만 ──────────────
+// 홈도 일반 노트와 같은 "content" pageType이라 layout.byPageType으로 분기할 수
+// 없어 `data-slug="index"`로 타겟팅한다. 컴포넌트를 빼도 빈 그리드 컬럼이
+// 남으므로 컬럼 자체를 접는다.
 body[data-slug="index"] {
   .left.sidebar,
   .right.sidebar {
@@ -1004,7 +812,7 @@ body[data-slug="index"] {
 }
 
 // ── 10.7 홈 섹션 헤더 컬러 ──────────────────────────────────────────────────
-// 세 컴포넌트 다 이미 홈 전용이라(quartz.config.yaml) 별도 스코프 불필요.
+// 세 컴포넌트 다 홈 전용이라 별도 스코프가 필요 없다.
 .featured-header h2,
 .topic-grid-header h2,
 .recent-notes-header h2 {
@@ -1015,7 +823,7 @@ body[data-slug="index"] {
   color: var(--accent-state);
 }
 
-// Recent Notes 얼룩말 — table과 동일 비율(3.5%/10%), hover는 순서상 뒤에 와야 이긴다.
+// Recent Notes 얼룩말 — §9 table과 동일 비율. hover는 순서상 뒤에 와야 이긴다.
 .recent-notes .row:nth-child(even) {
   background: rgba(var(--accent-rgb), 0.035);
 }
@@ -1034,22 +842,22 @@ hr {
   margin: 2rem 0;
 }
 
-// 이미지 가운데 정렬 — Quartz는 이미지를 <p><img></p>로 감싸므로 img를 block+auto로.
+// 이미지 가운데 정렬 — Quartz가 이미지를 <p><img></p>로 감싸므로 img를 block+auto로.
 article img {
   display: block;
   margin-inline: auto;
 }
 
-// 그림 캡션 — Quartz는 이미지와 바로 뒤 *그림.* 을 각각 별개의 <p>로 렌더한다.
-// 그래서 예전 `img + em`은 매칭되지 않았다. :has로 "이미지 단락 다음의 이탤릭 단락"을 잡는다.
+// 그림 캡션 — 이미지와 캡션이 각각 별개의 <p>라 `img + em`으로는 안 잡힌다.
+// :has로 "이미지 단락 다음의 이탤릭 단락"을 잡는다.
 article p:has(> img:only-child) + p:has(> em:only-child) {
-  margin-top: -0.5rem; // 이미지에 바짝 붙임 (문단 기본 간격 상쇄)
+  margin-top: -0.5rem; // 문단 기본 간격 상쇄
   text-align: center;
   font-size: 0.8rem;
   color: var(--gray);
   em {
     font-style: normal;
-  } // 캡션은 회색 작은 글씨로 충분 (이탤릭 해제)
+  }
 }
 
 figure figcaption {
@@ -1076,7 +884,7 @@ figure figcaption {
 }
 
 // ── 12. Giscus ─────────────────────────────────────────────────────────────
-// giscus 댓글(반응 포함)과 본문/이전 컴포넌트 사이 여백 (사용자 피드백으로 추가됨, 이관 시 보존)
+// 댓글 영역과 본문 사이 여백.
 
 .giscus {
   margin-top: 3rem;

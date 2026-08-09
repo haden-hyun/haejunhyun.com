@@ -94,16 +94,11 @@ export function googleFontHref(theme: Theme) {
   return `https://fonts.googleapis.com/css2?family=${headerFont}&family=${bodyFont}&family=${codeFont}&display=swap`
 }
 
-// [2026-08-05] titleFont(Anton) 서브셋 대상 확장. Quartz 코어는 원래 이
-// 폰트가 브랜드 워드마크(cfg.pageTitle)에만 쓰인다고 가정해 그 문자열의
-// 글자만 담도록 서브셋한다 — 하지만 이 사이트는 titleFont를 상단 내비
-// (Home/Notes/Topics/Archive), Hero CTA 버튼(Play Notes/GitHub/LinkedIn),
-// eyebrow("blue notes. 🎷")에도 쓴다. 이 문자들은 pageTitle 서브셋에 없어
-// .notdef(tofu) 박스로 깨졌다 — Google의 `text=` 서브셋 API는
-// unicode-range를 선언하지 않아, 브라우저가 "이 폰트가 전체 유니코드를
-// 커버한다"고 오판하고 폴백 폰트로 넘어가지 않기 때문(실제로는 글자가
-// 아예 없는데도). 라틴 대소문자+숫자+흔한 문장부호를 서브셋에 항상
-// 포함시켜, titleFont를 쓰는 문구가 나중에 바뀌어도 다시 깨지지 않게 한다.
+// titleFont 서브셋 확장 — 코어는 이 폰트가 cfg.pageTitle에만 쓰인다고 가정해 그
+// 문자열의 글자만 서브셋하지만, 이 사이트는 상단 내비·CTA 버튼·eyebrow에도 쓴다.
+// 주의: 서브셋에 없는 글자는 폴백되지 않고 tofu로 깨진다 — Google `text=` API가
+//       unicode-range를 선언하지 않아 브라우저가 전체 커버로 오판한다. 라틴
+//       대소문자+숫자+문장부호를 항상 포함시켜 문구가 바뀌어도 안 깨지게 한다.
 const TITLE_FONT_SUBSET_EXTRA_CHARS =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .,!?'\"-–—:()/&"
 
