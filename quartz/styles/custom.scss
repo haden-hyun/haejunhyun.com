@@ -7,7 +7,7 @@
 @use "sass:map";
 @use "./variables.scss" as *;
 
-// 주의: base.scss `.page`의 max-width와 같은 값이어야 한다 — §10.5 topbar full-bleed 기준값.
+// 페이지 폭 상한 — §10.4 `.page`가 쓰는 단일 기준값.
 $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 
 // ── 0. 브랜드 토큰 ──────────────────────────────────────────────────────────
@@ -694,39 +694,59 @@ tbody td {
   }
 }
 
+// ── 10.4 페이지 폭·좌우 여백 ──────────────────────────────────────────────
+// `.page`가 좌우 여백의 단일 소스 — 최소 거터 2rem, 상한 $pageMaxWidth.
+// 주의: vw는 세로 스크롤바 폭을 포함한다 — 폭 계산은 %/auto로 할 것.
+// 주의: padding이 아니라 width로 준다 — content-box라 padding은 상한 바깥에 붙는다.
+html {
+  width: auto; // base.scss의 width:100vw 무효화 — vw는 스크롤바를 포함해 6px 어긋난다
+}
+
+body {
+  // §10.5 topbar full-bleed(-100vmax)를 화면 폭에서 잘라낸다.
+  // 주의: html에 걸면 viewport로 전파돼 무효 — body여야 한다. clip은 sticky를 깨지 않는다.
+  overflow-x: clip;
+}
+
+.page {
+  --page-gutter: 2rem;
+  width: min(100% - var(--page-gutter) * 2, #{$pageMaxWidth});
+  margin-inline: auto;
+
+  @media all and ($mobile) {
+    --page-gutter: 1rem;
+  }
+
+  // base.scss `#quartz-body`의 좌우 패딩은 위 거터와 중복.
+  > #quartz-body {
+    padding-inline: 0;
+  }
+}
+
 // ── 10.5 전역 상단 바 (topbar) ────────────────────────────────────────────
-// 브랜드·내비·검색·다크모드를 모든 페이지에서 같은 전체 폭 가로 바로 렌더한다.
+// 브랜드·내비·검색·다크모드를 모든 페이지에서 같은 가로 바로 렌더한다.
 // 렌더 순서 PageTitle → GlobalNav → SocialLinks → 검색+다크모드, 브랜드+내비는
 // 왼쪽 / 나머지는 오른쪽 정렬.
-//
-// full-bleed: `.page`(max-width + 중앙 정렬) 안의 그리드 아이템이라 그냥 두면
-// 로고 왼쪽에 여백이 생긴다. 막대만 뷰포트 끝까지 늘리고, 안쪽 내용은 padding으로
-// 본문 컬럼과 같은 위치에 맞춘다.
+// 폭은 `.page`를 그대로 따르고(§10.4), 배경·구분선만 ::before로 화면 끝까지 번진다.
 .topbar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  width: 100vw;
+  width: 100%;
   // 주의: relative로 바꾸지 말 것 — non-layered라 base.scss의 sticky를 덮어써 고정이 깨진다.
-  // 주의: left:50%+margin-left:-50vw는 쓰지 말 것 — sticky에서 퍼센트 기준이 달라져 밀린다.
   position: sticky;
   top: 0;
-  margin-left: calc(50% - 50vw);
   gap: 1.5rem;
-  // 안쪽 여백은 base.scss `#quartz-body`의 반응형 padding과 `.page`의 중앙 정렬
-  // 여백을 그대로 재현해 홈 히어로 시작점과 정확히 맞춘다.
-  // 주의: 임의의 여백값을 더하면 로고가 히어로보다 안쪽에서 시작한다.
-  padding: 1.2rem max(0px, calc((100vw - #{$pageMaxWidth}) / 2)) 1rem
-    max(0px, calc((100vw - #{$pageMaxWidth}) / 2));
-  border-bottom: 1px solid var(--border);
+  padding: 1.2rem 0 1rem;
 
-  @media all and not ($desktop) {
-    padding-left: max(1rem, calc((100vw - #{$pageMaxWidth}) / 2 + 1rem));
-    padding-right: max(1rem, calc((100vw - #{$pageMaxWidth}) / 2 + 1rem));
-  }
-
-  @media all and ($mobile) {
-    padding: 1.2rem 1rem 1rem 1rem;
+  // 배경·구분선 full-bleed. 주의: z-index -1이라야 바 안의 내용 아래에 깔린다.
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 -100vmax;
+    z-index: -1;
+    background-color: var(--light);
+    border-bottom: 1px solid var(--border);
   }
 
   .social-links {
