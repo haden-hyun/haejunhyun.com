@@ -4,6 +4,16 @@
   // "섹션이 끝났다"는 신호를 동일한 시각 문법으로 준다.
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--border);
+
+  // 홈 상단 2열(home-top 그룹) 안에서는 히어로와 같은 높이를 채운다.
+  .flex-component & {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
 }
 
 .featured-header {
@@ -26,6 +36,16 @@
 
   @media all and (max-width: 800px) {
     grid-template-columns: 1fr;
+  }
+
+  // 2열 홈에서는 대형/소형 좌우 분할이 아니라 한 폭 세로 스택이다.
+  // 첫 카드만 남는 높이를 전부 먹고(1fr) 소형 3개는 내용 높이로 균일하게 쌓인다.
+  .flex-component & {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    flex: 1;
+    min-height: 0;
+    gap: 12px;
   }
 }
 
@@ -57,6 +77,16 @@
   padding: 26px;
   border: 1px solid var(--border);
   border-radius: var(--radius, 10px);
+
+  // 스택에서는 대형 카드가 남는 높이를 채우고 메타는 바닥에 붙는다.
+  .flex-component & {
+    min-height: 0;
+
+    .featured-meta {
+      margin-top: auto;
+      padding-top: 0.75rem;
+    }
+  }
   // 메인 카드는 옅은 대각선 그라디언트로 소형 카드 3개와 구분된다.
   background: linear-gradient(160deg, var(--surface-2), var(--surface));
   text-decoration: none;
@@ -95,6 +125,15 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  // 소형 3개는 서로 같은 높이. 대형 카드가 남는 세로를 먹으므로 여기선 늘리지 않는다.
+  .flex-component & {
+    flex: none;
+
+    .featured-item {
+      flex: none;
+    }
+  }
 }
 
 .featured-item {

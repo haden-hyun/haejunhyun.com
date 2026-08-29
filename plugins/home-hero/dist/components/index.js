@@ -67,7 +67,7 @@ VisitorCounter.css = `
 var VisitorCounter_default = (() => VisitorCounter);
 
 // src/components/styles/hero.scss
-var hero_default = ".home-hero {\n  display: grid;\n  grid-template-columns: 1fr auto;\n  gap: 48px;\n  align-items: center;\n  padding: 2.5rem 0 2rem 0;\n  margin-bottom: 1rem;\n  border-bottom: 1px solid var(--border);\n}\n@media all and (max-width: 800px) {\n  .home-hero {\n    grid-template-columns: 1fr;\n    gap: 20px;\n    padding: 1.5rem 0 1.5rem 0;\n    text-align: left;\n  }\n}\n\n.hero-eyebrow {\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 600;\n  letter-spacing: 0.02em;\n  color: var(--accent);\n  margin-bottom: 0.6rem;\n}\n\n.hero-headline {\n  font-family: var(--headerFont);\n  font-weight: 780;\n  font-size: 2.1rem;\n  line-height: 1.28;\n  letter-spacing: -0.03em;\n  color: var(--text);\n  margin: 0 0 0.9rem 0;\n  border: none;\n  padding: 0;\n}\n@media all and (max-width: 800px) {\n  .hero-headline {\n    font-size: 1.6rem;\n  }\n}\n\n.hero-description {\n  font-family: var(--headerFont);\n  font-size: 1.02rem;\n  line-height: 1.7;\n  color: var(--text-2);\n  max-width: 640px;\n  margin: 0 0 1.3rem 0;\n}\n\n.hero-cta {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.6rem;\n  margin-bottom: 1.6rem;\n}\n\n.hero-btn {\n  display: inline-flex;\n  align-items: center;\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  padding: 0.55rem 1.1rem;\n  border-radius: var(--radius, 10px);\n  border: 1px solid var(--border);\n  color: var(--text);\n  text-decoration: none;\n  transition: border-color 0.15s, background-color 0.15s;\n  min-height: 44px;\n  box-sizing: border-box;\n}\n.hero-btn:hover {\n  border-color: var(--accent);\n  background: var(--surface-2);\n}\n\n.hero-btn-primary {\n  background: var(--accent-action);\n  border-color: var(--accent-action);\n  color: var(--surface);\n}\n.hero-btn-primary:hover {\n  opacity: 0.9;\n  background: var(--accent-action);\n}\n\n.hero-stats {\n  display: flex;\n  gap: 2rem;\n  flex-wrap: wrap;\n}\n.hero-stats b {\n  display: block;\n  font-family: var(--codeFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  color: var(--text);\n}\n.hero-stats span {\n  font-size: 0.72rem;\n  color: var(--text-3);\n}\n\n.hero-avatar-col {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 0.5rem;\n  flex-shrink: 0;\n}\n\n.hero-avatar {\n  width: 104px;\n  height: 104px;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-family: var(--headerFont);\n  font-size: 2.4rem;\n  font-weight: 700;\n  color: #fff;\n  background: linear-gradient(140deg, var(--tertiary, var(--accent)) 0%, var(--accent) 60%, var(--dark) 130%);\n  flex-shrink: 0;\n  user-select: none;\n}\n@media all and (max-width: 800px) {\n  .hero-avatar {\n    width: 72px;\n    height: 72px;\n    font-size: 1.7rem;\n  }\n}\n\n.hero-avatar-img {\n  height: 220px;\n  width: auto;\n  object-fit: contain;\n  user-select: none;\n  -webkit-user-drag: none;\n}\n@media all and (max-width: 800px) {\n  .hero-avatar-img {\n    height: 140px;\n  }\n}\n\n.hero-visitor-counter .visitor-counter {\n  margin: 0;\n  justify-content: center;\n}";
+var hero_default = ".home-hero {\n  display: grid;\n  grid-template-columns: 1fr auto;\n  gap: 48px;\n  align-items: center;\n  padding: 2.5rem 0 2rem 0;\n  margin-bottom: 1rem;\n  border-bottom: 1px solid var(--border);\n}\n@media all and (max-width: 800px) {\n  .home-hero {\n    grid-template-columns: 1fr;\n    gap: 20px;\n    padding: 1.5rem 0 1.5rem 0;\n    text-align: left;\n  }\n}\n\n@media all and (max-width: 1000px) {\n  .flex-component:has(.home-hero) {\n    flex-wrap: wrap !important;\n  }\n  .flex-component:has(.home-hero) > div {\n    flex-basis: 100% !important;\n    flex-grow: 1 !important;\n  }\n}\n:root .home-hero.has-backdrop {\n  position: relative;\n  overflow: hidden;\n  isolation: isolate;\n  grid-template-columns: 1fr;\n  align-items: end;\n  height: 700px;\n  padding: 0;\n  border: none;\n  border-radius: 10px;\n  margin-bottom: 0;\n}\n@media all and (max-width: 1000px) {\n  :root .home-hero.has-backdrop {\n    height: auto;\n    min-height: 420px;\n    margin-bottom: 1.5rem;\n  }\n}\n@media all and (max-width: 800px) {\n  :root .home-hero.has-backdrop {\n    min-height: 0;\n    padding: 1.75rem 0;\n    border-radius: 8px;\n  }\n}\n:root .hero-backdrop {\n  display: block;\n  position: absolute;\n  inset: -16px;\n  z-index: 0;\n  background-position: center bottom;\n  background-size: cover;\n  background-repeat: no-repeat;\n  filter: blur(5px);\n}\n:root .hero-veil {\n  display: block;\n  position: absolute;\n  inset: 0;\n  z-index: 1;\n  background: rgba(14, 20, 32, 0.64);\n  -webkit-backdrop-filter: blur(14px);\n  backdrop-filter: blur(14px);\n  -webkit-mask-image: linear-gradient(180deg, #000 0 9%, transparent 21% 30%, #000 44% 100%);\n  mask-image: linear-gradient(180deg, #000 0 9%, transparent 21% 30%, #000 44% 100%);\n}\n@media all and (max-width: 800px) {\n  :root .hero-veil {\n    -webkit-mask-image: none;\n    mask-image: none;\n    background: rgba(14, 20, 32, 0.72);\n  }\n}\n:root .has-backdrop .hero-main {\n  position: relative;\n  z-index: 3;\n  max-width: 100%;\n  padding: 0 1.75rem 2.5rem;\n}\n@media all and (max-width: 800px) {\n  :root .has-backdrop .hero-main {\n    padding: 0 1.25rem;\n  }\n}\n:root .has-backdrop .hero-headline {\n  color: var(--stage-text);\n}\n:root .has-backdrop .hero-eyebrow {\n  color: var(--stage-accent-2);\n}\n:root .has-backdrop .hero-description {\n  color: var(--stage-text-2);\n}\n:root .has-backdrop .hero-topbar {\n  position: absolute;\n  z-index: 3;\n  top: 0;\n  left: 0;\n  right: 0;\n  padding: 1.1rem 1.75rem;\n}\n@media all and (max-width: 800px) {\n  :root .has-backdrop .hero-topbar {\n    position: static;\n    padding: 0 1.25rem 1.25rem;\n  }\n}\n:root .has-backdrop .hero-stats {\n  gap: 1.4rem;\n  align-items: baseline;\n}\n:root .has-backdrop .hero-stats .hero-stat {\n  display: flex;\n  align-items: baseline;\n  gap: 0.4rem;\n}\n:root .has-backdrop .hero-stats b {\n  display: inline;\n  font-size: 0.86rem;\n  color: var(--stage-text);\n}\n:root .has-backdrop .hero-stats span {\n  font-size: 0.68rem;\n  color: var(--stage-text-2);\n}\n:root .has-backdrop .hero-btn {\n  color: var(--stage-text);\n  border-color: rgba(233, 239, 247, 0.55);\n}\n:root .has-backdrop .hero-btn:hover {\n  border-color: var(--stage-text);\n  background: rgba(233, 239, 247, 0.1);\n}\n:root .has-backdrop .hero-btn-primary {\n  background: #b8442a;\n  border-color: #b8442a;\n  color: #fff;\n}\n:root .has-backdrop .hero-btn-primary:hover {\n  background: #b8442a;\n}\n:root .has-backdrop .hero-avatar-col {\n  position: absolute;\n  right: 1.75rem;\n  bottom: 1.25rem;\n  z-index: 3;\n}\n@media all and (max-width: 800px) {\n  :root .has-backdrop .hero-avatar-col {\n    position: static;\n    align-items: flex-start;\n    padding: 1rem 1.25rem 0;\n  }\n}\n:root .has-backdrop .hero-visitor-counter .visitor-counter {\n  color: var(--stage-text-2);\n}\n\n.hero-eyebrow {\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 600;\n  letter-spacing: 0.02em;\n  color: var(--accent);\n  margin-bottom: 0.6rem;\n}\n\n.hero-headline {\n  font-family: var(--headerFont);\n  font-weight: 780;\n  font-size: 2.1rem;\n  line-height: 1.28;\n  letter-spacing: -0.03em;\n  color: var(--text);\n  margin: 0 0 0.9rem 0;\n  border: none;\n  padding: 0;\n}\n@media all and (max-width: 800px) {\n  .hero-headline {\n    font-size: 1.6rem;\n  }\n}\n\n.hero-description {\n  font-family: var(--headerFont);\n  font-size: 1.02rem;\n  line-height: 1.7;\n  color: var(--text-2);\n  max-width: 640px;\n  margin: 0 0 1.3rem 0;\n}\n\n.hero-cta {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.6rem;\n  margin-bottom: 1.6rem;\n}\n\n.hero-btn {\n  display: inline-flex;\n  align-items: center;\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  padding: 0.55rem 1.1rem;\n  border-radius: var(--radius, 10px);\n  border: 1px solid var(--border);\n  color: var(--text);\n  text-decoration: none;\n  transition: border-color 0.15s, background-color 0.15s;\n  min-height: 44px;\n  box-sizing: border-box;\n}\n.hero-btn:hover {\n  border-color: var(--accent);\n  background: var(--surface-2);\n}\n\n.hero-btn-primary {\n  background: var(--accent-action);\n  border-color: var(--accent-action);\n  color: var(--surface);\n}\n.hero-btn-primary:hover {\n  opacity: 0.9;\n  background: var(--accent-action);\n}\n\n.hero-stats {\n  display: flex;\n  gap: 2rem;\n  flex-wrap: wrap;\n}\n.hero-stats b {\n  display: block;\n  font-family: var(--codeFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  color: var(--text);\n}\n.hero-stats span {\n  font-size: 0.72rem;\n  color: var(--text-3);\n}\n\n.hero-avatar-col {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 0.5rem;\n  flex-shrink: 0;\n}\n\n.hero-avatar {\n  width: 104px;\n  height: 104px;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-family: var(--headerFont);\n  font-size: 2.4rem;\n  font-weight: 700;\n  color: #fff;\n  background: linear-gradient(140deg, var(--tertiary, var(--accent)) 0%, var(--accent) 60%, var(--dark) 130%);\n  flex-shrink: 0;\n  user-select: none;\n}\n@media all and (max-width: 800px) {\n  .hero-avatar {\n    width: 72px;\n    height: 72px;\n    font-size: 1.7rem;\n  }\n}\n\n.hero-avatar-img {\n  height: 220px;\n  width: auto;\n  object-fit: contain;\n  user-select: none;\n  -webkit-user-drag: none;\n}\n@media all and (max-width: 800px) {\n  .hero-avatar-img {\n    height: 140px;\n  }\n}\n\n.hero-visitor-counter .visitor-counter {\n  margin: 0;\n  justify-content: center;\n}";
 var l2;
 function S(n2) {
   return n2.children;
@@ -133,7 +133,34 @@ var HomeHero_default = ((userOpts) => {
     const topicCount = new Set(files.map((f4) => (f4.slug ?? "").split("/")[0]).filter(Boolean)).size;
     const lastUpdateTime = files.reduce((max, f4) => Math.max(max, getTime(f4)), 0);
     const locale = cfg.locale ?? "en-US";
-    return /* @__PURE__ */ u3("section", { class: classNames2(displayClass, "home-hero"), children: [
+    const backdrop = opts.backgroundImage;
+    const stats = /* @__PURE__ */ u3("div", { class: "hero-stats", children: [
+      /* @__PURE__ */ u3("div", { class: "hero-stat", children: [
+        /* @__PURE__ */ u3("b", { children: noteCount }),
+        /* @__PURE__ */ u3("span", { children: "\uB178\uD2B8" })
+      ] }),
+      /* @__PURE__ */ u3("div", { class: "hero-stat", children: [
+        /* @__PURE__ */ u3("b", { children: topicCount }),
+        /* @__PURE__ */ u3("span", { children: "\uD1A0\uD53D" })
+      ] }),
+      lastUpdateTime > 0 && /* @__PURE__ */ u3("div", { class: "hero-stat", children: [
+        /* @__PURE__ */ u3("b", { children: formatDate(new Date(lastUpdateTime), locale) }),
+        /* @__PURE__ */ u3("span", { children: "\uCD5C\uADFC \uC5C5\uB370\uC774\uD2B8" })
+      ] })
+    ] });
+    return /* @__PURE__ */ u3("section", { class: classNames2(displayClass, "home-hero", backdrop ? "has-backdrop" : ""), children: [
+      backdrop && /* @__PURE__ */ u3(S, { children: [
+        /* @__PURE__ */ u3(
+          "div",
+          {
+            class: "hero-backdrop",
+            style: `background-image:url("${backdrop}")`,
+            "aria-hidden": "true"
+          }
+        ),
+        /* @__PURE__ */ u3("div", { class: "hero-veil", "aria-hidden": "true" }),
+        /* @__PURE__ */ u3("div", { class: "hero-topbar", children: stats })
+      ] }),
       /* @__PURE__ */ u3("div", { class: "hero-main", children: [
         opts.eyebrow && /* @__PURE__ */ u3("div", { class: "hero-eyebrow", children: opts.eyebrow }),
         /* @__PURE__ */ u3("h1", { class: "hero-headline", children: opts.headline.split("\n").map((line, i2, arr) => /* @__PURE__ */ u3(S, { children: [
@@ -149,23 +176,10 @@ var HomeHero_default = ((userOpts) => {
             children: link.label
           }
         )) }),
-        /* @__PURE__ */ u3("div", { class: "hero-stats", children: [
-          /* @__PURE__ */ u3("div", { class: "hero-stat", children: [
-            /* @__PURE__ */ u3("b", { children: noteCount }),
-            /* @__PURE__ */ u3("span", { children: "\uB178\uD2B8" })
-          ] }),
-          /* @__PURE__ */ u3("div", { class: "hero-stat", children: [
-            /* @__PURE__ */ u3("b", { children: topicCount }),
-            /* @__PURE__ */ u3("span", { children: "\uD1A0\uD53D" })
-          ] }),
-          lastUpdateTime > 0 && /* @__PURE__ */ u3("div", { class: "hero-stat", children: [
-            /* @__PURE__ */ u3("b", { children: formatDate(new Date(lastUpdateTime), locale) }),
-            /* @__PURE__ */ u3("span", { children: "\uCD5C\uADFC \uC5C5\uB370\uC774\uD2B8" })
-          ] })
-        ] })
+        !backdrop && stats
       ] }),
       /* @__PURE__ */ u3("div", { class: "hero-avatar-col", children: [
-        opts.avatarImage ? /* @__PURE__ */ u3("img", { class: "hero-avatar-img", src: opts.avatarImage, alt: "", "aria-hidden": "true" }) : /* @__PURE__ */ u3("div", { class: "hero-avatar", "aria-hidden": "true", children: opts.avatarInitial }),
+        !backdrop && (opts.avatarImage ? /* @__PURE__ */ u3("img", { class: "hero-avatar-img", src: opts.avatarImage, alt: "", "aria-hidden": "true" }) : /* @__PURE__ */ u3("div", { class: "hero-avatar", "aria-hidden": "true", children: opts.avatarInitial })),
         /* @__PURE__ */ u3("div", { class: "hero-visitor-counter", children: VisitorCounter2(props) })
       ] })
     ] });

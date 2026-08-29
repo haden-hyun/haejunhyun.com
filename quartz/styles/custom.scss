@@ -52,6 +52,21 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --text: var(--dark);
   --text-2: var(--darkgray);
   --text-3: var(--gray);
+
+  // 무대(stage) — 컷아웃이 설 밤. 두 모드 모두 밤이다: 컷아웃의 흰 옷이 형태를 유지하려면
+  // 판이 최소 3:1은 어두워야 하는데(#8d9aa8도 2.80으로 미달), 그 밝기면 판은 이미
+  // 크림 대비 2.6이라 "밝은 판"이 아니다. 밝게 하면서 인물을 살릴 값이 존재하지 않는다.
+  // 라이트에서 판이 튀는 문제는 색을 바꾸는 대신 포스터 배경 + 페이드로 눅인다.
+  --stage: #141d28; // 흰 옷 16.56:1 — 형태 유지
+  --stage-fade: 0.5; // 판 상단에 페이지색을 얹어 종이에서 무대로 내려가게 한다
+  --stage-edge: transparent;
+  --stage-text: #e9eff7; // 14.69:1  AAA
+  --stage-text-2: #c8d4e2; // 11.30:1  AAA
+  --stage-text-3: #8fa0b5; //  6.36:1  AA
+  --stage-accent: #6fb2e0; //  7.38:1  AAA · = darkMode.secondary
+  // 베일(반투명 잉크) 위에서 쓰는 한 단계 밝은 파랑. --stage-accent는 그 위에서 3.70으로
+  // 소형 텍스트 AA에 못 미친다. = darkMode.tertiary.
+  --stage-accent-2: #9dcdec; //  5.02:1  AA (베일 0.64 위)
 }
 
 // 다크모드 — documentElement의 `saved-theme` 속성으로 제어된다.
@@ -71,6 +86,12 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --cal-bad: #e8695c;
   --cal-quote: #9a938c;
   --cal-ref: #b39ae0; // 7.56  AAA
+
+  // 다크에선 페이지가 이미 밤이라 판을 한 단계 띄우고 테두리로 경계를 만든다
+  // (카드가 --surface + border로 서는 방식과 같다). 페이드는 얹을 종이가 없으니 0.
+  --stage: #1e2836; // = --lightgray. 배경 대비 1.24
+  --stage-fade: 0;
+  --stage-edge: rgba(233, 239, 247, 0.09);
 }
 
 // ── 1. Typography ──────────────────────────────────────────────────────────

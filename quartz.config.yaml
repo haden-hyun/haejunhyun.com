@@ -285,10 +285,18 @@ plugins:
         - label: "LinkedIn"
           href: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
       avatarImage: "./static/avatar.png"
+      # backgroundImage가 있으면 밤 히어로 모드 — 아바타 열 대신 배경 인물이 선다.
+      backgroundImage: "./static/bluegiant/poster.jpg"
     order: 15
     layout:
       position: beforeBody
       priority: 1
+      # Featured와 한 행으로 묶는다 — 세로 포스터가 좁고 긴 열에서 비율을 유지하도록.
+      group: home-top
+      groupOptions:
+        basis: "42%"
+        shrink: false
+        align: stretch
   - source: ./plugins/featured-notes
     enabled: true
     # Featured. 홈 전용, priority 2 = Hero 아래. 슬롯 4개(대형 1 + 소형 3).
@@ -306,6 +314,11 @@ plugins:
     layout:
       position: beforeBody
       priority: 2
+      group: home-top
+      groupOptions:
+        grow: true
+        basis: "0"
+        align: stretch
   - source: ./plugins/topic-grid
     enabled: true
     # TopicGrid. 홈 전용, priority 3 = Featured 아래.
@@ -511,8 +524,20 @@ plugins:
     order: 90
   - source: ./plugins/footer
     enabled: true
+    # 잉크 판(--stage) 위 무대형 푸터. figureImage는 배경이 투명한 컷아웃이어야 한다.
     options:
-      links: {}
+      eyebrow: "Haejun Records"
+      headline: "계속 재생 중"
+      description: "일로 만지는 데이터와 코드, 취미로 치는 기타. 정해진 주제나 규칙 없이 그저 내게 필요한 것들을 모아두는 아카이브입니다."
+      links:
+        Home: "/"
+        Topics: "/topics"
+        Archive: "/archive"
+        GitHub: "https://github.com/haden-hyun"
+        LinkedIn: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
+      meta: "© 2026 Haejun Hyun · Built with Quartz"
+      figureImage: "./static/bluegiant/player.webp"
+      backgroundImage: "./static/bluegiant/poster.jpg"
     order: 50
 layout:
   groups:
@@ -520,6 +545,13 @@ layout:
       priority: 35
       direction: row
       gap: 0.5rem
+    # 홈 상단 2열 — 좌 히어로(세로 포스터) / 우 Featured.
+    # 좁은 화면 전환은 hero/featured scss가 담당한다(wrap만으로는 열 폭이 안 풀린다).
+    home-top:
+      priority: 1
+      direction: row
+      wrap: wrap
+      gap: 1.25rem
   byPageType:
     "404":
       positions:

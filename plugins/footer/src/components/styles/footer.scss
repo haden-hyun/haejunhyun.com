@@ -1,22 +1,139 @@
-footer {
-  text-align: left;
-  margin-bottom: 4rem;
-  opacity: 0.7;
+// 무대형 푸터 — 잉크 판 위에 컷아웃이 선다.
+// 주의: 색은 custom.scss §0의 --stage-* 토큰만 참조한다. 이 판은 모드와 무관하게 밤이다.
 
-  // [2026-08-04] 방문자 카운터가 home-hero로 옮겨가면서 이 줄은 다시
-  // "Created by haejun" 하나뿐 — space-between 정렬용 .footer-row 래퍼도
-  // 함께 걷어냈다(과거엔 우측 카운터와의 정렬 때문에 필요했다).
-  & p {
-    margin: 0;
+.site-footer {
+  margin-bottom: 2rem;
+  // 좌우 여백은 .page가 단일 소스다 — 여기서 vw로 full-bleed를 만들지 말 것.
+}
+
+.sf-stage {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 2rem;
+  padding: 3.5rem 1.75rem 0;
+  border-radius: 10px;
+  background: var(--stage);
+  border: 1px solid var(--stage-edge);
+  color: var(--stage-text-2);
+
+  // 판을 밝게 할 수는 없다(컷아웃 흰 옷이 사라진다) → 대신 히어로와 같은 포스터를 깔아
+  // "임의의 검은 사각형"이 아니라 히어로와 짝을 이루는 이미지 블록으로 만든다.
+  // 주의: 배경은 --stage 위에 얹히므로 이미지가 없어도 판은 그대로 선다.
+  background-image: var(--stage-image, none);
+  background-position: center 42%;
+  background-size: cover;
+
+  // 잉크 베일 — 위 배경을 덮어 글자 대비를 --stage와 동등하게 유지한다(제목 14.69:1).
+  // 이미지가 없으면 --stage 위의 같은 색이라 아무 변화도 없다.
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 29, 40, 0.86);
+    pointer-events: none;
   }
 
-  & ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: row;
+  // 라이트에서 판 상단 경계가 튄다 → 페이지색을 얹어 종이에서 무대로 내려가게.
+  // 주의: 높이(48px)가 .sf-body의 상단 패딩(56px)을 넘으면 글자 대비가 깎인다.
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 2;
+    height: 48px;
+    background: linear-gradient(180deg, var(--bg), transparent);
+    opacity: var(--stage-fade);
+    pointer-events: none;
+  }
+
+  // ::after 위로 내용을 올린다
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media all and (max-width: 800px) {
+    grid-template-columns: 1fr;
     gap: 1rem;
-    margin-top: -1rem;
+    padding: 2.75rem 1.25rem 0;
+  }
+}
+
+.sf-body {
+  padding-bottom: 2.25rem;
+}
+
+.sf-eyebrow {
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--stage-text-3);
+  margin-bottom: 0.5rem;
+}
+
+.sf-headline {
+  font-family: var(--headerFont);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--stage-text);
+  margin: 0 0 0.5rem;
+
+  a {
+    color: var(--stage-accent);
+  }
+}
+
+.sf-description {
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: var(--stage-text-2);
+  max-width: 44ch;
+  margin: 0 0 1rem;
+}
+
+.sf-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  font-size: 0.82rem;
+
+  a {
+    color: var(--stage-text-2);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--stage-accent);
+    }
+  }
+}
+
+.sf-meta {
+  margin-top: 1.1rem;
+  font-size: 0.72rem;
+  color: var(--stage-text-3);
+}
+
+// 컷아웃은 판 바닥에 닿아야 한다 — 띄우면 어디에 서 있는지 알 수 없어진다.
+// 높이 하한 96px(인물로 읽히는 최소), 편안한 범위 140px 이상.
+.sf-figure {
+  display: block;
+  height: 190px;
+  width: auto;
+  align-self: end;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.5));
+
+  @media all and (max-width: 800px) {
+    height: 132px;
+    justify-self: end;
   }
 }

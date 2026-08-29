@@ -21,6 +21,11 @@ interface HomeHeroOptions {
     avatarInitial: string;
     /** 아바타 이미지 경로(예: "./static/avatar.png"). 있으면 이니셜 원보다 우선. */
     avatarImage?: string;
+    /**
+     * 히어로 배경 이미지. 마크업만 얹고 켜고 끄는 것은 hero.scss가 한다 —
+     * 다크에서만 밤 히어로가 되고, 라이트에서는 배경·베일이 꺼지며 아바타 열이 돌아온다.
+     */
+    backgroundImage?: string;
 }
 declare const _default: (userOpts?: Partial<HomeHeroOptions>) => QuartzComponent;
 

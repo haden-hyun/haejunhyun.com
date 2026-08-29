@@ -19,6 +19,197 @@
   }
 }
 
+// ── 밤 히어로 ────────────────────────────────────────────────────────────────
+// 두 모드 모두 적용된다. 이 존은 모드와 무관하게 밤이라 색은 --stage-* 토큰만 쓴다 —
+// 라이트에서도 베일 위 글자는 밝은 잉크여야 AA를 넘긴다.
+// home-top 그룹(히어로 42% + Featured 58%)은 합이 정확히 100%라 flex-wrap이 발동하지 않는다
+// — 폰에서도 2열로 남는다. 래퍼 div는 Flex.tsx가 인라인 스타일로 flex-basis를 박으므로
+// 클래스 규칙으로는 못 이긴다. 좁은 화면에서만 !important로 푼다.
+@media all and (max-width: 1000px) {
+  .flex-component:has(.home-hero) {
+    flex-wrap: wrap !important;
+
+    > div {
+      flex-basis: 100% !important;
+      flex-grow: 1 !important;
+    }
+  }
+}
+
+:root {
+  // 좁은 열이라 700px까지 키운다 — 열폭 456~607에서 비율 0.65~0.87로 원본(0.707)에 근접.
+  // 620px이면 세로 노출이 72%까지 떨어져 포스터가 다시 잘려 보인다.
+  .home-hero.has-backdrop {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    grid-template-columns: 1fr;
+    align-items: end;
+    height: 700px;
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 0;
+
+    @media all and (max-width: 1000px) {
+      height: auto;
+      min-height: 420px;
+      margin-bottom: 1.5rem;
+    }
+
+    @media all and (max-width: 800px) {
+      min-height: 0;
+      padding: 1.75rem 0;
+      border-radius: 8px;
+    }
+  }
+
+  // 얕은 심도 — 배경 연주자를 뒤로 보내고 글자 뒤 최악 픽셀도 함께 낮춘다.
+  // 주의: blur가 가장자리를 비우므로 inset을 음수로 준다.
+  .hero-backdrop {
+    display: block;
+    position: absolute;
+    inset: -16px;
+    z-index: 0;
+    background-position: center bottom;
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: blur(5px);
+  }
+
+  // 좁은 열에서는 글자가 열 전 폭을 쓰므로 타원이 아니라 하단 밴드로 덮는다.
+  // 알파 0.64에서 제목 7.3:1 · 본문 5.6:1 (열폭 456·607 양쪽 실측).
+  .hero-veil {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: rgba(14, 20, 32, 0.64);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    // 두 밴드 — 상단은 통계 줄(베일 없으면 라벨 1.15로 완전 미달), 하단은 제목 블록.
+    // 그 사이 20~30% 구간만 원본이 그대로 보인다: 달과 연주자가 여기에 온다.
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 0 9%,
+      transparent 21% 30%,
+      #000 44% 100%
+    );
+    mask-image: linear-gradient(180deg, #000 0 9%, transparent 21% 30%, #000 44% 100%);
+
+    @media all and (max-width: 800px) {
+      -webkit-mask-image: none;
+      mask-image: none;
+      background: rgba(14, 20, 32, 0.72);
+    }
+  }
+
+  .has-backdrop {
+    .hero-main {
+      position: relative;
+      z-index: 3;
+      max-width: 100%;
+      padding: 0 1.75rem 2.5rem;
+
+      @media all and (max-width: 800px) {
+        padding: 0 1.25rem;
+      }
+    }
+
+    .hero-headline {
+      color: var(--stage-text);
+    }
+
+    // eyebrow는 공간 축(파랑)을 유지한다. 주의: --accent(#6fb2e0)는 베일 위 3.70으로
+    // 소형 텍스트 AA 미달이라, 한 단계 밝은 --stage-accent-2를 쓴다(5.02).
+    .hero-eyebrow {
+      color: var(--stage-accent-2);
+    }
+
+    .hero-description {
+      color: var(--stage-text-2);
+    }
+
+    // 통계는 상단 한 줄로. 하단 제목 블록에서 빼내 배경 연주자가 드러나게 한다.
+    // 메타(3등급)는 이미지 위에서 AA를 못 넘으므로 라벨을 본문 등급으로 올린다.
+    .hero-topbar {
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 1.1rem 1.75rem;
+
+      @media all and (max-width: 800px) {
+        position: static;
+        padding: 0 1.25rem 1.25rem;
+      }
+    }
+
+    .hero-stats {
+      gap: 1.4rem;
+      align-items: baseline;
+
+      .hero-stat {
+        display: flex;
+        align-items: baseline;
+        gap: 0.4rem;
+      }
+
+      b {
+        display: inline;
+        font-size: 0.86rem;
+        color: var(--stage-text);
+      }
+
+      span {
+        font-size: 0.68rem;
+        color: var(--stage-text-2);
+      }
+    }
+
+    .hero-btn {
+      color: var(--stage-text);
+      // 0.34로는 베일 위 경계 대비가 1.94다 — UI 경계 기준 3.0을 넘기려면 0.55가 필요.
+      border-color: rgba(233, 239, 247, 0.55);
+
+      &:hover {
+        border-color: var(--stage-text);
+        background: rgba(233, 239, 247, 0.1);
+      }
+    }
+
+    // 밤 배경에서도 CTA는 라이트 브릭이다 — 다크 브릭(#e87256)은 흰 라벨과 3.01로 미달.
+    .hero-btn-primary {
+      background: #b8442a;
+      border-color: #b8442a;
+      color: #fff; // 5.39:1  AA
+
+      &:hover {
+        background: #b8442a;
+      }
+    }
+
+    // 배경에 이미 연주자가 있으니 손그림 아바타는 겹치지 않는다. 카운터만 남긴다.
+    .hero-avatar-col {
+      position: absolute;
+      right: 1.75rem;
+      bottom: 1.25rem;
+      z-index: 3;
+
+      @media all and (max-width: 800px) {
+        position: static;
+        align-items: flex-start;
+        padding: 1rem 1.25rem 0;
+      }
+    }
+
+    .hero-visitor-counter .visitor-counter {
+      color: var(--stage-text-2);
+    }
+  }
+}
+
 .hero-eyebrow {
   // Anton은 로고 전용 디스플레이 서체라 UI 텍스트엔 과하다 → headerFont 사용.
   font-family: var(--headerFont);

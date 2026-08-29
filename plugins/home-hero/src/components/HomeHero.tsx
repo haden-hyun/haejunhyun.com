@@ -44,6 +44,11 @@ export interface HomeHeroOptions {
   avatarInitial: string
   /** 아바타 이미지 경로(예: "./static/avatar.png"). 있으면 이니셜 원보다 우선. */
   avatarImage?: string
+  /**
+   * 히어로 배경 이미지. 마크업만 얹고 켜고 끄는 것은 hero.scss가 한다 —
+   * 다크에서만 밤 히어로가 되고, 라이트에서는 배경·베일이 꺼지며 아바타 열이 돌아온다.
+   */
+  backgroundImage?: string
 }
 
 const defaultOptions: HomeHeroOptions = {
@@ -89,8 +94,42 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
     const lastUpdateTime = files.reduce((max, f) => Math.max(max, getTime(f)), 0)
     const locale = cfg.locale ?? "en-US"
 
+    const backdrop = opts.backgroundImage
+
+    // 밤 히어로에서는 상단으로 올라간다 — 하단에 두면 제목 블록이 히어로의 54%를 먹어
+    // 배경 연주자(높이 60~100% 구간)가 글자와 베일에 함께 가린다.
+    const stats = (
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <b>{noteCount}</b>
+          <span>노트</span>
+        </div>
+        <div class="hero-stat">
+          <b>{topicCount}</b>
+          <span>토픽</span>
+        </div>
+        {lastUpdateTime > 0 && (
+          <div class="hero-stat">
+            <b>{formatDate(new Date(lastUpdateTime), locale)}</b>
+            <span>최근 업데이트</span>
+          </div>
+        )}
+      </div>
+    )
+
     return (
-      <section class={classNames(displayClass, "home-hero")}>
+      <section class={classNames(displayClass, "home-hero", backdrop ? "has-backdrop" : "")}>
+        {backdrop && (
+          <>
+            <div
+              class="hero-backdrop"
+              style={`background-image:url("${backdrop}")`}
+              aria-hidden="true"
+            />
+            <div class="hero-veil" aria-hidden="true" />
+            <div class="hero-topbar">{stats}</div>
+          </>
+        )}
         <div class="hero-main">
           {opts.eyebrow && <div class="hero-eyebrow">{opts.eyebrow}</div>}
           <h1 class="hero-headline">
@@ -114,31 +153,19 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
               ))}
             </div>
           )}
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <b>{noteCount}</b>
-              <span>노트</span>
-            </div>
-            <div class="hero-stat">
-              <b>{topicCount}</b>
-              <span>토픽</span>
-            </div>
-            {lastUpdateTime > 0 && (
-              <div class="hero-stat">
-                <b>{formatDate(new Date(lastUpdateTime), locale)}</b>
-                <span>최근 업데이트</span>
-              </div>
-            )}
-          </div>
+          {!backdrop && stats}
         </div>
+        {/* 주의: 아바타는 backdrop이 없을 때만 렌더한다. CSS로 숨기면 브라우저가
+            avatar.png(695KB)를 그대로 내려받는다 — 밤 히어로에선 영영 안 보이는데도. */}
         <div class="hero-avatar-col">
-          {opts.avatarImage ? (
-            <img class="hero-avatar-img" src={opts.avatarImage} alt="" aria-hidden="true" />
-          ) : (
-            <div class="hero-avatar" aria-hidden="true">
-              {opts.avatarInitial}
-            </div>
-          )}
+          {!backdrop &&
+            (opts.avatarImage ? (
+              <img class="hero-avatar-img" src={opts.avatarImage} alt="" aria-hidden="true" />
+            ) : (
+              <div class="hero-avatar" aria-hidden="true">
+                {opts.avatarInitial}
+              </div>
+            ))}
           {/* 주의: JSX 태그(`<VisitorCounter />`)로 쓰면 dts 빌드가 실패한다 —
               preact가 QuartzComponent를 유효한 JSX 엘리먼트로 인식하지 못한다.
               함수 호출 + 캐스트가 유일하게 통과하는 형태. */}
