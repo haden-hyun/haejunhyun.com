@@ -22,8 +22,8 @@ interface HomeHeroOptions {
     /** 아바타 이미지 경로(예: "./static/avatar.png"). 있으면 이니셜 원보다 우선. */
     avatarImage?: string;
     /**
-     * 히어로 배경 이미지. 마크업만 얹고 켜고 끄는 것은 hero.scss가 한다 —
-     * 다크에서만 밤 히어로가 되고, 라이트에서는 배경·베일이 꺼지며 아바타 열이 돌아온다.
+     * 히어로 배경 이미지. 있으면 밤 히어로(배경 + 베일 + 상단 통계 줄)가 되고
+     * 아바타는 카운터만 남는다 — 두 모드 모두 적용된다(DESIGN-SYSTEM.md §3.3).
      */
     backgroundImage?: string;
 }

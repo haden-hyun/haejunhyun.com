@@ -31,6 +31,7 @@ npx quartz build            # → public/
 - `.quartz/`가 없으면 `quartz.ts`의 `./.quartz/plugins` import가 깨진다 — 첫 명령이 해결책
 - 주의: **dev 서버(`deploy-dev.sh`)가 `public/`을 해시 없는 산출물로 덮어쓴다.**
   커밋 전 `public/index.html`이 `index-<해시>.css`를 참조하는지 확인 — `index.css`면 dev 빌드다
+- 주의: dev 서버와 `build`를 겹쳐 돌리면 `public/`이 비워질 수 있다. 서버를 끄고 다시 구울 것
 - 주의: `npm run install-plugins`는 YAML 설정 이전의 레거시 경로 — 쓰지 말 것
 
 ## 저장소 지도
