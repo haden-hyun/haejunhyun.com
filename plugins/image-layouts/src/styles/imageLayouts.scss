@@ -92,6 +92,10 @@
 
   .il-item {
     flex: 0 0 100%;
+    min-width: 100%;
+    // 임베드의 520/800/820 폭은 일반 레이아웃용이다.
+    // 캐러셀에서는 슬라이드가 viewport 전체를 차지해야 다음 이미지가 노출되지 않는다.
+    max-width: none !important;
     height: 100%;
     scroll-snap-align: center;
   }
