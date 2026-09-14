@@ -883,29 +883,7 @@ article img {
   margin-inline: auto;
 }
 
-// Fig N. 번호 — article 스코프로 카운터를 리셋해 노트마다 1부터 시작한다.
-// 구 방식(p+em)과 신 방식(figure figcaption)이 같은 카운터를 공유해 혼용 중에도 번호가 이어진다.
-article {
-  counter-reset: figure;
-}
-
-// 그림 캡션 — 이미지와 캡션이 각각 별개의 <p>라 `img + em`으로는 안 잡힌다.
-// :has로 "이미지 단락 다음의 이탤릭 단락"을 잡는다.
-article p:has(> img:only-child) + p:has(> em:only-child) {
-  margin-top: -0.5rem; // 문단 기본 간격 상쇄
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--gray);
-  counter-increment: figure;
-  em {
-    font-style: italic;
-  }
-  em::before {
-    content: "Fig " counter(figure) ". ";
-    font-style: normal;
-  }
-}
-
+// 그림 캡션 — 캡션의 `Fig N.` 라벨은 blog-publish 단계에서 본문에 기록한다.
 figure figcaption {
   display: block;
   text-align: center;
@@ -913,11 +891,6 @@ figure figcaption {
   font-style: italic;
   color: var(--gray);
   margin-top: 0.4rem;
-  counter-increment: figure;
-  &::before {
-    content: "Fig " counter(figure) ". ";
-    font-style: normal;
-  }
 }
 
 ::-webkit-scrollbar {
