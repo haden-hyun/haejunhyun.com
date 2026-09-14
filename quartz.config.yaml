@@ -306,10 +306,10 @@ plugins:
     options:
       recentExcludeCount: 6
       slugs:
-        - data-engineering/infra/gpu-fundamentals-and-practical-usage
+        - tools/obsidian/quartz/build/obsidian-quartz-blog
+        - finance-property/real-estate/address-pnu
         - data-science/deep-learning/neural-network
-        - finance-property/real-estate/auction-rights-analysis
-        - gis/python-gis/geopandas-overlay
+        - data-engineering/infra/docker/docker-concept
     order: 15
     layout:
       position: beforeBody
