@@ -1,16 +1,28 @@
-// 홈 마스트헤드 — 이미지·카드 없이 활자만.
+// 홈 마스트헤드 — 활자(좌) + 비닐판 BGM 토글(우, CSS로 그림. 래스터 이미지 아님).
 // 주의: 색은 custom.scss §0의 토큰(--accent, --text 등)만 참조한다.
 //    플러그인에서 색 값을 새로 정의하지 말 것 — 단일 소스는 quartz.config.yaml.
+// 주의: 비닐 자체는 예외 — 실제 흑색 레코드 은유라 테마와 무관하게 검정 고정이다.
 
 .home-hero {
   display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
+  align-items: center;
+  gap: 2rem;
   padding: 3.5rem 0 3rem;
 
   @media all and (max-width: 800px) {
     padding: 2.25rem 0 2rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
   }
+}
+
+.hero-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
 }
 
 .hero-meta {
@@ -43,6 +55,7 @@
 }
 
 .hero-description {
+  // 본문체로 통일 — Featured 카드 설명문 등 다른 본문 텍스트와 같은 서체를 쓴다.
   font-size: 1.08rem;
   line-height: 1.7;
   color: var(--text-2);
@@ -56,6 +69,7 @@
   align-items: center;
   gap: 0.6rem 1.4rem;
   margin-top: 0.4rem;
+  font-family: var(--headerFont); // §hero-description과 같은 이유(main과 동일)
   font-size: 0.95rem;
 }
 
@@ -88,4 +102,100 @@
     text-decoration: underline;
     text-underline-offset: 3px;
   }
+}
+
+// 비닐판 — 홈 3열 그리드(hero-meta 등)가 아니라 한 장의 물체라 위치는 relative 하나로 충분.
+.hero-vinyl {
+  position: relative;
+  flex: 0 0 auto;
+  align-self: center;
+
+  @media all and (max-width: 800px) {
+    align-self: flex-start;
+  }
+}
+
+.hero-vinyl-disc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  cursor: pointer;
+  list-style: none;
+  // 검정 비닐 + 홈(groove). 테마 토큰이 아니라 고정 검정 — 레코드 자체의 색이다.
+  background:
+    repeating-radial-gradient(circle at center, transparent 0 6px, rgba(255, 255, 255, 0.05) 6px 7px),
+    #17171a;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover {
+    transform: scale(1.04);
+  }
+}
+
+.hero-vinyl[open] .hero-vinyl-disc {
+  animation: hero-vinyl-spin 4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-vinyl[open] .hero-vinyl-disc {
+    animation: none;
+  }
+}
+
+@keyframes hero-vinyl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// 레이블 스티커 — 크림 고정색. 비닐과 마찬가지로 테마와 무관하다.
+.hero-vinyl-label {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.15;
+  background: #f2ede0;
+  color: #17171a;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.hero-vinyl-panel {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  z-index: 3;
+  width: 280px;
+  max-width: calc(100vw - 2rem);
+  padding: 0.6rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 10px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+
+  @media all and (max-width: 800px) {
+    right: auto;
+    left: 0;
+  }
+}
+
+.hero-vinyl-frame {
+  display: block;
+  border: none;
+  border-radius: calc(var(--radius, 10px) - 4px);
 }

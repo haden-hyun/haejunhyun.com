@@ -108,11 +108,6 @@ export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
           )}
         </div>
         <div class="rows">
-          <div class="row-head" aria-hidden="true">
-            <span>Date</span>
-            <span>Title</span>
-            {opts.showTags && <span>Topic</span>}
-          </div>
           {pages.map((page) => {
             const title = page.frontmatter?.title ?? "Untitled"
             const description = page.description ?? ""

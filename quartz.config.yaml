@@ -40,9 +40,8 @@ configuration:
         secondary: "#1c5f95" # accent        6.17:1  AA
         tertiary: "#17527f" # accent hover  7.55:1  AAA
         highlight: rgba(28,95,149,0.10)
-        # `==강조==` 밑줄 밴드. 색상이 아니라 명도로만 구분한다.
-        # 주의: 배경 대비도 함께 볼 것 — 밴드가 안 보이면 기능이 없다.
-        textHighlight: "#ccb684"
+        # `==강조==` 전체 채움(형광펜). 그린 — 본문 대비 8.26:1 AAA.
+        textHighlight: "#c4e9d3"
       darkMode:
         light: "#0e1420" # bg · 잉크 네이비 (Blue Giant #0c0c24 계열)
         lightgray: "#1e2836" # border
@@ -52,7 +51,8 @@ configuration:
         secondary: "#6fb2e0" # accent        8.00:1  AAA
         tertiary: "#9dcdec" # accent hover 10.86:1  AAA
         highlight: rgba(111,178,224,0.15)
-        textHighlight: "#36435a" # 배경 대비 1.85 / 밴드 위 본문(#bcc9d9) 5.93 AA
+        # 골드(형광펜 관습) — 본문 대비 7.01:1 AAA.
+        textHighlight: "#40371c"
 plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
@@ -278,12 +278,12 @@ plugins:
       headline: "Blue Notes."
       description: "즉흥 노트, 떠오른 순서대로."
       links:
-        - label: "최근 노트 ↓"
+        - label: "Dive In"
           href: "#recent"
           primary: true
-        - label: "GitHub ↗"
+        - label: "GitHub"
           href: "https://github.com/haden-hyun/haejunhyun.com"
-        - label: "LinkedIn ↗"
+        - label: "LinkedIn"
           href: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
     order: 15
     layout:
@@ -291,7 +291,7 @@ plugins:
       priority: 1
   - source: ./plugins/featured-notes
     enabled: true
-    # Selected. 홈 전용, priority 2 = 마스트헤드 아래. 번호 목록 4행(첫 항목만 크게).
+    # Featured. 홈 전용, priority 2 = 마스트헤드 아래. 번호 목록 4행(첫 항목만 카드형).
     # slugs가 유일한 지정 수단이다 — 쓴 순서가 표시 순서(번호)고 첫 항목이 크게 표시된다.
     # 비워두면 토픽 라운드로빈으로 자동 선정. 못 찾은 슬러그는 빌드 로그에 경고.
     # 주의: recentExcludeCount는 아래 recent-notes-index.limit과 같은 값으로 유지할 것.
@@ -308,7 +308,7 @@ plugins:
       priority: 2
   - source: ./plugins/topic-grid
     enabled: true
-    # Index by Topic. 홈 전용, priority 4 = Catalogue 아래.
+    # Topics. 홈 전용, priority 4 = Recent Notes 아래.
     options:
       showHeader: true
     order: 15
@@ -449,9 +449,9 @@ plugins:
       priority: 13
   - source: ./plugins/recent-notes-index
     enabled: true
-    # 홈 Catalogue(최근 노트 표). priority 3 = Selected 아래. linkToMore는 /archive로 연결.
+    # 홈 Recent Notes(최근 노트 표). priority 3 = Featured 아래. linkToMore는 /archive로 연결.
     options:
-      title: "Catalogue"
+      title: "Recent Notes"
       limit: 6
       showTags: true
       linkToMore: "archive"
@@ -510,22 +510,17 @@ plugins:
     order: 90
   - source: ./plugins/footer
     enabled: true
-    # 텍스트 콜로폰 푸터(전 페이지 공통). 열 = 링크 목록 또는 문단.
+    # 텍스트 콜로폰 푸터(전 페이지 공통). main 원안 — 브랜드 + 평문 링크 목록 + 저작권 한 줄.
     options:
       columns:
-        - title: "INDEX"
+        - title: "HAEJUN RECORDS"
           links:
             Home: "/"
             Topics: "/topics"
             Archive: "/archive"
-        - title: "ELSEWHERE"
-          links:
-            GitHub ↗: "https://github.com/haden-hyun"
-            LinkedIn ↗: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
-        - title: "COLOPHON"
-          text: "Set in Anton, Hahmlet, Noto Sans KR and JetBrains Mono. Written in Obsidian, built with Quartz v5, served by Cloudflare."
-      brand: "HAEJUN RECORDS · 개인 지식 아카이브"
-      meta: "© 2026 Haejun Hyun"
+            GitHub: "https://github.com/haden-hyun"
+            LinkedIn: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
+      meta: "© 2026 Haejun Hyun · Built with Quartz"
     order: 50
 layout:
   groups:

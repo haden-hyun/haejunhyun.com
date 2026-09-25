@@ -13,22 +13,30 @@
   gap: 1.5rem 2.25rem;
 }
 
+// 로고와 같은 슬롯(--titleFont) — custom.scss §6 .page-title과 동일 처방.
 .sf-col-title {
-  font-family: var(--codeFont);
-  font-size: 0.72rem;
+  font-family: var(--titleFont);
+  font-size: 1.1rem;
   font-weight: 400;
-  letter-spacing: 0.1em;
-  color: var(--text-3);
-  margin-bottom: 0.6rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  margin-bottom: 0.7rem;
 }
 
 .sf-links {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 0.25rem;
+  display: flex;
+  flex-wrap: wrap;
   font-size: 0.88rem;
+
+  li:not(:last-child)::after {
+    content: "·";
+    margin: 0 0.7rem;
+    color: var(--text-3);
+  }
 
   a {
     color: var(--accent);

@@ -19,7 +19,8 @@ function formatDate(d: Date): string {
 }
 
 /**
- * 홈 마스트헤드 — 메타 한 줄 + 헤드라인 + 설명 + 링크. 이미지 없음.
+ * 홈 마스트헤드 — 메타 한 줄 + 헤드라인 + 설명 + 링크(좌) + 비닐판 BGM 토글(우).
+ * 비닐은 래스터 이미지가 아니라 CSS로 그린다.
  *
  * - 홈 전용 렌더는 내부 slug 가드. `condition: is-index`는 내장에 없다
  * - 통계는 전부 allFiles 런타임 집계. 하드코딩 금지
@@ -75,40 +76,65 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
 
     return (
       <section class={classNames(displayClass, "home-hero")}>
-        <div class="hero-meta">
-          <span>
-            <b>{noteCount}</b> NOTES
-          </span>
-          <span>
-            <b>{topicCount}</b> TOPICS
-          </span>
-          {lastUpdateTime > 0 && (
+        <div class="hero-main">
+          <div class="hero-meta">
             <span>
-              UPDATED <b>{formatDate(new Date(lastUpdateTime))}</b>
+              <b>{noteCount}</b> NOTES
             </span>
+            <span>
+              <b>{topicCount}</b> TOPICS
+            </span>
+            {lastUpdateTime > 0 && (
+              <span>
+                UPDATED <b>{formatDate(new Date(lastUpdateTime))}</b>
+              </span>
+            )}
+          </div>
+          <h1 class="hero-headline">
+            {opts.headline.split("\n").map((line, i, arr) => (
+              <>
+                {line}
+                {i < arr.length - 1 && <br />}
+              </>
+            ))}
+          </h1>
+          {opts.description && <p class="hero-description">{opts.description}</p>}
+          {opts.links.length > 0 && (
+            <div class="hero-cta">
+              {opts.links.map((link) => (
+                <a
+                  class={classNames(undefined, link.primary ? "hero-btn-primary" : "hero-link")}
+                  href={link.href}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
           )}
         </div>
-        <h1 class="hero-headline">
-          {opts.headline.split("\n").map((line, i, arr) => (
-            <>
-              {line}
-              {i < arr.length - 1 && <br />}
-            </>
-          ))}
-        </h1>
-        {opts.description && <p class="hero-description">{opts.description}</p>}
-        {opts.links.length > 0 && (
-          <div class="hero-cta">
-            {opts.links.map((link) => (
-              <a
-                class={classNames(undefined, link.primary ? "hero-btn-primary" : "hero-link")}
-                href={link.href}
-              >
-                {link.label}
-              </a>
-            ))}
+
+        {/* Blue Giant OST "First Note" — 닫힌 <details> 안은 렌더되지 않아
+            loading="lazy" iframe이 열기 전엔 요청을 안 보낸다. */}
+        <details class="hero-vinyl">
+          <summary class="hero-vinyl-disc" aria-label="Play First Note">
+            <span class="hero-vinyl-label">
+              First
+              <br />
+              Note
+            </span>
+          </summary>
+          <div class="hero-vinyl-panel">
+            <iframe
+              class="hero-vinyl-frame"
+              src="https://open.spotify.com/embed/track/03IckTW2qNaWUvrOHtuYhL?utm_source=generator"
+              width="100%"
+              height="152"
+              frameborder="0"
+              loading="lazy"
+              allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+            />
           </div>
-        )}
+        </details>
       </section>
     )
   }

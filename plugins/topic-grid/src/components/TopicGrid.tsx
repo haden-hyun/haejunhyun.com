@@ -102,7 +102,7 @@ export default ((userOpts?: Partial<TopicGridOptions>) => {
       <section class={`${displayClass ?? ""} topic-grid-section`}>
         {opts.showHeader && (
           <div class="topic-grid-header">
-            <h2>Index by Topic</h2>
+            <h2>Topics</h2>
             <a class="topic-grid-more" href={resolveRelative(fileData.slug!, "topics")}>
               전체 →
             </a>

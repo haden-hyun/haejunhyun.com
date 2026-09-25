@@ -1,5 +1,5 @@
 // src/components/styles/hero.scss
-var hero_default = ".home-hero {\n  display: flex;\n  flex-direction: column;\n  gap: 1.1rem;\n  padding: 3.5rem 0 3rem;\n}\n@media all and (max-width: 800px) {\n  .home-hero {\n    padding: 2.25rem 0 2rem;\n  }\n}\n\n.hero-meta {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.25rem 1rem;\n  font-family: var(--codeFont);\n  font-size: 0.78rem;\n  letter-spacing: 0.06em;\n  color: var(--text-3);\n  font-variant-numeric: tabular-nums;\n}\n.hero-meta b {\n  font-weight: 600;\n  color: var(--text);\n}\n\n.hero-headline {\n  font-family: var(--headerFont);\n  font-weight: 900;\n  font-size: clamp(2.5rem, 6vw, 3.75rem);\n  line-height: 1.1;\n  letter-spacing: -0.02em;\n  color: var(--text);\n  margin: 0;\n  border: none;\n  padding: 0;\n  text-wrap: balance;\n}\n\n.hero-description {\n  font-size: 1.08rem;\n  line-height: 1.7;\n  color: var(--text-2);\n  max-width: 38em;\n  margin: 0;\n}\n\n.hero-cta {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 0.6rem 1.4rem;\n  margin-top: 0.4rem;\n  font-size: 0.95rem;\n}\n\n.hero-btn-primary {\n  display: inline-flex;\n  align-items: center;\n  min-height: 44px;\n  padding: 0 1.1rem;\n  box-sizing: border-box;\n  border-radius: var(--radius, 10px);\n  background: var(--accent-action);\n  color: var(--surface);\n  font-weight: 700;\n  text-decoration: none;\n  transition: filter 0.15s;\n}\n.hero-btn-primary:hover {\n  filter: brightness(1.06);\n}\n\n.hero-link {\n  color: var(--accent);\n  font-weight: 600;\n  text-decoration: none;\n}\n.hero-link:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}";
+var hero_default = ".home-hero {\n  display: flex;\n  align-items: center;\n  gap: 2rem;\n  padding: 3.5rem 0 3rem;\n}\n@media all and (max-width: 800px) {\n  .home-hero {\n    padding: 2.25rem 0 2rem;\n    flex-direction: column;\n    align-items: stretch;\n    gap: 1.5rem;\n  }\n}\n\n.hero-main {\n  flex: 1 1 auto;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 1.1rem;\n}\n\n.hero-meta {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.25rem 1rem;\n  font-family: var(--codeFont);\n  font-size: 0.78rem;\n  letter-spacing: 0.06em;\n  color: var(--text-3);\n  font-variant-numeric: tabular-nums;\n}\n.hero-meta b {\n  font-weight: 600;\n  color: var(--text);\n}\n\n.hero-headline {\n  font-family: var(--headerFont);\n  font-weight: 900;\n  font-size: clamp(2.5rem, 6vw, 3.75rem);\n  line-height: 1.1;\n  letter-spacing: -0.02em;\n  color: var(--text);\n  margin: 0;\n  border: none;\n  padding: 0;\n  text-wrap: balance;\n}\n\n.hero-description {\n  font-size: 1.08rem;\n  line-height: 1.7;\n  color: var(--text-2);\n  max-width: 38em;\n  margin: 0;\n}\n\n.hero-cta {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 0.6rem 1.4rem;\n  margin-top: 0.4rem;\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n}\n\n.hero-btn-primary {\n  display: inline-flex;\n  align-items: center;\n  min-height: 44px;\n  padding: 0 1.1rem;\n  box-sizing: border-box;\n  border-radius: var(--radius, 10px);\n  background: var(--accent-action);\n  color: var(--surface);\n  font-weight: 700;\n  text-decoration: none;\n  transition: filter 0.15s;\n}\n.hero-btn-primary:hover {\n  filter: brightness(1.06);\n}\n\n.hero-link {\n  color: var(--accent);\n  font-weight: 600;\n  text-decoration: none;\n}\n.hero-link:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n\n.hero-vinyl {\n  position: relative;\n  flex: 0 0 auto;\n  align-self: center;\n}\n@media all and (max-width: 800px) {\n  .hero-vinyl {\n    align-self: flex-start;\n  }\n}\n\n.hero-vinyl-disc {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 132px;\n  height: 132px;\n  border-radius: 50%;\n  cursor: pointer;\n  list-style: none;\n  background: repeating-radial-gradient(circle at center, transparent 0 6px, rgba(255, 255, 255, 0.05) 6px 7px), #17171a;\n  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);\n  transition: transform 0.2s;\n}\n.hero-vinyl-disc::-webkit-details-marker {\n  display: none;\n}\n.hero-vinyl-disc:hover {\n  transform: scale(1.04);\n}\n\n.hero-vinyl[open] .hero-vinyl-disc {\n  animation: hero-vinyl-spin 4s linear infinite;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .hero-vinyl[open] .hero-vinyl-disc {\n    animation: none;\n  }\n}\n@keyframes hero-vinyl-spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n.hero-vinyl-label {\n  width: 54px;\n  height: 54px;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  text-align: center;\n  line-height: 1.15;\n  background: #f2ede0;\n  color: #17171a;\n  font-family: var(--codeFont);\n  font-size: 0.6rem;\n  font-weight: 700;\n  letter-spacing: 0.02em;\n  text-transform: uppercase;\n}\n\n.hero-vinyl-panel {\n  position: absolute;\n  top: calc(100% + 0.6rem);\n  right: 0;\n  z-index: 3;\n  width: 280px;\n  max-width: calc(100vw - 2rem);\n  padding: 0.6rem;\n  background: var(--surface);\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);\n}\n@media all and (max-width: 800px) {\n  .hero-vinyl-panel {\n    right: auto;\n    left: 0;\n  }\n}\n\n.hero-vinyl-frame {\n  display: block;\n  border: none;\n  border-radius: calc(var(--radius, 10px) - 4px);\n}";
 var l;
 function S(n2) {
   return n2.children;
@@ -60,33 +60,54 @@ var HomeHero_default = ((userOpts) => {
     const topicCount = new Set(files.map((f3) => (f3.slug ?? "").split("/")[0]).filter(Boolean)).size;
     const lastUpdateTime = files.reduce((max, f3) => Math.max(max, getTime(f3)), 0);
     return /* @__PURE__ */ u2("section", { class: classNames(displayClass, "home-hero"), children: [
-      /* @__PURE__ */ u2("div", { class: "hero-meta", children: [
-        /* @__PURE__ */ u2("span", { children: [
-          /* @__PURE__ */ u2("b", { children: noteCount }),
-          " NOTES"
+      /* @__PURE__ */ u2("div", { class: "hero-main", children: [
+        /* @__PURE__ */ u2("div", { class: "hero-meta", children: [
+          /* @__PURE__ */ u2("span", { children: [
+            /* @__PURE__ */ u2("b", { children: noteCount }),
+            " NOTES"
+          ] }),
+          /* @__PURE__ */ u2("span", { children: [
+            /* @__PURE__ */ u2("b", { children: topicCount }),
+            " TOPICS"
+          ] }),
+          lastUpdateTime > 0 && /* @__PURE__ */ u2("span", { children: [
+            "UPDATED ",
+            /* @__PURE__ */ u2("b", { children: formatDate(new Date(lastUpdateTime)) })
+          ] })
         ] }),
-        /* @__PURE__ */ u2("span", { children: [
-          /* @__PURE__ */ u2("b", { children: topicCount }),
-          " TOPICS"
-        ] }),
-        lastUpdateTime > 0 && /* @__PURE__ */ u2("span", { children: [
-          "UPDATED ",
-          /* @__PURE__ */ u2("b", { children: formatDate(new Date(lastUpdateTime)) })
-        ] })
+        /* @__PURE__ */ u2("h1", { class: "hero-headline", children: opts.headline.split("\n").map((line, i2, arr) => /* @__PURE__ */ u2(S, { children: [
+          line,
+          i2 < arr.length - 1 && /* @__PURE__ */ u2("br", {})
+        ] })) }),
+        opts.description && /* @__PURE__ */ u2("p", { class: "hero-description", children: opts.description }),
+        opts.links.length > 0 && /* @__PURE__ */ u2("div", { class: "hero-cta", children: opts.links.map((link) => /* @__PURE__ */ u2(
+          "a",
+          {
+            class: classNames(void 0, link.primary ? "hero-btn-primary" : "hero-link"),
+            href: link.href,
+            children: link.label
+          }
+        )) })
       ] }),
-      /* @__PURE__ */ u2("h1", { class: "hero-headline", children: opts.headline.split("\n").map((line, i2, arr) => /* @__PURE__ */ u2(S, { children: [
-        line,
-        i2 < arr.length - 1 && /* @__PURE__ */ u2("br", {})
-      ] })) }),
-      opts.description && /* @__PURE__ */ u2("p", { class: "hero-description", children: opts.description }),
-      opts.links.length > 0 && /* @__PURE__ */ u2("div", { class: "hero-cta", children: opts.links.map((link) => /* @__PURE__ */ u2(
-        "a",
-        {
-          class: classNames(void 0, link.primary ? "hero-btn-primary" : "hero-link"),
-          href: link.href,
-          children: link.label
-        }
-      )) })
+      /* @__PURE__ */ u2("details", { class: "hero-vinyl", children: [
+        /* @__PURE__ */ u2("summary", { class: "hero-vinyl-disc", "aria-label": "Play First Note", children: /* @__PURE__ */ u2("span", { class: "hero-vinyl-label", children: [
+          "First",
+          /* @__PURE__ */ u2("br", {}),
+          "Note"
+        ] }) }),
+        /* @__PURE__ */ u2("div", { class: "hero-vinyl-panel", children: /* @__PURE__ */ u2(
+          "iframe",
+          {
+            class: "hero-vinyl-frame",
+            src: "https://open.spotify.com/embed/track/03IckTW2qNaWUvrOHtuYhL?utm_source=generator",
+            width: "100%",
+            height: "152",
+            frameborder: "0",
+            loading: "lazy",
+            allow: "autoplay; encrypted-media; fullscreen; picture-in-picture"
+          }
+        ) })
+      ] })
     ] });
   };
   HomeHero.css = hero_default;

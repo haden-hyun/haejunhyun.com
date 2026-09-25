@@ -8,7 +8,7 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/featured.scss"
 
 /**
- * Selected — 홈 전용. 번호 매긴 목록 4행, 첫 항목만 크게.
+ * Featured — 홈 전용. 번호 매긴 목록 4행, 첫 항목만 크게(카드형 배경 + 토픽 배지).
  *
  * - `options.slugs`가 유일한 지정 수단. 쓴 순서가 표시 순서(번호), 첫 항목이 크게
  * - 부족분은 토픽 라운드로빈으로 채운다 (전체 최신순은 큰 토픽이 슬롯을 독식)
@@ -99,7 +99,7 @@ function pickRoundRobin(files: FileData[], count: number, exclude: Set<string>):
 export interface FeaturedNotesOptions {
   /** recent-notes-index의 options.limit과 같은 값으로 유지할 것. */
   recentExcludeCount: number
-  /** Selected 노트 슬러그. 쓴 순서가 표시 순서(번호)고, 첫 항목이 크게 표시된다. */
+  /** Featured 노트 슬러그. 쓴 순서가 표시 순서(번호)고, 첫 항목이 크게 표시된다. */
   slugs: string[]
 }
 
@@ -178,28 +178,42 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
     return (
       <section class={`${displayClass ?? ""} featured-section`}>
         <div class="featured-header">
-          <h2>Selected</h2>
+          <h2>Featured</h2>
         </div>
         <ol class="featured-tracks">
           {selected.map((item, i) => {
             const isLead = i === 0
             const href = resolveRelative(fileData.slug!, item.slug as string)
             const date = getDisplayDate(item)
-            const meta = [
-              getCategoryName((item.slug as string) ?? ""),
-              isLead && date ? formatDate(date) : undefined,
-              `${getReadingMinutes(item)}분`,
-            ].filter(Boolean)
+            const category = getCategoryName((item.slug as string) ?? "")
+
+            if (isLead) {
+              const leadMeta = [date ? formatDate(date) : undefined, `${getReadingMinutes(item)}분`]
+                .filter(Boolean)
+                .join(" · ")
+              return (
+                <li class="featured-track is-lead">
+                  <span class="featured-no">{pad(i + 1)}</span>
+                  <div class="featured-lead-body">
+                    <span class="featured-cat">First Note · {category}</span>
+                    <a class="featured-title" href={href}>
+                      {titleOf(item)}
+                    </a>
+                    {item.description && <p class="featured-desc">{item.description as string}</p>}
+                    <span class="featured-meta">{leadMeta}</span>
+                  </div>
+                </li>
+              )
+            }
+
+            const meta = [category, `${getReadingMinutes(item)}분`].join(" · ")
             return (
-              <li class={`featured-track${isLead ? " is-lead" : ""}`}>
+              <li class="featured-track">
                 <span class="featured-no">{pad(i + 1)}</span>
                 <a class="featured-title" href={href}>
                   {titleOf(item)}
                 </a>
-                {isLead && item.description && (
-                  <p class="featured-desc">{item.description as string}</p>
-                )}
-                <span class="featured-meta">{meta.join(" · ")}</span>
+                <span class="featured-meta">{meta}</span>
               </li>
             )
           })}

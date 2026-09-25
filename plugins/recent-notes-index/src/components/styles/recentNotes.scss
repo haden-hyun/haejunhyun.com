@@ -1,4 +1,5 @@
-// Catalogue — 괘선 표(.rows > .row: 날짜 | 제목·요약 | 토픽). 행 전체가 링크.
+// Recent Notes — main 원안 그대로: 헤더 행 없이 96px/1fr/auto 그리드 데이터 행만.
+// 얼룩말·hover 배경색은 custom.scss §9와 공유(단일 소스) — 여기선 hover의 여백 이동만 담당.
 // 섹션 라벨(h2) 조판은 custom.scss의 홈 섹션 라벨 규칙이 정한다.
 
 .recent-notes {
@@ -31,60 +32,45 @@
   }
 }
 
-.row-head,
 .row {
   display: grid;
-  grid-template-columns: 6.5rem minmax(0, 1fr) auto;
-  gap: 1rem;
-  align-items: baseline;
-}
-
-.row-head {
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--text);
-  font-family: var(--codeFont);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-3);
-
-  span:last-child:not(:nth-child(2)) {
-    text-align: right;
-  }
-}
-
-.row {
-  padding: 0.85rem 0;
+  grid-template-columns: 96px 1fr auto;
+  gap: 18px;
+  align-items: center;
+  padding: 15px 8px;
   border-bottom: 1px solid var(--border);
   text-decoration: none;
   color: inherit;
+  transition: 0.12s;
 
-  &:hover .t {
-    color: var(--accent);
+  // 배경색은 custom.scss §9 얼룩말/hover 규칙이 정한다(단일 소스) — 여백 이동만 여기서.
+  &:hover {
+    padding-left: 14px;
+    padding-right: 2px;
   }
 
   .d {
     font-family: var(--codeFont);
-    font-size: 0.8rem;
+    font-size: 12px;
     color: var(--text-3);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
 
   .t {
+    // 노트 제목은 사이트 전체에서 헤딩 서체 — 실제 노트 페이지 h1(custom.scss §1)과 같은 계열.
     display: block;
     font-family: var(--headerFont);
-    font-size: 0.97rem;
+    font-size: 15.5px;
     font-weight: 700;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.018em;
     color: var(--text);
-    transition: color 0.12s;
   }
 
   .s {
-    font-size: 0.84rem;
+    font-size: 13px;
     color: var(--text-3);
-    margin-top: 0.2rem;
+    margin-top: 7px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -93,19 +79,17 @@
 
   .tag {
     font-family: var(--codeFont);
-    font-size: 0.74rem;
+    font-size: 11px;
     color: var(--text-3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 8px;
     white-space: nowrap;
-    text-align: right;
   }
 }
 
 // 좁은 화면: 날짜·토픽이 제목 위 한 줄, 제목·요약은 그 아래 전폭.
 @media all and (max-width: 640px) {
-  .row-head {
-    display: none;
-  }
-
   .row {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.3rem 0.75rem;

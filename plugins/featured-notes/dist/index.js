@@ -35,7 +35,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/featured.scss
-var featured_default = ".featured-section {\n  margin: 0;\n  padding: 2.25rem 0 2.5rem;\n  border-top: 1px solid var(--border);\n}\n\n.featured-header {\n  margin-bottom: 1.1rem;\n}\n.featured-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n}\n\n.featured-tracks {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n}\n\n.featured-track {\n  display: grid;\n  grid-template-columns: 2.4em minmax(0, 1fr) auto;\n  gap: 0.25rem 0.9rem;\n  align-items: baseline;\n  padding: 0.8rem 0;\n  border-bottom: 1px solid var(--border);\n}\n.featured-track:last-child {\n  border-bottom: none;\n}\n@media all and (max-width: 640px) {\n  .featured-track {\n    grid-template-columns: 2em minmax(0, 1fr);\n  }\n}\n\n.featured-no {\n  font-family: var(--codeFont);\n  font-size: 0.8rem;\n  color: var(--text-3);\n  font-variant-numeric: tabular-nums;\n}\n\n.featured-title {\n  font-family: var(--headerFont);\n  font-size: 1.06rem;\n  font-weight: 700;\n  line-height: 1.4;\n  color: var(--text);\n  text-decoration: none;\n}\n.featured-title:hover {\n  color: var(--accent);\n}\n\n.featured-meta {\n  font-family: var(--codeFont);\n  font-size: 0.74rem;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  color: var(--text-3);\n  white-space: nowrap;\n  text-align: right;\n}\n@media all and (max-width: 640px) {\n  .featured-meta {\n    grid-column: 2;\n    text-align: left;\n    white-space: normal;\n  }\n}\n\n.featured-track.is-lead {\n  padding-top: 0.25rem;\n  padding-bottom: 1.3rem;\n}\n.featured-track.is-lead .featured-title {\n  font-size: clamp(1.35rem, 3vw, 1.75rem);\n  font-weight: 900;\n  line-height: 1.3;\n}\n.featured-track.is-lead .featured-desc {\n  grid-column: 2/-1;\n  margin: 0.35rem 0 0;\n  max-width: 40em;\n  font-size: 0.97rem;\n  line-height: 1.65;\n  color: var(--text-2);\n}\n.featured-track.is-lead .featured-meta {\n  grid-column: 2/-1;\n  text-align: left;\n  margin-top: 0.5rem;\n}";
+var featured_default = '.featured-section {\n  margin: 0;\n  padding: 2.25rem 0 2.5rem;\n  border-top: 1px solid var(--border);\n}\n\n.featured-header {\n  margin-bottom: 1.1rem;\n}\n.featured-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n}\n\n.featured-tracks {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n}\n\n.featured-track {\n  display: grid;\n  grid-template-columns: 2.4em minmax(0, 1fr) auto;\n  gap: 0.25rem 0.9rem;\n  align-items: baseline;\n  padding: 0.8rem 0;\n  border-bottom: 1px solid var(--border);\n}\n.featured-track:last-child {\n  border-bottom: none;\n}\n@media all and (max-width: 640px) {\n  .featured-track {\n    grid-template-columns: 2em minmax(0, 1fr);\n  }\n}\n\n.featured-no {\n  font-family: var(--codeFont);\n  font-size: 0.8rem;\n  color: var(--text-3);\n  font-variant-numeric: tabular-nums;\n}\n\n.featured-title {\n  font-family: var(--headerFont);\n  font-size: 1.06rem;\n  font-weight: 700;\n  line-height: 1.4;\n  color: var(--text);\n  text-decoration: none;\n}\n.featured-title:hover {\n  color: var(--accent);\n}\n\n.featured-meta {\n  font-family: var(--codeFont);\n  font-size: 0.74rem;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  color: var(--text-3);\n  white-space: nowrap;\n  text-align: right;\n}\n@media all and (max-width: 640px) {\n  .featured-meta {\n    grid-column: 2;\n    text-align: left;\n    white-space: normal;\n  }\n}\n\n.featured-track.is-lead {\n  grid-template-columns: 2.4em minmax(0, 1fr);\n  align-items: start;\n  padding: 1.25rem 1.4rem 1.5rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: linear-gradient(160deg, var(--surface-2), var(--surface));\n}\n\n.featured-lead-body {\n  display: flex;\n  flex-direction: column;\n}\n\n.featured-cat {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  font-family: var(--codeFont);\n  font-size: 11px;\n  font-weight: 700;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  color: var(--featured-cat-color);\n  margin-bottom: 0.6rem;\n}\n.featured-cat::before {\n  content: "";\n  width: 6px;\n  height: 6px;\n  border-radius: 2px;\n  background: currentColor;\n}\n\n.featured-lead-body .featured-title {\n  font-size: clamp(1.35rem, 3vw, 1.75rem);\n  font-weight: 900;\n  line-height: 1.3;\n}\n\n.featured-lead-body .featured-desc {\n  margin: 0.35rem 0 0;\n  max-width: 40em;\n  font-size: 0.97rem;\n  line-height: 1.65;\n  color: var(--text-2);\n}\n\n.featured-lead-body .featured-meta {\n  text-align: left;\n  margin-top: 0.6rem;\n}';
 var l;
 function S(n2) {
   return n2.children;
@@ -177,21 +177,32 @@ var FeaturedNotes_default = ((userOpts) => {
     const formatDate = (d2) => `${d2.getFullYear()}.${pad(d2.getMonth() + 1)}.${pad(d2.getDate())}`;
     const titleOf = (f3) => f3.frontmatter?.title ?? "Untitled";
     return /* @__PURE__ */ u2("section", { class: `${displayClass ?? ""} featured-section`, children: [
-      /* @__PURE__ */ u2("div", { class: "featured-header", children: /* @__PURE__ */ u2("h2", { children: "Selected" }) }),
+      /* @__PURE__ */ u2("div", { class: "featured-header", children: /* @__PURE__ */ u2("h2", { children: "Featured" }) }),
       /* @__PURE__ */ u2("ol", { class: "featured-tracks", children: selected.map((item, i2) => {
         const isLead = i2 === 0;
         const href = resolveRelative(fileData.slug, item.slug);
         const date = getDisplayDate(item);
-        const meta = [
-          getCategoryName(item.slug ?? ""),
-          isLead && date ? formatDate(date) : void 0,
-          `${getReadingMinutes(item)}\uBD84`
-        ].filter(Boolean);
-        return /* @__PURE__ */ u2("li", { class: `featured-track${isLead ? " is-lead" : ""}`, children: [
+        const category = getCategoryName(item.slug ?? "");
+        if (isLead) {
+          const leadMeta = [date ? formatDate(date) : void 0, `${getReadingMinutes(item)}\uBD84`].filter(Boolean).join(" \xB7 ");
+          return /* @__PURE__ */ u2("li", { class: "featured-track is-lead", children: [
+            /* @__PURE__ */ u2("span", { class: "featured-no", children: pad(i2 + 1) }),
+            /* @__PURE__ */ u2("div", { class: "featured-lead-body", children: [
+              /* @__PURE__ */ u2("span", { class: "featured-cat", children: [
+                "First Note \xB7 ",
+                category
+              ] }),
+              /* @__PURE__ */ u2("a", { class: "featured-title", href, children: titleOf(item) }),
+              item.description && /* @__PURE__ */ u2("p", { class: "featured-desc", children: item.description }),
+              /* @__PURE__ */ u2("span", { class: "featured-meta", children: leadMeta })
+            ] })
+          ] });
+        }
+        const meta = [category, `${getReadingMinutes(item)}\uBD84`].join(" \xB7 ");
+        return /* @__PURE__ */ u2("li", { class: "featured-track", children: [
           /* @__PURE__ */ u2("span", { class: "featured-no", children: pad(i2 + 1) }),
           /* @__PURE__ */ u2("a", { class: "featured-title", href, children: titleOf(item) }),
-          isLead && item.description && /* @__PURE__ */ u2("p", { class: "featured-desc", children: item.description }),
-          /* @__PURE__ */ u2("span", { class: "featured-meta", children: meta.join(" \xB7 ") })
+          /* @__PURE__ */ u2("span", { class: "featured-meta", children: meta })
         ] });
       }) })
     ] });

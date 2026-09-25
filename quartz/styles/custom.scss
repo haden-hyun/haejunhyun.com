@@ -25,11 +25,14 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --accent-action: #b8442a; // 4.94:1  AA — CTA
   --accent-state: #b03a7d; // 5.14:1  AA — 읽기 진행바
 
-  // 인라인 코드 칩 — 세 축(공간/행위/시간)에 속하지 않아 색이 아닌 재질로 구분한다.
-  --code-chip-bg: #eae4d6;
-  --code-chip-border: #c6bda8;
-  --code-ink: #443e36; // 8.33:1  AAA
+  // 인라인 코드 칩 — 틸 고정(모드 불문). 세 축·하이라이트와 색상 27°+ 이격.
+  --code-chip-bg: #c4e9e4;
+  --code-chip-border: #9fcbc4;
+  --code-ink: #20242a; // 11.97:1  AAA
   --code-bg: #efebe0; // 코드블럭 배경 — syntax.scss 대비 계산의 기준
+
+  // Featured 리드 카드의 "First Note" 배지 — 카드 배경 대비 6.74/5.53 AA.
+  --featured-cat-color: #a02256;
 
   // 콜아웃 시맨틱 5그룹 — 12종 타입을 가치 단위로 묶는다.
   // 주의: 대비는 페이지 배경이 아니라 콜아웃 틴트(7%) 배경 기준으로 잰다.
@@ -61,10 +64,12 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --accent-action: #e87256; // 6.12:1  AA
   --accent-state: #dd7ab0; // 6.57:1  AA
 
-  --code-chip-bg: #1b2432;
-  --code-chip-border: #2c3a4d;
-  --code-ink: #c9c0b4; // 8.69:1  AAA
+  --code-chip-bg: #1c403b;
+  --code-chip-border: #2e5c55;
+  --code-ink: #eef1f4; // 10.04:1  AAA
   --code-bg: #141b28;
+
+  --featured-cat-color: #e87daa; // 카드 배경 대비 6.97/5.63 AA
 
   --cal-good: #4cbf87;
   --cal-warn: #d9a441;
@@ -149,15 +154,14 @@ article em {
   letter-spacing: 0.02em;
 }
 
-// `==강조==` — 채움이 아니라 밑줄 밴드. 칩=박스 / 하이라이트=밑줄로 형태를 갈라둔다.
+// `==강조==` — 형광펜 전체 채움(그린/골드). 색은 --textHighlight 하나(quartz.config.yaml).
 // 주의: `<mark>`를 같이 잡을 것 — ofm은 `==...==`에만 .text-highlight를 붙여서,
 //       원고가 직접 쓴 <mark>는 브라우저 기본 형광 노랑으로 샌다.
 .text-highlight,
 article mark {
-  background-color: transparent;
-  box-shadow: inset 0 -0.45em 0 var(--textHighlight);
-  border-radius: 0;
-  padding: 0;
+  background: var(--textHighlight);
+  border-radius: 3px;
+  padding: 0.05em 0.18em;
   color: inherit;
 }
 
@@ -481,16 +485,33 @@ button.toc-header h3,
   margin: 0;
 }
 
-// 홈 섹션 라벨 3종(Selected/Catalogue/Index by Topic)도 한 규칙으로 통일한다.
+// 홈 섹션 라벨 3종 — main과 같은 본문형 크기(§10.7 이전 값)로 통일한다. 색만 공유.
 .featured-header h2,
 .recent-notes-header h2,
 .topic-grid-header h2 {
-  font-family: var(--headerFont);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--secondary); // h2 = 공간 축(DESIGN-SYSTEM §3.2)
+}
+
+.featured-header h2,
+.topic-grid-header h2 {
+  font-family: var(--headerFont);
+  font-size: 1.15rem;
+  font-weight: 720;
+}
+
+.recent-notes-header h2 {
+  font-family: var(--headerFont);
+  font-size: 19px;
+  font-weight: 720;
+  letter-spacing: -0.02em;
+}
+
+// Catalogue 얼룩말 — §9 table과 동일 비율. hover는 순서상 뒤에 와야 이긴다.
+.recent-notes .row:nth-child(even) {
+  background: rgba(var(--accent-rgb), 0.035);
+}
+.recent-notes .row:hover {
+  background: rgba(var(--accent-rgb), 0.1);
 }
 
 .sidebar.right {
