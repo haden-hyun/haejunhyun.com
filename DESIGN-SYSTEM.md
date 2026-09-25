@@ -178,13 +178,17 @@
 **역할**: 사이트 전체의 목적지 4개(`Home · Topics · Archive · Notes`)와 홈 한 화면.
 
 - Notes는 실제 노트 위에서 `<span aria-current="page">`, 그 밖에서는 가장 최근 노트로 가는 링크.
-- 홈은 전부 `beforeBody` 한 열이다: 마스트헤드(1) → Selected(2) → Catalogue(3) → Index by Topic(4). 이미지·카드 없음, 섹션 경계는 1px 괘선.
-- 마스트헤드: Mono 메타 한 줄(`N NOTES · N TOPICS · UPDATED YYYY.MM.DD`, `allFiles` 런타임 집계) + Hahmlet 900 헤드라인 + 브릭 CTA 1개.
-- **음악 은유는 헤드라인("Blue Notes.") 한 곳에만.** 음반의 명사(번호·표·크레딧)는 형식으로 빌리고, 동사(재생·Play·Now Playing)는 쓰지 않는다. 판별 기준: 그 표현 뒤에 실제 데이터가 있는가.
-- 홈 섹션 라벨 3종(Selected/Catalogue/Index by Topic)은 `custom.scss`의 한 규칙으로 통일한다.
-- **Selected는 `quartz.config.yaml`의 `slugs` 배열이 유일한 지정 수단.** 쓴 순서 = 번호, 첫 항목만 크게, 부족분은 토픽 라운드로빈으로 자동 채움.
+- 홈은 전부 `beforeBody` 한 열이다: 마스트헤드(1) → Featured(2) → Recent Notes(3) → Topics(4). 이미지·카드 없음(Featured 첫 항목 제외), 섹션 경계는 1px 괘선.
+- 마스트헤드: Mono 메타 한 줄(`N NOTES · N TOPICS · UPDATED YYYY.MM.DD`, `allFiles` 런타임 집계) + Hahmlet 900 헤드라인("Blue Notes.") + 본문체 설명문 + CTA(브릭 "Dive In" + GitHub/LinkedIn 평문 링크).
+- **비닐판(`hero-vinyl`)**: 헤드라인 옆에 CSS로 그린 레코드판. `<details>` 토글 — 닫혀 있으면 Spotify iframe이 렌더되지 않아 요청이 안 나간다(`loading="lazy"`보다 먼저 걸리는 차단). 열면 "First Note" 트랙 임베드.
+- **음악 은유는 헤드라인·비닐판 두 곳에만.** 음반의 명사(번호·표·크레딧)는 형식으로 빌리고, 동사(재생·Play·Now Playing)는 텍스트 라벨엔 쓰지 않는다. 판별 기준: 그 표현 뒤에 실제 데이터가 있는가.
+- 홈 섹션 라벨 3종(Featured/Recent Notes/Topics)은 `custom.scss`의 한 규칙으로 통일한다.
+- **Featured 첫 항목만 카드형 배경 + 토픽 배지.** 배지는 "First Note · {토픽}", 핑크 고정색(`--featured-cat-color`).
+- Recent Notes는 헤더 행(DATE/TITLE/TOPIC) 없이 `96px 1fr auto` 그리드 데이터 행만 나열한다.
+- **Featured는 `quartz.config.yaml`의 `slugs` 배열이 유일한 지정 수단.** 쓴 순서 = 번호, 첫 항목만 크게, 부족분은 토픽 라운드로빈으로 자동 채움.
 - 주의: 미해결·중복·초과 슬러그는 빌드 로그 경고로 찍힌다. 조용히 무시되지 않는다.
-- 푸터는 전 페이지 공통 텍스트 콜로폰(INDEX / ELSEWHERE / COLOPHON 열 + 하단 한 줄). 인물 포스터·컷아웃·"계속 재생 중" 무대 푸터는 **기각** — 은유가 콘텐츠를 앞질러 오그라든다.
+- 푸터는 전 페이지 공통 텍스트 콜로폰 — 브랜드(로고와 같은 `--titleFont` 슬롯) + 평문 링크 목록(가로 정렬, `·` 구분자) + 하단 저작권 한 줄. 다열 콜로폰(INDEX/ELSEWHERE/COLOPHON)·인물 포스터·컷아웃·"계속 재생 중" 무대 푸터는 **기각** — 은유가 콘텐츠를 앞질러 오그라든다.
+- 파비콘은 색소폰 이모지(quartz 크리스탈 기본값에서 교체). 홈 탭 타이틀에 `· First Note` 접미.
 
 ### 4.10 페이지 폭 · 좌우 여백
 
