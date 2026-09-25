@@ -1,7 +1,7 @@
 {
   "name": "@haejunhyun/home-hero",
   "version": "0.1.0",
-  "description": "Home page Hero + StatsStrip. Renders eyebrow/headline/description/links/avatar and live-aggregated note/topic counts, index-page only.",
+  "description": "Home page masthead. Renders a live-aggregated meta line (notes/topics/last update), headline, description and links, index-page only.",
   "type": "module",
   "license": "MIT",
   "private": true,
@@ -34,8 +34,7 @@
     }
   },
   "dependencies": {
-    "@quartz-community/types": "github:quartz-community/types",
-    "@haejunhyun/visitor-counter": "file:../visitor-counter"
+    "@quartz-community/types": "github:quartz-community/types"
   },
   "devDependencies": {
     "@types/node": "^24.10.0",

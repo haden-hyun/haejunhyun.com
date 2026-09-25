@@ -8,9 +8,9 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/featured.scss"
 
 /**
- * Featured — 홈 전용. 대형 카드 1 + 소형 카드 3.
+ * Selected — 홈 전용. 번호 매긴 목록 4행, 첫 항목만 크게.
  *
- * - `options.slugs`가 유일한 지정 수단. 쓴 순서가 표시 순서, 첫 항목이 대형 카드
+ * - `options.slugs`가 유일한 지정 수단. 쓴 순서가 표시 순서(번호), 첫 항목이 크게
  * - 부족분은 토픽 라운드로빈으로 채운다 (전체 최신순은 큰 토픽이 슬롯을 독식)
  * - 중복 노출 방지(`recentExcludeCount`)는 자동 채움에만 적용
  *
@@ -99,7 +99,7 @@ function pickRoundRobin(files: FileData[], count: number, exclude: Set<string>):
 export interface FeaturedNotesOptions {
   /** recent-notes-index의 options.limit과 같은 값으로 유지할 것. */
   recentExcludeCount: number
-  /** Featured 노트 슬러그. 쓴 순서가 표시 순서고, 첫 항목이 대형 카드다. */
+  /** Selected 노트 슬러그. 쓴 순서가 표시 순서(번호)고, 첫 항목이 크게 표시된다. */
   slugs: string[]
 }
 
@@ -170,69 +170,40 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
     const selected = [...curated, ...autoFilled]
     if (selected.length === 0) return <></>
 
-    const [main, ...rest] = selected
-    const sideItems = rest.slice(0, 3)
+    const pad = (n: number) => String(n).padStart(2, "0")
+    const formatDate = (d: Date) => `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`
+    const titleOf = (f: FileData) =>
+      (f.frontmatter as { title?: string } | undefined)?.title ?? "Untitled"
 
     return (
       <section class={`${displayClass ?? ""} featured-section`}>
         <div class="featured-header">
-          <h2>Featured</h2>
+          <h2>Selected</h2>
         </div>
-        <div class="featured-grid">
-          <a class="featured-main" href={resolveRelative(fileData.slug!, main!.slug as string)}>
-            <span
-              class="featured-cat"
-            >
-              {getCategoryName((main!.slug as string) ?? "")}
-            </span>
-            <h3>{(main!.frontmatter as { title?: string } | undefined)?.title ?? "Untitled"}</h3>
-            {main!.description && <p>{main!.description as string}</p>}
-            <div class="featured-meta">
-              {(() => {
-                const d = getDisplayDate(main!)
-                return d ? (
-                  <span>
-                    {d.toLocaleDateString("ko-KR", {
-                      month: "short",
-                      day: "2-digit",
-                      year: "numeric",
-                    })}
-                  </span>
-                ) : null
-              })()}
-              <span class="featured-meta-sep" />
-              <span>{getReadingMinutes(main!)}분</span>
-            </div>
-          </a>
-          <div class="featured-side">
-            {sideItems.map((item) => (
-              <a class="featured-item" href={resolveRelative(fileData.slug!, item.slug as string)}>
-                <span
-                  class="featured-cat"
-                >
-                  {getCategoryName((item.slug as string) ?? "")}
-                </span>
-                <h4>{(item.frontmatter as { title?: string } | undefined)?.title ?? "Untitled"}</h4>
-                <div class="featured-meta">
-                  {(() => {
-                    const d = getDisplayDate(item)
-                    return d ? (
-                      <span>
-                        {d.toLocaleDateString("ko-KR", {
-                          month: "short",
-                          day: "2-digit",
-                          year: "numeric",
-                        })}
-                      </span>
-                    ) : null
-                  })()}
-                  <span class="featured-meta-sep" />
-                  <span>{getReadingMinutes(item)}분</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
+        <ol class="featured-tracks">
+          {selected.map((item, i) => {
+            const isLead = i === 0
+            const href = resolveRelative(fileData.slug!, item.slug as string)
+            const date = getDisplayDate(item)
+            const meta = [
+              getCategoryName((item.slug as string) ?? ""),
+              isLead && date ? formatDate(date) : undefined,
+              `${getReadingMinutes(item)}분`,
+            ].filter(Boolean)
+            return (
+              <li class={`featured-track${isLead ? " is-lead" : ""}`}>
+                <span class="featured-no">{pad(i + 1)}</span>
+                <a class="featured-title" href={href}>
+                  {titleOf(item)}
+                </a>
+                {isLead && item.description && (
+                  <p class="featured-desc">{item.description as string}</p>
+                )}
+                <span class="featured-meta">{meta.join(" · ")}</span>
+              </li>
+            )
+          })}
+        </ol>
       </section>
     )
   }

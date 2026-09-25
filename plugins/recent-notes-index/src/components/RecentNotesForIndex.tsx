@@ -5,7 +5,6 @@ import type {
   QuartzPluginData,
 } from "@quartz-community/types"
 import { classNames } from "@quartz-community/utils/lang"
-import { formatDate } from "@quartz-community/utils/date"
 import { resolveRelative } from "../util/path"
 import style from "./styles/recentNotes.scss"
 
@@ -61,6 +60,12 @@ function getTagLabel(f: RecentNotesPluginData): string {
   return parts.length > 1 ? parts.slice(0, -1).join("/") : (parts[0] ?? "")
 }
 
+/** 2026.09.13 — 표의 날짜 열은 로케일과 무관하게 한 형식. */
+function formatDate(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0")
+  return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`
+}
+
 const defaultOptions: RecentNotesForIndexOptions = {
   limit: 6,
   linkToMore: false,
@@ -77,7 +82,6 @@ export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
     allFiles,
     fileData,
     displayClass,
-    cfg,
   }: QuartzComponentProps) => {
     // 홈 전용 가드. `is-index` layout condition은 내장에 없다(역인 not-index만 존재).
     if (fileData.slug !== "index") return <></>
@@ -92,8 +96,6 @@ export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
       .sort(opts.sort)
       .slice(0, opts.limit)
 
-    const locale = cfg.locale ?? "en-US"
-
     return (
       // id="recent" — home-hero의 CTA(href="#recent") 스크롤 대상. 지우지 말 것.
       <div id="recent" class={classNames(displayClass, "recent-notes")}>
@@ -106,6 +108,11 @@ export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
           )}
         </div>
         <div class="rows">
+          <div class="row-head" aria-hidden="true">
+            <span>Date</span>
+            <span>Title</span>
+            {opts.showTags && <span>Topic</span>}
+          </div>
           {pages.map((page) => {
             const title = page.frontmatter?.title ?? "Untitled"
             const description = page.description ?? ""
@@ -113,7 +120,7 @@ export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
 
             return (
               <a class="row" href={resolveRelative(fileData.slug!, page.slug!)}>
-                <span class="d">{displayDate ? formatDate(displayDate, locale) : ""}</span>
+                <span class="d">{displayDate ? formatDate(displayDate) : ""}</span>
                 <span>
                   <span class="t">{title}</span>
                   {description && <span class="s">{description}</span>}

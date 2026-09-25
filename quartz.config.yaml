@@ -261,6 +261,8 @@ plugins:
       position: right
       # TOC 다음. 이전엔 graph(30) 뒤라 남는 높이가 없어 한 줄만 보였다.
       priority: 30
+      # 홈에서 제거 — 홈 본문이 비어 있어 백링크가 맥락 없이 뜬다.
+      condition: not-index
   - source: ./plugins/global-nav
     enabled: true
     # Home|Topics|Archive|Notes 내비. topbar 포지션 = PageTitle과 같은 줄.
@@ -271,36 +273,26 @@ plugins:
       priority: 11
   - source: ./plugins/home-hero
     enabled: true
-    # Hero + StatsStrip. 홈 전용(컴포넌트 내부 slug 가드), priority 1 = 최상단.
+    # 홈 마스트헤드(메타 한 줄 + 헤드라인). 홈 전용(컴포넌트 내부 slug 가드), priority 1 = 최상단.
     options:
-      eyebrow: "blue notes. 🎷"
-      headline: "어쩌다 보니 모인\n관심사의 파편들"
-      description: "일로 만지는 데이터와 코드, 취미로 치는 기타. 정해진 주제나 규칙 없이 그저 내게 필요한 것들을 모아두는 아카이브입니다."
+      headline: "Blue Notes."
+      description: "즉흥 노트, 떠오른 순서대로."
       links:
-        - label: "Play Notes"
+        - label: "최근 노트 ↓"
           href: "#recent"
           primary: true
-        - label: "GitHub"
+        - label: "GitHub ↗"
           href: "https://github.com/haden-hyun/haejunhyun.com"
-        - label: "LinkedIn"
+        - label: "LinkedIn ↗"
           href: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
-      avatarImage: "./static/avatar.png"
-      # backgroundImage가 있으면 밤 히어로 모드 — 아바타 열 대신 배경 인물이 선다.
-      backgroundImage: "./static/bluegiant/poster.jpg"
     order: 15
     layout:
       position: beforeBody
       priority: 1
-      # Featured와 한 행으로 묶는다 — 세로 포스터가 좁고 긴 열에서 비율을 유지하도록.
-      group: home-top
-      groupOptions:
-        basis: "42%"
-        shrink: false
-        align: stretch
   - source: ./plugins/featured-notes
     enabled: true
-    # Featured. 홈 전용, priority 2 = Hero 아래. 슬롯 4개(대형 1 + 소형 3).
-    # slugs가 유일한 지정 수단이다 — 쓴 순서가 표시 순서고 첫 항목이 대형 카드.
+    # Selected. 홈 전용, priority 2 = 마스트헤드 아래. 번호 목록 4행(첫 항목만 크게).
+    # slugs가 유일한 지정 수단이다 — 쓴 순서가 표시 순서(번호)고 첫 항목이 크게 표시된다.
     # 비워두면 토픽 라운드로빈으로 자동 선정. 못 찾은 슬러그는 빌드 로그에 경고.
     # 주의: recentExcludeCount는 아래 recent-notes-index.limit과 같은 값으로 유지할 것.
     options:
@@ -314,20 +306,15 @@ plugins:
     layout:
       position: beforeBody
       priority: 2
-      group: home-top
-      groupOptions:
-        grow: true
-        basis: "0"
-        align: stretch
   - source: ./plugins/topic-grid
     enabled: true
-    # TopicGrid. 홈 전용, priority 3 = Featured 아래.
+    # Index by Topic. 홈 전용, priority 4 = Catalogue 아래.
     options:
       showHeader: true
     order: 15
     layout:
       position: beforeBody
-      priority: 3
+      priority: 4
   - source: github:quartz-community/article-title
     enabled: true
     layout:
@@ -462,17 +449,17 @@ plugins:
       priority: 13
   - source: ./plugins/recent-notes-index
     enabled: true
-    # 홈 "Recent Notes" 섹션. linkToMore는 /archive로 연결.
+    # 홈 Catalogue(최근 노트 표). priority 3 = Selected 아래. linkToMore는 /archive로 연결.
     options:
-      title: "Recent Notes"
+      title: "Catalogue"
       limit: 6
       showTags: true
       linkToMore: "archive"
       linkToMoreLabel: "아카이브 →"
     order: 15
     layout:
-      position: afterBody
-      priority: 40
+      position: beforeBody
+      priority: 3
   - source: ./plugins/prev-next
     enabled: true
     options: {}
@@ -511,9 +498,8 @@ plugins:
       position: afterBody
       priority: 20
   - source: ./plugins/visitor-counter
-    # layout 키 없음 = 위치 기반 렌더 제외.
-    # home-hero가 npm(file:) 의존성으로 직접 렌더한다.
-    enabled: true
+    # 렌더하는 곳 없음 — 홈 마스트헤드 개편으로 제거. 방문 집계는 goatcounter-tracking이 한다.
+    enabled: false
     options: {}
     order: 15
   - source: ./plugins/goatcounter-tracking
@@ -524,20 +510,22 @@ plugins:
     order: 90
   - source: ./plugins/footer
     enabled: true
-    # 잉크 판(--stage) 위 무대형 푸터. figureImage는 배경이 투명한 컷아웃이어야 한다.
+    # 텍스트 콜로폰 푸터(전 페이지 공통). 열 = 링크 목록 또는 문단.
     options:
-      eyebrow: "Haejun Records"
-      headline: "계속 재생 중"
-      description: "일로 만지는 데이터와 코드, 취미로 치는 기타. 정해진 주제나 규칙 없이 그저 내게 필요한 것들을 모아두는 아카이브입니다."
-      links:
-        Home: "/"
-        Topics: "/topics"
-        Archive: "/archive"
-        GitHub: "https://github.com/haden-hyun"
-        LinkedIn: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
-      meta: "© 2026 Haejun Hyun · Built with Quartz"
-      figureImage: "./static/bluegiant/player.webp"
-      backgroundImage: "./static/bluegiant/poster.jpg"
+      columns:
+        - title: "INDEX"
+          links:
+            Home: "/"
+            Topics: "/topics"
+            Archive: "/archive"
+        - title: "ELSEWHERE"
+          links:
+            GitHub ↗: "https://github.com/haden-hyun"
+            LinkedIn ↗: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
+        - title: "COLOPHON"
+          text: "Set in Anton, Hahmlet, Noto Sans KR and JetBrains Mono. Written in Obsidian, built with Quartz v5, served by Cloudflare."
+      brand: "HAEJUN RECORDS · 개인 지식 아카이브"
+      meta: "© 2026 Haejun Hyun"
     order: 50
 layout:
   groups:
@@ -545,13 +533,6 @@ layout:
       priority: 35
       direction: row
       gap: 0.5rem
-    # 홈 상단 2열 — 좌 히어로(세로 포스터) / 우 Featured.
-    # 좁은 화면 전환은 hero/featured scss가 담당한다(wrap만으로는 열 폭이 안 풀린다).
-    home-top:
-      priority: 1
-      direction: row
-      wrap: wrap
-      gap: 1.25rem
   byPageType:
     "404":
       positions:

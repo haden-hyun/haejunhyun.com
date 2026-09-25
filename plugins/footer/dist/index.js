@@ -1,5 +1,5 @@
 // src/components/styles/footer.scss
-var footer_default = '.site-footer {\n  margin-bottom: 2rem;\n}\n\n.sf-stage {\n  position: relative;\n  overflow: hidden;\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;\n  align-items: end;\n  gap: 2rem;\n  padding: 3.5rem 1.75rem 0;\n  border-radius: 10px;\n  background: var(--stage);\n  border: 1px solid var(--stage-edge);\n  color: var(--stage-text-2);\n  background-image: var(--stage-image, none);\n  background-position: center 42%;\n  background-size: cover;\n}\n.sf-stage::after {\n  content: "";\n  position: absolute;\n  inset: 0;\n  background: rgba(20, 29, 40, 0.86);\n  pointer-events: none;\n}\n.sf-stage::before {\n  content: "";\n  position: absolute;\n  inset: 0 0 auto 0;\n  z-index: 2;\n  height: 48px;\n  background: linear-gradient(180deg, var(--bg), transparent);\n  opacity: var(--stage-fade);\n  pointer-events: none;\n}\n.sf-stage > * {\n  position: relative;\n  z-index: 1;\n}\n@media all and (max-width: 800px) {\n  .sf-stage {\n    grid-template-columns: 1fr;\n    gap: 1rem;\n    padding: 2.75rem 1.25rem 0;\n  }\n}\n\n.sf-body {\n  padding-bottom: 2.25rem;\n}\n\n.sf-eyebrow {\n  font-family: var(--codeFont);\n  font-size: 0.66rem;\n  letter-spacing: 0.13em;\n  text-transform: uppercase;\n  color: var(--stage-text-3);\n  margin-bottom: 0.5rem;\n}\n\n.sf-headline {\n  font-family: var(--headerFont);\n  font-size: 1.25rem;\n  font-weight: 700;\n  letter-spacing: -0.02em;\n  color: var(--stage-text);\n  margin: 0 0 0.5rem;\n}\n.sf-headline a {\n  color: var(--stage-accent);\n}\n\n.sf-description {\n  font-size: 0.86rem;\n  line-height: 1.7;\n  color: var(--stage-text-2);\n  max-width: 44ch;\n  margin: 0 0 1rem;\n}\n\n.sf-links {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: flex;\n  flex-wrap: wrap;\n  gap: 1.1rem;\n  font-size: 0.82rem;\n}\n.sf-links a {\n  color: var(--stage-text-2);\n  text-decoration: none;\n}\n.sf-links a:hover {\n  color: var(--stage-accent);\n}\n\n.sf-meta {\n  margin-top: 1.1rem;\n  font-size: 0.72rem;\n  color: var(--stage-text-3);\n}\n\n.sf-figure {\n  display: block;\n  height: 190px;\n  width: auto;\n  align-self: end;\n  user-select: none;\n  -webkit-user-drag: none;\n  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.5));\n}\n@media all and (max-width: 800px) {\n  .sf-figure {\n    height: 132px;\n    justify-self: end;\n  }\n}';
+var footer_default = ".site-footer {\n  margin: 3rem 0 2rem;\n  padding-top: 1.75rem;\n  border-top: 2px solid var(--text);\n}\n\n.sf-cols {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));\n  gap: 1.5rem 2.25rem;\n}\n\n.sf-col-title {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  font-weight: 400;\n  letter-spacing: 0.1em;\n  color: var(--text-3);\n  margin-bottom: 0.6rem;\n}\n\n.sf-links {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  gap: 0.25rem;\n  font-size: 0.88rem;\n}\n.sf-links a {\n  color: var(--accent);\n  text-decoration: none;\n}\n.sf-links a:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n\n.sf-text {\n  margin: 0;\n  font-size: 0.85rem;\n  line-height: 1.7;\n  color: var(--text-2);\n}\n\n.sf-fine {\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-between;\n  gap: 0.5rem 1rem;\n  margin-top: 1.75rem;\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  color: var(--text-3);\n}";
 var l;
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
@@ -22,34 +22,21 @@ function u2(e2, t2, n2, o2, i2, u3) {
 }
 
 // src/components/Footer.tsx
-function resolveFromRoot(path, slug) {
-  if (!path.startsWith("./")) return path;
-  const depth = slug.split("/").length - 1;
-  const prefix = depth === 0 ? "." : Array(depth).fill("..").join("/");
-  return `${prefix}/${path.slice(2)}`;
-}
 var Footer_default = ((opts) => {
   const Footer = (props) => {
-    const { displayClass, fileData } = props;
-    const links = opts?.links ?? {};
-    const slug = fileData.slug ?? "";
-    const figureSrc = opts?.figureImage ? resolveFromRoot(opts.figureImage, slug) : void 0;
-    const bgSrc = opts?.backgroundImage ? resolveFromRoot(opts.backgroundImage, slug) : void 0;
-    const hasText = Boolean(opts?.eyebrow || opts?.headline || opts?.description);
-    return /* @__PURE__ */ u2("footer", { class: `${displayClass ?? ""} site-footer`, children: /* @__PURE__ */ u2("div", { class: "sf-stage", style: bgSrc ? `--stage-image:url("${bgSrc}")` : void 0, children: [
-      /* @__PURE__ */ u2("div", { class: "sf-body", children: [
-        opts?.eyebrow && /* @__PURE__ */ u2("div", { class: "sf-eyebrow", children: opts.eyebrow }),
-        opts?.headline && /* @__PURE__ */ u2("p", { class: "sf-headline", children: opts.headline }),
-        opts?.description && /* @__PURE__ */ u2("p", { class: "sf-description", children: opts.description }),
-        !hasText && /* @__PURE__ */ u2("p", { class: "sf-headline", children: [
-          "Created by ",
-          /* @__PURE__ */ u2("a", { href: "https://github.com/haden-hyun", children: "haejun" })
-        ] }),
-        Object.keys(links).length > 0 && /* @__PURE__ */ u2("ul", { class: "sf-links", children: Object.entries(links).map(([text, link]) => /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2("a", { href: link, children: text }) })) }),
-        opts?.meta && /* @__PURE__ */ u2("div", { class: "sf-meta", children: opts.meta })
-      ] }),
-      figureSrc && /* @__PURE__ */ u2("img", { class: "sf-figure", src: figureSrc, alt: "", "aria-hidden": "true" })
-    ] }) });
+    const { displayClass } = props;
+    const columns = opts?.columns ?? [];
+    return /* @__PURE__ */ u2("footer", { class: `${displayClass ?? ""} site-footer`, children: [
+      columns.length > 0 && /* @__PURE__ */ u2("div", { class: "sf-cols", children: columns.map((col) => /* @__PURE__ */ u2("div", { class: "sf-col", children: [
+        /* @__PURE__ */ u2("div", { class: "sf-col-title", children: col.title }),
+        col.links && /* @__PURE__ */ u2("ul", { class: "sf-links", children: Object.entries(col.links).map(([text, link]) => /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2("a", { href: link, children: text }) })) }),
+        col.text && /* @__PURE__ */ u2("p", { class: "sf-text", children: col.text })
+      ] })) }),
+      (opts?.brand || opts?.meta) && /* @__PURE__ */ u2("div", { class: "sf-fine", children: [
+        opts?.brand && /* @__PURE__ */ u2("span", { children: opts.brand }),
+        opts?.meta && /* @__PURE__ */ u2("span", { children: opts.meta })
+      ] })
+    ] });
   };
   Footer.css = footer_default;
   return Footer;

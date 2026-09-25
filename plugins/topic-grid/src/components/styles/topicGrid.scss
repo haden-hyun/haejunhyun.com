@@ -1,102 +1,90 @@
+// Index by Topic — 이름 · 점선 리더 · 노트 수. 카드 없음.
+// 섹션 라벨(h2) 조판은 custom.scss의 홈 섹션 라벨 규칙이 정한다.
+
 .topic-grid-section {
-  margin: 1.5rem 0 2rem 0;
+  padding: 2.25rem 0 2.5rem;
+  border-top: 1px solid var(--border);
 }
 
 .topic-grid-header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 0.9rem;
+  margin-bottom: 1.1rem;
 
   h2 {
     margin: 0;
     padding: 0;
     border: none;
-    font-family: var(--headerFont);
-    font-size: 1.15rem;
-    font-weight: 720;
   }
 }
 
-.topic-grid-total {
-  font-family: var(--codeFont);
-  font-size: 0.72rem;
-  color: var(--text-3);
-}
-
-.topic-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-
-  @media all and (max-width: 1080px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media all and (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.topic-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 1rem 1rem 0.9rem 1.1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius, 10px);
-  background: var(--surface);
+.topic-grid-more {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
   text-decoration: none;
-  overflow: hidden;
-  transition:
-    border-color 0.15s,
-    transform 0.15s;
-
-  // 최소 터치 영역
-  min-height: 108px;
 
   &:hover {
-    border-color: var(--border-strong);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 }
 
-.topic-card-label {
-  font-family: var(--headerFont);
-  // 이모지가 없어 라벨이 카드의 유일한 시각적 앵커 — 그래서 크게 잡는다.
-  font-size: 1.15rem;
-  font-weight: 670;
+.topic-index {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.25rem 2.25rem;
+
+  li {
+    margin: 0;
+  }
+}
+
+.topic-entry {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.45rem 0;
+  min-height: 44px; // 최소 터치 영역
+  box-sizing: border-box;
+  text-decoration: none;
+
+  &:hover .topic-entry-name {
+    color: var(--accent);
+  }
+}
+
+.topic-entry-name {
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--text);
-  margin-top: 0.2rem;
+  transition: color 0.12s;
+
+  small {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--text-3);
+  }
 }
 
-.topic-card-subtext {
-  font-size: 0.76rem;
-  color: var(--text-2);
-  line-height: 1.4;
+// 리더는 글리프가 아니라 테두리로 그린다 — 텍스트 대비 규칙 밖의 순수 장식.
+.topic-entry-leader {
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 1px dotted var(--border-strong);
+  opacity: 0.6;
+  transform: translateY(-0.3em);
 }
 
-.topic-card-count {
-  margin-top: 0.5rem;
+.topic-entry-count {
   font-family: var(--codeFont);
-  font-size: 0.68rem;
-  color: var(--text-3);
-}
-
-// 카드 하단 비율 바 — 토픽별 노트 수 비중.
-// 토픽 색은 폐지했지만 이 바는 남긴다: 색코딩이 아니라 분포라는 실제 정보를
-// 나르기 때문. 중립색이라 브랜드를 흔들지 않는다.
-.topic-card-share {
-  margin-top: 0.35rem;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--surface-2);
-  overflow: hidden;
-}
-
-.topic-card-share-fill {
-  height: 100%;
-  background: var(--text-3);
-  opacity: 0.55;
-  border-radius: 2px;
+  font-size: 0.82rem;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
 }

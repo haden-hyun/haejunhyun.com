@@ -52,16 +52,6 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --text: var(--dark);
   --text-2: var(--darkgray);
   --text-3: var(--gray);
-
-  // 무대(stage) — 컷아웃이 서는 판. 두 모드 모두 밤이다 (근거: DESIGN-SYSTEM.md §3.3).
-  --stage: #141d28;
-  --stage-fade: 0.5; // 판 상단에 페이지색을 얹어 종이에서 무대로 내려가게 한다
-  --stage-edge: transparent;
-  --stage-text: #e9eff7; // 14.69  AAA
-  --stage-text-2: #c8d4e2; // 11.30  AAA
-  --stage-text-3: #8fa0b5; //  6.36  AA
-  --stage-accent: #6fb2e0; //  7.38  AAA · = darkMode.secondary
-  --stage-accent-2: #9dcdec; //  5.02  AA — 베일 위 소형 텍스트용(--stage-accent는 3.70)
 }
 
 // 다크모드 — documentElement의 `saved-theme` 속성으로 제어된다.
@@ -81,11 +71,6 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --cal-bad: #e8695c;
   --cal-quote: #9a938c;
   --cal-ref: #b39ae0; // 7.56  AAA
-
-  // 다크에선 판을 한 단계 띄우고 테두리로 경계를 만든다 — 얹을 종이가 없어 페이드는 0.
-  --stage: #1e2836; // = --lightgray. 배경 대비 1.24
-  --stage-fade: 0;
-  --stage-edge: rgba(233, 239, 247, 0.09);
 }
 
 // ── 1. Typography ──────────────────────────────────────────────────────────
@@ -496,6 +481,18 @@ button.toc-header h3,
   margin: 0;
 }
 
+// 홈 섹션 라벨 3종(Selected/Catalogue/Index by Topic)도 한 규칙으로 통일한다.
+.featured-header h2,
+.recent-notes-header h2,
+.topic-grid-header h2 {
+  font-family: var(--headerFont);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--secondary); // h2 = 공간 축(DESIGN-SYSTEM §3.2)
+}
+
 .sidebar.right {
   .toc {
     flex: 1 1 0;
@@ -844,29 +841,6 @@ body[data-slug="index"] {
   .page-header {
     margin-top: 1rem;
   }
-}
-
-// ── 10.7 홈 섹션 헤더 컬러 ──────────────────────────────────────────────────
-// 세 컴포넌트 다 홈 전용이라 별도 스코프가 필요 없다.
-.featured-header h2,
-.topic-grid-header h2,
-.recent-notes-header h2 {
-  color: var(--secondary);
-}
-
-.featured-cat {
-  color: var(--accent-state);
-}
-
-// Recent Notes 얼룩말 — §9 table과 동일 비율. hover는 순서상 뒤에 와야 이긴다.
-.recent-notes .row:nth-child(even) {
-  background: rgba(var(--accent-rgb), 0.035);
-}
-.recent-notes .row:hover {
-  background: rgba(var(--accent-rgb), 0.1);
-}
-.recent-notes .row .t {
-  font-family: var(--headerFont);
 }
 
 // ── 11. Utilities ──────────────────────────────────────────────────────────

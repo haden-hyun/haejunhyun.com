@@ -8,10 +8,10 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/topicGrid.scss"
 
 /**
- * TopicGrid — 홈 전용. 클릭 가능한 토픽 카드.
+ * TopicGrid — 홈 전용. 토픽 이름 · 점선 · 노트 수의 색인 목록.
  *
  * - 토픽별 색·이모지 없음. 식별은 라벨 타이포가 한다 (DESIGN-SYSTEM.md)
- * - 정렬은 노트 수 내림차순 + 카드 하단 비율 바
+ * - 정렬은 노트 수 내림차순
  *
  * 주의: TOPICS 배열은 topics-page와 중복이다. 토픽 변경 시 두 파일을 함께 고칠 것.
  */
@@ -66,7 +66,7 @@ function isRealNote(slug: string): boolean {
 }
 
 export interface TopicGridOptions {
-  /** true면 헤더("Topics" + "전체 N개") 표시 */
+  /** true면 헤더(라벨 + 토픽 페이지 링크) 표시 */
   showHeader: boolean
 }
 
@@ -97,34 +97,31 @@ export default ((userOpts?: Partial<TopicGridOptions>) => {
     const topicsWithCounts = TOPICS.map((t) => ({ ...t, count: counts.get(t.key) ?? 0 })).sort(
       (a, b) => b.count - a.count,
     )
-    const maxCount = Math.max(1, ...topicsWithCounts.map((t) => t.count))
-    const totalCount = topicsWithCounts.reduce((sum, t) => sum + t.count, 0)
 
     return (
       <section class={`${displayClass ?? ""} topic-grid-section`}>
         {opts.showHeader && (
           <div class="topic-grid-header">
-            <h2>Topics</h2>
-            <span class="topic-grid-total">
-              전체 {totalCount}개 노트 · {topicsWithCounts.length}개 토픽
-            </span>
+            <h2>Index by Topic</h2>
+            <a class="topic-grid-more" href={resolveRelative(fileData.slug!, "topics")}>
+              전체 →
+            </a>
           </div>
         )}
-        <div class="topic-grid">
+        <ul class="topic-index">
           {topicsWithCounts.map((t) => (
-            <a
-              class="topic-card"
-              href={resolveRelative(fileData.slug!, t.key)}
-            >
-              <b class="topic-card-label">{t.label}</b>
-              <span class="topic-card-subtext">{t.subtext}</span>
-              <div class="topic-card-count">{t.count}개 노트</div>
-              <div class="topic-card-share" aria-hidden="true">
-                <div class="topic-card-share-fill" style={`width:${(t.count / maxCount) * 100}%`} />
-              </div>
-            </a>
+            <li>
+              <a class="topic-entry" href={resolveRelative(fileData.slug!, t.key)}>
+                <span class="topic-entry-name">
+                  {t.label}
+                  <small>{t.subtext}</small>
+                </span>
+                <span class="topic-entry-leader" aria-hidden="true" />
+                <span class="topic-entry-count">{t.count}</span>
+              </a>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
     )
   }

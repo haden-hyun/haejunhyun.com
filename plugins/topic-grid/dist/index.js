@@ -35,7 +35,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/topicGrid.scss
-var topicGrid_default = ".topic-grid-section {\n  margin: 1.5rem 0 2rem 0;\n}\n\n.topic-grid-header {\n  display: flex;\n  align-items: baseline;\n  justify-content: space-between;\n  margin-bottom: 0.9rem;\n}\n.topic-grid-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 720;\n}\n\n.topic-grid-total {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  color: var(--text-3);\n}\n\n.topic-grid {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  gap: 12px;\n}\n@media all and (max-width: 1080px) {\n  .topic-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media all and (max-width: 480px) {\n  .topic-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.topic-card {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  gap: 0.15rem;\n  padding: 1rem 1rem 0.9rem 1.1rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  overflow: hidden;\n  transition: border-color 0.15s, transform 0.15s;\n  min-height: 108px;\n}\n.topic-card:hover {\n  border-color: var(--border-strong);\n}\n\n.topic-card-label {\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 670;\n  color: var(--text);\n  margin-top: 0.2rem;\n}\n\n.topic-card-subtext {\n  font-size: 0.76rem;\n  color: var(--text-2);\n  line-height: 1.4;\n}\n\n.topic-card-count {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  color: var(--text-3);\n}\n\n.topic-card-share {\n  margin-top: 0.35rem;\n  height: 3px;\n  border-radius: 2px;\n  background: var(--surface-2);\n  overflow: hidden;\n}\n\n.topic-card-share-fill {\n  height: 100%;\n  background: var(--text-3);\n  opacity: 0.55;\n  border-radius: 2px;\n}";
+var topicGrid_default = ".topic-grid-section {\n  padding: 2.25rem 0 2.5rem;\n  border-top: 1px solid var(--border);\n}\n\n.topic-grid-header {\n  display: flex;\n  align-items: baseline;\n  justify-content: space-between;\n  margin-bottom: 1.1rem;\n}\n.topic-grid-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n}\n\n.topic-grid-more {\n  font-size: 0.85rem;\n  font-weight: 600;\n  color: var(--accent);\n  text-decoration: none;\n}\n.topic-grid-more:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n\n.topic-index {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));\n  gap: 0.25rem 2.25rem;\n}\n.topic-index li {\n  margin: 0;\n}\n\n.topic-entry {\n  display: flex;\n  align-items: baseline;\n  gap: 0.5rem;\n  padding: 0.45rem 0;\n  min-height: 44px;\n  box-sizing: border-box;\n  text-decoration: none;\n}\n.topic-entry:hover .topic-entry-name {\n  color: var(--accent);\n}\n\n.topic-entry-name {\n  font-size: 0.95rem;\n  font-weight: 600;\n  color: var(--text);\n  transition: color 0.12s;\n}\n.topic-entry-name small {\n  display: block;\n  margin-top: 0.1rem;\n  font-size: 0.78rem;\n  font-weight: 400;\n  color: var(--text-3);\n}\n\n.topic-entry-leader {\n  flex: 1;\n  min-width: 1rem;\n  border-bottom: 1px dotted var(--border-strong);\n  opacity: 0.6;\n  transform: translateY(-0.3em);\n}\n\n.topic-entry-count {\n  font-family: var(--codeFont);\n  font-size: 0.82rem;\n  color: var(--text-2);\n  font-variant-numeric: tabular-nums;\n}";
 var l;
 function S(n2) {
   return n2.children;
@@ -124,35 +124,19 @@ var TopicGrid_default = ((userOpts) => {
     const topicsWithCounts = TOPICS.map((t2) => ({ ...t2, count: counts.get(t2.key) ?? 0 })).sort(
       (a2, b2) => b2.count - a2.count
     );
-    const maxCount = Math.max(1, ...topicsWithCounts.map((t2) => t2.count));
-    const totalCount = topicsWithCounts.reduce((sum, t2) => sum + t2.count, 0);
     return /* @__PURE__ */ u2("section", { class: `${displayClass ?? ""} topic-grid-section`, children: [
       opts.showHeader && /* @__PURE__ */ u2("div", { class: "topic-grid-header", children: [
-        /* @__PURE__ */ u2("h2", { children: "Topics" }),
-        /* @__PURE__ */ u2("span", { class: "topic-grid-total", children: [
-          "\uC804\uCCB4 ",
-          totalCount,
-          "\uAC1C \uB178\uD2B8 \xB7 ",
-          topicsWithCounts.length,
-          "\uAC1C \uD1A0\uD53D"
-        ] })
+        /* @__PURE__ */ u2("h2", { children: "Index by Topic" }),
+        /* @__PURE__ */ u2("a", { class: "topic-grid-more", href: resolveRelative(fileData.slug, "topics"), children: "\uC804\uCCB4 \u2192" })
       ] }),
-      /* @__PURE__ */ u2("div", { class: "topic-grid", children: topicsWithCounts.map((t2) => /* @__PURE__ */ u2(
-        "a",
-        {
-          class: "topic-card",
-          href: resolveRelative(fileData.slug, t2.key),
-          children: [
-            /* @__PURE__ */ u2("b", { class: "topic-card-label", children: t2.label }),
-            /* @__PURE__ */ u2("span", { class: "topic-card-subtext", children: t2.subtext }),
-            /* @__PURE__ */ u2("div", { class: "topic-card-count", children: [
-              t2.count,
-              "\uAC1C \uB178\uD2B8"
-            ] }),
-            /* @__PURE__ */ u2("div", { class: "topic-card-share", "aria-hidden": "true", children: /* @__PURE__ */ u2("div", { class: "topic-card-share-fill", style: `width:${t2.count / maxCount * 100}%` }) })
-          ]
-        }
-      )) })
+      /* @__PURE__ */ u2("ul", { class: "topic-index", children: topicsWithCounts.map((t2) => /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2("a", { class: "topic-entry", href: resolveRelative(fileData.slug, t2.key), children: [
+        /* @__PURE__ */ u2("span", { class: "topic-entry-name", children: [
+          t2.label,
+          /* @__PURE__ */ u2("small", { children: t2.subtext })
+        ] }),
+        /* @__PURE__ */ u2("span", { class: "topic-entry-leader", "aria-hidden": "true" }),
+        /* @__PURE__ */ u2("span", { class: "topic-entry-count", children: t2.count })
+      ] }) })) })
     ] });
   };
   TopicGrid.css = topicGrid_default;

@@ -35,7 +35,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/featured.scss
-var featured_default = '.featured-section {\n  margin: 0 0 1.5rem 0;\n  padding-bottom: 1.5rem;\n  border-bottom: 1px solid var(--border);\n}\n.flex-component .featured-section {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  margin-bottom: 0;\n  padding-bottom: 0;\n  border-bottom: none;\n}\n\n.featured-header {\n  margin-bottom: 0.9rem;\n}\n.featured-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 720;\n}\n\n.featured-grid {\n  display: grid;\n  grid-template-columns: 1.35fr 1fr;\n  gap: 16px;\n}\n@media all and (max-width: 800px) {\n  .featured-grid {\n    grid-template-columns: 1fr;\n  }\n}\n.flex-component .featured-grid {\n  grid-template-columns: 1fr;\n  grid-template-rows: 1fr auto;\n  flex: 1;\n  min-height: 0;\n  gap: 12px;\n}\n\n.featured-cat {\n  color: var(--text-3);\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  font-family: var(--codeFont);\n  font-size: 11px;\n  font-weight: 700;\n  letter-spacing: 0.06em;\n  text-transform: uppercase;\n  margin-bottom: 14px;\n}\n.featured-cat::before {\n  content: "";\n  width: 6px;\n  height: 6px;\n  border-radius: 2px;\n  background: currentColor;\n}\n\n.featured-main {\n  display: flex;\n  flex-direction: column;\n  padding: 26px;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n}\n.flex-component .featured-main {\n  min-height: 0;\n}\n.flex-component .featured-main .featured-meta {\n  margin-top: auto;\n  padding-top: 0.75rem;\n}\n.featured-main {\n  background: linear-gradient(160deg, var(--surface-2), var(--surface));\n  text-decoration: none;\n  transition: border-color 0.15s;\n}\n.featured-main:hover {\n  border-color: var(--border-strong, var(--accent));\n}\n.featured-main h3 {\n  margin: 0 0 0.6rem 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1.5rem;\n  font-weight: 730;\n  line-height: 1.3;\n  color: var(--text);\n}\n.featured-main p {\n  margin: 0 0 0.9rem 0;\n  font-size: 0.92rem;\n  line-height: 1.6;\n  color: var(--text-2);\n  display: -webkit-box;\n  -webkit-line-clamp: 3;\n  -webkit-box-orient: vertical;\n  overflow: hidden;\n}\n\n.featured-side {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n.flex-component .featured-side {\n  flex: none;\n}\n.flex-component .featured-side .featured-item {\n  flex: none;\n}\n\n.featured-item {\n  display: flex;\n  flex-direction: column;\n  padding: 15px 17px;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  transition: border-color 0.15s;\n}\n.featured-item:hover {\n  border-color: var(--border-strong);\n}\n.featured-item h4 {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 0.97rem;\n  font-weight: 650;\n  line-height: 1.4;\n  color: var(--text);\n}\n\n.featured-meta {\n  display: flex;\n  align-items: center;\n  gap: 0.4rem;\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  color: var(--text-3);\n}\n\n.featured-meta-sep {\n  width: 3px;\n  height: 3px;\n  border-radius: 50%;\n  background: var(--text-3);\n  flex-shrink: 0;\n}';
+var featured_default = ".featured-section {\n  margin: 0;\n  padding: 2.25rem 0 2.5rem;\n  border-top: 1px solid var(--border);\n}\n\n.featured-header {\n  margin-bottom: 1.1rem;\n}\n.featured-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n}\n\n.featured-tracks {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n}\n\n.featured-track {\n  display: grid;\n  grid-template-columns: 2.4em minmax(0, 1fr) auto;\n  gap: 0.25rem 0.9rem;\n  align-items: baseline;\n  padding: 0.8rem 0;\n  border-bottom: 1px solid var(--border);\n}\n.featured-track:last-child {\n  border-bottom: none;\n}\n@media all and (max-width: 640px) {\n  .featured-track {\n    grid-template-columns: 2em minmax(0, 1fr);\n  }\n}\n\n.featured-no {\n  font-family: var(--codeFont);\n  font-size: 0.8rem;\n  color: var(--text-3);\n  font-variant-numeric: tabular-nums;\n}\n\n.featured-title {\n  font-family: var(--headerFont);\n  font-size: 1.06rem;\n  font-weight: 700;\n  line-height: 1.4;\n  color: var(--text);\n  text-decoration: none;\n}\n.featured-title:hover {\n  color: var(--accent);\n}\n\n.featured-meta {\n  font-family: var(--codeFont);\n  font-size: 0.74rem;\n  letter-spacing: 0.04em;\n  text-transform: uppercase;\n  color: var(--text-3);\n  white-space: nowrap;\n  text-align: right;\n}\n@media all and (max-width: 640px) {\n  .featured-meta {\n    grid-column: 2;\n    text-align: left;\n    white-space: normal;\n  }\n}\n\n.featured-track.is-lead {\n  padding-top: 0.25rem;\n  padding-bottom: 1.3rem;\n}\n.featured-track.is-lead .featured-title {\n  font-size: clamp(1.35rem, 3vw, 1.75rem);\n  font-weight: 900;\n  line-height: 1.3;\n}\n.featured-track.is-lead .featured-desc {\n  grid-column: 2/-1;\n  margin: 0.35rem 0 0;\n  max-width: 40em;\n  font-size: 0.97rem;\n  line-height: 1.65;\n  color: var(--text-2);\n}\n.featured-track.is-lead .featured-meta {\n  grid-column: 2/-1;\n  text-align: left;\n  margin-top: 0.5rem;\n}";
 var l;
 function S(n2) {
   return n2.children;
@@ -173,63 +173,27 @@ var FeaturedNotes_default = ((userOpts) => {
     const autoFilled = needed > 0 ? pickRoundRobin(files, needed, exclude).sort((a2, b2) => getTime(b2) - getTime(a2)) : [];
     const selected = [...curated, ...autoFilled];
     if (selected.length === 0) return /* @__PURE__ */ u2(S, {});
-    const [main, ...rest] = selected;
-    const sideItems = rest.slice(0, 3);
+    const pad = (n2) => String(n2).padStart(2, "0");
+    const formatDate = (d2) => `${d2.getFullYear()}.${pad(d2.getMonth() + 1)}.${pad(d2.getDate())}`;
+    const titleOf = (f3) => f3.frontmatter?.title ?? "Untitled";
     return /* @__PURE__ */ u2("section", { class: `${displayClass ?? ""} featured-section`, children: [
-      /* @__PURE__ */ u2("div", { class: "featured-header", children: /* @__PURE__ */ u2("h2", { children: "Featured" }) }),
-      /* @__PURE__ */ u2("div", { class: "featured-grid", children: [
-        /* @__PURE__ */ u2("a", { class: "featured-main", href: resolveRelative(fileData.slug, main.slug), children: [
-          /* @__PURE__ */ u2(
-            "span",
-            {
-              class: "featured-cat",
-              children: getCategoryName(main.slug ?? "")
-            }
-          ),
-          /* @__PURE__ */ u2("h3", { children: main.frontmatter?.title ?? "Untitled" }),
-          main.description && /* @__PURE__ */ u2("p", { children: main.description }),
-          /* @__PURE__ */ u2("div", { class: "featured-meta", children: [
-            (() => {
-              const d2 = getDisplayDate(main);
-              return d2 ? /* @__PURE__ */ u2("span", { children: d2.toLocaleDateString("ko-KR", {
-                month: "short",
-                day: "2-digit",
-                year: "numeric"
-              }) }) : null;
-            })(),
-            /* @__PURE__ */ u2("span", { class: "featured-meta-sep" }),
-            /* @__PURE__ */ u2("span", { children: [
-              getReadingMinutes(main),
-              "\uBD84"
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ u2("div", { class: "featured-side", children: sideItems.map((item) => /* @__PURE__ */ u2("a", { class: "featured-item", href: resolveRelative(fileData.slug, item.slug), children: [
-          /* @__PURE__ */ u2(
-            "span",
-            {
-              class: "featured-cat",
-              children: getCategoryName(item.slug ?? "")
-            }
-          ),
-          /* @__PURE__ */ u2("h4", { children: item.frontmatter?.title ?? "Untitled" }),
-          /* @__PURE__ */ u2("div", { class: "featured-meta", children: [
-            (() => {
-              const d2 = getDisplayDate(item);
-              return d2 ? /* @__PURE__ */ u2("span", { children: d2.toLocaleDateString("ko-KR", {
-                month: "short",
-                day: "2-digit",
-                year: "numeric"
-              }) }) : null;
-            })(),
-            /* @__PURE__ */ u2("span", { class: "featured-meta-sep" }),
-            /* @__PURE__ */ u2("span", { children: [
-              getReadingMinutes(item),
-              "\uBD84"
-            ] })
-          ] })
-        ] })) })
-      ] })
+      /* @__PURE__ */ u2("div", { class: "featured-header", children: /* @__PURE__ */ u2("h2", { children: "Selected" }) }),
+      /* @__PURE__ */ u2("ol", { class: "featured-tracks", children: selected.map((item, i2) => {
+        const isLead = i2 === 0;
+        const href = resolveRelative(fileData.slug, item.slug);
+        const date = getDisplayDate(item);
+        const meta = [
+          getCategoryName(item.slug ?? ""),
+          isLead && date ? formatDate(date) : void 0,
+          `${getReadingMinutes(item)}\uBD84`
+        ].filter(Boolean);
+        return /* @__PURE__ */ u2("li", { class: `featured-track${isLead ? " is-lead" : ""}`, children: [
+          /* @__PURE__ */ u2("span", { class: "featured-no", children: pad(i2 + 1) }),
+          /* @__PURE__ */ u2("a", { class: "featured-title", href, children: titleOf(item) }),
+          isLead && item.description && /* @__PURE__ */ u2("p", { class: "featured-desc", children: item.description }),
+          /* @__PURE__ */ u2("span", { class: "featured-meta", children: meta.join(" \xB7 ") })
+        ] });
+      }) })
     ] });
   };
   FeaturedNotes.css = featured_default;
