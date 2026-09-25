@@ -44,7 +44,6 @@ npx quartz build            # → public/
 | `plugins/`           | 로컬 커스텀 플러그인 20종. 각각 독립 npm 패키지                  |
 | `quartz/`            | 코어. `styles/custom.scss`·`styles/syntax.scss` 외 수정 금지     |
 | `quartz/static/`     | 빌드에 실려 나가는 정적 파일(아이콘·OG 이미지 등)                |
-| `assets/`            | 배포되지 않는 원본 이미지(컷아웃·포스터 마스터)                  |
 | `scripts/`           | 배포 스크립트 3종                                                |
 | `quartz.ts`          | YAML로 표현 못 하는 오버라이드(OG 이미지 등)                     |
 | `DESIGN-SYSTEM.md`   | 디자인의 현재 상태 — 색·서체를 건드리기 전 필독                  |
