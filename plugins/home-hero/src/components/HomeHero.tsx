@@ -19,12 +19,34 @@ function formatDate(d: Date): string {
 }
 
 /**
- * 홈 마스트헤드 — 메타 한 줄 + 헤드라인 + 설명 + 링크(좌) + 비닐판 BGM 토글(우).
- * 비닐은 래스터 이미지가 아니라 CSS로 그린다.
+ * 홈 마스트헤드 — 메타 한 줄 + 헤드라인 + 설명 + 링크.
  *
  * - 홈 전용 렌더는 내부 slug 가드. `condition: is-index`는 내장에 없다
  * - 통계는 전부 allFiles 런타임 집계. 하드코딩 금지
+ * - 방문 수는 GoatCounter 공개 카운터(토큰 불필요). 사이트 설정의 visitor counter 허용이 꺼지면 "-"로 남는다
  */
+
+const GOATCOUNTER_SITE = "haejunhyun"
+
+// 주의: start/end는 UTC 자정이고 end는 배타적이다 — start=end면 항상 0. 날짜 단위만 받아 KST 하루는 표현 불가.
+const visitScript = `
+async function fillHeroVisits() {
+  const total = document.getElementById("hero-visits-total")
+  const today = document.getElementById("hero-visits-today")
+  if (!total && !today) return
+  const base = "https://${GOATCOUNTER_SITE}.goatcounter.com/counter/TOTAL.json"
+  const day = new Date().toISOString().slice(0, 10)
+  const next = new Date(Date.now() + 864e5).toISOString().slice(0, 10)
+  const get = (url, el) =>
+    fetch(url)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d && el) el.textContent = d.count })
+      .catch(() => {})
+  get(base, total)
+  get(base + "?start=" + day + "&end=" + next, today)
+}
+document.addEventListener("nav", fillHeroVisits)
+`
 
 type Link = { label: string; href: string; primary?: boolean }
 
@@ -84,6 +106,12 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
             <span>
               <b>{topicCount}</b> TOPICS
             </span>
+            <span>
+              <b id="hero-visits-total">-</b> VISITS
+            </span>
+            <span>
+              <b id="hero-visits-today">-</b> TODAY
+            </span>
             {lastUpdateTime > 0 && (
               <span>
                 UPDATED <b>{formatDate(new Date(lastUpdateTime))}</b>
@@ -112,33 +140,11 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
             </div>
           )}
         </div>
-
-        {/* Blue Giant OST "First Note" — 닫힌 <details> 안은 렌더되지 않아
-            loading="lazy" iframe이 열기 전엔 요청을 안 보낸다. */}
-        <details class="hero-vinyl">
-          <summary class="hero-vinyl-disc" aria-label="Play First Note">
-            <span class="hero-vinyl-label">
-              First
-              <br />
-              Note
-            </span>
-          </summary>
-          <div class="hero-vinyl-panel">
-            <iframe
-              class="hero-vinyl-frame"
-              src="https://open.spotify.com/embed/track/03IckTW2qNaWUvrOHtuYhL?utm_source=generator"
-              width="100%"
-              height="152"
-              frameborder="0"
-              loading="lazy"
-              allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-            />
-          </div>
-        </details>
       </section>
     )
   }
 
   HomeHero.css = style
+  HomeHero.afterDOMLoaded = visitScript
   return HomeHero
 }) satisfies QuartzComponentConstructor<Partial<HomeHeroOptions>>

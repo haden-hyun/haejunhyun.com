@@ -498,7 +498,7 @@ plugins:
       position: afterBody
       priority: 20
   - source: ./plugins/visitor-counter
-    # 렌더하는 곳 없음 — 홈 마스트헤드 개편으로 제거. 방문 집계는 goatcounter-tracking이 한다.
+    # 미사용 — 방문 수 표시는 home-hero 메타 줄로 옮겼다. 주의: 이 플러그인은 API 토큰을 클라이언트에 노출한다.
     enabled: false
     options: {}
     order: 15
