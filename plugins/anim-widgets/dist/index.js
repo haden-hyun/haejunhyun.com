@@ -2194,12 +2194,117 @@ var loader = {
 };
 var load = loader.load;
 
+// src/scene.ts
+var TAGS = /* @__PURE__ */ new Set([
+  "svg",
+  "g",
+  "path",
+  "circle",
+  "rect",
+  "ellipse",
+  "line",
+  "polyline",
+  "polygon",
+  "text",
+  "tspan",
+  "title",
+  "desc",
+  "defs",
+  "marker"
+]);
+var ATTRS = /* @__PURE__ */ new Set([
+  "id",
+  "class",
+  "viewbox",
+  "xmlns",
+  "d",
+  "points",
+  "transform",
+  "opacity",
+  "cx",
+  "cy",
+  "r",
+  "rx",
+  "ry",
+  "x",
+  "y",
+  "x1",
+  "y1",
+  "x2",
+  "y2",
+  "dx",
+  "dy",
+  "width",
+  "height",
+  "stroke-width",
+  "stroke-dasharray",
+  "stroke-linecap",
+  "stroke-linejoin",
+  "text-anchor",
+  "dominant-baseline",
+  "font-size",
+  "font-weight",
+  "marker-start",
+  "marker-mid",
+  "marker-end",
+  "refx",
+  "refy",
+  "markerwidth",
+  "markerheight",
+  "orient",
+  "markerunits",
+  "fill",
+  "stroke"
+]);
+var TAG = /<(\/?)([A-Za-z][A-Za-z0-9-]*)((?:\s+[A-Za-z][A-Za-z0-9:-]*\s*=\s*(?:"[^"<>]*"|'[^'<>]*'))*)\s*(\/?)>/y;
+var ATTR = /\s+([A-Za-z][A-Za-z0-9:-]*)\s*=\s*(?:"([^"]*)"|'([^']*)')/g;
+var TEXT = /^(?:[^<>&]|&(?:amp|lt|gt|quot|apos);)*$/;
+var MARKER_REF = /^url\(#[A-Za-z][\w-]*\)$/;
+function checkAttr(name, value) {
+  if (!ATTRS.has(name)) return `\uD5C8\uC6A9\uD558\uC9C0 \uC54A\uB294 \uC18D\uC131 ${name}`;
+  if (name === "xmlns") return value === "http://www.w3.org/2000/svg" ? void 0 : "xmlns \uAC12\uC774 SVG \uB124\uC784\uC2A4\uD398\uC774\uC2A4\uAC00 \uC544\uB2C8\uB2E4";
+  if (name === "fill" || name === "stroke") return value === "none" ? void 0 : `${name}\uC740 none\uB9CC \uC4F8 \uC218 \uC788\uB2E4(\uC0C9\uC740 \uD14C\uB9C8 CSS\uAC00 \uCE60\uD55C\uB2E4)`;
+  if (name.startsWith("marker-")) return MARKER_REF.test(value) ? void 0 : `${name}\uC740 url(#id)\uB9CC \uC4F8 \uC218 \uC788\uB2E4`;
+  if (/[&\\]|url\(|script:/i.test(value)) return `${name} \uAC12\uC5D0 \uC4F8 \uC218 \uC5C6\uB294 \uBB38\uC790\uC5F4\uC774 \uC788\uB2E4`;
+  return void 0;
+}
+function checkScene(scene) {
+  let pos = 0;
+  let depth = 0;
+  let first = true;
+  while (pos < scene.length) {
+    const lt = scene.indexOf("<", pos);
+    const text = scene.slice(pos, lt === -1 ? scene.length : lt);
+    if (!TEXT.test(text)) return "\uD14D\uC2A4\uD2B8\uC5D0 `<`\xB7`>`\uB098 \uD5C8\uC6A9\uD558\uC9C0 \uC54A\uB294 \uC5D4\uD2F0\uD2F0\uAC00 \uC788\uB2E4";
+    if (lt === -1) break;
+    TAG.lastIndex = lt;
+    const m = TAG.exec(scene);
+    if (!m) return `\uD574\uC11D\uD560 \uC218 \uC5C6\uB294 \uD0DC\uADF8: ${scene.slice(lt, lt + 30)}`;
+    const [whole, closing, rawName, attrs, selfClosing] = m;
+    const name = rawName.toLowerCase();
+    if (!TAGS.has(name)) return `\uD5C8\uC6A9\uD558\uC9C0 \uC54A\uB294 \uC694\uC18C <${name}>`;
+    if (first && (closing || name !== "svg")) return "scene\uC740 <svg>\uB85C \uC2DC\uC791\uD574\uC57C \uD55C\uB2E4";
+    first = false;
+    if (closing && attrs) return `\uB2EB\uB294 \uD0DC\uADF8\uC5D0 \uC18D\uC131\uC774 \uC788\uB2E4: </${name}>`;
+    for (const a of attrs.matchAll(ATTR)) {
+      const problem = checkAttr(a[1].toLowerCase(), a[2] ?? a[3] ?? "");
+      if (problem) return problem;
+    }
+    if (closing) depth--;
+    else if (!selfClosing) depth++;
+    if (depth < 0) return "\uB2EB\uB294 \uD0DC\uADF8\uAC00 \uB0A8\uB294\uB2E4";
+    if (depth === 0 && lt + whole.length < scene.length) return "scene\uC740 <svg> \uD558\uB098\uC5EC\uC57C \uD55C\uB2E4";
+    pos = lt + whole.length;
+  }
+  if (first) return "scene\uC740 <svg> \uD558\uB098\uC5EC\uC57C \uD55C\uB2E4";
+  return depth === 0 ? void 0 : "\uB2EB\uD788\uC9C0 \uC54A\uC740 \uD0DC\uADF8\uAC00 \uC788\uB2E4";
+}
+
 // src/parse.ts
 var ASSET_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z0-9]+$/;
 var CANVAS_EXT = /\.m?js$/;
 var VIDEO_EXT = /\.(webm|mp4)$/;
 var POSTER_EXT = /\.(png|jpe?g|webp|avif|svg)$/;
-var SCENE_FORBIDDEN = /<script|\son[a-z]+\s*=|\s(fill|stroke)\s*=\s*["'](?!none)/i;
 var fail = (error) => ({ ok: false, error });
 var toList = (value) => value === void 0 || value === null ? [] : (Array.isArray(value) ? value : [value]).map((v) => String(v).trim()).filter(Boolean);
 var toPositive = (value, fallback) => {
@@ -2228,8 +2333,8 @@ function parseSpec(source) {
   switch (data.type) {
     case "steps": {
       const scene = String(data.scene ?? "").trim();
-      if (!/^<svg[\s>]/i.test(scene) || !/<\/svg>$/i.test(scene)) return fail("scene\uC740 <svg> \uD558\uB098\uC5EC\uC57C \uD55C\uB2E4");
-      if (SCENE_FORBIDDEN.test(scene)) return fail("scene\uC5D0 script\xB7on* \uC18D\uC131\xB7fill/stroke \uC0C9 \uC9C0\uC815\uC740 \uAE08\uC9C0\uB2E4");
+      const sceneProblem = checkScene(scene);
+      if (sceneProblem) return fail(`scene: ${sceneProblem}`);
       if (!Array.isArray(data.steps) || data.steps.length === 0) return fail("steps\uAC00 \uBE44\uC5C8\uB2E4");
       const steps = [];
       for (const [i, item] of data.steps.entries()) {

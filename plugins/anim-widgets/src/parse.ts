@@ -1,4 +1,5 @@
 import { load as parseYaml } from "js-yaml"
+import { checkScene } from "./scene"
 
 export interface AnimStep {
   say: string
@@ -42,8 +43,6 @@ const ASSET_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*\.[a-z0-9]+$/
 const CANVAS_EXT = /\.m?js$/
 const VIDEO_EXT = /\.(webm|mp4)$/
 const POSTER_EXT = /\.(png|jpe?g|webp|avif|svg)$/
-// scene SVG 안에서 스크립트·이벤트 핸들러·하드코딩 색을 막는다 — 색은 테마 CSS가 칠한다.
-const SCENE_FORBIDDEN = /<script|\son[a-z]+\s*=|\s(fill|stroke)\s*=\s*["'](?!none)/i
 
 const fail = (error: string): ParseResult => ({ ok: false, error })
 
@@ -82,8 +81,8 @@ export function parseSpec(source: string): ParseResult {
   switch (data.type) {
     case "steps": {
       const scene = String(data.scene ?? "").trim()
-      if (!/^<svg[\s>]/i.test(scene) || !/<\/svg>$/i.test(scene)) return fail("scene은 <svg> 하나여야 한다")
-      if (SCENE_FORBIDDEN.test(scene)) return fail("scene에 script·on* 속성·fill/stroke 색 지정은 금지다")
+      const sceneProblem = checkScene(scene)
+      if (sceneProblem) return fail(`scene: ${sceneProblem}`)
       if (!Array.isArray(data.steps) || data.steps.length === 0) return fail("steps가 비었다")
 
       const steps: AnimStep[] = []

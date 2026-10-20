@@ -60,6 +60,31 @@ describe("parseSpec", () => {
     expect(parseSpec(`type: steps\nalt: a\nscene: '<svg><path fill="none"/></svg>'\nsteps: [{say: s}]`).ok).toBe(true)
   })
 
+  it("scene 허용 목록: 차단 목록을 우회하던 입력도 거부한다", () => {
+    const bad = [
+      `<svg/onload=alert(1)>`,
+      `<svg onload="x"></svg>`,
+      `<svg><a href="javascript:x"><text>t</text></a></svg>`,
+      `<svg><foreignObject><iframe src="x"></iframe></foreignObject></svg>`,
+      `<svg><use href="#x"/></svg>`,
+      `<svg><circle style="fill:red"/></svg>`,
+      `<svg><circle fill=red /></svg>`,
+      `<svg><text>&#x3c;script&#x3e;</text></svg>`,
+      `<svg><!-- c --></svg>`,
+      `<svg><animate attributeName="href"/></svg>`,
+      `<svg><path marker-end="url(javascript:x)"/></svg>`,
+      `<svg></svg><svg></svg>`,
+      `<svg><g></svg>`,
+      `<svg xmlns="http://evil"></svg>`,
+    ]
+    for (const scene of bad) {
+      const r = parseSpec(`type: steps\nalt: a\nscene: ${JSON.stringify(scene)}\nsteps: [{say: s}]`)
+      expect(r.ok, scene).toBe(false)
+    }
+    const good = `<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><g id="a"><path d="M0 0 L5 5" marker-end="url(#arr)" fill="none"/><text x="1" y="2">a &amp; b</text></g></svg>`
+    expect(parseSpec(`type: steps\nalt: a\nscene: ${JSON.stringify(good)}\nsteps: [{say: s}]`).ok).toBe(true)
+  })
+
   it("canvas는 폴더 없는 kebab-case .js만 받는다", () => {
     expect(parseSpec("type: canvas\nalt: a\nsrc: queue-demo.js").ok).toBe(true)
     expect(parseSpec("type: canvas\nalt: a\nsrc: attachments/queue-demo.js").ok).toBe(false)
