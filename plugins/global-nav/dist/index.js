@@ -37,6 +37,28 @@ function resolveRelative(current, target) {
 // src/components/styles/globalNav.scss
 var globalNav_default = ".global-nav {\n  display: flex;\n  align-items: center;\n  gap: 1.4rem;\n  flex-wrap: wrap;\n}\n\n.global-nav-link {\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  color: var(--text-2);\n  text-decoration: none;\n  padding: 0.3rem 0;\n  border-bottom: 2px solid transparent;\n  transition: color 0.15s, border-color 0.15s;\n}\n.global-nav-link:hover {\n  color: var(--text);\n}\n.global-nav-link.active {\n  color: var(--accent);\n  border-bottom-color: var(--accent);\n}";
 
+// ../_shared/noteMeta.ts
+function toDate(value) {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? void 0 : value;
+  if (typeof value !== "string" && typeof value !== "number") return void 0;
+  const d2 = new Date(value);
+  return Number.isNaN(d2.getTime()) ? void 0 : d2;
+}
+function formatYmd(date) {
+  return date.toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
+}
+function getNoteDates(file) {
+  const created = file.dates?.created ?? file.dates?.published;
+  const differs = (d2, ...others) => d2 && !others.some((o2) => o2 && formatYmd(o2) === formatYmd(d2)) ? d2 : void 0;
+  const revised = differs(toDate(file.frontmatter?.posted), created);
+  const updated = differs(file.dates?.modified, created, revised);
+  return { created, revised, updated };
+}
+function getListDate(file) {
+  const { created, revised } = getNoteDates(file);
+  return revised ?? created;
+}
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
@@ -75,12 +97,7 @@ var NAV_ITEMS = [
   { label: "Notes", kind: "latest-note" }
 ];
 var LATEST_NOTE_FALLBACK = "archive";
-function getSortTime(f3) {
-  const posted = f3.frontmatter?.posted;
-  const m2 = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null;
-  if (m2) return new Date(Number(m2[1]), Number(m2[2]) - 1, Number(m2[3])).getTime();
-  return f3.dates?.created?.getTime() ?? 0;
-}
+var getSortTime = (f3) => getListDate(f3)?.getTime() ?? 0;
 function findLatestNoteSlug(allFiles) {
   let latest = null;
   for (const f3 of allFiles) {

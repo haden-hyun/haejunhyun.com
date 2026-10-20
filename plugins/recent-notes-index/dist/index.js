@@ -16,14 +16,13 @@ function formatYmd(date) {
 function getNoteDates(file) {
   const created = file.dates?.created ?? file.dates?.published;
   const differs = (d2, ...others) => d2 && !others.some((o2) => o2 && formatYmd(o2) === formatYmd(d2)) ? d2 : void 0;
-  const revised = differs(toDate(file.frontmatter?.revised), created);
+  const revised = differs(toDate(file.frontmatter?.posted), created);
   const updated = differs(file.dates?.modified, created, revised);
   return { created, revised, updated };
 }
 function getListDate(file) {
   const { created, revised } = getNoteDates(file);
-  if (!created) return file.dates?.modified;
-  return revised && revised > created ? revised : created;
+  return revised ?? created;
 }
 
 // ../_shared/notes.ts
