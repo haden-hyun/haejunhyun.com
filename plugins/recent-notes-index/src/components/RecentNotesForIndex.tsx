@@ -6,7 +6,7 @@ import type {
 } from "@quartz-community/types"
 import { classNames } from "@quartz-community/utils/lang"
 import { formatYmd, getListDate, getNoteDates } from "../../../_shared/noteMeta"
-import { buildRecentRows, byListDateDesc, isRealNote, titleCase, topicName } from "../../../_shared/notes"
+import { buildRecentRows, byListDateDesc, isListedNote, titleCase, topicName } from "../../../_shared/notes"
 import { resolveRelative } from "../util/path"
 import style from "./styles/recentNotes.scss"
 
@@ -47,7 +47,7 @@ export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
       .filter(opts.filter)
       .filter(
         (f) =>
-          f.slug !== fileData.slug && f.frontmatter?.title && isRealNote(f.slug),
+          f.slug !== fileData.slug && f.frontmatter?.title && isListedNote(f),
       )
       .sort(opts.sort)
     const rows = buildRecentRows(pages, opts.limit)

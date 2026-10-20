@@ -61,6 +61,9 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
+function isListedNote(file) {
+  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
 var TOPIC_NAMES = {
   "computer-science": "Computer Science",
   "data-engineering": "Data Engineering",
@@ -112,7 +115,7 @@ var ArchiveContent_default = (() => {
     displayClass
   }) => {
     const currentSlug = fileData.slug ?? "archive";
-    const files = allFiles.filter((f3) => isRealNote(f3.slug)).filter((f3) => getCreated(f3)).sort((a2, b2) => getCreated(b2).getTime() - getCreated(a2).getTime());
+    const files = allFiles.filter((f3) => isListedNote(f3)).filter((f3) => getCreated(f3)).sort((a2, b2) => getCreated(b2).getTime() - getCreated(a2).getTime());
     const byYear = /* @__PURE__ */ new Map();
     for (const f3 of files) {
       const year = Number(formatYmd(getCreated(f3)).slice(0, 4));

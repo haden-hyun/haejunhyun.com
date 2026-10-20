@@ -46,6 +46,9 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
+function isListedNote(file) {
+  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
 var l;
 function S(n2) {
   return n2.children;
@@ -95,7 +98,7 @@ var TopicGrid_default = ((userOpts) => {
     const counts = /* @__PURE__ */ new Map();
     for (const f3 of files) {
       const slug = f3.slug ?? "";
-      if (!isRealNote(slug)) continue;
+      if (!isListedNote(f3)) continue;
       const key = slug.split("/")[0];
       if (!key) continue;
       counts.set(key, (counts.get(key) ?? 0) + 1);

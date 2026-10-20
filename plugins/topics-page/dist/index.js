@@ -46,6 +46,9 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
+function isListedNote(file) {
+  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
 var l;
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
@@ -112,7 +115,7 @@ var TopicsContent_default = (() => {
     const counts = /* @__PURE__ */ new Map();
     for (const f3 of files) {
       const slug = f3.slug ?? "";
-      if (!isRealNote(slug)) continue;
+      if (!isListedNote(f3)) continue;
       const key = slug.split("/")[0];
       if (!key) continue;
       counts.set(key, (counts.get(key) ?? 0) + 1);

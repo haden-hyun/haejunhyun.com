@@ -17,6 +17,11 @@ export function isRealNote(slug: string | undefined): boolean {
   return true
 }
 
+/** 목록에 올릴 노트. `unlisted: true`는 URL로만 열리고 홈·아카이브·토픽·카탈로그 집계에서 빠진다. */
+export function isListedNote(file: SlugFile & { unlisted?: unknown }): boolean {
+  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true
+}
+
 const TOPIC_NAMES: Record<string, string> = {
   "computer-science": "Computer Science",
   "data-engineering": "Data Engineering",

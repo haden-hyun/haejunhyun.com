@@ -8,7 +8,7 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/noteCatalog.scss"
 // @ts-expect-error - Inline script loaded as text by esbuild plugin
 import graphFoldScript from "./scripts/graphFold.inline.ts"
-import { isRealNote } from "../../../_shared/notes"
+import { isListedNote, isRealNote } from "../../../_shared/notes"
 
 type CatalogPluginData = QuartzPluginData & Record<string, unknown>
 
@@ -41,7 +41,7 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
     // 번호 접두사(`1. `, `2. `)가 사용자 의도한 순서라 날짜가 아닌 자연 정렬을 쓴다.
     const siblings = (allFiles as CatalogPluginData[])
       .filter((f) => {
-        if (!f.slug || !isRealNote(f.slug)) return false
+        if (!f.slug || !isListedNote(f)) return false
         return f.slug.split("/").slice(0, -1).join("/") === parentDir
       })
       .sort((a, b) =>

@@ -7,7 +7,7 @@ import type {
 import { buildSax, renderSax, SAX_REST } from "./sax"
 import type { SaxModel } from "./sax"
 import style from "./styles/hero.scss"
-import { isRealNote } from "../../../_shared/notes"
+import { isListedNote } from "../../../_shared/notes"
 
 // 주의: `@quartz-community/utils`를 쓰지 않고 인라인한 것은 의도적이다.
 // github: 참조 의존성이라 fresh npm install에서 dist 없이 설치돼 빌드가 깨진다.
@@ -182,7 +182,7 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
 
     // 토픽 폴더 안의 노트만 센다 — 루트에 놓인 노트가 토픽 1개로 잡히지 않게.
     const files = (allFiles as (QuartzPluginData & Record<string, unknown>)[]).filter(
-      (f) => f.slug !== fileData.slug && isRealNote(f.slug) && (f.slug ?? "").includes("/"),
+      (f) => f.slug !== fileData.slug && isListedNote(f) && (f.slug ?? "").includes("/"),
     )
     const noteCount = files.length
     const topicCount = new Set(files.map((f) => (f.slug ?? "").split("/")[0]).filter(Boolean)).size

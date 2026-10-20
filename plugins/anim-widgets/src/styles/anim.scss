@@ -1,0 +1,150 @@
+// 색은 전부 테마 변수에서 온다 — 다크모드 전환이 자동으로 반영된다.
+.anim {
+  margin: 1.75rem 0;
+  padding: 1rem 1rem 0.75rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 8px;
+  background: var(--light);
+}
+
+.anim-caption {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--gray);
+}
+
+.anim-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.anim-btn {
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--lightgray);
+  border-radius: 6px;
+  background: var(--light);
+  color: var(--darkgray);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--secondary);
+    color: var(--secondary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}
+
+.anim-say {
+  margin: 0.75rem 0 0;
+  text-align: center;
+  color: var(--darkgray);
+  min-height: 1.6em;
+}
+
+.anim-scene svg {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin: 0 auto;
+
+  :is(circle, rect, ellipse, polygon) {
+    fill: var(--light);
+    stroke: var(--gray);
+    stroke-width: 1.5;
+  }
+
+  :is(path, line, polyline) {
+    fill: none;
+    stroke: var(--gray);
+    stroke-width: 1.5;
+  }
+
+  text {
+    fill: var(--darkgray);
+    stroke: none;
+    font-family: var(--bodyFont);
+    font-size: 13px;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  [id] {
+    opacity: 0.28;
+    transition: opacity 0.35s ease;
+  }
+
+  [id].is-on {
+    opacity: 1;
+  }
+
+  .is-on:is(circle, rect, ellipse, polygon, path, line, polyline),
+  .is-on :is(circle, rect, ellipse, polygon, path, line, polyline) {
+    stroke: var(--secondary);
+    stroke-width: 2;
+  }
+
+  .is-on :is(circle, rect, ellipse, polygon) {
+    fill: var(--highlight);
+  }
+
+  .is-flow:is(path, line, polyline),
+  .is-flow :is(path, line, polyline) {
+    stroke-dasharray: 5 7;
+    animation: anim-flow 0.9s linear infinite;
+  }
+}
+
+@keyframes anim-flow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+.anim-stage {
+  position: relative;
+  height: var(--anim-height, 280px);
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.anim-overlay {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+
+  .anim-stage:hover &,
+  &:focus-within {
+    opacity: 1;
+  }
+}
+
+.anim-video video {
+  display: block;
+  width: 100%;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-scene svg [id] {
+    transition: none;
+  }
+}

@@ -7,7 +7,7 @@ import type {
 import { resolveRelative } from "../util/path"
 import style from "./styles/globalNav.scss"
 import { getListDate } from "../../../_shared/noteMeta"
-import { isRealNote } from "../../../_shared/notes"
+import { isListedNote, isRealNote } from "../../../_shared/notes"
 
 /**
  * 글로벌 내비 — `Home | Topics | Archive | Notes`. 현재는 topbar 배치.
@@ -43,7 +43,7 @@ function findLatestNoteSlug(allFiles: QuartzComponentProps["allFiles"]): string 
   let latest: (typeof allFiles)[number] | null = null
   for (const f of allFiles) {
     const slug = f.slug as string | undefined
-    if (!slug || !f.frontmatter?.title || !isRealNote(slug)) continue
+    if (!slug || !f.frontmatter?.title || !isListedNote(f)) continue
     if (latest === null || getSortTime(f) > getSortTime(latest)) latest = f
   }
   return (latest?.slug as string | undefined) ?? null

@@ -6,7 +6,7 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import { formatYmd, getNoteDates } from "../../../_shared/noteMeta"
-import { isRealNote, topicName } from "../../../_shared/notes"
+import { isListedNote, topicName } from "../../../_shared/notes"
 import style from "./styles/archiveContent.scss"
 
 /**
@@ -27,7 +27,7 @@ export default (() => {
   }: QuartzComponentProps) => {
     const currentSlug = (fileData.slug as string) ?? "archive"
     const files = (allFiles as FileData[])
-      .filter((f) => isRealNote(f.slug as string | undefined))
+      .filter((f) => isListedNote(f))
       .filter((f) => getCreated(f))
       .sort((a, b) => getCreated(b)!.getTime() - getCreated(a)!.getTime())
 

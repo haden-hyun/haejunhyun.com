@@ -117,6 +117,12 @@ plugins:
       carouselHeight: 24rem
       gap: 0.5rem
     order: 55
+  - source: ./plugins/anim-widgets
+    enabled: true
+    # ```anim 코드펜스 → 단계형 SVG(steps) · 캔버스 루프 데모(canvas) · 루프 영상(video).
+    # 주의: .html 자산은 Quartz가 페이지로 취급해 확장자를 떼고 복사하므로 데모는 .js 모듈로 둔다.
+    options: {}
+    order: 56
   - source: ./plugins/note-specs
     enabled: true
     # 좌측 최상단 SPECS — 날짜·읽기시간·토픽. CATALOG보다 위에 온다.

@@ -226,6 +226,9 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
+function isListedNote(file) {
+  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
 var l;
 function S(n2) {
   return n2.children;
@@ -392,7 +395,7 @@ var HomeHero_default = ((userOpts) => {
     const { fileData, allFiles, displayClass } = props;
     if (fileData.slug !== "index") return /* @__PURE__ */ u2(S, {});
     const files = allFiles.filter(
-      (f3) => f3.slug !== fileData.slug && isRealNote(f3.slug) && (f3.slug ?? "").includes("/")
+      (f3) => f3.slug !== fileData.slug && isListedNote(f3) && (f3.slug ?? "").includes("/")
     );
     const noteCount = files.length;
     const topicCount = new Set(files.map((f3) => (f3.slug ?? "").split("/")[0]).filter(Boolean)).size;

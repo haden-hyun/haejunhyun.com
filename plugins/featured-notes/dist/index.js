@@ -68,6 +68,9 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
+function isListedNote(file) {
+  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
 var TOPIC_NAMES = {
   "computer-science": "Computer Science",
   "data-engineering": "Data Engineering",
@@ -259,7 +262,7 @@ var FeaturedNotes_default = ((userOpts) => {
     displayClass
   }) => {
     if (fileData.slug !== "index") return /* @__PURE__ */ u2(S, {});
-    const files = allFiles.filter((f3) => isRealNote(f3.slug));
+    const files = allFiles.filter((f3) => isListedNote(f3));
     const recent = getRecentSlugs(files, opts.recentExcludeCount);
     const curated = resolveSlugs(opts.slugs, files, recent);
     const exclude = /* @__PURE__ */ new Set([...curated.map((f3) => f3.slug), ...recent]);

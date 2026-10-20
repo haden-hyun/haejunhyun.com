@@ -68,6 +68,9 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
+function isListedNote(file) {
+  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
 var l;
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
@@ -102,7 +105,7 @@ function findLatestNoteSlug(allFiles) {
   let latest = null;
   for (const f3 of allFiles) {
     const slug = f3.slug;
-    if (!slug || !f3.frontmatter?.title || !isRealNote(slug)) continue;
+    if (!slug || !f3.frontmatter?.title || !isListedNote(f3)) continue;
     if (latest === null || getSortTime(f3) > getSortTime(latest)) latest = f3;
   }
   return latest?.slug ?? null;

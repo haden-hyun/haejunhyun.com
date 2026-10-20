@@ -6,7 +6,7 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import style from "./styles/topicGrid.scss"
-import { isRealNote } from "../../../_shared/notes"
+import { isListedNote } from "../../../_shared/notes"
 
 /**
  * TopicGrid — 홈 전용. 토픽 이름 · 점선 · 노트 수의 색인 목록.
@@ -57,7 +57,7 @@ export default ((userOpts?: Partial<TopicGridOptions>) => {
     const counts = new Map<string, number>()
     for (const f of files) {
       const slug = (f.slug as string | undefined) ?? ""
-      if (!isRealNote(slug)) continue
+      if (!isListedNote(f)) continue
       const key = slug.split("/")[0]
       if (!key) continue
       counts.set(key, (counts.get(key) ?? 0) + 1)

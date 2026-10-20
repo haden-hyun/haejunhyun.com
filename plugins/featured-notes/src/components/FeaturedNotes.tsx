@@ -5,7 +5,7 @@ import type {
   QuartzPluginData,
 } from "@quartz-community/types"
 import { getListDate, readingMinutes } from "../../../_shared/noteMeta"
-import { buildRecentRows, byListDateDesc, isRealNote, topicName } from "../../../_shared/notes"
+import { buildRecentRows, byListDateDesc, isListedNote, topicName } from "../../../_shared/notes"
 import { resolveRelative } from "../util/path"
 import style from "./styles/featured.scss"
 
@@ -128,7 +128,7 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
   }: QuartzComponentProps) => {
     if (fileData.slug !== "index") return <></>
 
-    const files = (allFiles as FileData[]).filter((f) => isRealNote(f.slug as string | undefined))
+    const files = (allFiles as FileData[]).filter((f) => isListedNote(f))
     const recent = getRecentSlugs(files, opts.recentExcludeCount)
     const curated = resolveSlugs(opts.slugs, files, recent)
 

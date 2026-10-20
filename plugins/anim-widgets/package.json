@@ -1,0 +1,54 @@
+{
+  "name": "@haejunhyun/anim-widgets",
+  "version": "0.1.0",
+  "description": "Renders ```anim code fences (step-through SVG, canvas loop demos, looping video) at build time.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@quartz-community/types": "github:quartz-community/types",
+    "js-yaml": "^4.1.0",
+    "unist-util-visit": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^24.10.0",
+    "sass": "^1.83.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "quartz": {
+    "name": "anim-widgets",
+    "displayName": "Anim Widgets",
+    "category": "transformer",
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 56,
+    "defaultEnabled": true,
+    "defaultOptions": {}
+  }
+}

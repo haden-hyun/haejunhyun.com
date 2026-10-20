@@ -6,7 +6,7 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import style from "./styles/topicsContent.scss"
-import { isRealNote } from "../../../_shared/notes"
+import { isListedNote } from "../../../_shared/notes"
 
 /**
  * 내비의 "Topics" 라우트 — 홈 TopicGrid와 같은 데이터·카드를 독립 페이지로.
@@ -69,7 +69,7 @@ export default (() => {
     const counts = new Map<string, number>()
     for (const f of files) {
       const slug = (f.slug as string | undefined) ?? ""
-      if (!isRealNote(slug)) continue
+      if (!isListedNote(f)) continue
       const key = slug.split("/")[0]
       if (!key) continue
       counts.set(key, (counts.get(key) ?? 0) + 1)

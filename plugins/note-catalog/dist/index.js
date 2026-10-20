@@ -46,6 +46,9 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
+function isListedNote(file) {
+  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
 var l;
 function S(n2) {
   return n2.children;
@@ -83,7 +86,7 @@ var NoteCatalog_default = ((userOpts) => {
     if (!currentSlug || !isRealNote(currentSlug)) return /* @__PURE__ */ u2(S, {});
     const parentDir = currentSlug.split("/").slice(0, -1).join("/");
     const siblings = allFiles.filter((f3) => {
-      if (!f3.slug || !isRealNote(f3.slug)) return false;
+      if (!f3.slug || !isListedNote(f3)) return false;
       return f3.slug.split("/").slice(0, -1).join("/") === parentDir;
     }).sort(
       (a2, b2) => (a2.frontmatter?.title ?? a2.slug).localeCompare(b2.frontmatter?.title ?? b2.slug, void 0, {
