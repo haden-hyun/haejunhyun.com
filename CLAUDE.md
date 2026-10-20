@@ -44,6 +44,10 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 `plugins/*` 20종. 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
+`plugins/_shared/`는 플러그인이 아니라 공유 소스다(노트 판별 `isRealNote`·토픽 표시명·Recent 묶음·`noteMeta`).
+각 플러그인이 상대 경로로 가져와 dist에 번들한다. **여기를 고치면 가져다 쓰는 플러그인을 전부 재빌드할 것**
+(`grep -l _shared plugins/*/src -r`). 주의: 가져다 쓰는 플러그인의 tsconfig는 `rootDir: ".."`이어야 dts 빌드가 통과한다.
+
 주의: **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
 9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의
 코드를 쓰고 있었다(2026-08-06 발견·교정). `plugin install`은 락파일을 따르므로 링크를
@@ -159,8 +163,8 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
   시간(Chitlins `#b03a7d`, 읽기 진행바·TOC 활성). 각 색이 답하는 질문이 달라 역할 침범이 없다.
 - 주의: 팔레트의 블루는 **2색 × 2모드**다(True Midnight/Deeper Cut = 라이트, Stage Light/Rim Light = 다크).
   한 테마에서 쓸 수 있는 블루는 2개뿐. `--dark`(#141d28)는 검정이 아니라 H213의 가장 깊은 잉크다.
-- **bold는 색이 아니라 재질/무게(`--dark`)로 구분한다.** 인라인 코드(틸 고정)·하이라이트
-  (그린/골드, 형광펜 관습)는 예외로 색을 쓴다 — 세 축과는 색상 27° 이상 벌려 둔다(DESIGN-SYSTEM §4.2).
+- **bold는 색이 아니라 재질/무게(`--dark`)로 구분한다.** 인라인 코드는 무채 종이 칩, 하이라이트
+  (라임, 형광펜 관습)만 예외로 색을 쓴다 — 세 축과는 색상 27° 이상 벌려 둔다(DESIGN-SYSTEM §4.2).
 - 서체: 로고 Anton / 헤딩 Hahmlet / 본문 Noto Sans KR / 코드 JetBrains Mono.
   주의: `theme.typography`와 `fonts` 플러그인 옵션 **두 곳을 항상 같게** 유지(후자가 최종 결정).
 - **토픽 컬러는 폐지됐다.** 색은 그룹핑엔 강하나 명명엔 약한데 토픽은 명명 문제다.

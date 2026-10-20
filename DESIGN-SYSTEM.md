@@ -18,12 +18,14 @@
 | 슬롯   | 서체                | 범위                                         |
 | ------ | ------------------- | -------------------------------------------- |
 | title  | Anton 400           | 로고만                                       |
-| header | Hahmlet 400/700/900 | 헤딩, 콜아웃 제목                            |
+| header | Hahmlet 400/700/900 | 헤딩, 콜아웃 제목, 섹션·패널 라벨, 내비 탭   |
 | body   | Noto Sans KR        | 본문, 사이드바                               |
 | code   | JetBrains Mono      | 코드, 메타 (한글은 Noto Sans KR 폴백 → §4.4) |
 
 - 로고(Anton)와 헤딩(Hahmlet)을 나눠 브랜드 목소리와 콘텐츠 목소리를 분리한다.
 - h1만 자간 −0.02em. Hahmlet은 조이면 한글 자소가 붙는다.
+- UI 문구는 영문 전용(`locale: en-US`). 원고·히어로 설명문만 한국어.
+- `h1~h6`·`p`·`li`는 `word-break: keep-all` — 한글을 어절 단위로 끊는다.
 - 주의: `theme.typography`와 `fonts` 플러그인 옵션 **두 곳을 항상 같게** (후자가 최종 결정).
 
 ---
@@ -38,12 +40,13 @@
 | ------------------ | --------------- | --------------- |
 | bg `light`         | `#f7f5ef`       | `#0e1420`       |
 | border `lightgray` | `#e4dfd4`       | `#1e2836`       |
-| meta `gray`        | `#676f7c` 4.65  | `#7c8899` 5.12  |
+| meta `gray`        | `#5f6773` 5.27  | `#7f8b9c` 5.34  |
 | body `darkgray`    | `#323e4c` 9.99  | `#bcc9d9` 10.96 |
 | heading `dark`     | `#141d28` 15.58 | `#e9eff7` 15.93 |
 | accent `secondary` | `#1c5f95` 6.17  | `#6fb2e0` 8.00  |
 | hover `tertiary`   | `#17527f` 7.55  | `#9dcdec` 10.86 |
 
+- `gray`는 페이지가 아니라 **목록 행 hover(accent 10%) 위에서 4.5**가 되도록 잡았다(라이트 4.56 / 다크 4.56). 얼룩·hover 행에 meta가 얹히기 때문이다.
 - **hover는 진해지는 방향.** 라이트에서 밝아지면 대비를 못 맞춘다.
 - `--dark`는 검정이 아니라 H213의 가장 깊은 잉크다. 헤딩 3단계가 전부 블루 계열.
 - 주의: 한 테마에서 쓸 수 있는 블루는 2개뿐이다.
@@ -55,8 +58,8 @@
 | 축                     | 토큰              | 라이트         | 다크           | 적용처                                          |
 | ---------------------- | ----------------- | -------------- | -------------- | ----------------------------------------------- |
 | **공간** 여기서 저기로 | `--secondary`     | `#1c5f95`      | `#6fb2e0`      | 링크, 백링크, breadcrumb, CATALOG 현재 항목, h2 |
-| **행위** 누르는 것     | `--accent-action` | `#b8442a` 4.94 | `#e87256` 6.12 | 홈 "최근 노트 ↓" CTA                            |
-| **시간** 읽는 중       | `--accent-state`  | `#b03a7d` 5.14 | `#dd7ab0` 6.57 | 읽기 진행바, TOC 활성                           |
+| **행위** 누르는 것     | `--accent-action` | `#b8442a` 4.94 | `#e87256` 6.12 | 현재 적용처 없음 — CTA가 생기면 이 색            |
+| **시간** 읽는 중       | `--accent-state`  | `#b03a7d` 5.14 | `#dd7ab0` 6.57 | 읽기 진행바                                     |
 
 - `bold`는 여전히 **색이 아니라 재질/무게**(`--dark`)로 구분한다. 인라인 코드·하이라이트는 예외 — §4.2.
 - 강도는 중요도에 비례하고 **빈도에 반비례**한다 — 본문에 흩뿌려지는 것에 축 색을 주지 않는다.
@@ -78,19 +81,27 @@
 | 출처 | quote                               | `#6b6560` 4.82        | `#9a938c`      |
 | 참고 | `reference` _(커스텀)_              | `#6b3fa0` 6.77        | `#b39ae0` 7.56 |
 
-- 구현은 `--color` 재정의 하나. `callouts.scss`가 제목에 쓰고 있어 박스까지 따라온다.
+- 구현은 `--color` 재정의 하나. 면·보더·제목·불릿이 전부 `--color`에서 파생된다.
 - **형태는 Obsidian 규격 유지** — 아이콘·둥근 모서리·좌측 바. 우리가 정의하는 건 색이지 형태가 아니다.
+- 면 처리 "Hairline": 모든 타입 같은 5% 틴트 + 보더 22% + 제목 아래 1px 구분선(24%). 타입별로 면 농도를 나누는 안은 **기각**.
+- 제목 잉크 `--cal-ink = --color 82% + --dark` — 최저 5.86(라이트) / 8.17(다크). 중첩 콜아웃도 AA.
+- 헤더 지오메트리(2열 격자):
+  - 아이콘 16px, 슬롯 높이 = 제목 한 줄(`1.45em`), 마스크를 1px 내린다(한글 잉크 중심 보정). 아이콘↔제목 오차 ±0.2px.
+  - 제목·목록 글자가 같은 세로선(아이콘 16 + 간격 8 = 24px)에서 시작한다. 문단·코드블록은 아이콘 열부터.
+  - 제목 Hahmlet 700 0.92rem / 패딩 상하 12px 대칭. 제목만 있거나 접히면 구분선 없음.
+- 주의: 제목 `p`·`.callout-title-inner`는 레이어 안 규칙이 서체·굵기를 직접 잡는다 — `font: inherit`를 빼면 Noto 600으로 돌아간다.
+- 주의: 접힘 규칙은 레이어 안이라 비-레이어 패딩에 진다. `custom.scss`에서 패딩·보더를 다시 0으로 줘야 빈 띠가 안 남는다.
 - 주의: 대비는 페이지 배경이 아니라 **콜아웃 틴트 배경 기준**으로 잰다.
 
 ### 4.2 인라인 코드 · 하이라이트 · 강조
 
-**역할**: 인라인 코드는 틸 고정색으로 정체성을 유지하고, 하이라이트는 형광펜 관습(초록/노랑)을
-따라 모드별로 색을 바꾼다. 세 축(공간/행위/시간)과는 색상 27° 이상 벌려 오독을 막는다.
+**역할**: 인라인 코드는 색을 빼고 종이 칩(무채 배경+보더)으로 재질만 바꾼다. 하이라이트는 형광펜 관습을
+따라 라임 하나를 두 모드에 쓴다. 세 축(공간/행위/시간)·콜아웃 색과는 색상 27° 이상 벌려 오독을 막는다.
 
-| 대상             | 라이트               | 다크                 | 비고                                          |
-| ---------------- | -------------------- | -------------------- | --------------------------------------------- |
-| 인라인 코드      | bg `#c4e9e4` 틸       | bg `#1c403b` 틸      | 모드가 바뀌어도 같은 색 — 칩(배경+보더) 유지 |
-| `==하이라이트==` | `#c4e9d3` 그린 8.26   | `#40371c` 골드 7.01  | 전체 채움. 형광펜 관습이 색 선택의 근거       |
+| 대상             | 라이트                       | 다크                         | 비고                                         |
+| ---------------- | ---------------------------- | ---------------------------- | -------------------------------------------- |
+| 인라인 코드      | bg `#ebe6da` / 보더 `#ddd6c7` | bg `#1c2535` / 보더 `#2a3446` | 글자 `--dark`. 유채색 칩(틸·블루)은 **기각** |
+| `==하이라이트==` | `#e2efa6` 라임 13.86         | `#56651a` 라임 5.96          | 전체 채움, 글자 `--highlight-ink`. 밑줄 밴드는 **기각** |
 | `strong`         | `--dark`              | 〃                    | 서체가 이미 헤딩과 본문을 가르므로 색만으로 충분 |
 | `em`             | 기울이지 않고 자간 `0.02em` |                | 한글엔 이탤릭 관습이 없다                     |
 
@@ -104,6 +115,7 @@
 
 - 헤더 = accent 8% 배경 + 2px accent 하단 보더 + `--dark` bold. 표 헤더만 본문 서체.
 - 얼룩말 3.5% / hover 10%. 주의: hover가 얼룩보다 진해야 하고, `nth-child`와 명시도가 같아 **순서 의존**이다.
+- 같은 얼룩·hover를 표 모양 목록(Featured·Recent Notes·Topics·Archive)에도 쓴다. 10%를 넘기면 그 위 `gray` 메타가 AA를 잃는다(§3.1).
 
 ### 4.4 한글 폰트 폴백 — 수식·코드
 
@@ -139,6 +151,11 @@
 - 주의: **기본색을 `--shiki-light/dark`로 되돌리지 말 것.** Shiki가 식별자에 토큰 타입을 안 붙여서, 폴백을 맡기면 변수명이 통제 밖으로 나간다.
 - 주의: 대비는 **코드블럭 배경**(`--code-bg`) 기준으로 잰다.
 
+코드블록 외형은 **Mac 창**이다(`custom.scss` §2).
+
+- 34px 제목 줄(`--code-bar-bg`) + 신호등 3점 + 언어 라벨(Mono 11px 600 대문자, `--secondary`, 5.16 / 6.92). `title="…"`이 있으면 그 파일명이 라벨을 대신한다. 복사 버튼은 제목 줄 오른쪽.
+- 줄 번호는 CSS 카운터 — sticky 좌측 3ch, 세로 구분선, 주석색, `user-select: none`(복사에서 제외). Mermaid는 제외.
+
 ### 4.6 토픽 — 색이 아니라 타이포그래피
 
 **역할**: 8~10개 토픽을 라벨 타이포로 식별한다. **토픽 컬러는 폐지됐다 — 되살리지 말 것.**
@@ -153,9 +170,9 @@
 
 | 패널                             | 핵심                                                          |
 | -------------------------------- | ------------------------------------------------------------- |
-| SPECS (`plugins/note-specs`)     | 날짜·읽기시간·태그를 좌측 최상단 음반 사양으로. 데스크톱 전용 |
+| SPECS (`plugins/note-specs`)     | 작성·개정·수정·읽는 시간·토픽(§4.11). 데스크톱 전용          |
 | CATALOG (`plugins/note-catalog`) | 전체 파일 트리 폐기, **형제 노트만**. 길이가 형제 수에만 비례 |
-| TOC                              | `flex: 1 1 0` + `min-height: 0` — 남는 공간 전부, 내부 스크롤 |
+| TOC                              | 라벨 "TOC". `flex: 1 1 0` + `min-height: 0` — 남는 공간 전부, 내부 스크롤 |
 | Backlinks                        | `0 0 auto`, `max-height: 9rem`                                |
 | Graph                            | `0 0 auto`, 기본 접힘                                         |
 
@@ -175,22 +192,28 @@
 
 ### 4.9 상단 내비 · 홈 구성
 
-**역할**: 사이트 전체의 목적지 4개(`Home · Topics · Archive · Notes`)와 홈 한 화면.
+**역할**: 사이트 전체의 목적지(`Home · Topics · Archive · Notes`)와 홈 한 화면.
 
-- Notes는 실제 노트 위에서 `<span aria-current="page">`, 그 밖에서는 가장 최근 노트로 가는 링크.
-- 홈은 전부 `beforeBody` 한 열이다: 마스트헤드(1) → Featured(2) → Recent Notes(3) → Topics(4). 이미지·카드 없음(Featured 첫 항목 제외), 섹션 경계는 1px 괘선.
-- 마스트헤드: Mono 메타 한 줄(`N NOTES · N TOPICS · N VISITS · N TODAY · UPDATED YYYY.MM.DD` — 노트·토픽은 `allFiles` 런타임 집계, 방문은 GoatCounter 공개 카운터 `TOTAL.json`. 토큰 없이 `start/end`로 오늘 수를 받는다. 주의: 날짜는 UTC 자정·`end` 배타 — TODAY는 KST 09시에 리셋된다) + Hahmlet 900 헤드라인("Blue Notes.") + 본문체 설명문 + CTA(브릭 "Dive In" + GitHub/LinkedIn 평문 링크).
-- **음악 은유는 헤드라인 한 곳에만.** 음반의 명사(번호·표·크레딧)는 형식으로 빌리고, 동사(재생·Play·Now Playing)는 텍스트 라벨엔 쓰지 않는다. 판별 기준: 그 표현 뒤에 실제 데이터가 있는가. 헤드라인 옆 비닐판 + Spotify "First Note" 임베드는 **기각** — 데이터 없는 장식이 인덱스형 홈에 유일한 인터랙션으로 남았고, 서드파티 추적만 늘린다.
-- 홈 섹션 라벨 3종(Featured/Recent Notes/Topics)은 `custom.scss`의 한 규칙으로 통일한다.
-- **Featured 첫 항목만 카드형 배경 + 토픽 배지.** 배지는 "First Note · {토픽}", 핑크 고정색(`--featured-cat-color`).
-- Recent Notes는 헤더 행(DATE/TITLE/TOPIC) 없이 `96px 1fr auto` 그리드 데이터 행만 나열한다.
-- **Featured는 `quartz.config.yaml`의 `slugs` 배열이 유일한 지정 수단.** 쓴 순서 = 번호, 첫 항목만 크게, 부족분은 토픽 라운드로빈으로 자동 채움.
-- 주의: 미해결·중복·초과 슬러그는 빌드 로그 경고로 찍힌다. 조용히 무시되지 않는다.
-- 푸터는 전 페이지 공통 텍스트 콜로폰 — 브랜드(로고와 같은 `--titleFont` 슬롯) + 평문 링크 목록(가로 정렬, `·` 구분자) + 하단 저작권 한 줄. 다열 콜로폰(INDEX/ELSEWHERE/COLOPHON)·인물 포스터·컷아웃·"계속 재생 중" 무대 푸터는 **기각** — 은유가 콘텐츠를 앞질러 오그라든다.
-- 파비콘은 색소폰 이모지(quartz 크리스탈 기본값에서 교체).
-- **목록 날짜 = `posted` → `created`** (Recent Notes · Archive · Featured · Notes 목적지 · 마스트헤드 `UPDATED`). 둘 다 `YYYY-MM-DD`, 로컬 자정으로 해석한다.
-- **Prev/Next는 `created` 순**이다. 읽는 순서가 목적인데, `posted`는 개정 때 오늘로 덮어써져 개정한 글이 시리즈 맨 뒤로 밀리기 때문이다.
-- 주의: `updated`(note-properties가 `modified`로 매핑)는 작업마다 바뀌므로 정렬에 쓰지 않는다. `modified`는 노트 상세 SPECS·content-meta 날짜와 folder/tag 페이지(커뮤니티 플러그인, `defaultDateType`)에만 남아 있다.
+- 상단 바: 로고 `HAEJUN RECORDS`(Anton) → 탭 `Home · Topics · Archive · Notes`(Hahmlet, 현재 탭 `--secondary` + 밑줄) → 소셜 아이콘 GitHub·LinkedIn(오른쪽 정렬, hover 칩) → 검색 `Search` + `⌘K` 배지 → 테마 토글.
+  - 검색 라벨은 `custom.scss` 의사 요소다(검색은 코어 마크업). 접근성 이름은 `aria-label`.
+  - `⌘K` 배지는 `(hover: none)`에서 숨긴다.
+  - 모바일: 1행 로고 + 아이콘 + 테마 토글(`4rem`) / 2행 탭(`2.75rem`). 행 높이 고정(CLS), 터치 타깃 44px.
+- 홈은 `beforeBody` 한 열: 히어로 → Featured(전폭) → Recent Notes | Topics 2단(`1.8fr : 1fr`, 간격 56px, 800px 이하 1단) → 푸터. 배경은 노트와 같은 크림.
+- 히어로: H1 "Blue Notes."(Hahmlet 900, `clamp(2.5rem, 6vw, 3.75rem)`, 자간 −0.02em) → "Haejun Hyun"(Hahmlet 700 1.05rem, `--darkgray`) → 설명문 → 링크 칩 GitHub·LinkedIn → Mono 12px 메타 줄 `N notes · N topics · N visits · N today`.
+  - 설명문은 `summary-description`의 `fallbackDescriptions.index`(홈 meta/og description)를 그대로 쓴다 — 문장이 한 곳에만 있다.
+  - 링크 칩: accent 8% 배경(hover 16%) + Hahmlet 700 `--secondary`, 높이 40px(모바일 44px). RSS 링크 없음.
+  - 노트·토픽 수는 `allFiles` 런타임 집계, 방문은 GoatCounter 공개 카운터 `TOTAL.json`(토큰 없이 `start/end`로 오늘 수). 숫자 자리는 `min-width`로 폭 고정. 주의: 날짜는 UTC 자정·`end` 배타 — today는 KST 09시에 리셋된다.
+  - 우측 3D ASCII 색소폰(80×44자, ink = `--secondary`). 자동 회전·드래그 회전, `aria-hidden`. 화면 밖·탭 숨김에서 정지, 30fps 상한, 감속 모션이면 자동 회전·파티클 정지(드래그만 허용). 첫 프레임은 빌드 시 HTML에 미리 렌더.
+- 섹션 라벨(Featured / Recent Notes / Topics): Hahmlet 700 1.15rem `--secondary`, 아래 1px 괘선. 우측 링크 `Archive →`는 Hahmlet 600 0.9rem. 각 플러그인 scss에 같은 값으로 둔다.
+- Featured: `01~04` 번호 + 제목 + 요약 1줄 + `토픽 · N min`. 첫 항목만 크게(제목 `clamp(1.35rem, 3vw, 1.75rem)` 900, 요약 2줄). 행 얼룩·hover는 표와 같다(§4.3).
+  - 지정 수단은 `quartz.config.yaml`의 `slugs` 배열 하나 — 쓴 순서 = 번호, 부족분은 토픽 라운드로빈. Recent Notes에 나온 노트는 지정·자동 채움 모두에서 뺀다.
+  - 주의: 미해결·중복·초과 슬러그는 빌드 로그 경고로 찍힌다. 조용히 무시되지 않는다.
+- Recent Notes: 5행, `날짜(Mono YYYY-MM-DD) | 제목 + 요약 1줄 | 토픽 표시명`. 정렬 키는 `getListDate`(§4.11), 개정이 더 최근이면 제목 뒤 `Revised` 라벨. 같은 날짜·같은 2단계 폴더 3편 이상은 한 줄로 묶는다(`Docker · 5 notes`, 링크는 그 폴더).
+  - Featured의 Recent 제외 집합과 Recent 표는 **같은 함수**(`plugins/_shared/notes.ts`의 `buildRecentRows`)로 만든다.
+- Topics: 영문 부제 + 노트 수, 행 얼룩.
+- 푸터: `© 2026 Haejun Hyun` + Mono `BUILT WITH OBSIDIAN + QUARTZ`.
+- **음악 은유는 헤드라인과 색소폰 한 점에만.** 동사(재생·Play·Now Playing)는 텍스트 라벨에 쓰지 않는다. 비닐판 + Spotify 임베드, 다열 콜로폰·인물 포스터·"계속 재생 중" 무대 푸터는 **기각** — 서드파티 추적을 늘리거나 은유가 콘텐츠를 앞지른다.
+- 파비콘은 색소폰 이모지.
 
 ### 4.10 페이지 폭 · 좌우 여백
 
@@ -205,6 +228,39 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - topbar는 폭을 `.page`에서 받고 배경·구분선만 `::before`로 번진다. 로고와 본문 시작점이 자동으로 맞는다.
 - 주의: 폭 계산에 `vw`를 쓰지 말 것 — 세로 스크롤바 폭을 포함해 좌우가 어긋난다.
 - 주의: `::before`의 `-100vmax` 블리드는 **`body`의 `overflow-x: clip`**이 자른다. `html`에 걸면 viewport로 전파돼 무효다.
+
+### 4.11 날짜 · 읽는 시간
+
+**역할**: 노트의 시간 정보를 사이트 전체에서 같은 값·같은 형식으로 낸다. 구현은 `plugins/_shared/noteMeta.ts` 하나(SPECS·Archive·홈이 함께 쓴다).
+
+| 이름      | 출처                                                         | 표시 조건                        |
+| --------- | ------------------------------------------------------------ | -------------------------------- |
+| 작성      | `dates.created` (frontmatter `created`)                      | 항상                             |
+| 개정      | frontmatter `posted` — 날짜 플러그인이 모르는 키라 직접 읽음 | 작성일과 다른 날일 때만 (`Revised`) |
+| 수정      | `dates.modified` (note-properties가 `updated`를 별칭 처리)   | 작성·개정일과 다른 날일 때만     |
+| 읽는 시간 | `readingMinutes(text)` — reading-time 이식, CJK 대응, 200wpm | 0분이 아닐 때                    |
+
+- 형식은 `YYYY-MM-DD`, KST 기준(`formatYmd`). 빌드 머신 시간대와 무관하다.
+- **목록 날짜 `getListDate` = `posted` → `created`** (Recent Notes · Featured · Notes 목적지). Archive는 작성일로 묶고 개정일(`posted`)을 보조 표기한다.
+- **Prev/Next는 `created` 순**이다. 읽는 순서가 목적인데, `posted`는 개정 때 오늘로 덮어써져 개정한 글이 시리즈 맨 뒤로 밀리기 때문이다.
+- 주의: `updated`(note-properties가 `modified`로 매핑)는 작업마다 바뀌므로 정렬에 쓰지 않는다. `modified`는 SPECS `Updated`·content-meta 날짜와 folder/tag 페이지(커뮤니티 플러그인, `defaultDateType`)에만 남아 있다.
+- 주의: content-meta(모바일 메타 줄)는 외부 플러그인이라 날짜 형식을 locale에 맡긴다. 읽는 시간은 같은 알고리즘이라 숫자가 같다.
+
+### 4.12 모션
+
+**역할**: 움직임은 상태 변화를 알리는 데만 쓴다. 토큰은 `custom.scss` §0.
+
+| 토큰         | 값                              | 용도                    |
+| ------------ | ------------------------------- | ----------------------- |
+| `--ease`     | `cubic-bezier(0.22, 1, 0.36, 1)` | 모든 전환               |
+| `--dur-fast` | 150ms                           | 호버·색                 |
+| `--dur-base` | 250ms                           | 등장·이동(맨 위로 버튼) |
+| `--dur-slow` | 900ms                           | 큰 리빌                 |
+
+- `transition: all` 금지 — 바뀌는 속성만 적는다.
+- 호버는 제목 밑줄(목록)이나 보더·색(카드)만. 위치를 옮기는 호버(패딩 이동·translate·scale)는 쓰지 않는다. 스크롤 리빌 없음.
+- 읽기 진행바·맨 위로 버튼은 노트 페이지에만(컴포넌트가 자동 생성 페이지에선 렌더하지 않는다). 진행바는 rAF 스로틀 + `scaleX`, 맨 위로는 1.5뷰포트 이후 등장.
+- `prefers-reduced-motion: reduce`: CSS 전환·애니메이션·부드러운 스크롤을 즉시 끝낸다(`custom.scss` §13). 스크립트 모션은 각 스크립트가 같은 미디어 쿼리를 읽어 끈다.
 
 ---
 
@@ -234,5 +290,5 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 ## 7. 무드 확장
 
 - **Blue Note Bar**: 카드 hover 미세 발광. Hero 뒤 radial-gradient 광원은 **기각**.
-- **Blue Giant**: 진행바 그라디언트, CTA hover 발광. 필수: `prefers-reduced-motion`, SPA 재바인딩.
+- **Blue Giant**: 진행바 그라디언트, CTA hover 발광. 필수: `prefers-reduced-motion`(§4.12), SPA 재바인딩.
 - **넘지 말 선**: 본문 뒤 텍스처·노이즈, 커서 트레일/파티클, 사운드, 본문 서체를 무드용으로 바꾸기.
