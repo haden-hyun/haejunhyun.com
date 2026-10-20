@@ -1,0 +1,9 @@
+{
+  "id": "anim-preview",
+  "name": "Anim Preview",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "블로그 anim-widgets의 ```anim 펜스(steps·canvas·video)를 읽기 모드와 라이브 프리뷰에서 실제 애니메이션으로 보여 준다.",
+  "author": "haejun",
+  "isDesktopOnly": false
+}

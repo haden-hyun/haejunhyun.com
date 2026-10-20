@@ -1,0 +1,17 @@
+{
+  "name": "anim-preview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Obsidian plugin that previews ```anim fences with the blog anim-widgets schema and styles.",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "install-vault": "node esbuild.config.mjs --install",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "obsidian": "1.14.4",
+    "typescript": "5.9.3"
+  }
+}

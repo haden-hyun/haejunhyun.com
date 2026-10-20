@@ -1,0 +1,19 @@
+/* Quartz 테마 변수 → Obsidian 테마 변수. .anim 안에서만 정의해 볼트 테마·다른 플러그인과 충돌하지 않는다.
+   블로그 anim.scss는 이 변수들만 쓰므로 수정 없이 아래에 그대로 이어 붙는다. */
+.anim {
+  --light: var(--background-primary);
+  --lightgray: var(--background-modifier-border);
+  --gray: var(--text-muted);
+  --darkgray: var(--text-normal);
+  --dark: var(--text-normal);
+  --secondary: var(--text-accent);
+  --tertiary: var(--text-accent-hover);
+  --highlight: color-mix(in srgb, var(--text-accent) 15%, transparent);
+  --bodyFont: var(--font-text);
+}
+
+.anim-error {
+  margin: 0 0 0.5rem;
+  color: var(--text-error);
+  font-size: var(--font-ui-small);
+}

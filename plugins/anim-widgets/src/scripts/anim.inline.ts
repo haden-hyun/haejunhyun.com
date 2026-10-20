@@ -24,7 +24,17 @@ function readColors(): Record<string, string> {
 }
 
 function onVisible(el: Element, fn: (visible: boolean) => void) {
-  const io = new IntersectionObserver(([entry]) => fn(Boolean(entry?.isIntersecting)), { threshold: 0.15 })
+  // 주의: 비율이 임계 아래로 내려갈 때도 isIntersecting이 true일 수 있어 비율로 판정하고, 상태가 바뀔 때만 알린다.
+  let shown: boolean | undefined
+  const io = new IntersectionObserver(
+    ([entry]) => {
+      const visible = (entry?.intersectionRatio ?? 0) >= 0.15
+      if (visible === shown) return
+      shown = visible
+      fn(visible)
+    },
+    { threshold: [0, 0.15] },
+  )
   io.observe(el)
   window.addCleanup(() => io.disconnect())
 }
@@ -98,7 +108,13 @@ function initSteps(root: HTMLElement) {
   root.insertBefore(bar, say.nextSibling)
   render()
 
-  onVisible(root, (visible) => (visible && !paused ? start() : stop()))
+  // 다시 화면에 들어오면 처음부터 — 사용자가 멈췄거나 동작 줄이기면 위치를 지킨다.
+  onVisible(root, (visible) => {
+    if (!visible) return stop()
+    if (paused || reducedMotion()) return
+    go(0)
+    start()
+  })
   window.addCleanup(() => {
     stop()
     bar.remove()
@@ -186,8 +202,9 @@ function initCanvas(root: HTMLElement) {
   document.addEventListener("themechange", onTheme)
   onVisible(root, (v) => {
     visible = v
-    if (v) startLoop()
-    else stopLoop()
+    if (!v) return stopLoop()
+    if (!paused) elapsed = 0 // 다시 화면에 들어오면 처음부터
+    startLoop()
   })
   window.addCleanup(() => {
     alive = false
