@@ -1,6 +1,8 @@
 // ```anim 위젯 런타임. 동작 줄이기·화면 밖 정지·테마 전환을 여기서 한 번에 처리한다.
 // 주의: 정리는 window.addCleanup에 맡긴다 — Quartz가 prenav에서 호출한다.
 
+import { makeUtil, type Util } from "../util"
+
 type Draw = (ctx: CanvasRenderingContext2D, frame: Frame) => void
 interface Frame {
   t: number
@@ -9,6 +11,7 @@ interface Frame {
   height: number
   colors: Record<string, string>
   reduced: boolean
+  util: Util
 }
 
 const COLOR_VARS = ["light", "lightgray", "gray", "darkgray", "dark", "secondary", "tertiary", "highlight"]
@@ -20,6 +23,7 @@ function readColors(): Record<string, string> {
   const colors: Record<string, string> = {}
   for (const name of COLOR_VARS) colors[name] = style.getPropertyValue(`--${name}`).trim()
   colors.font = style.getPropertyValue("--bodyFont").trim() || "sans-serif"
+  colors.mono = style.getPropertyValue("--codeFont").trim() || "monospace"
   return colors
 }
 
@@ -106,6 +110,8 @@ function initSteps(root: HTMLElement) {
     go(index + 1)
   })
   root.insertBefore(bar, say.nextSibling)
+  // 동작 줄이기면 마지막(요약) 단계에서 시작한다 — 정지 화면이 완성 그림이어야 한다.
+  if (reducedMotion()) index = steps.length - 1
   render()
 
   // 다시 화면에 들어오면 처음부터 — 사용자가 멈췄거나 동작 줄이기면 위치를 지킨다.
@@ -134,6 +140,7 @@ function initCanvas(root: HTMLElement) {
 
   let draw: Draw | undefined
   let colors = readColors()
+  let util = makeUtil(colors)
   let width = 0
   let height = 0
   let raf = 0
@@ -151,7 +158,7 @@ function initCanvas(root: HTMLElement) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctx.clearRect(0, 0, width, height)
     try {
-      draw(ctx, { t, progress: Math.min(1, t / cycle), width, height, colors, reduced })
+      draw(ctx, { t, progress: Math.min(1, t / cycle), width, height, colors, reduced, util })
     } catch (e) {
       console.error(`[anim] ${src}`, e)
       stopLoop()
@@ -197,6 +204,7 @@ function initCanvas(root: HTMLElement) {
   ro.observe(stage)
   const onTheme = () => {
     colors = readColors()
+    util = makeUtil(colors)
     paint()
   }
   document.addEventListener("themechange", onTheme)

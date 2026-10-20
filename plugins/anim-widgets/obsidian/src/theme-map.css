@@ -10,6 +10,7 @@
   --tertiary: var(--text-accent-hover);
   --highlight: color-mix(in srgb, var(--text-accent) 15%, transparent);
   --bodyFont: var(--font-text);
+  --codeFont: var(--font-monospace);
 }
 
 .anim-error {

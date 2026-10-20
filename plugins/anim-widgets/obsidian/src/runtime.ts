@@ -2,6 +2,7 @@
 // 블로그와 다른 점은 Host 하나로 모았다: 정리(window.addCleanup → Component.register), 모듈 로딩(import(url) → Blob import),
 // 테마 신호(themechange → css-change), 색 읽기(documentElement → 위젯 루트 기준).
 import type { AnimSpec, CanvasSpec, StepsSpec, VideoSpec } from "@blog/parse"
+import { makeUtil, type Util } from "../../src/util"
 
 export type Draw = (ctx: CanvasRenderingContext2D, frame: Frame) => void
 interface Frame {
@@ -11,6 +12,7 @@ interface Frame {
   height: number
   colors: Record<string, string>
   reduced: boolean
+  util: Util
 }
 
 export interface Host {
@@ -35,6 +37,7 @@ function readColors(root: HTMLElement): Record<string, string> {
     colors[name] = getComputedStyle(probe).color
   }
   colors.font = getComputedStyle(root).getPropertyValue("--bodyFont").trim() || "sans-serif"
+  colors.mono = getComputedStyle(root).getPropertyValue("--codeFont").trim() || "monospace"
   probe.remove()
   return colors
 }
@@ -130,6 +133,8 @@ function mountSteps(el: HTMLElement, spec: StepsSpec, host: Host) {
     go(index + 1)
   })
   root.insertBefore(bar, say.nextSibling)
+  // 동작 줄이기면 마지막(요약) 단계에서 시작한다 — 정지 화면이 완성 그림이어야 한다.
+  if (reducedMotion()) index = steps.length - 1
   render()
 
   // 다시 화면에 들어오면 처음부터 — 사용자가 멈췄거나 동작 줄이기면 위치를 지킨다.
@@ -154,6 +159,7 @@ function mountCanvas(el: HTMLElement, spec: CanvasSpec, host: Host) {
   const { cycle, hold, src } = spec
   let draw: Draw | undefined
   let colors: Record<string, string> = {}
+  let util = makeUtil(colors)
   let width = 0
   let height = 0
   let raf = 0
@@ -171,7 +177,7 @@ function mountCanvas(el: HTMLElement, spec: CanvasSpec, host: Host) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctx.clearRect(0, 0, width, height)
     try {
-      draw(ctx, { t, progress: Math.min(1, t / cycle), width, height, colors, reduced })
+      draw(ctx, { t, progress: Math.min(1, t / cycle), width, height, colors, reduced, util })
     } catch (e) {
       console.error(`[anim-preview] ${src}`, e)
       stopLoop()
@@ -180,6 +186,7 @@ function mountCanvas(el: HTMLElement, spec: CanvasSpec, host: Host) {
   // 주의: 코드블록 프로세서는 문서에 붙기 전의 el을 받을 수 있다. 색은 실제로 배치된 뒤(ResizeObserver 첫 호출)에 읽는다.
   const resize = () => {
     colors = readColors(root)
+    util = makeUtil(colors)
     const dpr = window.devicePixelRatio || 1
     width = stage.clientWidth
     height = stage.clientHeight
@@ -217,6 +224,7 @@ function mountCanvas(el: HTMLElement, spec: CanvasSpec, host: Host) {
   ro.observe(stage)
   host.onThemeChange(() => {
     colors = readColors(root)
+    util = makeUtil(colors)
     paint()
   })
   onVisible(host, root, (v) => {
