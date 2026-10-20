@@ -132,7 +132,7 @@
     object-fit: cover;
     border-radius: 3px;
     opacity: 0.55;
-    transition: opacity 0.15s ease;
+    transition: opacity var(--dur-fast) var(--ease);
   }
 
   &:hover img,

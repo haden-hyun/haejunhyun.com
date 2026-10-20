@@ -248,7 +248,8 @@ function extractCardSummary(contentNode) {
   const source = firstList?.children[0] ?? contentNode;
   return normalize(toString(source));
 }
-var SummaryDescription = () => {
+var SummaryDescription = (userOpts) => {
+  const fallbacks = userOpts?.fallbackDescriptions ?? {};
   return {
     name: "SummaryDescription",
     markdownPlugins() {
@@ -276,6 +277,7 @@ var SummaryDescription = () => {
               summaryText = normalize(toString(fallbackParagraph));
             }
           });
+          summaryText ||= fallbacks[file.data.slug ?? ""];
           if (summaryText) {
             frontmatter.description = summaryText;
           }

@@ -24,7 +24,9 @@
         width: 2rem;
         height: 2rem;
         border-radius: 6px;
-        transition: all 0.2s ease;
+        transition:
+          transform var(--dur-fast) var(--ease),
+          background-color var(--dur-fast) var(--ease);
         text-decoration: none;
         // 배경 제거
 
@@ -37,7 +39,9 @@
           height: 1.25rem;
           fill: var(--secondary);
           flex-shrink: 0;
-          transition: all 0.2s ease;
+          transition:
+            fill var(--dur-fast) var(--ease),
+            transform var(--dur-fast) var(--ease);
         }
 
         &:hover svg {

@@ -16,12 +16,12 @@
     padding: 0.8rem 1rem;
     border: 1px solid var(--lightgray);
     border-radius: 6px;
-    text-decoration: none;
-    border-bottom: 1px solid var(--lightgray) !important;
-    transition: border-color 0.15s, background 0.15s;
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      background-color var(--dur-fast) var(--ease);
 
     &:hover {
-      border-color: var(--secondary) !important;
+      border-color: var(--secondary);
       background: rgba(var(--accent-rgb), 0.04);
     }
 
@@ -42,6 +42,7 @@
       color: var(--darkgray);
       font-weight: 500;
       line-height: 1.4;
+      word-break: keep-all;
     }
   }
 }

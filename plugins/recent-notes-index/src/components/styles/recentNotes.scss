@@ -1,108 +1,163 @@
-// Recent Notes — main 원안 그대로: 헤더 행 없이 96px/1fr/auto 그리드 데이터 행만.
-// 얼룩말·hover 배경색은 custom.scss §9와 공유(단일 소스) — 여기선 hover의 여백 이동만 담당.
-// 섹션 라벨(h2) 조판은 custom.scss의 홈 섹션 라벨 규칙이 정한다.
+// Recent Notes — 날짜 | 제목+요약 | 토픽 3열 행. 모바일은 "날짜 · 토픽" 메타 줄 아래 제목·요약.
+// 주의: 섹션 라벨 규칙은 featured-notes·topic-grid와 같은 값으로 유지할 것.
 
 .recent-notes {
-  padding: 2.25rem 0 2.5rem;
-  border-top: 1px solid var(--border);
+  padding: 0 0 72px;
+
+  @media all and (max-width: 800px) {
+    padding-bottom: 48px;
+  }
 }
 
 .recent-notes-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.1rem;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--lightgray);
 
   h2 {
     margin: 0;
     padding: 0;
     border: none;
+    font-family: var(--headerFont);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--secondary);
+  }
+
+  @media all and (max-width: 800px) {
+    padding-bottom: 10px;
   }
 }
 
 .recent-notes-more {
-  font-size: 0.85rem;
+  padding: 8px 0;
+  font-family: var(--headerFont); // 상단 내비 "Archive"와 같은 서체
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--secondary);
   text-decoration: none;
 
   &:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
+
+  @media all and (max-width: 800px) {
+    padding: 10px 0;
+  }
 }
 
-.row {
+.recent-row {
   display: grid;
-  grid-template-columns: 96px 1fr auto;
-  gap: 18px;
-  align-items: center;
-  padding: 15px 8px;
-  border-bottom: 1px solid var(--border);
-  text-decoration: none;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: baseline;
+  padding: 22px 10px;
+  border-bottom: 1px solid var(--lightgray);
   color: inherit;
-  transition: 0.12s;
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease);
 
-  // 배경색은 custom.scss §9 얼룩말/hover 규칙이 정한다(단일 소스) — 여백 이동만 여기서.
+  // 얼룩말·hover — 표(tbody)와 같은 비율.
+  &:nth-child(even) {
+    background: rgba(var(--accent-rgb), 0.035);
+  }
+
   &:hover {
-    padding-left: 14px;
-    padding-right: 2px;
+    background: rgba(var(--accent-rgb), 0.1);
   }
 
-  .d {
-    font-family: var(--codeFont);
-    font-size: 12px;
-    color: var(--text-3);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .t {
-    // 노트 제목은 사이트 전체에서 헤딩 서체 — 실제 노트 페이지 h1(custom.scss §1)과 같은 계열.
-    display: block;
-    font-family: var(--headerFont);
-    font-size: 15.5px;
-    font-weight: 700;
-    letter-spacing: -0.018em;
-    color: var(--text);
-  }
-
-  .s {
-    font-size: 13px;
-    color: var(--text-3);
-    margin-top: 7px;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-  }
-
-  .tag {
-    font-family: var(--codeFont);
-    font-size: 11px;
-    color: var(--text-3);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    padding: 3px 8px;
-    white-space: nowrap;
+  @media all and (max-width: 800px) {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 4px 0;
+    padding: 18px 10px;
   }
 }
 
-// 좁은 화면: 날짜·토픽이 제목 위 한 줄, 제목·요약은 그 아래 전폭.
-@media all and (max-width: 640px) {
-  .row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.3rem 0.75rem;
+.recent-date {
+  font-family: var(--codeFont);
+  font-size: 12.5px;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 
-    > span:nth-child(2) {
-      grid-column: 1 / -1;
-      grid-row: 2;
-    }
+  @media all and (max-width: 800px) {
+    font-size: 11.5px;
+  }
+}
 
-    .tag {
-      grid-row: 1;
-      grid-column: 2;
-      white-space: normal;
+.recent-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+
+  @media all and (max-width: 800px) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+.recent-title {
+  font-family: var(--headerFont);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--dark);
+  word-break: keep-all;
+
+  @media all and (max-width: 800px) {
+    font-size: 16px;
+  }
+}
+
+.recent-revised {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 5px;
+  border: 1px solid var(--lightgray);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.6;
+  color: var(--gray);
+  vertical-align: 2px;
+}
+
+.recent-sub {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--gray);
+  word-break: keep-all;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+
+  @media all and (max-width: 800px) {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+.recent-topic {
+  font-size: 12.5px;
+  color: var(--gray);
+  white-space: nowrap;
+
+  @media all and (max-width: 800px) {
+    grid-row: 1;
+    grid-column: 2;
+    font-family: var(--codeFont);
+    font-size: 11.5px;
+
+    &::before {
+      content: " · ";
+      white-space: pre;
     }
   }
 }

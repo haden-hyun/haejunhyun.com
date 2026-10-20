@@ -40,7 +40,15 @@ function extractCardSummary(contentNode: MdastParent): string {
   return normalize(mdastToString(source))
 }
 
-const SummaryDescription: QuartzTransformerPlugin = () => {
+export interface SummaryDescriptionOptions {
+  /** 슬러그 → description. 원고에 description·요약 콜아웃이 모두 없을 때만 쓴다. */
+  fallbackDescriptions: Record<string, string>
+}
+
+const SummaryDescription: QuartzTransformerPlugin<Partial<SummaryDescriptionOptions>> = (
+  userOpts,
+) => {
+  const fallbacks = userOpts?.fallbackDescriptions ?? {}
   return {
     name: "SummaryDescription",
     markdownPlugins() {
@@ -78,6 +86,7 @@ const SummaryDescription: QuartzTransformerPlugin = () => {
             }
           })
 
+          summaryText ||= fallbacks[(file.data as { slug?: string }).slug ?? ""]
           if (summaryText) {
             frontmatter.description = summaryText
           }

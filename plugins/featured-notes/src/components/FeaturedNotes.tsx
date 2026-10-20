@@ -4,15 +4,17 @@ import type {
   QuartzComponentProps,
   QuartzPluginData,
 } from "@quartz-community/types"
+import { getListDate, readingMinutes } from "../../../_shared/noteMeta"
+import { buildRecentRows, byListDateDesc, isRealNote, topicName } from "../../../_shared/notes"
 import { resolveRelative } from "../util/path"
 import style from "./styles/featured.scss"
 
 /**
- * Featured — 홈 전용. 번호 매긴 목록 4행, 첫 항목만 크게(카드형 배경 + 토픽 배지).
+ * Featured — 홈 전용. 번호 + 제목 + "토픽 · N분" 4행.
  *
- * - `options.slugs`가 유일한 지정 수단. 쓴 순서가 표시 순서(번호), 첫 항목이 크게
+ * - `options.slugs`가 유일한 지정 수단. 쓴 순서가 표시 순서(번호)
  * - 부족분은 토픽 라운드로빈으로 채운다 (전체 최신순은 큰 토픽이 슬롯을 독식)
- * - 중복 노출 방지(`recentExcludeCount`)는 자동 채움에만 적용
+ * - Recent Notes에 나온 노트는 지정·자동 채움 모두에서 뺀다(중복 노출 금지)
  *
  * 주의: 목록 순서를 최신순으로 다시 정렬하지 말 것. 순서 제어가 이 방식의 목적이다.
  */
@@ -21,45 +23,18 @@ const MAX_SLOTS = 4
 
 type FileData = QuartzPluginData & Record<string, unknown>
 
-const CATEGORY_NAMES: Record<string, string> = {
-  "computer-science": "Computer Science",
-  "data-engineering": "Data Engineering",
-  "data-science": "Data Science",
-  gis: "GIS",
-  programming: "Programming",
-  "finance-property": "Finance & Property",
-  tools: "Tools",
-}
-
-function getCategoryName(slug: string): string {
-  const key = slug.split("/")[0] ?? ""
-  return CATEGORY_NAMES[key] ?? key.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-}
-
-function isRealNote(slug: string): boolean {
-  if (slug.startsWith("tags/")) return false
-  if (slug === "index" || slug.endsWith("/index")) return false
-  if (slug === "404") return false
-  if (slug === "topics" || slug === "archive") return false
-  return true
-}
-
-/** 목록 날짜 = posted(YYYY-MM-DD, created처럼 로컬 자정) → created. 주의: modified(=updated)는 작업마다 바뀐다. */
-function getDisplayDate(f: FileData): Date | undefined {
-  const posted = (f.frontmatter as { posted?: unknown } | undefined)?.posted
-  const m = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null
-  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
-  return (f.dates as { created?: Date } | undefined)?.created
-}
-
+/** recent-notes-index와 같은 목록 날짜 — max(created, revised ?? created). */
 function getTime(f: FileData): number {
-  return getDisplayDate(f)?.getTime() ?? 0
+  return getListDate(f)?.getTime() ?? 0
 }
 
-function getReadingMinutes(f: FileData): number {
-  const text = (f.text as string | undefined) ?? ""
-  const wordCount = text.split(/\s+/).filter(Boolean).length
-  return Math.max(1, Math.ceil(wordCount / 200))
+/** Recent Notes 표에 나오는 노트 슬러그 — 묶음 행의 구성원 포함. 규칙은 recent-notes-index와 같은 _shared 구현. */
+function getRecentSlugs(files: FileData[], limit: number): Set<string> {
+  const sorted = files
+    .filter((f) => (f.frontmatter as { title?: string } | undefined)?.title)
+    .sort(byListDateDesc)
+  const rows = buildRecentRows(sorted, limit)
+  return new Set(rows.flatMap((r) => (r.kind === "note" ? [r.file] : r.files)).map((f) => f.slug as string))
 }
 
 /** 토픽별 최신 노트를 하나씩, 최신 토픽 순으로 순회하며 뽑는다. */
@@ -101,17 +76,17 @@ function pickRoundRobin(files: FileData[], count: number, exclude: Set<string>):
 export interface FeaturedNotesOptions {
   /** recent-notes-index의 options.limit과 같은 값으로 유지할 것. */
   recentExcludeCount: number
-  /** Featured 노트 슬러그. 쓴 순서가 표시 순서(번호)고, 첫 항목이 크게 표시된다. */
+  /** Featured 노트 슬러그. 쓴 순서가 표시 순서(번호). */
   slugs: string[]
 }
 
 const defaultOptions: FeaturedNotesOptions = {
-  recentExcludeCount: 6,
+  recentExcludeCount: 5,
   slugs: [],
 }
 
-/** 슬러그를 노트로 해석한다. 미해결·중복·초과는 빌드 로그에 경고를 남긴다. */
-function resolveSlugs(slugs: string[], files: FileData[]): FileData[] {
+/** 슬러그를 노트로 해석한다. 미해결·중복·Recent 중복·초과는 빌드 로그에 경고를 남긴다. */
+function resolveSlugs(slugs: string[], files: FileData[], recent: Set<string>): FileData[] {
   const bySlug = new Map(files.map((f) => [f.slug as string, f]))
   const resolved: FileData[] = []
   const seen = new Set<string>()
@@ -125,6 +100,10 @@ function resolveSlugs(slugs: string[], files: FileData[]): FileData[] {
     const file = bySlug.get(slug)
     if (!file) {
       console.warn(`[featured-notes] 슬러그를 찾을 수 없어 건너뜁니다: "${slug}"`)
+      continue
+    }
+    if (recent.has(slug)) {
+      console.warn(`[featured-notes] Recent Notes에 이미 나와 건너뜁니다: "${slug}"`)
       continue
     }
     resolved.push(file)
@@ -149,19 +128,11 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
   }: QuartzComponentProps) => {
     if (fileData.slug !== "index") return <></>
 
-    const files = (allFiles as FileData[]).filter((f) => isRealNote((f.slug as string) ?? ""))
+    const files = (allFiles as FileData[]).filter((f) => isRealNote(f.slug as string | undefined))
+    const recent = getRecentSlugs(files, opts.recentExcludeCount)
+    const curated = resolveSlugs(opts.slugs, files, recent)
 
-    const curated = resolveSlugs(opts.slugs, files)
-
-    // recent-notes-index와 같은 정렬 기준(최신순)으로 상위 N개를 재현해 제외.
-    const recentPostsSlugs = new Set(
-      [...files]
-        .sort((a, b) => getTime(b) - getTime(a))
-        .slice(0, opts.recentExcludeCount)
-        .map((f) => f.slug as string),
-    )
-
-    const exclude = new Set([...curated.map((f) => f.slug as string), ...recentPostsSlugs])
+    const exclude = new Set([...curated.map((f) => f.slug as string), ...recent])
     const needed = MAX_SLOTS - curated.length
     // 자동 채움분만 최신순으로 정렬한다 — curated의 순서는 그대로 둔다.
     const autoFilled =
@@ -173,49 +144,34 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
     if (selected.length === 0) return <></>
 
     const pad = (n: number) => String(n).padStart(2, "0")
-    const formatDate = (d: Date) => `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`
     const titleOf = (f: FileData) =>
       (f.frontmatter as { title?: string } | undefined)?.title ?? "Untitled"
+    // 요약 = summary-description이 채운 frontmatter.description(원고의 [!summary] 콜아웃).
+    const descOf = (f: FileData) =>
+      (f.frontmatter as { description?: string } | undefined)?.description ?? ""
 
     return (
-      <section class={`${displayClass ?? ""} featured-section`}>
-        <div class="featured-header">
-          <h2>Featured</h2>
-        </div>
+      <section class={`${displayClass ?? ""} featured-section`} aria-labelledby="featured-h">
+        <h2 id="featured-h" class="featured-label">
+          Featured
+        </h2>
         <ol class="featured-tracks">
           {selected.map((item, i) => {
-            const isLead = i === 0
-            const href = resolveRelative(fileData.slug!, item.slug as string)
-            const date = getDisplayDate(item)
-            const category = getCategoryName((item.slug as string) ?? "")
-
-            if (isLead) {
-              const leadMeta = [date ? formatDate(date) : undefined, `${getReadingMinutes(item)}분`]
-                .filter(Boolean)
-                .join(" · ")
-              return (
-                <li class="featured-track is-lead">
-                  <span class="featured-no">{pad(i + 1)}</span>
-                  <div class="featured-lead-body">
-                    <span class="featured-cat">First Note · {category}</span>
-                    <a class="featured-title" href={href}>
-                      {titleOf(item)}
-                    </a>
-                    {item.description && <p class="featured-desc">{item.description as string}</p>}
-                    <span class="featured-meta">{leadMeta}</span>
-                  </div>
-                </li>
-              )
-            }
-
-            const meta = [category, `${getReadingMinutes(item)}분`].join(" · ")
+            const minutes = readingMinutes(item.text as string | undefined)
+            const meta = [topicName((item.slug as string) ?? ""), minutes ? `${minutes} min` : ""]
+              .filter(Boolean)
+              .join(" · ")
+            const desc = descOf(item)
             return (
-              <li class="featured-track">
-                <span class="featured-no">{pad(i + 1)}</span>
-                <a class="featured-title" href={href}>
-                  {titleOf(item)}
+              <li class={i === 0 ? "is-lead" : undefined}>
+                <a class="featured-row" href={resolveRelative(fileData.slug!, item.slug as string)}>
+                  <span class="featured-no">{pad(i + 1)}</span>
+                  <span class="featured-body">
+                    <span class="featured-title">{titleOf(item)}</span>
+                    {desc && <span class="featured-desc">{desc}</span>}
+                    <span class="featured-meta">{meta}</span>
+                  </span>
                 </a>
-                <span class="featured-meta">{meta}</span>
               </li>
             )
           })}

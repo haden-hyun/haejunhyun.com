@@ -2,8 +2,8 @@
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 50%;
   background: var(--secondary);
   border: none;
@@ -13,14 +13,17 @@
   justify-content: center;
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity 0.2s, transform 0.2s, background 0.15s;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease),
+    background-color var(--dur-fast) var(--ease);
   z-index: 1000;
   pointer-events: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   &.visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
     pointer-events: auto;
   }
 
@@ -28,9 +31,10 @@
     background: var(--tertiary);
   }
 
+  // 아이콘은 배경 잉크 — 다크 모드 블루 위 흰색은 3:1에 못 미친다.
   svg {
     width: 1rem;
     height: 1rem;
-    fill: #fff;
+    fill: var(--light);
   }
 }

@@ -1,96 +1,236 @@
-// 홈 마스트헤드 — 메타 한 줄 + 헤드라인 + 설명 + 링크, 한 열.
-// 주의: 색은 custom.scss §0의 토큰(--accent, --text 등)만 참조한다.
-//    플러그인에서 색 값을 새로 정의하지 말 것 — 단일 소스는 quartz.config.yaml.
+// 홈 히어로 — 좌측 텍스트, 우측 ASCII 색소폰(모바일은 색소폰이 위).
+// 주의: 색은 테마 변수만 참조한다. 단일 소스는 quartz.config.yaml.
+
+$ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 
 .home-hero {
-  padding: 3.5rem 0 3rem;
+  display: flex;
+  align-items: center;
+  gap: 24px 48px;
+  padding: 56px 0 88px;
 
   @media all and (max-width: 800px) {
-    padding: 2.25rem 0 2rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px 0 56px;
   }
 }
 
-.hero-main {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-}
+.hero-text {
+  flex: 1 1 420px;
+  min-width: 0;
 
-.hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1rem;
-  font-family: var(--codeFont);
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  color: var(--text-3);
-  font-variant-numeric: tabular-nums;
-
-  b {
-    font-weight: 600;
-    color: var(--text);
+  // 주의: 세로 배치에선 flex-basis가 높이가 되어 아래 빈 공간이 생긴다.
+  @media all and (max-width: 800px) {
+    flex-basis: auto;
   }
 }
 
 .hero-headline {
+  margin: 0;
+  padding: 0;
+  border: none;
   font-family: var(--headerFont);
   font-weight: 900;
   font-size: clamp(2.5rem, 6vw, 3.75rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
-  color: var(--text);
-  margin: 0;
-  border: none;
-  padding: 0;
-  text-wrap: balance;
+  color: var(--dark);
+
 }
 
-.hero-description {
-  // 본문체로 통일 — Featured 카드 설명문 등 다른 본문 텍스트와 같은 서체를 쓴다.
-  font-size: 1.08rem;
-  line-height: 1.7;
-  color: var(--text-2);
-  max-width: 38em;
-  margin: 0;
-}
-
-.hero-cta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.6rem 1.4rem;
-  margin-top: 0.4rem;
-  font-family: var(--headerFont); // §hero-description과 같은 이유(main과 동일)
-  font-size: 0.95rem;
-}
-
-// 사이트 색의 세 축 중 행위(Brick). 정의는 custom.scss §0, 대비 4.94:1 AA.
-.hero-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px; // 최소 터치 영역
-  padding: 0 1.1rem;
-  box-sizing: border-box;
-  border-radius: var(--radius, 10px);
-  background: var(--accent-action);
-  color: var(--surface); // 배경색 토큰 = 브릭 위 4.94:1
+.hero-author {
+  margin: 14px 0 0;
+  font-family: var(--headerFont);
+  font-size: 1.05rem;
   font-weight: 700;
-  text-decoration: none;
-  transition: filter 0.15s;
+  color: var(--darkgray);
 
-  // 주의: opacity로 흐리면 라이트 대비가 4.20으로 AA 미달이다.
-  &:hover {
-    filter: brightness(1.06);
+  @media all and (max-width: 800px) {
+    margin-top: 10px;
+    font-size: 1rem;
   }
 }
 
-.hero-link {
-  color: var(--accent);
-  font-weight: 600;
-  text-decoration: none;
+.hero-description {
+  margin: 26px 0 0;
+  max-width: 29em;
+  font-family: var(--headerFont);
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--darkgray);
+  word-break: keep-all;
 
-  &:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+  @media all and (max-width: 800px) {
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+}
+
+.hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 26px 0 0;
+
+  // 칩형 링크 — 블루 틴트 배경 + 헤딩체 볼드.
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--secondary);
+    font-family: var(--headerFont);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color var(--dur-fast) var(--ease);
+
+    &:hover {
+      background: rgba(var(--accent-rgb), 0.16);
+    }
+
+    @media all and (max-width: 800px) {
+      min-height: 44px;
+    }
+  }
+
+  @media all and (max-width: 800px) {
+    margin-top: 16px;
+  }
+}
+
+.hero-meta {
+  margin: 12px 0 0;
+  font-family: var(--codeFont);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+
+  @media all and (max-width: 800px) {
+    margin-top: 4px;
+    font-size: 11.5px;
+  }
+}
+
+// 방문 수가 "-" → 숫자로 바뀌어도 줄 폭이 변하지 않게.
+.hero-num {
+  display: inline-block;
+  min-width: 1ch;
+}
+
+.hero-num-total {
+  min-width: 3ch;
+  text-align: right;
+}
+
+.hero-sax-figure {
+  flex: 0 0 auto;
+  margin: 0;
+
+  @media all and (max-width: 800px) {
+    order: -1;
+    margin: 0 auto;
+  }
+}
+
+.hero-sax {
+  position: relative;
+  width: 340px;
+  height: 336px;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+
+  &.is-dragging {
+    cursor: grabbing;
+  }
+
+  @media all and (max-width: 800px) {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+.hero-sax-ink,
+.hero-sax-fx {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  font-family: var(--codeFont);
+  font-size: 7px;
+  line-height: 7.6px;
+  letter-spacing: 0.02px;
+  white-space: pre;
+  pointer-events: none;
+
+  @media all and (max-width: 800px) {
+    font-size: 5.2px;
+    line-height: 5.65px;
+  }
+}
+
+.hero-sax-ink {
+  color: var(--secondary);
+}
+
+// 소리 파티클 — 본체보다 연한 블루. 장식(aria-hidden)이라 대비 요구 없음.
+.hero-sax-fx {
+  color: color-mix(in srgb, var(--secondary) 50%, var(--light));
+}
+
+// 첫 진입 연출 — 세션당 1회(data-hero-swept), 모션 감소 설정이면 생략.
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-hero-swept]) {
+    .hero-headline {
+      background-image: linear-gradient(90deg, currentColor 0 50%, transparent 50% 100%);
+      background-size: 200% 100%;
+      background-position: 100% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: hero-sweep 1.4s $ease 0.15s forwards;
+    }
+
+    .hero-rise {
+      animation: hero-rise var(--dur-slow, 900ms) $ease both;
+    }
+
+    .hero-rise-1 {
+      animation-delay: 0.12s;
+    }
+
+    .hero-rise-2 {
+      animation-delay: 0.24s;
+    }
+
+    .hero-rise-3 {
+      animation-delay: 0.36s;
+    }
+  }
+}
+
+@keyframes hero-sweep {
+  to {
+    background-position: 0 0;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

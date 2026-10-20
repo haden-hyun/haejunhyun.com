@@ -1,19 +1,57 @@
-// Featured — 번호 매긴 목록. 첫 항목만 카드형 배경 + 토픽 배지로 구분한다.
-// 섹션 라벨(h2) 조판은 custom.scss의 홈 섹션 라벨 규칙이 정한다.
+// Featured — 번호 + 제목 + "토픽 · N분" 목록. 홈 히어로 바로 아래 전폭.
+// 주의: 섹션 라벨 규칙은 recent-notes-index·topic-grid와 같은 값으로 유지할 것.
+
+// RECENT NOTES(좌) + TOPICS(우)를 한 줄에 — 두 섹션은 beforeBody의 형제라 부모 그리드로 나란히 둔다.
+.page-header > .popover-hint:has(> .featured-section) {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  column-gap: 56px;
+  align-items: start;
+
+  > * {
+    grid-column: 1 / -1;
+  }
+
+  > .recent-notes {
+    grid-column: 1;
+  }
+
+  > .topic-grid-section {
+    grid-column: 2;
+  }
+
+  @media all and (max-width: 800px) {
+    grid-template-columns: minmax(0, 1fr);
+
+    > .recent-notes,
+    > .topic-grid-section {
+      grid-column: 1;
+    }
+  }
+}
 
 .featured-section {
   margin: 0;
-  padding: 2.25rem 0 2.5rem;
-  border-top: 1px solid var(--border);
+  padding: 0 0 96px;
+
+  @media all and (max-width: 800px) {
+    padding-bottom: 48px;
+  }
 }
 
-.featured-header {
-  margin-bottom: 1.1rem;
+.featured-label {
+  margin: 0;
+  padding: 0 0 14px;
+  border: none;
+  border-bottom: 1px solid var(--lightgray);
+  font-family: var(--headerFont);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--secondary);
 
-  h2 {
-    margin: 0;
-    padding: 0;
-    border: none;
+  @media all and (max-width: 800px) {
+    padding-bottom: 10px;
   }
 }
 
@@ -21,30 +59,48 @@
   list-style: none;
   margin: 0;
   padding: 0;
+
+  li {
+    margin: 0;
+  }
 }
 
-.featured-track {
+.featured-row {
   display: grid;
-  grid-template-columns: 2.4em minmax(0, 1fr) auto;
-  gap: 0.25rem 0.9rem;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
   align-items: baseline;
-  padding: 0.8rem 0;
-  border-bottom: 1px solid var(--border);
+  padding: 14px 10px;
+  border-bottom: 1px solid var(--lightgray);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease);
 
-  &:last-child {
-    border-bottom: none;
+  &:hover {
+    background: rgba(var(--accent-rgb), 0.1);
   }
 
-  @media all and (max-width: 640px) {
-    grid-template-columns: 2em minmax(0, 1fr);
+  &:hover .featured-title {
+    color: var(--secondary);
   }
+}
+
+// 얼룩말 — 표(tbody)와 같은 비율. hover가 뒤에 와야 이기므로 명시도를 맞춰 둔다.
+.featured-tracks > li:nth-child(even) > .featured-row:not(:hover) {
+  background: rgba(var(--accent-rgb), 0.035);
 }
 
 .featured-no {
   font-family: var(--codeFont);
-  font-size: 0.8rem;
-  color: var(--text-3);
+  font-size: 12px;
+  color: var(--gray);
   font-variant-numeric: tabular-nums;
+}
+
+.featured-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .featured-title {
@@ -52,82 +108,44 @@
   font-size: 1.06rem;
   font-weight: 700;
   line-height: 1.4;
-  color: var(--text);
-  text-decoration: none;
+  color: var(--dark);
+  word-break: keep-all;
+}
 
-  &:hover {
-    color: var(--accent);
+// 요약 한 줄(첫 항목은 두 줄) — 넘치면 말줄임.
+.featured-desc {
+  display: -webkit-box;
+  margin-top: 0.2rem;
+  max-width: 46em;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--darkgray);
+  word-break: keep-all;
+}
+
+// 첫 항목만 크게 — 기존 리드 크기(제목 1.35~1.75rem/900, 요약 0.97rem 두 줄).
+.is-lead > .featured-row {
+  padding-block: 1.25rem;
+
+  .featured-title {
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-weight: 900;
+    line-height: 1.3;
+  }
+
+  .featured-desc {
+    margin-top: 0.35rem;
+    -webkit-line-clamp: 2;
+    font-size: 0.97rem;
+    line-height: 1.65;
   }
 }
 
 .featured-meta {
-  font-family: var(--codeFont);
-  font-size: 0.74rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  white-space: nowrap;
-  text-align: right;
-
-  @media all and (max-width: 640px) {
-    grid-column: 2;
-    text-align: left;
-    white-space: normal;
-  }
-}
-
-// 첫 항목만 카드형 — main의 .featured-main 배경(옅은 대각선 그라디언트)을 재현.
-.featured-track.is-lead {
-  grid-template-columns: 2.4em minmax(0, 1fr);
-  align-items: start;
-  padding: 1.25rem 1.4rem 1.5rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius, 10px);
-  background: linear-gradient(160deg, var(--surface-2), var(--surface));
-}
-
-.featured-lead-body {
-  display: flex;
-  flex-direction: column;
-}
-
-// "First Note" 배지 — 핑크 고정색(--featured-cat-color, custom.scss). 대문자·자간·점 유지.
-.featured-cat {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--codeFont);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--featured-cat-color);
-  margin-bottom: 0.6rem;
-
-  &::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border-radius: 2px;
-    background: currentColor;
-  }
-}
-
-.featured-lead-body .featured-title {
-  font-size: clamp(1.35rem, 3vw, 1.75rem);
-  font-weight: 900;
-  line-height: 1.3;
-}
-
-.featured-lead-body .featured-desc {
-  margin: 0.35rem 0 0;
-  max-width: 40em;
-  font-size: 0.97rem;
-  line-height: 1.65;
-  color: var(--text-2);
-}
-
-.featured-lead-body .featured-meta {
-  text-align: left;
-  margin-top: 0.6rem;
+  margin-top: 0.3rem;
+  font-size: 13px;
+  color: var(--gray);
 }

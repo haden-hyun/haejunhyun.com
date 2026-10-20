@@ -5,9 +5,7 @@ configuration:
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
-  analytics:
-    provider: google
-    tagId: G-6XY03WD2ST
+  # 방문 집계는 goatcounter-tracking 플러그인 하나만 쓴다.
   locale: en-US
   baseUrl: haejunhyun.com
   ignorePatterns:
@@ -17,6 +15,7 @@ configuration:
     # 주의: content 기준 glob. `/**`가 있어야 watch 모드(minimatch)에서도 하위 파일이 걸린다.
     - attachments/_staging/**
     - attachments/archive/**
+    - test.md
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
@@ -37,25 +36,25 @@ configuration:
       lightMode:
         light: "#f7f5ef" # bg · 크림 인쇄지 (순백 대비 광량 91.3%)
         lightgray: "#e4dfd4" # border
-        gray: "#676f7c" # meta          4.65:1  AA
+        gray: "#5f6773" # meta          5.27:1  AA (행 hover 10% 위 4.56)
         darkgray: "#323e4c" # body          9.99:1  AAA
         dark: "#141d28" # heading      15.58:1  AAA
         secondary: "#1c5f95" # accent        6.17:1  AA
         tertiary: "#17527f" # accent hover  7.55:1  AAA
         highlight: rgba(28,95,149,0.10)
-        # `==강조==` 전체 채움(형광펜). 그린 — 본문 대비 8.26:1 AAA.
-        textHighlight: "#c4e9d3"
+        # `==강조==` 전체 채움(형광펜). 라임 — 두 모드 같은 색상, 의미색과 32°+ 이격. --highlight-ink 대비 13.86:1.
+        textHighlight: "#e2efa6"
       darkMode:
         light: "#0e1420" # bg · 잉크 네이비 (Blue Giant #0c0c24 계열)
         lightgray: "#1e2836" # border
-        gray: "#7c8899" # meta          5.12:1  AA
+        gray: "#7f8b9c" # meta          5.34:1  AA (행 hover 10% 위 4.56)
         darkgray: "#bcc9d9" # body         10.96:1  AAA
         dark: "#e9eff7" # heading      15.93:1  AAA
         secondary: "#6fb2e0" # accent        8.00:1  AAA
         tertiary: "#9dcdec" # accent hover 10.86:1  AAA
         highlight: rgba(111,178,224,0.15)
-        # 골드(형광펜 관습) — 본문 대비 7.01:1 AAA.
-        textHighlight: "#40371c"
+        # 라임(다크) — --highlight-ink 대비 5.96:1, 페이지 구분 2.87.
+        textHighlight: "#56651a"
 plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
@@ -98,7 +97,10 @@ plugins:
     order: 30
   - source: ./plugins/summary-description
     enabled: true
-    options: {}
+    options:
+      # 원고에 description·요약 콜아웃이 없을 때만 쓰인다. 홈 meta/og description.
+      fallbackDescriptions:
+        index: "여러 가지 데이터를 다루다 궁금해진 것들을 적어 둡니다."
     # `[!summary]` 콜아웃 본문 → frontmatter.description.
     # order 35 = ofm(30) 이후, description(70) 이전이어야 한다.
     order: 35
@@ -234,7 +236,7 @@ plugins:
     options:
       title: "CATALOG"
       moreHref: "topics"
-      moreLabel: "← 모든 토픽 보기"
+      moreLabel: "← All topics"
     order: 15
     layout:
       position: left
@@ -277,16 +279,14 @@ plugins:
       priority: 11
   - source: ./plugins/home-hero
     enabled: true
-    # 홈 마스트헤드(메타 한 줄 + 헤드라인). 홈 전용(컴포넌트 내부 slug 가드), priority 1 = 최상단.
+    # 홈 히어로(헤드라인·이름·설명·링크·메타 + ASCII 색소폰). 홈 전용(컴포넌트 내부 slug 가드), priority 1 = 최상단.
+    # 설명글은 summary-description의 fallbackDescriptions.index(홈 meta description)를 그대로 쓴다.
     options:
       headline: "Blue Notes."
-      description: "즉흥 노트, 떠오른 순서대로."
+      author: "Haejun Hyun"
       links:
-        - label: "Dive In"
-          href: "#recent"
-          primary: true
         - label: "GitHub"
-          href: "https://github.com/haden-hyun/haejunhyun.com"
+          href: "https://github.com/haden-hyun"
         - label: "LinkedIn"
           href: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
     order: 15
@@ -295,24 +295,24 @@ plugins:
       priority: 1
   - source: ./plugins/featured-notes
     enabled: true
-    # Featured. 홈 전용, priority 2 = 마스트헤드 아래. 번호 목록 4행(첫 항목만 카드형).
-    # slugs가 유일한 지정 수단이다 — 쓴 순서가 표시 순서(번호)고 첫 항목이 크게 표시된다.
-    # 비워두면 토픽 라운드로빈으로 자동 선정. 못 찾은 슬러그는 빌드 로그에 경고.
+    # Featured. 홈 전용, priority 2 = 히어로 아래 전폭. 번호 목록 4행.
+    # slugs가 유일한 지정 수단이다 — 쓴 순서가 표시 순서(번호).
+    # 비워두면 토픽 라운드로빈으로 자동 선정. 못 찾았거나 Recent Notes에 나온 슬러그는 빌드 로그에 경고.
     # 주의: recentExcludeCount는 아래 recent-notes-index.limit과 같은 값으로 유지할 것.
     options:
-      recentExcludeCount: 6
+      recentExcludeCount: 5
       slugs:
         - tools/obsidian/quartz/build/obsidian-quartz-blog
         - finance-property/real-estate/address-pnu
         - data-science/deep-learning/neural-network
-        - data-engineering/infra/docker/docker-concept
+        - gis/concept/crs
     order: 15
     layout:
       position: beforeBody
       priority: 2
   - source: ./plugins/topic-grid
     enabled: true
-    # Topics. 홈 전용, priority 4 = Recent Notes 아래.
+    # Topics. 홈 전용, priority 4 = Recent Notes 우측 단.
     options:
       showHeader: true
     order: 15
@@ -326,7 +326,7 @@ plugins:
       priority: 10
       # 홈은 HomeHero가 헤드라인을 대신 보여주므로 제외 (중복 방지).
       condition: not-index
-  # 데스크톱은 우측 note-specs가 대신하므로 모바일만 남긴다.
+  # 데스크톱은 좌측 note-specs가 대신하므로 모바일만 남긴다.
   - source: github:quartz-community/content-meta
     enabled: true
     layout:
@@ -453,13 +453,13 @@ plugins:
       priority: 13
   - source: ./plugins/recent-notes-index
     enabled: true
-    # 홈 Recent Notes(최근 노트 표). priority 3 = Featured 아래. linkToMore는 /archive로 연결.
+    # 홈 Recent Notes. priority 3 = Featured 아래, TOPICS와 2단. 같은 날짜·폴더 3편 이상은 한 행으로 묶인다.
     options:
       title: "Recent Notes"
-      limit: 6
+      limit: 5
       showTags: true
       linkToMore: "archive"
-      linkToMoreLabel: "아카이브 →"
+      linkToMoreLabel: "Archive →"
     order: 15
     layout:
       position: beforeBody
@@ -514,17 +514,11 @@ plugins:
     order: 90
   - source: ./plugins/footer
     enabled: true
-    # 텍스트 콜로폰 푸터(전 페이지 공통). main 원안 — 브랜드 + 평문 링크 목록 + 저작권 한 줄.
+    # 콜로폰 푸터(전 페이지 공통) — 저작권 + 제작 정보 한 줄. 링크는 상단바·히어로와 중복이라 두지 않는다.
     options:
-      columns:
-        - title: "HAEJUN RECORDS"
-          links:
-            Home: "/"
-            Topics: "/topics"
-            Archive: "/archive"
-            GitHub: "https://github.com/haden-hyun"
-            LinkedIn: "https://www.linkedin.com/in/haejun-hyun-332b76243/"
-      meta: "© 2026 Haejun Hyun · Built with Quartz"
+      columns: []
+      brand: "© 2026 Haejun Hyun"
+      meta: "BUILT WITH OBSIDIAN + QUARTZ"
     order: 50
 layout:
   groups:

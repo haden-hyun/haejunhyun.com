@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["src", "types"],
+  "include": ["src", "types", "../_shared"],
   "exclude": ["dist", "node_modules", "test"]
 }

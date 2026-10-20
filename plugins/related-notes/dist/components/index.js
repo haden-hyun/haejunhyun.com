@@ -35,7 +35,17 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/relatedNotes.scss
-var relatedNotes_default = ".related-notes {\n  margin: 2rem 0;\n}\n.related-notes h3 {\n  margin: 0 0 0.8rem 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1rem;\n  font-weight: 700;\n}\n\n.related-notes-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 12px;\n}\n@media all and (max-width: 600px) {\n  .related-notes-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.related-note-card {\n  display: flex;\n  flex-direction: column;\n  gap: 0.35rem;\n  padding: 0.85rem 1rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  transition: border-color 0.15s;\n}\n.related-note-card:hover {\n  border-color: var(--accent);\n}\n\n.related-note-cat {\n  font-family: var(--codeFont);\n  font-size: 0.66rem;\n  font-weight: 600;\n  letter-spacing: 0.03em;\n  color: var(--text-3);\n}\n\n.related-note-title {\n  font-family: var(--headerFont);\n  font-size: 0.92rem;\n  font-weight: 630;\n  line-height: 1.4;\n  color: var(--text);\n}";
+var relatedNotes_default = ".related-notes {\n  margin: 2rem 0;\n}\n.related-notes h3 {\n  margin: 0 0 0.8rem 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1rem;\n  font-weight: 700;\n}\n\n.related-notes-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 12px;\n}\n@media all and (max-width: 600px) {\n  .related-notes-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.related-note-card {\n  display: flex;\n  flex-direction: column;\n  gap: 0.35rem;\n  padding: 0.85rem 1rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  transition: border-color var(--dur-fast) var(--ease);\n}\n.related-note-card:hover {\n  border-color: var(--accent);\n}\n\n.related-note-cat {\n  font-family: var(--codeFont);\n  font-size: 0.66rem;\n  font-weight: 600;\n  letter-spacing: 0.03em;\n  color: var(--text-3);\n}\n\n.related-note-title {\n  font-family: var(--headerFont);\n  font-size: 0.92rem;\n  font-weight: 630;\n  line-height: 1.4;\n  color: var(--text);\n  word-break: keep-all;\n}";
+
+// ../_shared/notes.ts
+function isRealNote(slug) {
+  if (!slug) return false;
+  if (slug.startsWith("tags/")) return false;
+  if (slug === "index" || slug.endsWith("/index")) return false;
+  if (slug === "404") return false;
+  if (slug === "topics" || slug === "archive") return false;
+  return true;
+}
 var l;
 function S(n2) {
   return n2.children;
@@ -74,13 +84,6 @@ function getCategoryName(slug) {
   const key = slug.split("/")[0] ?? "";
   return CATEGORY_NAMES[key] ?? key.replace(/-/g, " ").replace(/\b\w/g, (c2) => c2.toUpperCase());
 }
-function isRealNote(slug) {
-  if (slug.startsWith("tags/")) return false;
-  if (slug === "index" || slug.endsWith("/index")) return false;
-  if (slug === "404") return false;
-  if (slug === "topics" || slug === "archive") return false;
-  return true;
-}
 var RelatedNotes_default = (() => {
   const RelatedNotes = ({
     fileData,
@@ -91,10 +94,10 @@ var RelatedNotes_default = (() => {
     if (currentSlug === "index") return /* @__PURE__ */ u2(S, {});
     const files = allFiles;
     const backlinks = files.filter(
-      (f3) => f3.unlisted !== true && f3.links?.includes(currentSlug) && isRealNote(f3.slug ?? "")
+      (f3) => f3.unlisted !== true && f3.links?.includes(currentSlug) && isRealNote(f3.slug)
     );
     const outgoingTargets = fileData.links ?? [];
-    const outgoing = outgoingTargets.map((target) => files.find((f3) => f3.slug === target)).filter((f3) => f3 !== void 0 && isRealNote(f3.slug ?? ""));
+    const outgoing = outgoingTargets.map((target) => files.find((f3) => f3.slug === target)).filter((f3) => f3 !== void 0 && isRealNote(f3.slug));
     const seen = /* @__PURE__ */ new Set([currentSlug]);
     const related = [];
     for (const f3 of [...outgoing, ...backlinks]) {
@@ -106,7 +109,7 @@ var RelatedNotes_default = (() => {
     }
     if (related.length === 0) return /* @__PURE__ */ u2(S, {});
     return /* @__PURE__ */ u2("div", { class: `${displayClass ?? ""} related-notes`, children: [
-      /* @__PURE__ */ u2("h3", { children: "\uC5F0\uACB0\uB41C \uB178\uD2B8" }),
+      /* @__PURE__ */ u2("h3", { children: "Related Notes" }),
       /* @__PURE__ */ u2("div", { class: "related-notes-grid", children: related.map((f3) => /* @__PURE__ */ u2("a", { class: "related-note-card", href: resolveRelative(currentSlug, f3.slug), children: [
         /* @__PURE__ */ u2("span", { class: "related-note-cat", children: getCategoryName(f3.slug ?? "") }),
         /* @__PURE__ */ u2("span", { class: "related-note-title", children: f3.frontmatter?.title ?? "Untitled" })

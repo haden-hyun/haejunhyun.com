@@ -2,6 +2,85 @@
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
+
+// ../_shared/noteMeta.ts
+function toDate(value) {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? void 0 : value;
+  if (typeof value !== "string" && typeof value !== "number") return void 0;
+  const d2 = new Date(value);
+  return Number.isNaN(d2.getTime()) ? void 0 : d2;
+}
+function formatYmd(date) {
+  return date.toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
+}
+function getNoteDates(file) {
+  const created = file.dates?.created ?? file.dates?.published;
+  const differs = (d2, ...others) => d2 && !others.some((o2) => o2 && formatYmd(o2) === formatYmd(d2)) ? d2 : void 0;
+  const revised = differs(toDate(file.frontmatter?.revised), created);
+  const updated = differs(file.dates?.modified, created, revised);
+  return { created, revised, updated };
+}
+function getListDate(file) {
+  const { created, revised } = getNoteDates(file);
+  if (!created) return file.dates?.modified;
+  return revised && revised > created ? revised : created;
+}
+
+// ../_shared/notes.ts
+function isRealNote(slug2) {
+  if (!slug2) return false;
+  if (slug2.startsWith("tags/")) return false;
+  if (slug2 === "index" || slug2.endsWith("/index")) return false;
+  if (slug2 === "404") return false;
+  if (slug2 === "topics" || slug2 === "archive") return false;
+  return true;
+}
+var TOPIC_NAMES = {
+  "computer-science": "Computer Science",
+  "data-engineering": "Data Engineering",
+  "data-science": "Data Science",
+  gis: "GIS",
+  programming: "Programming",
+  "finance-property": "Finance & Property",
+  tools: "Tools"
+};
+function titleCase(key) {
+  return key.replace(/-/g, " ").replace(/\b\w/g, (c2) => c2.toUpperCase());
+}
+function topicName(slug2) {
+  const key = slug2.split("/")[0] ?? "";
+  return TOPIC_NAMES[key] ?? titleCase(key);
+}
+var byListDateDesc = (a2, b2) => (getListDate(b2)?.getTime() ?? 0) - (getListDate(a2)?.getTime() ?? 0);
+var GROUP_MIN = 3;
+function buildRecentRows(sorted, limit) {
+  const keyOf = (f3) => {
+    const parts = (f3.slug ?? "").split("/");
+    const d2 = getListDate(f3);
+    if (parts.length < 3 || !d2) return void 0;
+    return `${formatYmd(d2)}|${parts.slice(0, -1).join("/")}`;
+  };
+  const members = /* @__PURE__ */ new Map();
+  for (const f3 of sorted) {
+    const key = keyOf(f3);
+    if (key) members.set(key, [...members.get(key) ?? [], f3]);
+  }
+  const rows = [];
+  const emitted = /* @__PURE__ */ new Set();
+  for (const f3 of sorted) {
+    if (rows.length >= limit) break;
+    const key = keyOf(f3);
+    const group = key ? members.get(key) : void 0;
+    if (key && group && group.length >= GROUP_MIN) {
+      if (emitted.has(key)) continue;
+      emitted.add(key);
+      rows.push({ kind: "group", folder: key.split("|")[1], files: group });
+    } else {
+      rows.push({ kind: "note", file: f3 });
+    }
+  }
+  return rows;
+}
 var l;
 function S(n2) {
   return n2.children;
@@ -83,41 +162,16 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/recentNotes.scss
-var recentNotes_default = ".recent-notes {\n  padding: 2.25rem 0 2.5rem;\n  border-top: 1px solid var(--border);\n}\n\n.recent-notes-header {\n  display: flex;\n  align-items: baseline;\n  justify-content: space-between;\n  margin-bottom: 1.1rem;\n}\n.recent-notes-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n}\n\n.recent-notes-more {\n  font-size: 0.85rem;\n  font-weight: 600;\n  color: var(--accent);\n  text-decoration: none;\n}\n.recent-notes-more:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n\n.row {\n  display: grid;\n  grid-template-columns: 96px 1fr auto;\n  gap: 18px;\n  align-items: center;\n  padding: 15px 8px;\n  border-bottom: 1px solid var(--border);\n  text-decoration: none;\n  color: inherit;\n  transition: 0.12s;\n}\n.row:hover {\n  padding-left: 14px;\n  padding-right: 2px;\n}\n.row .d {\n  font-family: var(--codeFont);\n  font-size: 12px;\n  color: var(--text-3);\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n.row .t {\n  display: block;\n  font-family: var(--headerFont);\n  font-size: 15.5px;\n  font-weight: 700;\n  letter-spacing: -0.018em;\n  color: var(--text);\n}\n.row .s {\n  font-size: 13px;\n  color: var(--text-3);\n  margin-top: 7px;\n  overflow: hidden;\n  display: -webkit-box;\n  -webkit-line-clamp: 1;\n  -webkit-box-orient: vertical;\n}\n.row .tag {\n  font-family: var(--codeFont);\n  font-size: 11px;\n  color: var(--text-3);\n  border: 1px solid var(--border);\n  border-radius: 5px;\n  padding: 3px 8px;\n  white-space: nowrap;\n}\n\n@media all and (max-width: 640px) {\n  .row {\n    grid-template-columns: minmax(0, 1fr) auto;\n    gap: 0.3rem 0.75rem;\n  }\n  .row > span:nth-child(2) {\n    grid-column: 1/-1;\n    grid-row: 2;\n  }\n  .row .tag {\n    grid-row: 1;\n    grid-column: 2;\n    white-space: normal;\n  }\n}";
+var recentNotes_default = '@charset "UTF-8";\n.recent-notes {\n  padding: 0 0 72px;\n}\n@media all and (max-width: 800px) {\n  .recent-notes {\n    padding-bottom: 48px;\n  }\n}\n\n.recent-notes-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding-bottom: 14px;\n  border-bottom: 1px solid var(--lightgray);\n}\n.recent-notes-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: 0;\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .recent-notes-header {\n    padding-bottom: 10px;\n  }\n}\n\n.recent-notes-more {\n  padding: 8px 0;\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  color: var(--secondary);\n  text-decoration: none;\n}\n.recent-notes-more:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n@media all and (max-width: 800px) {\n  .recent-notes-more {\n    padding: 10px 0;\n  }\n}\n\n.recent-row {\n  display: grid;\n  grid-template-columns: 120px minmax(0, 1fr) auto;\n  gap: 24px;\n  align-items: baseline;\n  padding: 22px 10px;\n  border-bottom: 1px solid var(--lightgray);\n  color: inherit;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.recent-row:nth-child(even) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n.recent-row:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n@media all and (max-width: 800px) {\n  .recent-row {\n    grid-template-columns: auto minmax(0, 1fr);\n    gap: 4px 0;\n    padding: 18px 10px;\n  }\n}\n\n.recent-date {\n  font-family: var(--codeFont);\n  font-size: 12.5px;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n@media all and (max-width: 800px) {\n  .recent-date {\n    font-size: 11.5px;\n  }\n}\n\n.recent-main {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n@media all and (max-width: 800px) {\n  .recent-main {\n    grid-column: 1/-1;\n    grid-row: 2;\n  }\n}\n\n.recent-title {\n  font-family: var(--headerFont);\n  font-size: 17px;\n  font-weight: 700;\n  letter-spacing: -0.01em;\n  color: var(--dark);\n  word-break: keep-all;\n}\n@media all and (max-width: 800px) {\n  .recent-title {\n    font-size: 16px;\n  }\n}\n\n.recent-revised {\n  display: inline-block;\n  margin-left: 8px;\n  padding: 0 5px;\n  border: 1px solid var(--lightgray);\n  border-radius: 4px;\n  font-size: 11px;\n  font-weight: 400;\n  letter-spacing: 0;\n  line-height: 1.6;\n  color: var(--gray);\n  vertical-align: 2px;\n}\n\n.recent-sub {\n  font-size: 14.5px;\n  line-height: 1.65;\n  color: var(--gray);\n  word-break: keep-all;\n  overflow: hidden;\n  display: -webkit-box;\n  -webkit-line-clamp: 1;\n  -webkit-box-orient: vertical;\n}\n@media all and (max-width: 800px) {\n  .recent-sub {\n    font-size: 14px;\n    line-height: 1.6;\n  }\n}\n\n.recent-topic {\n  font-size: 12.5px;\n  color: var(--gray);\n  white-space: nowrap;\n}\n@media all and (max-width: 800px) {\n  .recent-topic {\n    grid-row: 1;\n    grid-column: 2;\n    font-family: var(--codeFont);\n    font-size: 11.5px;\n  }\n  .recent-topic::before {\n    content: " \xB7 ";\n    white-space: pre;\n  }\n}';
 
 // src/components/RecentNotesForIndex.tsx
-function isAutoGeneratedPage(slug2) {
-  return slug2.startsWith("tags/") || slug2 === "index" || slug2.endsWith("/index") || slug2 === "404" || slug2 === "topics" || slug2 === "archive";
-}
-function getDisplayDate(f3) {
-  const posted = f3.frontmatter?.posted;
-  const m2 = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null;
-  if (m2) return new Date(Number(m2[1]), Number(m2[2]) - 1, Number(m2[3]));
-  return f3.dates?.created;
-}
-function getSortTime(f3) {
-  return getDisplayDate(f3)?.getTime() ?? 0;
-}
-function getTagLabel(f3) {
-  const tags = f3.frontmatter?.tags;
-  if (Array.isArray(tags) && tags.length > 0 && typeof tags[0] === "string") {
-    return tags[0];
-  }
-  const slug2 = f3.slug ?? "";
-  const parts = slug2.split("/");
-  return parts.length > 1 ? parts.slice(0, -1).join("/") : parts[0] ?? "";
-}
-function formatDate(d2) {
-  const pad = (n2) => String(n2).padStart(2, "0");
-  return `${d2.getFullYear()}.${pad(d2.getMonth() + 1)}.${pad(d2.getDate())}`;
-}
 var defaultOptions = {
-  limit: 6,
+  limit: 5,
   linkToMore: false,
-  linkToMoreLabel: "\uC544\uCE74\uC774\uBE0C \u2192",
+  linkToMoreLabel: "ALL NOTES \u2192",
   showTags: true,
   filter: () => true,
-  sort: (f1, f22) => getSortTime(f22) - getSortTime(f1)
+  sort: byListDateDesc
 };
 var RecentNotesForIndex_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
@@ -129,30 +183,49 @@ var RecentNotesForIndex_default = ((userOpts) => {
     if (fileData.slug !== "index") return /* @__PURE__ */ u2(S, {});
     const files = allFiles;
     const pages = files.filter(opts.filter).filter(
-      (f3) => f3.slug !== fileData.slug && f3.frontmatter?.title && !isAutoGeneratedPage(f3.slug ?? "")
-    ).sort(opts.sort).slice(0, opts.limit);
-    return (
-      // id="recent" — home-hero의 CTA(href="#recent") 스크롤 대상. 지우지 말 것.
-      /* @__PURE__ */ u2("div", { id: "recent", class: classNames(displayClass, "recent-notes"), children: [
-        /* @__PURE__ */ u2("div", { class: "recent-notes-header", children: [
-          /* @__PURE__ */ u2("h2", { children: opts.title ?? "Recent Notes" }),
-          opts.linkToMore && /* @__PURE__ */ u2("a", { class: "recent-notes-more", href: resolveRelative(fileData.slug, opts.linkToMore), children: opts.linkToMoreLabel })
-        ] }),
-        /* @__PURE__ */ u2("div", { class: "rows", children: pages.map((page) => {
-          const title = page.frontmatter?.title ?? "Untitled";
-          const description = page.description ?? "";
-          const displayDate = getDisplayDate(page);
-          return /* @__PURE__ */ u2("a", { class: "row", href: resolveRelative(fileData.slug, page.slug), children: [
-            /* @__PURE__ */ u2("span", { class: "d", children: displayDate ? formatDate(displayDate) : "" }),
-            /* @__PURE__ */ u2("span", { children: [
-              /* @__PURE__ */ u2("span", { class: "t", children: title }),
-              description && /* @__PURE__ */ u2("span", { class: "s", children: description })
+      (f3) => f3.slug !== fileData.slug && f3.frontmatter?.title && isRealNote(f3.slug)
+    ).sort(opts.sort);
+    const rows = buildRecentRows(pages, opts.limit);
+    const here = fileData.slug;
+    const titleOf = (f3) => f3.frontmatter?.title ?? "Untitled";
+    return /* @__PURE__ */ u2("section", { class: classNames(displayClass, "recent-notes"), "aria-labelledby": "recent-notes-h", children: [
+      /* @__PURE__ */ u2("div", { class: "recent-notes-header", children: [
+        /* @__PURE__ */ u2("h2", { id: "recent-notes-h", children: opts.title ?? "RECENT NOTES" }),
+        opts.linkToMore && /* @__PURE__ */ u2("a", { class: "recent-notes-more", href: resolveRelative(here, opts.linkToMore), children: opts.linkToMoreLabel })
+      ] }),
+      /* @__PURE__ */ u2("div", { class: "recent-rows", children: rows.map((row) => {
+        const lead = row.kind === "note" ? row.file : row.files[0];
+        const date = getListDate(lead);
+        const slug2 = lead.slug ?? "";
+        let href;
+        let title;
+        let sub;
+        let revised = false;
+        if (row.kind === "group") {
+          const shown = row.files.slice(0, 2).map(titleOf);
+          const rest = row.files.length - shown.length;
+          href = resolveRelative(here, `${row.folder}/index`);
+          title = `${titleCase(row.folder.split("/").pop() ?? "")} \xB7 ${row.files.length} notes`;
+          sub = shown.join(", ") + (rest > 0 ? ` +${rest} more` : "");
+        } else {
+          href = resolveRelative(here, slug2);
+          title = titleOf(row.file);
+          sub = row.file.description ?? "";
+          revised = Boolean(getNoteDates(row.file).revised);
+        }
+        return /* @__PURE__ */ u2("a", { class: "recent-row", href, children: [
+          /* @__PURE__ */ u2("span", { class: "recent-date", children: date ? formatYmd(date) : "" }),
+          /* @__PURE__ */ u2("span", { class: "recent-main", children: [
+            /* @__PURE__ */ u2("span", { class: "recent-title", children: [
+              title,
+              revised && /* @__PURE__ */ u2("span", { class: "recent-revised", children: "Revised" })
             ] }),
-            opts.showTags && /* @__PURE__ */ u2("span", { class: "tag", children: getTagLabel(page) })
-          ] });
-        }) })
-      ] })
-    );
+            sub && /* @__PURE__ */ u2("span", { class: "recent-sub", children: sub })
+          ] }),
+          opts.showTags && /* @__PURE__ */ u2("span", { class: "recent-topic", children: topicName(slug2) })
+        ] });
+      }) })
+    ] });
   };
   RecentNotesForIndex.css = recentNotes_default;
   return RecentNotesForIndex;

@@ -35,7 +35,17 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/topicGrid.scss
-var topicGrid_default = ".topic-grid-section {\n  padding: 2.25rem 0 2.5rem;\n  border-top: 1px solid var(--border);\n}\n\n.topic-grid-header {\n  display: flex;\n  align-items: baseline;\n  justify-content: space-between;\n  margin-bottom: 1.1rem;\n}\n.topic-grid-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n}\n\n.topic-grid-more {\n  font-size: 0.85rem;\n  font-weight: 600;\n  color: var(--accent);\n  text-decoration: none;\n}\n.topic-grid-more:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n\n.topic-index {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));\n  gap: 0.25rem 2.25rem;\n}\n.topic-index li {\n  margin: 0;\n}\n\n.topic-entry {\n  display: flex;\n  align-items: baseline;\n  gap: 0.5rem;\n  padding: 0.45rem 0;\n  min-height: 44px;\n  box-sizing: border-box;\n  text-decoration: none;\n}\n.topic-entry:hover .topic-entry-name {\n  color: var(--accent);\n}\n\n.topic-entry-name {\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 600;\n  color: var(--text);\n  transition: color 0.12s;\n}\n.topic-entry-name small {\n  display: block;\n  margin-top: 0.1rem;\n  font-size: 0.78rem;\n  font-weight: 400;\n  color: var(--text-3);\n}\n\n.topic-entry-leader {\n  flex: 1;\n  min-width: 1rem;\n  border-bottom: 1px dotted var(--border-strong);\n  opacity: 0.6;\n  transform: translateY(-0.3em);\n}\n\n.topic-entry-count {\n  font-family: var(--codeFont);\n  font-size: 0.82rem;\n  color: var(--text-2);\n  font-variant-numeric: tabular-nums;\n}";
+var topicGrid_default = ".topic-grid-section {\n  margin: 0;\n  padding: 0 0 96px;\n}\n@media all and (max-width: 800px) {\n  .topic-grid-section {\n    padding-bottom: 48px;\n  }\n}\n\n.topic-grid-label {\n  display: flex;\n  align-items: center;\n  min-height: 37px;\n  margin: 0;\n  padding: 0 0 14px;\n  border: none;\n  border-bottom: 1px solid var(--lightgray);\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: 0;\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .topic-grid-label {\n    padding-bottom: 10px;\n  }\n}\n\n.topic-index {\n  list-style: none;\n  margin: 0;\n  padding: 6px 0 0;\n}\n.topic-index li {\n  margin: 0;\n}\n@media all and (max-width: 800px) {\n  .topic-index {\n    padding-top: 0;\n  }\n}\n\n.topic-entry {\n  display: flex;\n  align-items: baseline;\n  gap: 10px;\n  padding: 9px 10px;\n  min-height: 44px;\n  box-sizing: border-box;\n  color: inherit;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.topic-entry:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n.topic-entry:hover .topic-entry-name {\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .topic-entry {\n    padding: 10px;\n  }\n}\n\n.topic-index > li:nth-child(even) > .topic-entry:not(:hover) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n\n.topic-entry-name {\n  font-family: var(--headerFont);\n  font-weight: 600;\n  color: var(--dark);\n}\n.topic-entry-name small {\n  display: block;\n  margin-top: 0.1rem;\n  font-family: var(--bodyFont);\n  font-size: 0.78rem;\n  font-weight: 400;\n  color: var(--gray);\n}\n\n.topic-entry-leader {\n  flex: 1;\n  min-width: 1rem;\n  border-bottom: 1px dotted var(--lightgray);\n  transform: translateY(-4px);\n}\n\n.topic-entry-count {\n  font-family: var(--codeFont);\n  font-size: 12px;\n  color: var(--darkgray);\n  font-variant-numeric: tabular-nums;\n}";
+
+// ../_shared/notes.ts
+function isRealNote(slug) {
+  if (!slug) return false;
+  if (slug.startsWith("tags/")) return false;
+  if (slug === "index" || slug.endsWith("/index")) return false;
+  if (slug === "404") return false;
+  if (slug === "topics" || slug === "archive") return false;
+  return true;
+}
 var l;
 function S(n2) {
   return n2.children;
@@ -62,45 +72,14 @@ function u2(e2, t2, n2, o2, i2, u3) {
 
 // src/components/TopicGrid.tsx
 var TOPICS = [
-  {
-    key: "computer-science",
-    label: "Computer Science",
-    subtext: "\uC54C\uACE0\uB9AC\uC998 \xB7 \uC790\uB8CC\uAD6C\uC870"
-  },
-  {
-    key: "data-engineering",
-    label: "Data Engineering",
-    subtext: "Airflow \xB7 Docker \xB7 PostgreSQL"
-  },
-  {
-    key: "data-science",
-    label: "Data Science",
-    subtext: "DL \xB7 ML \xB7 \uD1B5\uACC4 \xB7 \uC2DC\uAC01\uD654"
-  },
-  { key: "gis", label: "GIS", subtext: "\uACF5\uAC04 \uB370\uC774\uD130 \uBD84\uC11D" },
-  {
-    key: "programming",
-    label: "Programming",
-    subtext: "Python \xB7 SQL"
-  },
-  {
-    key: "finance-property",
-    label: "Finance & Property",
-    subtext: "\uBD80\uB3D9\uC0B0 \xB7 \uAE08\uC735"
-  },
-  {
-    key: "tools",
-    label: "Tools",
-    subtext: "Obsidian \xB7 \uC6CC\uD06C\uD50C\uB85C\uC6B0"
-  }
+  { key: "computer-science", label: "Computer Science", subtext: "Algorithms \xB7 Data Structures" },
+  { key: "data-engineering", label: "Data Engineering", subtext: "Airflow \xB7 Docker \xB7 PostgreSQL" },
+  { key: "data-science", label: "Data Science", subtext: "DL \xB7 ML \xB7 Statistics \xB7 Visualization" },
+  { key: "gis", label: "GIS", subtext: "Spatial Data Analysis" },
+  { key: "programming", label: "Programming", subtext: "Python \xB7 SQL" },
+  { key: "finance-property", label: "Finance & Property", subtext: "Real Estate \xB7 Finance" },
+  { key: "tools", label: "Tools", subtext: "Obsidian \xB7 Workflow" }
 ];
-function isRealNote(slug) {
-  if (slug.startsWith("tags/")) return false;
-  if (slug === "index" || slug.endsWith("/index")) return false;
-  if (slug === "404") return false;
-  if (slug === "topics" || slug === "archive") return false;
-  return true;
-}
 var defaultOptions = {
   showHeader: true
 };
@@ -124,20 +103,24 @@ var TopicGrid_default = ((userOpts) => {
     const topicsWithCounts = TOPICS.map((t2) => ({ ...t2, count: counts.get(t2.key) ?? 0 })).sort(
       (a2, b2) => b2.count - a2.count
     );
-    return /* @__PURE__ */ u2("section", { class: `${displayClass ?? ""} topic-grid-section`, children: [
-      opts.showHeader && /* @__PURE__ */ u2("div", { class: "topic-grid-header", children: [
-        /* @__PURE__ */ u2("h2", { children: "Topics" }),
-        /* @__PURE__ */ u2("a", { class: "topic-grid-more", href: resolveRelative(fileData.slug, "topics"), children: "\uC804\uCCB4 \u2192" })
-      ] }),
-      /* @__PURE__ */ u2("ul", { class: "topic-index", children: topicsWithCounts.map((t2) => /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2("a", { class: "topic-entry", href: resolveRelative(fileData.slug, t2.key), children: [
-        /* @__PURE__ */ u2("span", { class: "topic-entry-name", children: [
-          t2.label,
-          /* @__PURE__ */ u2("small", { children: t2.subtext })
-        ] }),
-        /* @__PURE__ */ u2("span", { class: "topic-entry-leader", "aria-hidden": "true" }),
-        /* @__PURE__ */ u2("span", { class: "topic-entry-count", children: t2.count })
-      ] }) })) })
-    ] });
+    return /* @__PURE__ */ u2(
+      "section",
+      {
+        class: `${displayClass ?? ""} topic-grid-section`,
+        "aria-labelledby": opts.showHeader ? "topic-grid-h" : void 0,
+        children: [
+          opts.showHeader && /* @__PURE__ */ u2("h2", { id: "topic-grid-h", class: "topic-grid-label", children: "Topics" }),
+          /* @__PURE__ */ u2("ul", { class: "topic-index", children: topicsWithCounts.map((t2) => /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2("a", { class: "topic-entry", href: resolveRelative(fileData.slug, t2.key), children: [
+            /* @__PURE__ */ u2("span", { class: "topic-entry-name", children: [
+              t2.label,
+              /* @__PURE__ */ u2("small", { children: t2.subtext })
+            ] }),
+            /* @__PURE__ */ u2("span", { class: "topic-entry-leader", "aria-hidden": "true" }),
+            /* @__PURE__ */ u2("span", { class: "topic-entry-count", children: t2.count })
+          ] }) })) })
+        ]
+      }
+    );
   };
   TopicGrid.css = topicGrid_default;
   return TopicGrid;

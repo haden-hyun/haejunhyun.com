@@ -3,11 +3,10 @@ import { QuartzComponent } from '@quartz-community/types';
 type Link = {
     label: string;
     href: string;
-    primary?: boolean;
 };
 interface HomeHeroOptions {
-    /** \n으로 줄바꿈 */
     headline: string;
+    author: string;
     description: string;
     links: Link[];
 }

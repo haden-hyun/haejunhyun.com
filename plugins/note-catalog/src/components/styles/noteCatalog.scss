@@ -17,8 +17,6 @@
     font-size: 0.68rem;
     letter-spacing: 0.06em;
     color: var(--gray);
-    text-decoration: none;
-    border-bottom: none !important;
     word-break: break-all;
 
     &:hover {
@@ -41,9 +39,8 @@
     padding: 4px 0 4px 0.6rem;
     border-left: 2px solid transparent;
     line-height: 1.45;
-    text-decoration: none;
-    border-bottom: none !important;
-    transition: color 0.12s;
+    word-break: keep-all;
+    transition: color var(--dur-fast) var(--ease);
 
     &.active {
       color: var(--secondary);
@@ -58,8 +55,6 @@
     border-top: 1px solid var(--lightgray);
     font-size: 0.75rem;
     color: var(--gray);
-    text-decoration: none;
-    border-bottom: none !important;
 
     &:hover {
       color: var(--secondary);

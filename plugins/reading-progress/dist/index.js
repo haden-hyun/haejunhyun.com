@@ -1,9 +1,22 @@
 // src/components/styles/readingProgress.scss
-var readingProgress_default = "#reading-progress-bar {\n  position: fixed;\n  top: 0;\n  left: 0;\n  height: 2px;\n  width: 0%;\n  background: var(--accent-state);\n  z-index: 9999;\n  transition: width 0.08s ease-out;\n  pointer-events: none;\n}";
+var readingProgress_default = "#reading-progress-bar {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 2px;\n  background: var(--accent-state);\n  transform: scaleX(0);\n  transform-origin: left;\n  z-index: 9999;\n  pointer-events: none;\n}";
 
 // src/components/scripts/readingProgress.inline.ts
-var readingProgress_inline_default = 'document.addEventListener("nav",()=>{let n=document.getElementById("reading-progress-bar");if(!n)return;let e=()=>{let o=window.scrollY,t=document.documentElement.scrollHeight-window.innerHeight;n.style.width=t>0?`${Math.min(o/t*100,100)}%`:"0%"};window.addEventListener("scroll",e,{passive:!0}),window.addCleanup(()=>window.removeEventListener("scroll",e)),e()});\n';
+var readingProgress_inline_default = 'document.addEventListener("nav",()=>{let t=document.getElementById("reading-progress-bar");if(!t)return;let e=0,r=()=>{e=0;let i=document.documentElement.scrollHeight-window.innerHeight,o=i>0?Math.min(window.scrollY/i,1):0;t.style.transform=`scaleX(${o})`},n=()=>{e||(e=requestAnimationFrame(r))};window.addEventListener("scroll",n,{passive:!0}),window.addEventListener("resize",n,{passive:!0}),window.addCleanup(()=>{window.removeEventListener("scroll",n),window.removeEventListener("resize",n),cancelAnimationFrame(e)}),r()});\n';
+
+// ../_shared/notes.ts
+function isRealNote(slug) {
+  if (!slug) return false;
+  if (slug.startsWith("tags/")) return false;
+  if (slug === "index" || slug.endsWith("/index")) return false;
+  if (slug === "404") return false;
+  if (slug === "topics" || slug === "archive") return false;
+  return true;
+}
 var l;
+function S(n2) {
+  return n2.children;
+}
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
     if ((r2 = i2.constructor) && null != r2.getDerivedStateFromError && (i2.setState(r2.getDerivedStateFromError(n2)), o2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n2, t2 || {}), o2 = i2.__d), o2) return i2.__E = i2;
@@ -20,13 +33,12 @@ function u2(e2, t2, n2, o2, i2, u3) {
   var a2, c2, p2 = t2;
   if ("ref" in p2) for (c2 in p2 = {}, t2) "ref" == c2 ? a2 = t2[c2] : p2[c2] = t2[c2];
   var l2 = { type: e2, props: p2, key: n2, ref: a2, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: --f2, __i: -1, __u: 0, __source: i2, __self: u3 };
+  if ("function" == typeof e2 && (a2 = e2.defaultProps)) for (c2 in a2) void 0 === p2[c2] && (p2[c2] = a2[c2]);
   return l.vnode && l.vnode(l2), l2;
 }
 
 // src/components/ReadingProgress.tsx
-var ReadingProgress = () => {
-  return /* @__PURE__ */ u2("div", { id: "reading-progress-bar" });
-};
+var ReadingProgress = ({ fileData }) => isRealNote(fileData.slug) ? /* @__PURE__ */ u2("div", { id: "reading-progress-bar", "aria-hidden": "true" }) : /* @__PURE__ */ u2(S, {});
 ReadingProgress.css = readingProgress_default;
 ReadingProgress.beforeDOMLoaded = readingProgress_inline_default;
 var ReadingProgress_default = (() => ReadingProgress);

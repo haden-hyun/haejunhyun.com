@@ -1,21 +1,15 @@
-.archive-page-content {
-  h1 {
-    margin-bottom: 0.3rem;
-  }
-}
-
 .archive-page-sub {
   font-family: var(--codeFont);
   font-size: 0.8rem;
   color: var(--text-3);
-  margin: 0 0 1.8rem 0;
+  margin: 0 0 1.8rem;
 }
 
 .archive-page-year {
   margin-bottom: 1.6rem;
 
   h2 {
-    margin: 0 0 0.6rem 0;
+    margin: 0 0 0.6rem;
     padding: 0;
     border: none;
     font-family: var(--codeFont);
@@ -30,23 +24,32 @@
   flex-direction: column;
 }
 
+// 주의: 하단선 !important는 custom.scss `article a`(비-레이어)의 투명 하단선을 이기기 위함.
 .archive-page-row {
   display: grid;
-  grid-template-columns: 72px 1fr auto;
-  align-items: center;
+  grid-template-columns: 6rem 1fr auto;
+  align-items: baseline;
   gap: 14px;
   padding: 0.6rem 0.3rem;
-  border-bottom: 1px solid var(--border);
-  text-decoration: none;
-  transition: padding-left 0.15s;
+  border-bottom: 1px solid var(--border) !important;
+  transition: background-color var(--dur-fast) var(--ease);
+
+  // 얼룩말·hover — 홈 Recent Notes·표(tbody)와 같은 비율.
+  &:nth-child(even) {
+    background: rgba(var(--accent-rgb), 0.035);
+  }
 
   &:hover {
-    background: var(--surface-2);
-    padding-left: 0.6rem;
+    background: rgba(var(--accent-rgb), 0.1);
+  }
+
+  &:hover .archive-page-title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   @media all and (max-width: 600px) {
-    grid-template-columns: 56px 1fr;
+    grid-template-columns: 6rem 1fr;
 
     .archive-page-cat {
       display: none;
@@ -57,6 +60,7 @@
 .archive-page-date {
   font-family: var(--codeFont);
   font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
   color: var(--text-3);
 }
 
@@ -66,11 +70,21 @@
   font-weight: 620;
   color: var(--text);
   line-height: 1.4;
+  word-break: keep-all;
+}
+
+.archive-page-rev {
+  margin-left: 0.5rem;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-3);
+  white-space: nowrap;
 }
 
 .archive-page-cat {
   font-family: var(--codeFont);
-  font-size: 0.66rem;
+  font-size: 0.7rem;
   color: var(--text-3);
   white-space: nowrap;
 }

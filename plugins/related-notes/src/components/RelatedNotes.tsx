@@ -6,6 +6,7 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import style from "./styles/relatedNotes.scss"
+import { isRealNote } from "../../../_shared/notes"
 
 /**
  * RelatedNotes — 노트 하단(afterBody)의 백링크 + 아웃고잉 링크, 최대 4개.
@@ -35,14 +36,6 @@ function getCategoryName(slug: string): string {
   return CATEGORY_NAMES[key] ?? key.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
-function isRealNote(slug: string): boolean {
-  if (slug.startsWith("tags/")) return false
-  if (slug === "index" || slug.endsWith("/index")) return false
-  if (slug === "404") return false
-  if (slug === "topics" || slug === "archive") return false
-  return true
-}
-
 export default (() => {
   const RelatedNotes: QuartzComponent = ({
     fileData,
@@ -59,14 +52,14 @@ export default (() => {
       (f) =>
         f.unlisted !== true &&
         (f.links as string[] | undefined)?.includes(currentSlug) &&
-        isRealNote((f.slug as string) ?? ""),
+        isRealNote(f.slug as string | undefined),
     )
 
     // 아웃고잉: 실제로 존재하는 노트에 매칭되는 링크만(깨진 링크는 버린다).
     const outgoingTargets = (fileData.links as string[] | undefined) ?? []
     const outgoing = outgoingTargets
       .map((target) => files.find((f) => f.slug === target))
-      .filter((f): f is FileData => f !== undefined && isRealNote((f.slug as string) ?? ""))
+      .filter((f): f is FileData => f !== undefined && isRealNote(f.slug as string | undefined))
 
     const seen = new Set<string>([currentSlug])
     const related: FileData[] = []
@@ -82,7 +75,7 @@ export default (() => {
 
     return (
       <div class={`${displayClass ?? ""} related-notes`}>
-        <h3>연결된 노트</h3>
+        <h3>Related Notes</h3>
         <div class="related-notes-grid">
           {related.map((f) => (
             <a class="related-note-card" href={resolveRelative(currentSlug, f.slug as string)}>

@@ -41,8 +41,8 @@ document.addEventListener("nav", () => {
       })
     }
 
-    addButton("il-prev", "이전 이미지", "‹", () => goTo(current() - 1))
-    addButton("il-next", "다음 이미지", "›", () => goTo(current() + 1))
+    addButton("il-prev", "Previous image", "‹", () => goTo(current() - 1))
+    addButton("il-next", "Next image", "›", () => goTo(current() + 1))
 
     thumbs.forEach((thumb, i) => {
       const onClick = () => goTo(i)

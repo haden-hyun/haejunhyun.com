@@ -4,7 +4,10 @@ import type {
   QuartzComponentProps,
   QuartzPluginData,
 } from "@quartz-community/types"
+import { buildSax, renderSax, SAX_REST } from "./sax"
+import type { SaxModel } from "./sax"
 import style from "./styles/hero.scss"
+import { isRealNote } from "../../../_shared/notes"
 
 // 주의: `@quartz-community/utils`를 쓰지 않고 인라인한 것은 의도적이다.
 // github: 참조 의존성이라 fresh npm install에서 dist 없이 설치돼 빌드가 깨진다.
@@ -12,14 +15,8 @@ function classNames(...classes: (string | undefined | false)[]): string {
   return classes.filter(Boolean).join(" ")
 }
 
-/** 2026.09.13 — 메타 줄은 로케일과 무관하게 한 형식. */
-function formatDate(d: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0")
-  return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`
-}
-
 /**
- * 홈 마스트헤드 — 메타 한 줄 + 헤드라인 + 설명 + 링크.
+ * 홈 히어로 — 헤드라인 + 이름 + 설명 + 링크 줄 + 메타 줄, 우측 3D ASCII 색소폰.
  *
  * - 홈 전용 렌더는 내부 slug 가드. `condition: is-index`는 내장에 없다
  * - 통계는 전부 allFiles 런타임 집계. 하드코딩 금지
@@ -28,9 +25,17 @@ function formatDate(d: Date): string {
 
 const GOATCOUNTER_SITE = "haejunhyun"
 
+// 헤드라인 sweep은 세션당 1회 — 첫 페인트 전에 판정해야 깜빡이지 않는다.
+const sweptScript = `try { if (sessionStorage.getItem("hero-swept")) document.documentElement.setAttribute("data-hero-swept", "") } catch {}`
+
 // 주의: start/end는 UTC 자정이고 end는 배타적이다 — start=end면 항상 0. 날짜 단위만 받아 KST 하루는 표현 불가.
-const visitScript = `
-async function fillHeroVisits() {
+const heroScript = `
+const buildSax = (${buildSax.toString()});
+const renderSax = (${renderSax.toString()});
+const REST = ${JSON.stringify(SAX_REST)};
+let saxModel = null;
+
+function fillHeroVisits() {
   const total = document.getElementById("hero-visits-total")
   const today = document.getElementById("hero-visits-today")
   if (!total && !today) return
@@ -45,40 +50,127 @@ async function fillHeroVisits() {
   get(base, total)
   get(base + "?start=" + day + "&end=" + next, today)
 }
-document.addEventListener("nav", fillHeroVisits)
+
+function markHeroSwept() {
+  const root = document.documentElement
+  if (!document.querySelector(".home-hero") || root.hasAttribute("data-hero-swept")) return
+  try { sessionStorage.setItem("hero-swept", "1") } catch {}
+  window.addCleanup(() => root.setAttribute("data-hero-swept", ""))
+}
+
+function initHeroSax() {
+  const box = document.querySelector(".hero-sax")
+  const inkEl = box?.querySelector(".hero-sax-ink")
+  const fxEl = box?.querySelector(".hero-sax-fx")
+  if (!box || !inkEl || !fxEl) return
+  saxModel = saxModel || buildSax()
+  const buf = {}
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  const m = { ay: REST.ay, ax: REST.ax, vy: 0, vx: 0, t: 0, drag: false, lx: 0, ly: 0, lt: 0 }
+  let raf = 0, prev = 0, acc = 0, visible = false
+
+  const draw = () => {
+    const f = renderSax(saxModel, buf, m.ay, m.ax, m.t)
+    inkEl.textContent = f.ink
+    fxEl.textContent = f.fx
+  }
+  const stop = () => { if (raf) cancelAnimationFrame(raf); raf = 0; prev = 0 }
+  const schedule = () => { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame) }
+  // 자동 회전 → 손 떼면 관성 감쇠 + 기울기 복귀. 그리기는 30fps로 제한한다.
+  function frame(now) {
+    raf = 0
+    const dt = prev ? Math.min(0.05, (now - prev) / 1000) : 1 / 60
+    prev = now
+    const spin = reduce ? 0 : 0.3
+    if (!m.drag) {
+      m.vy += (spin - m.vy) * (1 - Math.exp(-dt * 2.2))
+      m.vx += (REST.ax - m.ax) * 30 * dt
+      m.vx *= Math.exp(-dt * 5)
+      m.ay += m.vy * dt
+      m.ax += m.vx * dt
+    }
+    if (!reduce) m.t += dt
+    acc += dt
+    if (acc >= 1 / 30) { acc = 0; draw() }
+    if (reduce && !m.drag && Math.abs(m.vy) < 0.001 && Math.abs(m.vx) < 0.001) { prev = 0; return }
+    schedule()
+  }
+
+  const down = (e) => {
+    m.drag = true; m.lx = e.clientX; m.ly = e.clientY; m.lt = performance.now(); m.vy = 0; m.vx = 0
+    box.setPointerCapture?.(e.pointerId)
+    box.classList.add("is-dragging")
+    schedule()
+  }
+  const move = (e) => {
+    if (!m.drag) return
+    const now = performance.now(), dt = Math.max(0.008, (now - m.lt) / 1000)
+    const dx = e.clientX - m.lx, dy = e.clientY - m.ly
+    m.lx = e.clientX; m.ly = e.clientY; m.lt = now
+    m.ay += dx * 0.012; m.ax += dy * 0.012
+    m.vy = (dx * 0.012) / dt; m.vx = (dy * 0.012) / dt
+  }
+  const up = () => {
+    if (!m.drag) return
+    m.drag = false
+    if (performance.now() - m.lt > 80) { m.vy = 0; m.vx = 0 }
+    box.classList.remove("is-dragging")
+    schedule()
+  }
+  const onVisibility = () => (document.hidden ? stop() : schedule())
+  const io = new IntersectionObserver((entries) => {
+    visible = entries.some((en) => en.isIntersecting)
+    visible ? schedule() : stop()
+  })
+
+  io.observe(box)
+  box.addEventListener("pointerdown", down)
+  box.addEventListener("pointermove", move)
+  box.addEventListener("pointerup", up)
+  box.addEventListener("pointercancel", up)
+  document.addEventListener("visibilitychange", onVisibility)
+  window.addCleanup(() => {
+    stop()
+    io.disconnect()
+    box.removeEventListener("pointerdown", down)
+    box.removeEventListener("pointermove", move)
+    box.removeEventListener("pointerup", up)
+    box.removeEventListener("pointercancel", up)
+    document.removeEventListener("visibilitychange", onVisibility)
+  })
+}
+
+document.addEventListener("nav", () => {
+  fillHeroVisits()
+  markHeroSwept()
+  initHeroSax()
+})
 `
 
-type Link = { label: string; href: string; primary?: boolean }
+type Link = { label: string; href: string }
 
 export interface HomeHeroOptions {
-  /** \n으로 줄바꿈 */
   headline: string
+  author: string
   description: string
   links: Link[]
 }
 
 const defaultOptions: HomeHeroOptions = {
   headline: "",
+  author: "",
   description: "",
   links: [],
 }
 
-/** 슬러그 패턴으로 거른다. 자동 생성 페이지도 title이 있어 title 유무로는 안 된다. */
-function isRealNote(f: QuartzPluginData & Record<string, unknown>): boolean {
-  const slug = (f.slug as string | undefined) ?? ""
-  if (slug.startsWith("tags/")) return false
-  if (slug === "index" || slug.endsWith("/index")) return false
-  if (slug === "404") return false
-  if (slug === "topics" || slug === "archive") return false
-  return true
-}
+let saxModel: SaxModel | undefined
+let firstFrame: { ink: string; fx: string } | undefined
 
-/** 목록 날짜(posted → created) 기준 — 홈 Recent Notes 맨 윗줄과 같은 날이어야 한다. */
-function getTime(f: QuartzPluginData & Record<string, unknown>): number {
-  const posted = f.frontmatter?.posted
-  const m = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null
-  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime()
-  return (f as { dates?: { created?: Date } }).dates?.created?.getTime() ?? 0
+/** 클라이언트 첫 프레임과 같은 각도·시간으로 빌드 시 미리 그린다 — 빈칸·레이아웃 이동 방지. */
+function getFirstFrame(): { ink: string; fx: string } {
+  saxModel ??= buildSax()
+  firstFrame ??= renderSax(saxModel, {}, SAX_REST.ay, SAX_REST.ax, 0)
+  return firstFrame
 }
 
 export default ((userOpts?: Partial<HomeHeroOptions>) => {
@@ -90,61 +182,54 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
 
     // 토픽 폴더 안의 노트만 센다 — 루트에 놓인 노트가 토픽 1개로 잡히지 않게.
     const files = (allFiles as (QuartzPluginData & Record<string, unknown>)[]).filter(
-      (f) => f.slug !== fileData.slug && isRealNote(f) && (f.slug ?? "").includes("/"),
+      (f) => f.slug !== fileData.slug && isRealNote(f.slug) && (f.slug ?? "").includes("/"),
     )
     const noteCount = files.length
     const topicCount = new Set(files.map((f) => (f.slug ?? "").split("/")[0]).filter(Boolean)).size
-    const lastUpdateTime = files.reduce((max, f) => Math.max(max, getTime(f)), 0)
+    const frame = getFirstFrame()
+    // 기본값 = summary-description의 홈 description(meta/og와 같은 문장).
+    const description =
+      opts.description || ((fileData.frontmatter as { description?: string } | undefined)?.description ?? "")
 
     return (
       <section class={classNames(displayClass, "home-hero")}>
-        <div class="hero-main">
-          <div class="hero-meta">
-            <span>
-              <b>{noteCount}</b> NOTES
-            </span>
-            <span>
-              <b>{topicCount}</b> TOPICS
-            </span>
-            <span>
-              <b id="hero-visits-total">-</b> VISITS
-            </span>
-            <span>
-              <b id="hero-visits-today">-</b> TODAY
-            </span>
-            {lastUpdateTime > 0 && (
-              <span>
-                UPDATED <b>{formatDate(new Date(lastUpdateTime))}</b>
-              </span>
+        <div class="hero-text">
+          <h1 class="hero-headline">{opts.headline}</h1>
+          {opts.author && <p class="hero-author hero-rise hero-rise-1">{opts.author}</p>}
+          {description && <p class="hero-description hero-rise hero-rise-2">{description}</p>}
+          <div class="hero-rise hero-rise-3">
+            {opts.links.length > 0 && (
+              <p class="hero-links">
+                {opts.links.map((link) => (
+                  <a href={link.href}>{link.label}</a>
+                ))}
+              </p>
             )}
+            <p class="hero-meta">
+              {noteCount} notes · {topicCount} topics ·{" "}
+              <span id="hero-visits-total" class="hero-num hero-num-total">
+                -
+              </span>{" "}
+              visits ·{" "}
+              <span id="hero-visits-today" class="hero-num">
+                -
+              </span>{" "}
+              today
+            </p>
           </div>
-          <h1 class="hero-headline">
-            {opts.headline.split("\n").map((line, i, arr) => (
-              <>
-                {line}
-                {i < arr.length - 1 && <br />}
-              </>
-            ))}
-          </h1>
-          {opts.description && <p class="hero-description">{opts.description}</p>}
-          {opts.links.length > 0 && (
-            <div class="hero-cta">
-              {opts.links.map((link) => (
-                <a
-                  class={classNames(undefined, link.primary ? "hero-btn-primary" : "hero-link")}
-                  href={link.href}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          )}
         </div>
+        <figure class="hero-sax-figure hero-rise hero-rise-1" aria-hidden="true">
+          <div class="hero-sax">
+            <div class="hero-sax-ink">{frame.ink}</div>
+            <div class="hero-sax-fx">{frame.fx}</div>
+          </div>
+        </figure>
       </section>
     )
   }
 
   HomeHero.css = style
-  HomeHero.afterDOMLoaded = visitScript
+  HomeHero.beforeDOMLoaded = sweptScript
+  HomeHero.afterDOMLoaded = heroScript
   return HomeHero
 }) satisfies QuartzComponentConstructor<Partial<HomeHeroOptions>>

@@ -25,14 +25,14 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --accent-action: #b8442a; // 4.94:1  AA — CTA
   --accent-state: #b03a7d; // 5.14:1  AA — 읽기 진행바
 
-  // 인라인 코드 칩 — 틸 고정(모드 불문). 세 축·하이라이트와 색상 27°+ 이격.
-  --code-chip-bg: #c4e9e4;
-  --code-chip-border: #9fcbc4;
-  --code-ink: #20242a; // 11.97:1  AAA
+  // 인라인 코드 칩 — 코드블럭과 같은 종이 계열 중립 칩 + 잉크 글자.
+  --code-chip-bg: #ebe6da;
+  --code-chip-border: #ddd6c7;
+  --code-ink: var(--dark);
+  --highlight-ink: var(--dark); // 라임 위 13.86:1
   --code-bg: #efebe0; // 코드블럭 배경 — syntax.scss 대비 계산의 기준
-
-  // Featured 리드 카드의 "First Note" 배지 — 카드 배경 대비 6.74/5.53 AA.
-  --featured-cat-color: #a02256;
+  --code-bar-bg: #e6e1d4; // 맥 창 제목 줄 — 언어 라벨(secondary) 5.16:1
+  --code-shadow: 0 5px 20px rgba(20, 29, 40, 0.08);
 
   // 콜아웃 시맨틱 5그룹 — 12종 타입을 가치 단위로 묶는다.
   // 주의: 대비는 페이지 배경이 아니라 콜아웃 틴트(7%) 배경 기준으로 잰다.
@@ -55,6 +55,12 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --text: var(--dark);
   --text-2: var(--darkgray);
   --text-3: var(--gray);
+
+  // 모션 — 이징 1개, 시간 3단계(호버·색 / 등장·이동 / 히어로 리빌). 감속 설정은 §13.
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 900ms;
 }
 
 // 다크모드 — documentElement의 `saved-theme` 속성으로 제어된다.
@@ -64,12 +70,13 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --accent-action: #e87256; // 6.12:1  AA
   --accent-state: #dd7ab0; // 6.57:1  AA
 
-  --code-chip-bg: #1c403b;
-  --code-chip-border: #2e5c55;
-  --code-ink: #eef1f4; // 10.04:1  AAA
+  --code-chip-bg: #1c2535;
+  --code-chip-border: #2a3446;
+  --code-ink: var(--dark);
+  --highlight-ink: #f6f8e6; // 라임 위 5.96:1
   --code-bg: #141b28;
-
-  --featured-cat-color: #e87daa; // 카드 배경 대비 6.97/5.63 AA
+  --code-bar-bg: #1a2231; // 언어 라벨 6.92:1
+  --code-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
 
   --cal-good: #4cbf87;
   --cal-warn: #d9a441;
@@ -93,6 +100,7 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
     font-family: var(--headerFont);
     letter-spacing: 0;
     line-height: 1.3;
+    word-break: keep-all;
   }
 
   h1 {
@@ -133,6 +141,11 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
     margin-bottom: 1rem;
   }
 
+  li {
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
   strong {
     font-weight: 700;
   }
@@ -154,7 +167,7 @@ article em {
   letter-spacing: 0.02em;
 }
 
-// `==강조==` — 형광펜 전체 채움(그린/골드). 색은 --textHighlight 하나(quartz.config.yaml).
+// `==강조==` — 형광펜 전체 채움(라임). 색은 --textHighlight 하나(quartz.config.yaml).
 // 주의: `<mark>`를 같이 잡을 것 — ofm은 `==...==`에만 .text-highlight를 붙여서,
 //       원고가 직접 쓴 <mark>는 브라우저 기본 형광 노랑으로 샌다.
 .text-highlight,
@@ -162,7 +175,9 @@ article mark {
   background: var(--textHighlight);
   border-radius: 3px;
   padding: 0.05em 0.18em;
-  color: inherit;
+  color: var(--highlight-ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 // 본문 내부 링크만 하단선 (사이드바 링크 오염 방지)
@@ -170,7 +185,7 @@ article a {
   color: var(--secondary);
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: border-color 0.15s;
+  transition: border-color var(--dur-fast) var(--ease);
   &:hover {
     border-bottom-color: var(--secondary);
   }
@@ -178,28 +193,48 @@ article a {
 
 // ── 2. Code Blocks ─────────────────────────────────────────────────────────
 
-// 행 번호 숨김 — base.scss의 counter(line) 오버라이드.
-pre > code > [data-line]::before {
-  display: none;
+// 줄 번호 — 모든 코드블럭. 가로 스크롤에도 고정되는 거터, 선택·복사에서 제외.
+// 색은 주석 토큰(--syn-muted, 코드 배경 기준 AA)을 쓴다.
+pre > code {
+  counter-reset: line;
+
+  > [data-line]::before {
+    counter-increment: line;
+    content: counter(line);
+    position: sticky;
+    left: 0;
+    display: inline-block;
+    width: 3ch;
+    margin-right: 1em;
+    padding: 0 0.8em 0 0.75rem;
+    border-right: 1px solid var(--lightgray);
+    background: var(--code-bg);
+    text-align: right;
+    color: var(--syn-muted);
+    user-select: none;
+  }
 }
 
-// 언어 배지 — pre[data-language] 우상단.
-pre[data-language] {
-  position: relative;
-  &::before {
-    content: attr(data-language);
-    position: absolute;
-    top: 0.45rem;
-    right: 0.7rem;
-    font-family: var(--codeFont);
-    font-size: 0.62rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--secondary);
-    opacity: 0.7;
-    pointer-events: none;
-  }
+// 맥 창 신호등 — 순수 장식(대비 규칙 밖). 제목 줄 배경 위에 그린다.
+$mac-lights:
+  radial-gradient(6px at 20px 50%, #ff5f57 5.5px, transparent 6.5px),
+  radial-gradient(6px at 39px 50%, #febc2e 5.5px, transparent 6.5px),
+  radial-gradient(6px at 58px 50%, #28c840 5.5px, transparent 6.5px);
+
+@mixin mac-bar {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 44px 0 74px;
+  box-sizing: border-box;
+  background: $mac-lights, var(--code-bar-bg);
+  border-bottom: 1px solid var(--lightgray);
+  font-family: var(--codeFont);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--secondary);
 }
 
 code:not(pre code) {
@@ -214,13 +249,56 @@ code:not(pre code) {
 
 // config의 `keepBackground: false`가 걷어낸 Shiki 배경 자리에 사이트 톤을 넣는다.
 // 주의: syntax.scss의 토큰 대비가 이 값 기준으로 계산돼 있다 — 바꾸면 전부 재검증할 것.
+// 맥 창 프레임 — 제목 줄(pre::before)·복사 버튼은 고정, 가로 스크롤은 안쪽 code가 맡는다.
 pre {
   background: var(--code-bg);
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--lightgray);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--code-shadow);
   margin: 1.2rem 0;
-  overflow-x: auto;
+  padding: 0;
+  overflow: hidden;
+
+  &::before {
+    content: attr(data-language);
+    @include mac-bar;
+  }
+
+  // 왼쪽 여백은 줄 번호 거터가 맡는다.
+  > code {
+    padding: 0.75rem 0.75rem 0.85rem 0;
+  }
+
+  // 복사 버튼을 제목 줄 오른쪽에 상시 노출(터치 기기에서도 보이게).
+  > .clipboard-button {
+    top: 3px;
+    right: 6px;
+    margin: 0;
+    padding: 6px;
+    border: 0;
+    background: transparent;
+    opacity: 0.75;
+    transition: opacity var(--dur-fast) var(--ease);
+
+    &:hover {
+      opacity: 1;
+    }
+
+    > svg {
+      fill: var(--secondary);
+      filter: none;
+    }
+  }
+
+  // mermaid는 다이어그램이라 창 장식을 씌우지 않는다.
+  &:has(> code.mermaid) {
+    border: none;
+    box-shadow: none;
+
+    &::before {
+      content: none;
+    }
+  }
 }
 
 pre code {
@@ -231,18 +309,21 @@ pre code {
 
 // 코드블록 타이틀(```lang title="...") — rehype-pretty-code 표준 구조.
 [data-rehype-pretty-code-title] {
-  font-family: var(--codeFont);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--gray);
-  background: var(--lightgray);
-  padding: 4px 12px;
-  border-radius: 8px 8px 0 0;
+  @include mac-bar;
   border: 1px solid var(--lightgray);
-  border-bottom: none;
-  margin-bottom: -1px;
+  border-radius: 10px 10px 0 0;
+  text-transform: none;
+  letter-spacing: 0;
+
+  + pre {
+    margin-top: 0;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+
+    &::before {
+      content: none;
+    }
+  }
 }
 
 // ── 3. KaTeX ───────────────────────────────────────────────────────────────
@@ -289,34 +370,109 @@ body .katex-display .katex {
 // Obsidian 형태(아이콘 + 둥근 박스 + 좌측 바)를 유지하고 색만 우리 것을 쓴다.
 // 주의: 우리가 정의하는 건 색이지 형태가 아니다 — 아이콘·둥근 모서리를 걷어내지 말 것.
 .callout {
+  // 헤더 격자: 아이콘 열 + 글자 열. 제목 글자와 목록 글자가 --cal-indent에서 만난다.
+  --cal-icon: 16px;
+  --cal-gap: 8px;
+  --cal-indent: calc(var(--cal-icon) + var(--cal-gap));
+  --cal-lh: 1.45;
+  --cal-ink: color-mix(in srgb, var(--color) 82%, var(--dark));
   border-radius: 6px;
   margin: 1.2rem 0;
+  padding: 0;
+  overflow: hidden;
   line-height: 1.75;
+  // 보더·배경을 전부 타입 색(--color)에서 파생시킨다 — 신규 타입도 --color만 주면 따라온다.
+  // 주의: 네 변을 모두 파생시킬 것. 일부만 지정하면 나머지 변에 callouts.scss의
+  //       Obsidian 하드코딩 색이 남아 좌측 바와 테두리가 다른 계열이 된다.
+  border-color: color-mix(in srgb, var(--color) 22%, transparent);
+  border-left: 3px solid var(--color);
+  background: color-mix(in srgb, var(--color) 5%, transparent);
 
-  // callouts.scss의 `.callout-title { padding: 1rem 0 }` 상쇄
   & > .callout-title {
+    --cal-hair: color-mix(in srgb, var(--color) 24%, transparent);
+    gap: var(--cal-gap);
+    color: var(--cal-ink);
     font-family: var(--headerFont);
     font-weight: 700;
-    font-size: 0.88rem;
-    padding: 0.6rem 0.3rem 0.5rem;
+    font-size: 0.92rem;
+    line-height: var(--cal-lh);
+    padding: 12px 16px 7px 14px;
     margin: 0;
-  }
-  & > .callout-content {
-    padding: 0.5rem 0.3rem 0.7rem;
-    font-size: 0.9rem;
-    p:last-child {
-      margin-bottom: 0;
+    // 제목 아래 1px 구분선 — 제목 글자 시작선부터, 아이콘 열은 비운다.
+    background: linear-gradient(var(--cal-hair), var(--cal-hair)) no-repeat
+      calc(14px + var(--cal-indent)) 100% / calc(100% - 14px - var(--cal-indent)) 1px;
+    // 주의: 레이어 안 `p`·`.callout-title-inner` 규칙이 제목 서체·굵기를 직접 잡는다 — 상속으로 되돌린다.
+    & > .callout-title-inner,
+    & > .callout-title-inner > p {
+      font: inherit;
+      color: inherit;
+      margin: 0;
+    }
+    // 코드 칩이 줄 상자를 키워 아이콘과 어긋나지 않게 한다.
+    & > .callout-title-inner code {
+      line-height: 1;
+    }
+    // 아이콘 슬롯 높이 = 제목 한 줄. 한글 잉크 중심이 줄 중심보다 1px 낮아 마스크를 내린다.
+    & > .callout-icon,
+    & > .fold-callout-icon {
+      width: var(--cal-icon);
+      height: calc(var(--cal-lh) * 1em);
+      flex: 0 0 var(--cal-icon);
+      padding: 0;
+      mask-size: var(--cal-icon);
+      mask-position: 50% calc(50% + 1px);
+    }
+    & > .fold-callout-icon {
+      mask-position: center;
     }
   }
-}
-
-// 보더·배경을 전부 타입 색(--color)에서 파생시킨다 — 신규 타입도 --color만 주면 따라온다.
-// 주의: 네 변을 모두 파생시킬 것. 일부만 지정하면 나머지 변에 callouts.scss의
-//       Obsidian 하드코딩 색이 남아 좌측 바와 테두리가 다른 계열이 된다.
-.callout {
-  border-color: color-mix(in srgb, var(--color) 28%, transparent);
-  border-left: 3px solid var(--color);
-  background: color-mix(in srgb, var(--color) 7%, transparent);
+  // 제목만 있거나 접혔으면 구분선 없이 상하 12px 대칭.
+  & > .callout-title:last-child,
+  &.is-collapsed > .callout-title {
+    background: none;
+    padding-bottom: 12px;
+  }
+  & > .callout-content {
+    padding: 8px 16px 12px 14px;
+    font-size: 0.9rem;
+    // 주의: grid라 여백이 상쇄되지 않는다 — 형제 간격은 위쪽 하나로만 준다.
+    & > * {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    & > * + * {
+      margin-top: 0.6rem;
+    }
+    & > .callout,
+    & > .callout + * {
+      margin-top: 0.85rem;
+    }
+    // 주의: 레이어 안 `p { font-size; line-height }`가 콜아웃 본문 크기를 무시한다.
+    p {
+      font-size: inherit;
+      line-height: inherit;
+    }
+    & > ul,
+    & > ol {
+      padding-left: var(--cal-indent);
+    }
+    li::marker {
+      color: var(--color);
+    }
+  }
+  // 주의: callouts.scss의 접힘 규칙은 레이어 안이라 위 패딩에 진다 — 비-레이어로 다시 0.
+  &.is-collapsed > .callout-content {
+    padding-top: 0;
+    padding-bottom: 0;
+    & > * {
+      height: 0;
+      margin: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-block-width: 0;
+      overflow-y: clip;
+    }
+  }
 }
 
 // 12종 타입 → 5색 매핑. 12색은 지각 한계를 넘으므로 가치 단위로 묶는다.
@@ -425,23 +581,16 @@ a.tag-link {
 // 로고는 헤딩이 아니라 title 슬롯(--titleFont)을 써서 브랜드 존을 본문과 분리한다.
 // 주의: Anton은 400 weight만 존재한다 — 더 굵게 걸면 합성 볼드로 획이 뭉갠다.
 .page-title {
-  font-family: var(--titleFont) !important;
-  font-size: 1.75rem !important;
-  font-weight: 400 !important;
-  letter-spacing: 0.02em !important;
-  text-transform: uppercase !important;
-  color: var(--secondary) !important;
-}
+  font-family: var(--titleFont);
+  font-size: 1.3125rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  // 레이어 안 h2 규칙(§1)의 밑줄·여백 상쇄.
+  border-bottom: none;
+  padding: 0;
 
-// SPECS와 CATALOG는 성격이 다른 블록이라 간격을 확실히 벌린다.
-.sidebar.left {
-  gap: 1.6rem;
-}
-
-// ── 6.5 노트 본문 표 헤더만 본문 서체 ──────────────────────────────────────
-// 표 헤더는 헤딩이 아니라 데이터 라벨이라 --headerFont가 아니라 본문 서체를 쓴다.
-body:not([data-slug="index"]) article thead {
-  font-family: var(--bodyFont);
 }
 
 // ── 7. 좌측 CATALOG 패널 ──────────────────────────────────
@@ -454,6 +603,9 @@ body:not([data-slug="index"]) article thead {
 }
 
 .sidebar.left {
+  // SPECS와 CATALOG는 성격이 다른 블록이라 간격을 확실히 벌린다.
+  gap: 1.6rem;
+
   > .note-specs,
   > .desktop-only > .note-specs {
     flex: 0 0 auto;
@@ -485,33 +637,14 @@ button.toc-header h3,
   margin: 0;
 }
 
-// 홈 섹션 라벨 3종 — main과 같은 본문형 크기(§10.7 이전 값)로 통일한다. 색만 공유.
-.featured-header h2,
-.recent-notes-header h2,
-.topic-grid-header h2 {
-  color: var(--secondary); // h2 = 공간 축(DESIGN-SYSTEM §3.2)
-}
+// TOC 라벨은 다른 패널 라벨(SPECS·CATALOG)처럼 짧게 — i18n 원문은 크기 0으로 숨긴다(접근성 이름은 유지).
+button.toc-header h3 {
+  font-size: 0;
 
-.featured-header h2,
-.topic-grid-header h2 {
-  font-family: var(--headerFont);
-  font-size: 1.15rem;
-  font-weight: 720;
-}
-
-.recent-notes-header h2 {
-  font-family: var(--headerFont);
-  font-size: 19px;
-  font-weight: 720;
-  letter-spacing: -0.02em;
-}
-
-// Catalogue 얼룩말 — §9 table과 동일 비율. hover는 순서상 뒤에 와야 이긴다.
-.recent-notes .row:nth-child(even) {
-  background: rgba(var(--accent-rgb), 0.035);
-}
-.recent-notes .row:hover {
-  background: rgba(var(--accent-rgb), 0.1);
+  &::after {
+    content: "TOC";
+    font-size: 1rem;
+  }
 }
 
 .sidebar.right {
@@ -532,14 +665,14 @@ button.toc-header h3,
   }
 }
 
-.toc-content.overflow,
-.backlinks > ul.overflow {
+.toc-content.overflow {
   max-height: 100%;
   overflow-y: auto;
 }
 
 .backlinks > ul.overflow {
   max-height: 6.5rem;
+  overflow-y: auto;
 }
 
 // graph는 note-catalog의 graphFold 스크립트가 페이지마다 기본 접힘으로 되돌린다.
@@ -561,14 +694,6 @@ button.toc-header h3,
   }
   > h3::after {
     content: "▸";
-  }
-}
-
-.toc li a,
-.backlinks ul li a {
-  border-bottom: none !important;
-  &:hover {
-    border-bottom: none !important;
   }
 }
 
@@ -599,7 +724,6 @@ button.toc-header h3,
 // 주의: `opacity: 1`을 되돌리지 말 것. 플러그인이 비활성 항목에 거는 `opacity: .35`가
 //       --gray(4.65:1)에 곱해지면 실효 대비 약 1.6:1로 AA 위반이 된다. 활성/비활성
 //       구분은 투명도가 아니라 색과 굵기가 맡는다.
-.toc-content.overflow > li > a,
 .toc li a {
   opacity: 1;
 }
@@ -615,10 +739,8 @@ button.toc-header h3,
 // 활성 표시는 CATALOG 현재 노트와 같은 --secondary — "지금 여기"가 사이드바
 // 전체에서 한 부호로 읽혀야 한다.
 // 주의: --accent-state로 바꾸지 말 것 — 같은 질문에 두 부호로 답하게 된다.
-.toc-content.overflow > li > a.in-view,
-.toc-content li.depth-0 > a.in-view {
+.toc-content li > a.in-view {
   color: var(--secondary);
-  opacity: 1;
   font-weight: 600;
 }
 
@@ -628,9 +750,7 @@ button.toc-header h3,
   padding-left: 0.7rem;
 
   &.in-view {
-    color: var(--secondary);
     border-left-color: var(--secondary);
-    font-weight: 600;
   }
 }
 
@@ -642,6 +762,11 @@ table {
   margin: 1.2rem 0;
   font-size: 0.85rem;
   font-family: var(--bodyFont);
+
+  // base.scss가 thead에 헤딩 서체를 건다 — 표 헤더는 데이터 라벨이라 본문 서체.
+  thead {
+    font-family: inherit;
+  }
 }
 thead tr {
   background: rgba(var(--accent-rgb), 0.08);
@@ -690,8 +815,8 @@ tbody td {
     border-radius: 6px;
     gap: 0.2rem;
     transition:
-      border-color 0.15s,
-      background 0.15s;
+      border-color var(--dur-fast) var(--ease),
+      background-color var(--dur-fast) var(--ease);
     cursor: pointer;
 
     &:hover {
@@ -701,10 +826,10 @@ tbody td {
 
     .meta {
       order: 1;
-      font-size: 0.73rem !important;
-      color: var(--gray) !important;
-      opacity: 1 !important;
-      margin: 0 !important;
+      font-size: 0.73rem;
+      color: var(--gray);
+      opacity: 1;
+      margin: 0;
     }
 
     .desc {
@@ -717,7 +842,7 @@ tbody td {
 
     .tags {
       order: 3;
-      display: flex !important;
+      display: flex;
       flex-wrap: wrap;
       gap: 0.35rem;
       margin-top: 0.35rem;
@@ -757,20 +882,18 @@ body {
 }
 
 // ── 10.5 전역 상단 바 (topbar) ────────────────────────────────────────────
-// 브랜드·내비·검색·다크모드를 모든 페이지에서 같은 가로 바로 렌더한다.
-// 렌더 순서 PageTitle → GlobalNav → SocialLinks → 검색+다크모드, 브랜드+내비는
-// 왼쪽 / 나머지는 오른쪽 정렬.
+// 로고 → 내비(global-nav) → 검색·다크모드. 데스크톱은 한 줄, 모바일은 1행 로고+검색+테마 /
+// 2행 탭. 행 높이를 고정해 폰트·스크립트가 늦게 와도 아래 콘텐츠가 밀리지 않는다(CLS).
 // 폭은 `.page`를 그대로 따르고(§10.4), 배경·구분선만 ::before로 화면 끝까지 번진다.
 .topbar {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   width: 100%;
   // 주의: relative로 바꾸지 말 것 — non-layered라 base.scss의 sticky를 덮어써 고정이 깨진다.
   position: sticky;
   top: 0;
   gap: 1.5rem;
-  padding: 1.2rem 0 1rem;
+  padding: 0;
 
   // 배경·구분선 full-bleed. 주의: z-index -1이라야 바 안의 내용 아래에 깔린다.
   &::before {
@@ -785,26 +908,18 @@ body {
   .social-links {
     margin: 0 0 0 auto; // left만 auto → 오른쪽 정렬
 
-    // 상시 배경 없이 hover 중립 칩만.
     ul li a:hover {
       background-color: var(--surface-2);
     }
   }
 
-  // 주의: !important는 §6의 전역 .page-title 규칙이 이미 !important라 필요하다.
-  .page-title {
-    font-size: 1.75rem !important;
-    // 플러그인 기본 border-bottom이 가로 바에선 로고 밑줄로 드러난다.
-    border-bottom: none !important;
-
-    a {
-      text-decoration: none !important;
-    }
+  .global-nav {
+    gap: 1.5rem;
   }
 
-  // 검색·다크모드 수직 정렬 보정 — 다크모드 쪽 익명 wrapper를 :has()로 찾아 맞춘다.
+  // 주의: gap의 !important는 Flex 컴포넌트가 인라인 style로 gap을 넣기 때문.
   .flex-component {
-    align-items: center !important;
+    align-items: center;
     gap: 0.75rem !important;
 
     > div:has(> .darkmode) {
@@ -813,30 +928,118 @@ body {
     }
   }
 
-  // 내비 링크 간격은 바 자체의 gap과 같은 값으로 통일.
-  .global-nav {
-    gap: 1.5rem;
-  }
-
-  // 검색창 확장 + ⌘K 힌트(단축키 자체는 search 플러그인에 내장).
   .search {
     width: 220px;
     max-width: none;
   }
 
   .search > .search-button {
-    padding-right: 0.6rem;
+    height: 2.5rem;
+    gap: 0.5rem;
+    padding: 0 0.5rem 0 0.75rem;
+    border-color: var(--border);
+    border-radius: 10px;
+    font-size: 0.875rem;
 
+    svg {
+      width: 14px;
+      min-width: 14px;
+      margin: 0;
+    }
+
+    > p {
+      margin: 0;
+      line-height: 1;
+    }
+
+    // ⌘K 힌트(단축키 자체는 search 플러그인에 내장).
     &::after {
       content: "⌘K";
       margin-left: auto;
       font-family: var(--codeFont);
-      font-size: 0.65rem;
+      font-size: 0.6875rem;
       color: var(--text-3);
       border: 1px solid var(--border-strong);
-      border-radius: 4px;
-      padding: 1px 5px;
+      border-radius: 5px;
+      padding: 1px 6px;
     }
+  }
+
+  @media (hover: none) {
+    .search > .search-button::after {
+      display: none;
+    }
+  }
+
+  @media all and ($mobile) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 4rem 2.75rem;
+    gap: 0;
+
+    .page-title {
+      grid-area: 1 / 1;
+      font-size: 1.1875rem;
+    }
+
+    .flex-component {
+      grid-area: 1 / 2;
+      gap: 0 !important;
+    }
+
+    // 탭 첫 글자를 로고 시작점에 맞춘다(링크 좌우 패딩 12px 상쇄).
+    .global-nav {
+      grid-area: 2 / 1 / 3 / 3;
+      height: 2.75rem;
+      margin-left: -12px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+
+    .spacer,
+    .social-links {
+      display: none;
+    }
+
+    // 검색·테마 토글은 아이콘만, 터치 타깃 44px.
+    .search {
+      width: auto;
+      flex-grow: 0;
+    }
+
+    .search > .search-button {
+      width: 2.75rem;
+      height: 2.75rem;
+      padding: 0;
+      border: none;
+      justify-content: center;
+
+      svg {
+        width: 18px;
+        min-width: 18px;
+      }
+
+      > p,
+      &::after {
+        display: none;
+      }
+    }
+
+    .darkmode {
+      width: 2.75rem;
+      height: 2.75rem;
+
+      svg {
+        left: calc(50% - 10px);
+      }
+    }
+  }
+}
+
+// 모바일 상단 바(4rem + 2.75rem)가 sticky라 앵커 이동 시 제목이 가려지지 않게.
+@media all and ($mobile) {
+  html {
+    scroll-padding-top: 7rem;
   }
 }
 
@@ -861,6 +1064,12 @@ body[data-slug="index"] {
 
   .page-header {
     margin-top: 1rem;
+  }
+
+  // index.md 본문이 비어 article·hr은 숨긴다.
+  .center > article,
+  .center > hr {
+    display: none;
   }
 }
 
@@ -908,4 +1117,18 @@ figure figcaption {
 
 .giscus {
   margin-top: 3rem;
+}
+
+// ── 13. 감속 모션 ──────────────────────────────────────────────────────────
+// CSS 전환·애니메이션·부드러운 스크롤을 즉시 끝낸다. 스크립트 모션(색소폰 자동 회전,
+// 맨 위로 스크롤)은 각 스크립트가 같은 미디어 쿼리를 읽어 끈다.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -1,26 +1,28 @@
-// 텍스트 콜로폰 푸터 — 페이지 배경 위, 상단 굵은 괘선으로만 구분한다.
+// 콜로폰 푸터 — 1px 괘선 위 저작권(본문체) · 제작 정보(모노) 한 줄.
 // 좌우 여백은 .page가 단일 소스다 — 여기서 vw로 full-bleed를 만들지 말 것.
 
 .site-footer {
-  margin: 3rem 0 2rem;
-  padding-top: 1.75rem;
-  border-top: 2px solid var(--text);
+  margin: 0;
+  padding: 28px 0 48px;
+  border-top: 1px solid var(--lightgray);
+
+  @media all and (max-width: 800px) {
+    padding: 20px 0 40px;
+  }
 }
 
 .sf-cols {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 1.5rem 2.25rem;
+  margin-bottom: 1.75rem;
 }
 
-// 로고와 같은 슬롯(--titleFont) — custom.scss §6 .page-title과 동일 처방.
 .sf-col-title {
   font-family: var(--titleFont);
   font-size: 1.1rem;
-  font-weight: 400;
   letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--secondary);
+  color: var(--dark);
   margin-bottom: 0.7rem;
 }
 
@@ -30,16 +32,11 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  font-size: 0.88rem;
-
-  li:not(:last-child)::after {
-    content: "·";
-    margin: 0 0.7rem;
-    color: var(--text-3);
-  }
+  gap: 0 14px;
+  font-size: 13px;
 
   a {
-    color: var(--accent);
+    color: var(--gray);
     text-decoration: none;
 
     &:hover {
@@ -51,18 +48,23 @@
 
 .sf-text {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 13px;
   line-height: 1.7;
-  color: var(--text-2);
+  color: var(--darkgray);
 }
 
 .sf-fine {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 0.5rem 1rem;
-  margin-top: 1.75rem;
-  font-family: var(--codeFont);
-  font-size: 0.75rem;
-  color: var(--text-3);
+  align-items: baseline;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--gray);
+
+  > span + span {
+    font-family: var(--codeFont);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
 }

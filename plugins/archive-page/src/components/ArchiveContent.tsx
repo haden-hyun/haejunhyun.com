@@ -5,48 +5,18 @@ import type {
   QuartzPluginData,
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
+import { formatYmd, getNoteDates } from "../../../_shared/noteMeta"
+import { isRealNote, topicName } from "../../../_shared/notes"
 import style from "./styles/archiveContent.scss"
 
 /**
- * 내비의 "Archive" 라우트 — 전체 노트를 연도별로 묶어 최신 연도부터 나열.
- * isRealNote는 home-hero와 동일(사유는 그쪽 주석 참고).
+ * 내비의 "Archive" 라우트 — 전체 노트를 작성일(created) 연도별로 묶어 최신부터 나열.
  */
 
 type FileData = QuartzPluginData & Record<string, unknown>
 
-const CATEGORY_NAMES: Record<string, string> = {
-  "computer-science": "Computer Science",
-  "data-engineering": "Data Engineering",
-  "data-science": "Data Science",
-  gis: "GIS",
-  programming: "Programming",
-  "finance-property": "Finance & Property",
-  tools: "Tools",
-}
-
-function getCategoryName(slug: string): string {
-  const key = slug.split("/")[0] ?? ""
-  return CATEGORY_NAMES[key] ?? key.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-}
-
-function isRealNote(slug: string): boolean {
-  if (slug.startsWith("tags/")) return false
-  if (slug === "index" || slug.endsWith("/index")) return false
-  if (slug === "404") return false
-  if (slug === "topics" || slug === "archive") return false
-  return true
-}
-
-/** 목록 날짜 = posted(YYYY-MM-DD, created처럼 로컬 자정) → created. 주의: modified(=updated)는 작업마다 바뀐다. */
-function getDisplayDate(f: FileData): Date | undefined {
-  const posted = (f.frontmatter as { posted?: unknown } | undefined)?.posted
-  const m = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null
-  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
-  return (f.dates as { created?: Date } | undefined)?.created
-}
-
-function getTime(f: FileData): number {
-  return getDisplayDate(f)?.getTime() ?? 0
+function getCreated(f: FileData): Date | undefined {
+  return getNoteDates(f).created
 }
 
 export default (() => {
@@ -57,15 +27,13 @@ export default (() => {
   }: QuartzComponentProps) => {
     const currentSlug = (fileData.slug as string) ?? "archive"
     const files = (allFiles as FileData[])
-      .filter((f) => isRealNote((f.slug as string) ?? ""))
-      .filter((f) => getTime(f) > 0)
-      .sort((a, b) => getTime(b) - getTime(a))
+      .filter((f) => isRealNote(f.slug as string | undefined))
+      .filter((f) => getCreated(f))
+      .sort((a, b) => getCreated(b)!.getTime() - getCreated(a)!.getTime())
 
     const byYear = new Map<number, FileData[]>()
     for (const f of files) {
-      const d = getDisplayDate(f)
-      if (!d) continue
-      const year = d.getFullYear()
+      const year = Number(formatYmd(getCreated(f)!).slice(0, 4))
       const list = byYear.get(year) ?? []
       list.push(f)
       byYear.set(year, list)
@@ -76,24 +44,29 @@ export default (() => {
       // 주의: <h1>은 article-title이 렌더한다 — 여기서 중복 렌더 금지.
       <article class={`${displayClass ?? ""} archive-page-content popover-hint`}>
         <p class="archive-page-sub">
-          전체 {files.length}개 노트 · {years.length}개 연도
+          {files.length} notes · {years.length} years
         </p>
         {years.map((year) => (
           <section class="archive-page-year">
             <h2>{year}</h2>
             <div class="archive-page-rows">
               {byYear.get(year)!.map((f) => {
-                const d = getDisplayDate(f)
+                const { created, revised } = getNoteDates(f)
                 return (
                   <a class="archive-page-row" href={resolveRelative(currentSlug, f.slug as string)}>
-                    <span class="archive-page-date">
-                      {d?.toLocaleDateString("ko-KR", { month: "short", day: "2-digit" })}
-                    </span>
+                    <time class="archive-page-date" datetime={created!.toISOString()}>
+                      {formatYmd(created!)}
+                    </time>
                     <span class="archive-page-title">
                       {(f.frontmatter as { title?: string } | undefined)?.title ?? "Untitled"}
+                      {revised && (
+                        <span class="archive-page-rev">
+                          Revised <time datetime={revised.toISOString()}>{formatYmd(revised)}</time>
+                        </span>
+                      )}
                     </span>
                     <span class="archive-page-cat">
-                      {getCategoryName((f.slug as string) ?? "")}
+                      {topicName((f.slug as string) ?? "")}
                     </span>
                   </a>
                 )

@@ -35,7 +35,17 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/topicsContent.scss
-var topicsContent_default = ".topics-page-content h1 {\n  margin-bottom: 0.3rem;\n}\n\n.topics-page-sub {\n  font-family: var(--codeFont);\n  font-size: 0.8rem;\n  color: var(--text-3);\n  margin: 0 0 1.5rem 0;\n}\n\n.topics-page-grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 14px;\n}\n@media all and (max-width: 1080px) {\n  .topics-page-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media all and (max-width: 480px) {\n  .topics-page-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.topics-page-card {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  gap: 0.15rem;\n  padding: 1.1rem 1.1rem 1rem 1.2rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  overflow: hidden;\n  transition: border-color 0.15s, transform 0.15s;\n  min-height: 116px;\n}\n.topics-page-card:hover {\n  border-color: var(--border-strong);\n}\n\n.topics-page-label {\n  font-family: var(--headerFont);\n  font-size: 1.2rem;\n  font-weight: 670;\n  color: var(--text);\n  margin-top: 0.2rem;\n}\n\n.topics-page-subtext {\n  font-size: 0.8rem;\n  color: var(--text-2);\n  line-height: 1.4;\n}\n\n.topics-page-count {\n  margin-top: 0.55rem;\n  font-family: var(--codeFont);\n  font-size: 0.7rem;\n  color: var(--text-3);\n}\n\n.topics-page-share {\n  margin-top: 0.4rem;\n  height: 3px;\n  border-radius: 2px;\n  background: var(--surface-2);\n  overflow: hidden;\n}\n\n.topics-page-share-fill {\n  height: 100%;\n  background: var(--text-3);\n  opacity: 0.55;\n  border-radius: 2px;\n}";
+var topicsContent_default = ".topics-page-sub {\n  font-family: var(--codeFont);\n  font-size: 0.8rem;\n  color: var(--text-3);\n  margin: 0 0 1.5rem;\n}\n\n.topics-page-grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 14px;\n}\n@media all and (max-width: 1080px) {\n  .topics-page-grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media all and (max-width: 480px) {\n  .topics-page-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n.topics-page-card {\n  position: relative;\n  display: flex;\n  flex-direction: column;\n  gap: 0.15rem;\n  padding: 1.1rem 1.1rem 1rem 1.2rem;\n  border: 1px solid var(--border);\n  border-radius: var(--radius, 10px);\n  background: var(--surface);\n  text-decoration: none;\n  overflow: hidden;\n  transition: border-color var(--dur-fast) var(--ease);\n  min-height: 116px;\n  border-bottom-color: var(--border) !important;\n}\n.topics-page-card:hover {\n  border-color: var(--border-strong) !important;\n}\n\n.topics-page-label {\n  font-family: var(--headerFont);\n  font-size: 1.2rem;\n  font-weight: 670;\n  color: var(--text);\n  margin-top: 0.2rem;\n}\n\n.topics-page-subtext {\n  font-size: 0.8rem;\n  color: var(--text-2);\n  line-height: 1.4;\n}\n\n.topics-page-count {\n  margin-top: 0.55rem;\n  font-family: var(--codeFont);\n  font-size: 0.7rem;\n  color: var(--text-3);\n}\n\n.topics-page-share {\n  margin-top: 0.4rem;\n  height: 3px;\n  border-radius: 2px;\n  background: var(--surface-2);\n  overflow: hidden;\n}\n\n.topics-page-share-fill {\n  height: 100%;\n  background: var(--text-3);\n  opacity: 0.55;\n  border-radius: 2px;\n}";
+
+// ../_shared/notes.ts
+function isRealNote(slug) {
+  if (!slug) return false;
+  if (slug.startsWith("tags/")) return false;
+  if (slug === "index" || slug.endsWith("/index")) return false;
+  if (slug === "404") return false;
+  if (slug === "topics" || slug === "archive") return false;
+  return true;
+}
 var l;
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
@@ -62,7 +72,7 @@ var TOPICS = [
   {
     key: "computer-science",
     label: "Computer Science",
-    subtext: "\uC54C\uACE0\uB9AC\uC998 \xB7 \uC790\uB8CC\uAD6C\uC870"
+    subtext: "Algorithms \xB7 Data Structures"
   },
   {
     key: "data-engineering",
@@ -72,9 +82,9 @@ var TOPICS = [
   {
     key: "data-science",
     label: "Data Science",
-    subtext: "DL \xB7 ML \xB7 \uD1B5\uACC4 \xB7 \uC2DC\uAC01\uD654"
+    subtext: "DL \xB7 ML \xB7 Statistics \xB7 Visualization"
   },
-  { key: "gis", label: "GIS", subtext: "\uACF5\uAC04 \uB370\uC774\uD130 \uBD84\uC11D" },
+  { key: "gis", label: "GIS", subtext: "Spatial Data Analysis" },
   {
     key: "programming",
     label: "Programming",
@@ -83,21 +93,14 @@ var TOPICS = [
   {
     key: "finance-property",
     label: "Finance & Property",
-    subtext: "\uBD80\uB3D9\uC0B0 \xB7 \uAE08\uC735"
+    subtext: "Real Estate \xB7 Finance"
   },
   {
     key: "tools",
     label: "Tools",
-    subtext: "Obsidian \xB7 \uC6CC\uD06C\uD50C\uB85C\uC6B0"
+    subtext: "Obsidian \xB7 Workflow"
   }
 ];
-function isRealNote(slug) {
-  if (slug.startsWith("tags/")) return false;
-  if (slug === "index" || slug.endsWith("/index")) return false;
-  if (slug === "404") return false;
-  if (slug === "topics" || slug === "archive") return false;
-  return true;
-}
 var TopicsContent_default = (() => {
   const TopicsContent = ({
     fileData,
@@ -124,11 +127,10 @@ var TopicsContent_default = (() => {
       // frontmatter.title로 렌더한다(중복 방지, folder-page와 동일 패턴).
       /* @__PURE__ */ u2("article", { class: `${displayClass ?? ""} topics-page-content popover-hint`, children: [
         /* @__PURE__ */ u2("p", { class: "topics-page-sub", children: [
-          "\uC804\uCCB4 ",
           totalCount,
-          "\uAC1C \uB178\uD2B8 \xB7 ",
+          " notes \xB7 ",
           topicsWithCounts.length,
-          "\uAC1C \uD1A0\uD53D"
+          " topics"
         ] }),
         /* @__PURE__ */ u2("div", { class: "topics-page-grid", children: topicsWithCounts.map((t2) => /* @__PURE__ */ u2(
           "a",
@@ -140,7 +142,7 @@ var TopicsContent_default = (() => {
               /* @__PURE__ */ u2("span", { class: "topics-page-subtext", children: t2.subtext }),
               /* @__PURE__ */ u2("div", { class: "topics-page-count", children: [
                 t2.count,
-                "\uAC1C \uB178\uD2B8"
+                " notes"
               ] }),
               /* @__PURE__ */ u2("div", { class: "topics-page-share", "aria-hidden": "true", children: /* @__PURE__ */ u2(
                 "div",

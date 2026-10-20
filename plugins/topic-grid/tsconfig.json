@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "lib": ["ES2022", "DOM"],
-    "rootDir": ".",
+    "rootDir": "..",
     "outDir": "dist",
     "declaration": true,
     "declarationMap": true,
@@ -21,6 +21,6 @@
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
   },
-  "include": ["src", "types", "tsup.config.ts"],
+  "include": ["src", "types", "tsup.config.ts", "../_shared"],
   "exclude": ["dist", "node_modules"]
 }

@@ -1,15 +1,14 @@
-// 사이트 색의 세 축 중 시간(--accent-state, 핑크). 정의는 custom.scss §0.
-//   공간=블루(링크·현재 위치) / 행위=브릭(CTA) / 시간=핑크(읽는 중)
-// 블루로 두면 내비게이션과 구분되지 않는다.
-// 노트 페이지에서 핑크가 쓰이는 곳은 이 바 하나뿐이다.
+// 시간 축(--accent-state) — 노트 페이지에서 이 색이 쓰이는 곳은 이 바 하나뿐이다.
+// 폭이 아니라 scaleX로 그려 레이아웃을 건드리지 않는다.
 #reading-progress-bar {
   position: fixed;
   top: 0;
   left: 0;
+  width: 100%;
   height: 2px;
-  width: 0%;
   background: var(--accent-state);
+  transform: scaleX(0);
+  transform-origin: left;
   z-index: 9999;
-  transition: width 0.08s ease-out;
   pointer-events: none;
 }

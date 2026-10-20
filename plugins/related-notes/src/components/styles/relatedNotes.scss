@@ -30,7 +30,7 @@
   border-radius: var(--radius, 10px);
   background: var(--surface);
   text-decoration: none;
-  transition: border-color 0.15s;
+  transition: border-color var(--dur-fast) var(--ease);
 
   &:hover {
     border-color: var(--accent);
@@ -51,4 +51,5 @@
   font-weight: 630;
   line-height: 1.4;
   color: var(--text);
+  word-break: keep-all;
 }

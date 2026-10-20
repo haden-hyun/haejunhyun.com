@@ -1,14 +1,8 @@
-.topics-page-content {
-  h1 {
-    margin-bottom: 0.3rem;
-  }
-}
-
 .topics-page-sub {
   font-family: var(--codeFont);
   font-size: 0.8rem;
   color: var(--text-3);
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1.5rem;
 }
 
 .topics-page-grid {
@@ -36,19 +30,19 @@
   background: var(--surface);
   text-decoration: none;
   overflow: hidden;
-  transition:
-    border-color 0.15s,
-    transform 0.15s;
+  transition: border-color var(--dur-fast) var(--ease);
   min-height: 116px;
 
+  // 주의: 하단선 !important는 custom.scss `article a`(비-레이어)의 투명 하단선을 이기기 위함.
+  border-bottom-color: var(--border) !important;
+
   &:hover {
-    border-color: var(--border-strong);
+    border-color: var(--border-strong) !important;
   }
 }
 
 .topics-page-label {
   font-family: var(--headerFont);
-  // [2026-08-03] topic-grid와 동일 — 이모지 제거 후 키움.
   font-size: 1.2rem;
   font-weight: 670;
   color: var(--text);
@@ -78,7 +72,6 @@
 
 .topics-page-share-fill {
   height: 100%;
-  // [2026-08-05] 토픽별 색 폐지 — 비율 바만 중립색으로 남긴다(분포는 정보).
   background: var(--text-3);
   opacity: 0.55;
   border-radius: 2px;

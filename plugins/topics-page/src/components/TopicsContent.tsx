@@ -6,6 +6,7 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import style from "./styles/topicsContent.scss"
+import { isRealNote } from "../../../_shared/notes"
 
 /**
  * 내비의 "Topics" 라우트 — 홈 TopicGrid와 같은 데이터·카드를 독립 페이지로.
@@ -27,7 +28,7 @@ const TOPICS: Topic[] = [
   {
     key: "computer-science",
     label: "Computer Science",
-    subtext: "알고리즘 · 자료구조",
+    subtext: "Algorithms · Data Structures",
   },
   {
     key: "data-engineering",
@@ -37,9 +38,9 @@ const TOPICS: Topic[] = [
   {
     key: "data-science",
     label: "Data Science",
-    subtext: "DL · ML · 통계 · 시각화",
+    subtext: "DL · ML · Statistics · Visualization",
   },
-  { key: "gis", label: "GIS", subtext: "공간 데이터 분석" },
+  { key: "gis", label: "GIS", subtext: "Spatial Data Analysis" },
   {
     key: "programming",
     label: "Programming",
@@ -48,22 +49,14 @@ const TOPICS: Topic[] = [
   {
     key: "finance-property",
     label: "Finance & Property",
-    subtext: "부동산 · 금융",
+    subtext: "Real Estate · Finance",
   },
   {
     key: "tools",
     label: "Tools",
-    subtext: "Obsidian · 워크플로우",
+    subtext: "Obsidian · Workflow",
   },
 ]
-
-function isRealNote(slug: string): boolean {
-  if (slug.startsWith("tags/")) return false
-  if (slug === "index" || slug.endsWith("/index")) return false
-  if (slug === "404") return false
-  if (slug === "topics" || slug === "archive") return false
-  return true
-}
 
 export default (() => {
   const TopicsContent: QuartzComponent = ({
@@ -93,7 +86,7 @@ export default (() => {
       // frontmatter.title로 렌더한다(중복 방지, folder-page와 동일 패턴).
       <article class={`${displayClass ?? ""} topics-page-content popover-hint`}>
         <p class="topics-page-sub">
-          전체 {totalCount}개 노트 · {topicsWithCounts.length}개 토픽
+          {totalCount} notes · {topicsWithCounts.length} topics
         </p>
         <div class="topics-page-grid">
           {topicsWithCounts.map((t) => (
@@ -103,7 +96,7 @@ export default (() => {
             >
               <b class="topics-page-label">{t.label}</b>
               <span class="topics-page-subtext">{t.subtext}</span>
-              <div class="topics-page-count">{t.count}개 노트</div>
+              <div class="topics-page-count">{t.count} notes</div>
               <div class="topics-page-share" aria-hidden="true">
                 <div
                   class="topics-page-share-fill"
