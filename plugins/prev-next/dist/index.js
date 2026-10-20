@@ -1,12 +1,4 @@
-// node_modules/@quartz-community/utils/dist/sort.js
-function getDate(data) {
-  const defaultDateType = data.defaultDateType;
-  if (!defaultDateType) {
-    return void 0;
-  }
-  const dates = data.dates;
-  return dates?.[defaultDateType];
-}
+// ../../node_modules/github-slugger/index.js
 var l;
 function S(n2) {
   return n2.children;
@@ -91,6 +83,9 @@ function resolveRelative(current, target) {
 var prevNext_default = ".prev-next-nav {\n  margin-top: 3rem;\n  padding-top: 2rem;\n  border-top: 1px solid var(--lightgray);\n}\n.prev-next-nav .prev-next-inner {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0.8rem;\n}\n.prev-next-nav .prev-next-link {\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n  padding: 0.8rem 1rem;\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  text-decoration: none;\n  border-bottom: 1px solid var(--lightgray) !important;\n  transition: border-color 0.15s, background 0.15s;\n}\n.prev-next-nav .prev-next-link:hover {\n  border-color: var(--secondary) !important;\n  background: rgba(var(--accent-rgb), 0.04);\n}\n.prev-next-nav .prev-next-link.next {\n  text-align: right;\n}\n.prev-next-nav .prev-next-link .direction {\n  font-size: 0.7rem;\n  font-weight: 600;\n  color: var(--secondary);\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n}\n.prev-next-nav .prev-next-link .ptitle {\n  font-size: 0.85rem;\n  color: var(--darkgray);\n  font-weight: 500;\n  line-height: 1.4;\n}";
 
 // src/components/PrevNext.tsx
+function getSortTime(f3) {
+  return f3.dates?.created?.getTime() ?? 0;
+}
 var PrevNext = ({ fileData, allFiles }) => {
   if (!fileData.slug || fileData.slug === "index") return /* @__PURE__ */ u2(S, {});
   const slugParts = fileData.slug.split("/");
@@ -100,7 +95,7 @@ var PrevNext = ({ fileData, allFiles }) => {
     if (!f3.slug || !f3.dates || !f3.frontmatter?.title) return false;
     const fParentDir = f3.slug.split("/").slice(0, -1).join("/");
     return fParentDir === parentDir;
-  }).sort((a2, b2) => getDate(a2).getTime() - getDate(b2).getTime());
+  }).sort((a2, b2) => getSortTime(a2) - getSortTime(b2));
   const currentIdx = siblings.findIndex((f3) => f3.slug === fileData.slug);
   if (currentIdx === -1) return /* @__PURE__ */ u2(S, {});
   const prev = currentIdx > 0 ? siblings[currentIdx - 1] : null;

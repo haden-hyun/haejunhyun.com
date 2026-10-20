@@ -14,6 +14,9 @@ configuration:
     - private
     - templates
     - .obsidian
+    # 주의: content 기준 glob. `/**`가 있어야 watch 모드(minimatch)에서도 하위 파일이 걸린다.
+    - attachments/_staging/**
+    - attachments/archive/**
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
@@ -57,8 +60,9 @@ plugins:
   - source: github:quartz-community/created-modified-date
     enabled: true
     options:
-      # 주의: published를 쓰지 말 것. 해당 프론트매터를 가진 노트가 0개라
-      # 항상 filesystem mtime으로 폴백하고, 그 값은 동기화마다 바뀐다.
+      # content-meta 날짜와 folder/tag 페이지 정렬이 이 값을 쓴다. `updated`는 note-properties가 modified로 매핑한다.
+      # 주의: 목록 날짜(posted → created)는 이 값과 무관하게 로컬 플러그인이 직접 읽는다.
+      # 주의: published로 바꾸지 말 것 — 해당 키를 가진 노트가 없어 빌드 시각으로 떨어진다.
       defaultDateType: modified
       priority:
         - frontmatter

@@ -78,13 +78,14 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
-function getTime(f3) {
-  const dates = f3.dates;
-  return dates?.modified?.getTime() ?? dates?.created?.getTime() ?? 0;
-}
 function getDisplayDate(f3) {
-  const dates = f3.dates;
-  return dates?.modified ?? dates?.created ?? dates?.published;
+  const posted = f3.frontmatter?.posted;
+  const m2 = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null;
+  if (m2) return new Date(Number(m2[1]), Number(m2[2]) - 1, Number(m2[3]));
+  return f3.dates?.created;
+}
+function getTime(f3) {
+  return getDisplayDate(f3)?.getTime() ?? 0;
 }
 var ArchiveContent_default = (() => {
   const ArchiveContent = ({

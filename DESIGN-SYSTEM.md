@@ -188,6 +188,9 @@
 - 주의: 미해결·중복·초과 슬러그는 빌드 로그 경고로 찍힌다. 조용히 무시되지 않는다.
 - 푸터는 전 페이지 공통 텍스트 콜로폰 — 브랜드(로고와 같은 `--titleFont` 슬롯) + 평문 링크 목록(가로 정렬, `·` 구분자) + 하단 저작권 한 줄. 다열 콜로폰(INDEX/ELSEWHERE/COLOPHON)·인물 포스터·컷아웃·"계속 재생 중" 무대 푸터는 **기각** — 은유가 콘텐츠를 앞질러 오그라든다.
 - 파비콘은 색소폰 이모지(quartz 크리스탈 기본값에서 교체).
+- **목록 날짜 = `posted` → `created`** (Recent Notes · Archive · Featured · Notes 목적지 · 마스트헤드 `UPDATED`). 둘 다 `YYYY-MM-DD`, 로컬 자정으로 해석한다.
+- **Prev/Next는 `created` 순**이다. 읽는 순서가 목적인데, `posted`는 개정 때 오늘로 덮어써져 개정한 글이 시리즈 맨 뒤로 밀리기 때문이다.
+- 주의: `updated`(note-properties가 `modified`로 매핑)는 작업마다 바뀌므로 정렬에 쓰지 않는다. `modified`는 노트 상세 SPECS·content-meta 날짜와 folder/tag 페이지(커뮤니티 플러그인, `defaultDateType`)에만 남아 있다.
 
 ### 4.10 페이지 폭 · 좌우 여백
 
@@ -219,7 +222,6 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 
 ## 6. 백로그
 
-- [ ] **frontmatter 날짜 키 불일치** — `created-modified-date`는 `created`/`modified`/`published`만 읽는데 노트 91개 중 90개가 `updated:`를 쓴다. 수정일이 파일 mtime으로 떨어져 Recent Notes 정렬·표시 날짜가 흔들린다.
 - [ ] **사이드바 유연폭** — 320px 고정이라 좁은 데스크톱에서 여백이 본문에서만 나온다. `minmax(260px, .5fr)`로 바꾸면 1440에서 본문 726 → 846px. 260px에서 패널 라벨 조판이 버티는지 미검증.
 - [ ] TOC sticky · Explorer sticky
 - [ ] 헤딩 스케일 재조정 (h1 32 / h2 24 / h3 19.2 / h4 17px)

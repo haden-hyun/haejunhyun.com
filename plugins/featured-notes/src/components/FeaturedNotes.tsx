@@ -44,14 +44,16 @@ function isRealNote(slug: string): boolean {
   return true
 }
 
-function getTime(f: FileData): number {
-  const dates = f.dates as { modified?: Date; created?: Date } | undefined
-  return dates?.modified?.getTime() ?? dates?.created?.getTime() ?? 0
+/** 목록 날짜 = posted(YYYY-MM-DD, created처럼 로컬 자정) → created. 주의: modified(=updated)는 작업마다 바뀐다. */
+function getDisplayDate(f: FileData): Date | undefined {
+  const posted = (f.frontmatter as { posted?: unknown } | undefined)?.posted
+  const m = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+  return (f.dates as { created?: Date } | undefined)?.created
 }
 
-function getDisplayDate(f: FileData): Date | undefined {
-  const dates = f.dates as { modified?: Date; created?: Date; published?: Date } | undefined
-  return dates?.modified ?? dates?.created ?? dates?.published
+function getTime(f: FileData): number {
+  return getDisplayDate(f)?.getTime() ?? 0
 }
 
 function getReadingMinutes(f: FileData): number {

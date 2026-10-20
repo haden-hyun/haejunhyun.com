@@ -65,7 +65,10 @@ function isRealNote(f3) {
   return true;
 }
 function getTime(f3) {
-  return f3.dates?.modified?.getTime() ?? f3.dates?.created?.getTime() ?? 0;
+  const posted = f3.frontmatter?.posted;
+  const m2 = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null;
+  if (m2) return new Date(Number(m2[1]), Number(m2[2]) - 1, Number(m2[3])).getTime();
+  return f3.dates?.created?.getTime() ?? 0;
 }
 var HomeHero_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };

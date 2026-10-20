@@ -4,11 +4,18 @@ import type {
   QuartzComponentProps,
   QuartzPluginData,
 } from "@quartz-community/types"
-import { getDate } from "@quartz-community/utils/sort"
 import { resolveRelative } from "../util/path"
 import style from "./styles/prevNext.scss"
 
 type PrevNextPluginData = QuartzPluginData & Record<string, unknown>
+
+/**
+ * 읽는 순서 = created(원 작성일). 목록 날짜 posted는 개정 때 오늘로 덮어써져
+ * 시리즈 순서를 흔들고, modified(=updated)는 작업마다 바뀌므로 둘 다 쓰지 않는다.
+ */
+function getSortTime(f: PrevNextPluginData): number {
+  return f.dates?.created?.getTime() ?? 0
+}
 
 const PrevNext: QuartzComponent = ({ fileData, allFiles }: QuartzComponentProps) => {
   if (!fileData.slug || fileData.slug === "index") return <></>
@@ -23,7 +30,7 @@ const PrevNext: QuartzComponent = ({ fileData, allFiles }: QuartzComponentProps)
       const fParentDir = f.slug.split("/").slice(0, -1).join("/")
       return fParentDir === parentDir
     })
-    .sort((a, b) => getDate(a)!.getTime() - getDate(b)!.getTime())
+    .sort((a, b) => getSortTime(a) - getSortTime(b))
 
   const currentIdx = siblings.findIndex((f) => f.slug === fileData.slug)
   if (currentIdx === -1) return <></>

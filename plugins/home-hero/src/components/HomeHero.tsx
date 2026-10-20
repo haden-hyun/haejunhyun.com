@@ -73,12 +73,12 @@ function isRealNote(f: QuartzPluginData & Record<string, unknown>): boolean {
   return true
 }
 
+/** 목록 날짜(posted → created) 기준 — 홈 Recent Notes 맨 윗줄과 같은 날이어야 한다. */
 function getTime(f: QuartzPluginData & Record<string, unknown>): number {
-  return (
-    (f as { dates?: { modified?: Date; created?: Date } }).dates?.modified?.getTime() ??
-    (f as { dates?: { modified?: Date; created?: Date } }).dates?.created?.getTime() ??
-    0
-  )
+  const posted = f.frontmatter?.posted
+  const m = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime()
+  return (f as { dates?: { created?: Date } }).dates?.created?.getTime() ?? 0
 }
 
 export default ((userOpts?: Partial<HomeHeroOptions>) => {

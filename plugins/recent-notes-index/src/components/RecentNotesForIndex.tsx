@@ -32,17 +32,17 @@ export interface RecentNotesForIndexOptions {
   sort: (f1: RecentNotesPluginData, f2: RecentNotesPluginData) => number
 }
 
-/**
- * modified → created → 0(날짜 없으면 뒤로).
- * utils의 `byDateAndAlphabetical`을 쓰지 않는 건 의도적 — 그쪽은
- * defaultDateType 하나만 읽고 modified→created 폴백 체인이 없다.
- */
-function getSortTime(f: RecentNotesPluginData): number {
-  return f.dates?.modified?.getTime() ?? f.dates?.created?.getTime() ?? 0
+/** 목록 날짜 = posted(YYYY-MM-DD, created처럼 로컬 자정) → created. 주의: modified(=updated)는 작업마다 바뀐다. */
+function getDisplayDate(f: RecentNotesPluginData): Date | undefined {
+  const posted = f.frontmatter?.posted
+  const m = typeof posted === "string" ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(posted.trim()) : null
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+  return f.dates?.created
 }
 
-function getDisplayDate(f: RecentNotesPluginData): Date | undefined {
-  return f.dates?.modified ?? f.dates?.created ?? f.dates?.published
+/** utils의 `byDateAndAlphabetical`은 defaultDateType(modified)만 읽어서 쓰지 않는다. 날짜 없으면 뒤로. */
+function getSortTime(f: RecentNotesPluginData): number {
+  return getDisplayDate(f)?.getTime() ?? 0
 }
 
 /**
