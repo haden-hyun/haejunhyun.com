@@ -213,8 +213,11 @@ for (const f of fences) {
       await sleep(300)
       const rc = await r.page.evaluate(() => window.__probe.runtimeCanvas())
       const src = await rfig.getAttribute("data-src")
-      const fin = await r.page.evaluate(([s, o]) => window.__probe.frame(s, o), [src, { width: rc.width, height: rc.height, cycle: spec.cycle, progress: 1, reduced: true }])
-      add("AV7", rc.hash === fin.hash, rc.hash === fin.hash ? "동작 줄이기 정지 화면 = progress 1 프레임" : "동작 줄이기 화면이 마지막 프레임과 다르다")
+      const cmp = await r.page.evaluate(([s, o]) => window.__probe.compareRuntime(s, o), [src, { width: rc.width, height: rc.height, cycle: spec.cycle, progress: 1, reduced: true }])
+      // 래스터 경로 차이(채널 ±2, 픽셀 0.5% 미만)만 같은 프레임으로 본다. 다른 장면이면 둘 다 크게 넘는다.
+      const same = cmp?.sameSize && cmp.maxDelta <= 2 && cmp.diffRatio < 0.005
+      const how = cmp ? `차이 픽셀 ${(cmp.diffRatio * 100).toFixed(2)}% · 최대 채널 차 ${cmp.maxDelta}` : "런타임 캔버스 없음"
+      add("AV7", same, same ? `동작 줄이기 정지 화면 = progress 1 프레임 (${how})` : `동작 줄이기 화면이 마지막 프레임과 다르다 (${how})`)
       const hidden = await rfig.evaluate((el) => el.querySelector(".anim-overlay")?.hidden === true)
       add("AV7", hidden, hidden ? "동작 줄이기에서 일시정지 버튼 숨김" : "동작 줄이기인데 일시정지 버튼이 보인다")
     } else if (spec.kind === "steps") {
