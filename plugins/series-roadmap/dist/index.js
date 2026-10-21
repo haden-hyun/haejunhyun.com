@@ -3517,6 +3517,17 @@ function partTypoWarnings(parts) {
   }
   return out;
 }
+function gapWarnings(parts, known) {
+  const out = [];
+  for (const p of parts) {
+    for (let i = 1; i < p.episodes.length; i++) {
+      for (let n = p.episodes[i - 1].index + 1; n < p.episodes[i].index; n++) {
+        if (!known.has(n)) out.push(`\uBD80 "${p.name}"\uC5D0 ${n}\uD3B8\uC774 \uBE60\uC84C\uB2E4 \u2014 outline \uB204\uB77D\uC778\uC9C0 \uD655\uC778`);
+      }
+    }
+  }
+  return out;
+}
 var legendItem = (marker, label, className) => h("li", className ? { className } : {}, marker, label);
 function buildRoadmap(spec, title, published, hrefFor, warn, current) {
   const episodes = mergeEpisodes(spec, published, warn);
@@ -3528,6 +3539,7 @@ function buildRoadmap(spec, title, published, hrefFor, warn, current) {
   const parts = groupParts(episodes);
   const partOrder = new Map(parts.map((p, i) => [p.name, i]));
   partTypoWarnings(parts).forEach(warn);
+  gapWarnings(parts, new Set(byIndex.keys())).forEach(warn);
   const columns = Math.max(1, ...parts.map((p) => p.episodes.length));
   const publishedCount = episodes.filter((e) => e.id).length;
   let hasWires = false;

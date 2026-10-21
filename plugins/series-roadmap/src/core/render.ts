@@ -212,7 +212,20 @@ export function partTypoWarnings(parts: { name: string; episodes: { index: numbe
   return out
 }
 
-const legendItem = (marker: RNode, label: string, className?: string[]): RNode =>
+/** 같은 부의 이웃한 두 편 사이에 발행본·outline 어디에도 없는 번호가 있으면 경고. 0편과 부 사이 공백은 보지 않는다. */
+export function gapWarnings(parts: { name: string; episodes: { index: number }[] }[], known: Set<number>): string[] {
+  const out: string[] = []
+  for (const p of parts) {
+    for (let i = 1; i < p.episodes.length; i++) {
+      for (let n = p.episodes[i - 1]!.index + 1; n < p.episodes[i]!.index; n++) {
+        if (!known.has(n)) out.push(`부 "${p.name}"에 ${n}편이 빠졌다 — outline 누락인지 확인`)
+      }
+    }
+  }
+  return out
+}
+
+const legendItem =(marker: RNode, label: string, className?: string[]): RNode =>
   h("li", className ? { className } : {}, marker, label)
 
 /** 로드맵 nav. 시리즈에 편이 없으면 undefined. */
@@ -234,6 +247,7 @@ export function buildRoadmap(
   const parts = groupParts(episodes)
   const partOrder = new Map(parts.map((p, i) => [p.name, i]))
   partTypoWarnings(parts).forEach(warn)
+  gapWarnings(parts, new Set(byIndex.keys())).forEach(warn)
   const columns = Math.max(1, ...parts.map((p) => p.episodes.length))
   const publishedCount = episodes.filter((e) => e.id).length
   let hasWires = false

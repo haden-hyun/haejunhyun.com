@@ -41,7 +41,7 @@ npx quartz build            # → public/
 | `quartz.config.yaml` | **설정의 중심** — 테마(색·서체)·플러그인·레이아웃 전부           |
 | `content/`           | 원고. vault 심볼릭 링크 (실제 파일 없음)                         |
 | `public/`            | 빌드 결과물. **커밋 대상**                                       |
-| `plugins/`           | 로컬 커스텀 플러그인 20종. 각각 독립 npm 패키지                  |
+| `plugins/`           | 로컬 커스텀 플러그인 23종. 각각 독립 npm 패키지(`_shared`는 공유 소스) |
 | `quartz/`            | 코어. `styles/custom.scss`·`styles/syntax.scss` 외 수정 금지     |
 | `quartz/static/`     | 빌드에 실려 나가는 정적 파일(아이콘·OG 이미지 등)                |
 | `scripts/`           | 배포 스크립트 3종                                                |
@@ -58,12 +58,14 @@ npx quartz build            # → public/
 | 홈           | `home-hero` · `featured-notes` · `topic-grid` · `recent-notes-index`              |
 | 페이지 골격  | `global-nav` · `footer` · `topics-page` · `archive-page`                          |
 | 노트 부속    | `note-specs` · `note-catalog` · `related-notes` · `prev-next` · `summary-description` |
-| 읽기 보조    | `reading-progress` · `back-to-top` · `image-lightbox` · `image-layouts`           |
+| 시리즈       | `series-nav`(series-box·series-pager) · `series-roadmap`                          |
+| 읽기 보조    | `reading-progress` · `back-to-top` · `image-lightbox` · `image-layouts` · `anim-widgets` |
 | 기타         | `social-links` · `visitor-counter` · `goatcounter-tracking`                       |
 
 - **`dist/`가 커밋 대상** — 빌드는 저장소 상태를 그대로 읽으므로 **소스만 고치면 반영되지 않는다**
 - 수정 후 해당 플러그인에서 `npm install && npm run build`(tsup)
 - 새 플러그인은 기존 것(`plugins/home-hero/`)을 그대로 본뜨는 게 가장 정확하다
+- `series-roadmap`·`anim-widgets`는 `obsidian/` 아래 Obsidian 미리보기 플러그인을 따로 둔다(`npm run build` → `npm run install-vault`)
 - 주의: `quartz.lock.json`의 `resolved`가 다른 저장소를 가리키면 이 저장소를 고쳐도 반영되지 않는다 — 락파일을 먼저 확인
 
 ## 배포 스크립트

@@ -41,12 +41,29 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 로컬 플러그인은 `dist/`가 커밋 대상
 
-`plugins/*` 20종. 각각 독립 npm 패키지다.
+`plugins/*` 23종(`_shared` 제외). 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
-`plugins/_shared/`는 플러그인이 아니라 공유 소스다(노트 판별 `isRealNote`·토픽 표시명·Recent 묶음·`noteMeta`).
+`plugins/_shared/`는 플러그인이 아니라 공유 소스다(노트 판별 `isRealNote`·토픽 표시명·Recent 묶음·`noteMeta`·
+시리즈 편 목록 `series.ts`·상대경로 `path.ts`).
 각 플러그인이 상대 경로로 가져와 dist에 번들한다. **여기를 고치면 가져다 쓰는 플러그인을 전부 재빌드할 것**
-(`grep -l _shared plugins/*/src -r`). 주의: 가져다 쓰는 플러그인의 tsconfig는 `rootDir: ".."`이어야 dts 빌드가 통과한다.
+(`grep -l _shared plugins/*/src -r` — `series-nav`·`series-roadmap` 포함). 주의: 가져다 쓰는 플러그인의 tsconfig는 `rootDir: ".."`이어야 dts 빌드가 통과한다.
+
+주의: 루트 `.gitignore`의 `.gitignore` 줄이 하위 `.gitignore`까지 무시해, 일부 플러그인의 `.gitignore`가
+추적되지 않는다(`series-roadmap`·`anim-widgets`의 `obsidian/dist` 무시 규칙 포함). 로컬에선 적용되지만 새 클론에선 없다.
+
+### 시리즈 로드맵 `plugins/series-roadmap`
+
+` ```series-roadmap ` 펜스를 자리표시로 바꾸고, 렌더 시점(pageType `treeTransforms`, `allFiles` 사용)에
+발행본 프론트매터(`series_index`·`title`·`series_part`·`series_question`·`series_requires`)와 펜스 `outline`을
+병합해 로드맵을 그린다. 렌더는 `src/core/render.ts`·`client.ts`가 블로그와 Obsidian 미리보기에 공용이다.
+
+- Obsidian 미리보기는 `plugins/series-roadmap/obsidian`: `npm run build` → `npm run install-vault`
+  (볼트 `.obsidian/plugins/series-roadmap-preview`에 설치, Obsidian에서 플러그인을 껐다 켜야 반영).
+- 빌드 경고 `[series-roadmap]`: requires가 같은 부 직전 편·자기 번호 이상·없는 번호·뒤 부를 가리킴,
+  outline 번호 중복, 편 1개뿐인 부 이름이 다른 부와 비슷함(오타 의심), 같은 부 안 번호 공백. 경고만 내고 빌드는 통과한다.
+- 주의: `seriesTitles`는 네 곳에 중복이다 — `quartz.config.yaml`의 `series-box`·`series-pager`·`series-roadmap`
+  옵션과 Obsidian 미리보기 플러그인 설정. 새 시리즈를 추가하면 넷 다 고칠 것.
 
 주의: **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
 9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의
@@ -108,7 +125,7 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
 
 1. **AA 4.5 예외 없음.** 텍스트로 렌더되는 모든 것(본문·링크·라벨·메타·콜아웃 제목·
    코드 토큰). 순수 장식(보더·얼룩·구분선)은 요구 없음. 큰 글씨(≥24px, ≥18.7px bold)와
-   상태 표시 UI 경계는 3.0.
+   상태 표시 UI 경계는 3.0. 유일한 일시 상태 예외는 DESIGN-SYSTEM §4.13(로드맵 호버 흐림).
 2. **색의 단일 소스는 `quartz.config.yaml`.** `custom.scss`는 별칭만 정의한다.
    플러그인이 자기 색 값을 병렬로 정의하면 사이트가 분열된다.
 3. **`secondary`를 바꾸면 `--accent-rgb`도 같이.** 두 값이 같은 색이라는 보장이 문법에 없다.

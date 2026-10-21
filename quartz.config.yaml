@@ -513,7 +513,7 @@ plugins:
       priority: 30
   - source: ./plugins/series-roadmap
     enabled: true
-    # ```series-roadmap 펜스 → 0편 서문 본문의 시리즈 로드맵. 주의: seriesTitles는 series-box·series-pager와 같게 둘 것.
+    # ```series-roadmap 펜스 → 0편(없으면 1편 들어가며) 본문의 시리즈 로드맵. 주의: seriesTitles는 series-box·series-pager와 같게 둘 것.
     options:
       seriesTitles:
         deep-learning-basics: "딥러닝 기초 시리즈"
