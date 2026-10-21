@@ -52,9 +52,18 @@ function seriesOf(file) {
   const raw = file.frontmatter?.series;
   return raw == null ? "" : String(raw).trim();
 }
+function seriesIndexOf(file) {
+  const raw = file.frontmatter?.series_index;
+  if (typeof raw === "number") return Number.isFinite(raw) ? raw : void 0;
+  if (typeof raw === "string" && raw.trim() !== "") {
+    const index = Number(raw);
+    return Number.isFinite(index) ? index : void 0;
+  }
+  return void 0;
+}
 function toEntry(file) {
-  const index = Number(file.frontmatter?.series_index);
-  if (!Number.isFinite(index) || !isListedNote(file)) return void 0;
+  const index = seriesIndexOf(file);
+  if (index === void 0 || !isListedNote(file)) return void 0;
   const question = file.frontmatter?.series_question;
   return {
     file,
