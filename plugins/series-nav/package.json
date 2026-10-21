@@ -1,0 +1,72 @@
+{
+  "name": "@haejunhyun/series-nav",
+  "version": "0.1.0",
+  "description": "Series navigation for Quartz - a series box under the title and a prev/next pager, driven by series/series_index frontmatter.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup"
+  },
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "preact": {
+      "optional": false
+    }
+  },
+  "dependencies": {
+    "@quartz-community/types": "github:quartz-community/types"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "preact": "^10.28.2",
+    "sass": "^1.97.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "quartz": {
+    "name": "series-nav",
+    "displayName": "Series Nav",
+    "category": "component",
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 15,
+    "defaultEnabled": true,
+    "defaultOptions": {},
+    "components": {
+      "SeriesBox": {
+        "displayName": "Series Box",
+        "defaultPosition": "beforeBody",
+        "defaultPriority": 35
+      },
+      "SeriesPager": {
+        "displayName": "Series Pager",
+        "defaultPosition": "afterBody",
+        "defaultPriority": 30
+      }
+    }
+  }
+}

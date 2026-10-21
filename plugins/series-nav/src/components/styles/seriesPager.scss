@@ -1,0 +1,50 @@
+// 구 prev-next 하단 카드와 같은 형태.
+.series-pager {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--lightgray);
+
+  .series-pager-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .series-pager-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--lightgray);
+    border-radius: 6px;
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      background-color var(--dur-fast) var(--ease);
+
+    &:hover {
+      border-color: var(--secondary);
+      background: rgba(var(--accent-rgb), 0.04);
+    }
+
+    &.next {
+      text-align: right;
+    }
+
+    .direction {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--secondary);
+      letter-spacing: 0.06em;
+    }
+
+    .ptitle {
+      font-size: 0.85rem;
+      color: var(--darkgray);
+      font-weight: 500;
+      line-height: 1.4;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+  }
+}
