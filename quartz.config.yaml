@@ -471,8 +471,36 @@ plugins:
       position: beforeBody
       priority: 3
   - source: ./plugins/prev-next
-    enabled: true
+    # series-nav로 대체 — 같은 폴더 날짜순 대신 시리즈 노트에서만 이전·다음 편을 보인다.
+    enabled: false
     options: {}
+    order: 15
+    layout:
+      position: afterBody
+      priority: 30
+  # series-nav는 컴포넌트가 둘이라 엔트리를 둘로 나눈다(엔트리당 컴포넌트 1개 제약).
+  # 주의: name이 PascalCase로 컴포넌트를 찾는 키다(series-box → SeriesBox). options는 두 엔트리에 같게 둘 것.
+  - source:
+      repo: ./plugins/series-nav
+      name: series-box
+    enabled: true
+    # 제목 아래 시리즈 상자(현재 편·이전/다음·접히는 목록). priority 35 = 모바일 메타(content-meta 20·tag-list 30) 다음.
+    options:
+      seriesTitles:
+        deep-learning-basics: "딥러닝 기초 시리즈"
+    order: 15
+    layout:
+      position: beforeBody
+      priority: 35
+      condition: not-index
+  - source:
+      repo: ./plugins/series-nav
+      name: series-pager
+    enabled: true
+    # 본문 하단 이전·다음 편. 구 prev-next 자리(afterBody 30).
+    options:
+      seriesTitles:
+        deep-learning-basics: "딥러닝 기초 시리즈"
     order: 15
     layout:
       position: afterBody
