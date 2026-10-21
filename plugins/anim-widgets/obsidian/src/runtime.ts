@@ -195,7 +195,8 @@ function mountCanvas(el: HTMLElement, spec: CanvasSpec, host: Host) {
     paint()
   }
   const tick = (now: number) => {
-    elapsed += Math.min(100, now - last)
+    // 첫 rAF 타임스탬프는 startLoop의 performance.now()보다 이를 수 있다 → 음수면 progress < 0이 된다.
+    elapsed += Math.min(100, Math.max(0, now - last)) // 상한: 탭 복귀 시 시간이 튀지 않게
     last = now
     paint()
     raf = requestAnimationFrame(tick)
