@@ -3,7 +3,7 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "@quartz-community/types"
-import { resolveRelative } from "../util/path"
+import { resolveRelative } from "../../../_shared/path"
 import { defaultOptions, getSeriesContext, type SeriesFile, type SeriesNavOptions } from "./series"
 import style from "./styles/seriesBox.scss"
 

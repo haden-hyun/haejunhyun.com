@@ -1,4 +1,4 @@
-// src/util/path.ts
+// ../_shared/path.ts
 function endsWith(s2, suffix) {
   return s2 === suffix || s2.endsWith("/" + suffix);
 }
@@ -44,10 +44,7 @@ function isListedNote(file) {
   return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
 }
 
-// src/components/series.ts
-var defaultOptions = {
-  seriesTitles: {}
-};
+// ../_shared/series.ts
 function seriesOf(file) {
   const raw = file.frontmatter?.series;
   return raw == null ? "" : String(raw).trim();
@@ -72,12 +69,20 @@ function toEntry(file) {
     question: question == null || String(question).trim() === "" ? void 0 : String(question).trim()
   };
 }
+function getSeriesEntries(series, allFiles) {
+  return allFiles.filter((f3) => seriesOf(f3) === series).map(toEntry).filter((e2) => e2 !== void 0).sort(
+    (a2, b2) => a2.index - b2.index || a2.title.localeCompare(b2.title, "ko", { numeric: true })
+  );
+}
+
+// src/components/series.ts
+var defaultOptions = {
+  seriesTitles: {}
+};
 function getSeriesContext(fileData, allFiles, opts) {
   const series = seriesOf(fileData);
   if (!series || !fileData.slug) return void 0;
-  const entries = allFiles.filter((f3) => seriesOf(f3) === series).map(toEntry).filter((e2) => e2 !== void 0).sort(
-    (a2, b2) => a2.index - b2.index || a2.title.localeCompare(b2.title, "ko", { numeric: true })
-  );
+  const entries = getSeriesEntries(series, allFiles);
   const current = entries.findIndex((e2) => e2.file.slug === fileData.slug);
   if (current === -1) return void 0;
   return {

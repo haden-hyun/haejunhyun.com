@@ -1,7 +1,5 @@
-// Quartz `@quartz-community/utils`의 경로 헬퍼 사본.
-// 주의: 의존성으로 끌어오지 않는 이유: 그 패키지는 `github:` 참조라 dist 없이
-// 설치돼 esbuild가 해결하지 못한다(다른 로컬 플러그인들은 dist가 남아 있던
-// 시점에 설치돼 우연히 동작 중이다). 필요한 게 문자열 함수 셋뿐이라 사본이 낫다.
+// `@quartz-community/utils` 경로 헬퍼 사본. series-nav·series-roadmap이 함께 쓴다.
+// 주의: 그 패키지는 `github:` 참조라 dist 없이 설치돼 esbuild가 해결하지 못한다 — 의존성으로 끌어오지 말 것.
 
 function endsWith(s: string, suffix: string): boolean {
   return s === suffix || s.endsWith("/" + suffix)

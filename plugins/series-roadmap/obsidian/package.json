@@ -1,0 +1,17 @@
+{
+  "name": "series-roadmap-preview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Obsidian plugin that previews ```series-roadmap fences with the blog series-roadmap renderer and styles.",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "install-vault": "node esbuild.config.mjs --install",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "obsidian": "1.14.4",
+    "typescript": "5.9.3"
+  }
+}

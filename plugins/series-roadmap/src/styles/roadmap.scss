@@ -1,0 +1,406 @@
+// 레인 배치: 부 = 가로 줄, 편 = 줄 안 카드. 칼럼 수(--rm-cols)는 가장 큰 부의 편 수라 모든 부가 같은 열 격자를 공유한다.
+// 주의: 이 CSS는 레이어 밖(externalResources)이라 custom.scss의 `article a`와 명시도로 겨룬다 — 선택자를 .series-roadmap 아래에 둘 것.
+.series-roadmap {
+  container-type: inline-size;
+  margin: 1.2rem 0 0.6rem;
+
+  ol,
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  .rm {
+    border-top: 2px solid var(--dark);
+    padding-top: 14px;
+  }
+
+  .rm-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 16px;
+    margin-bottom: 18px;
+  }
+
+  .rm-title {
+    font-family: var(--headerFont);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--dark);
+  }
+
+  .rm-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--gray);
+
+    li {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+  }
+
+  .lg-line {
+    display: inline-block;
+    width: 22px;
+    height: 0;
+    border-top: 2px solid var(--secondary);
+  }
+
+  .legend-chip {
+    font-family: var(--codeFont);
+    font-size: 11px;
+    line-height: 1;
+    padding: 3px 7px;
+    border-radius: 999px;
+    border: 1px dashed var(--gray);
+  }
+
+  .rm-board {
+    position: relative;
+  }
+
+  .rm-parts {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .rm-part {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    gap: 0 18px;
+    align-items: start;
+    min-width: 0;
+  }
+
+  .rm-part-head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    background: var(--dark);
+    color: var(--light);
+  }
+
+  .rm-part-no {
+    font-family: var(--codeFont);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    opacity: 0.75;
+  }
+
+  .rm-part-name {
+    font-weight: 600;
+    font-size: 13.5px;
+    line-height: 1.35;
+    word-break: keep-all;
+  }
+
+  .rm-eps {
+    display: grid;
+    grid-template-columns: repeat(var(--rm-cols, 3), minmax(0, 1fr));
+    gap: 12px 30px;
+  }
+
+  .rm-ep {
+    position: relative;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 9px 11px 10px;
+    border: 1px solid var(--lightgray);
+    border-radius: 8px;
+    background: var(--light);
+
+    &.is-pub {
+      border-color: var(--secondary);
+    }
+
+    &.is-plan {
+      border-style: dashed;
+      background: transparent;
+    }
+
+    &.is-hl,
+    &.is-src {
+      background: var(--highlight);
+      border-color: var(--secondary);
+    }
+
+    // 로드맵이 놓인 편. 테두리가 1px 두꺼운 만큼 패딩을 줄여 카드 크기를 맞춘다
+    &.is-current {
+      background: var(--highlight);
+      border: 2px solid var(--secondary);
+      padding: 8px 10px 9px;
+    }
+
+    &.is-src::before {
+      content: "선수";
+      position: absolute;
+      top: -9px;
+      right: 10px;
+      font-family: var(--codeFont);
+      font-size: 10.5px;
+      line-height: 1;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: var(--secondary);
+      color: var(--light);
+    }
+  }
+
+  .rm-ep,
+  .rm-part-head {
+    transition:
+      opacity 0.15s,
+      background 0.15s,
+      border-color 0.15s;
+  }
+
+  // 강조 중에는 관련 없는 카드를 흐리게 한다
+  .rm.has-hl .rm-ep:not(.is-hl):not(.is-src) {
+    opacity: 0.38;
+  }
+
+  .rm.has-hl .rm-part-head {
+    opacity: 0.55;
+  }
+
+  .rm-ep-top {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .dot {
+    flex: none;
+    width: 11px;
+    height: 11px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: var(--light);
+    border: 2px solid var(--gray);
+
+    &.pub {
+      background: var(--secondary);
+      border-color: var(--secondary);
+    }
+
+    &.plan {
+      border-style: dashed;
+      opacity: 0.7;
+    }
+  }
+
+  .rm-current {
+    margin-left: auto;
+    font-family: var(--codeFont);
+    font-size: 11px;
+    line-height: 1;
+    padding: 3px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--secondary);
+    color: var(--secondary);
+  }
+
+  .rm-ep .no {
+    font-family: var(--codeFont);
+    font-size: 11.5px;
+    color: var(--gray);
+  }
+
+  .rm-ep-title,
+  .rm-ep-q {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  .rm-ep-title {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--darkgray);
+    font-weight: 600;
+
+    a {
+      color: var(--secondary);
+      text-decoration: none;
+      border-bottom: 0;
+
+      // 카드 전체가 링크
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+
+      &:hover,
+      &:focus-visible {
+        text-decoration: underline;
+        outline: none;
+      }
+    }
+  }
+
+  .rm-ep.is-plan .rm-ep-title {
+    color: var(--gray);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .rm-ep-q {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--gray);
+  }
+
+  .rm-req {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 3px;
+  }
+
+  .chip {
+    font-family: var(--codeFont);
+    font-size: 11px;
+    line-height: 1;
+    padding: 3px 7px;
+    border-radius: 999px;
+    border: 1px dashed var(--gray);
+    color: var(--gray);
+    text-decoration: none;
+    white-space: nowrap;
+    background: var(--light);
+
+    &.is-on {
+      background: var(--highlight);
+    }
+  }
+
+  a.chip {
+    border-color: var(--secondary);
+    color: var(--secondary);
+
+    &:hover,
+    &:focus-visible {
+      background: var(--highlight);
+      outline: none;
+    }
+  }
+
+  .rm-wires {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .w-flow,
+  .w-part,
+  .w-req {
+    fill: none;
+    stroke-width: 2;
+  }
+
+  .w-flow,
+  .w-req {
+    stroke: var(--secondary);
+  }
+
+  .w-part {
+    stroke: var(--dark);
+  }
+
+  .w-req {
+    stroke-dasharray: 5 4;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .rm.has-hl .w-req.is-hl {
+    opacity: 1;
+  }
+
+  .ah-flow,
+  .ah-req {
+    fill: var(--secondary);
+  }
+
+  .ah-part {
+    fill: var(--dark);
+  }
+
+  .rm-foot {
+    margin: 12px 0 0;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--gray);
+  }
+
+  // 좁은 폭: 부 이름을 줄 위로, 카드 세로 쌓기, 선 없이 부 사이 ↓
+  @container (max-width: 600px) {
+    .rm-part {
+      position: relative;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .rm-part-head {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .rm-eps {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .rm-part:not(:last-child)::after {
+      content: "↓";
+      position: absolute;
+      left: 50%;
+      bottom: -26px;
+      transform: translateX(-50%);
+      font-family: var(--codeFont);
+      font-size: 16px;
+      line-height: 1;
+      color: var(--dark);
+    }
+
+    .rm-wires,
+    .lg-wire,
+    .rm-hint {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rm-ep,
+    .rm-part-head,
+    .w-req {
+      transition: none;
+    }
+  }
+}

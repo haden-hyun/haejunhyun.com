@@ -1,0 +1,9 @@
+{
+  "id": "series-roadmap-preview",
+  "name": "Series Roadmap Preview",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "블로그 series-roadmap의 ```series-roadmap 펜스를 읽기 모드와 라이브 프리뷰에서 블로그와 같은 로드맵으로 보여 준다.",
+  "author": "haejun",
+  "isDesktopOnly": false
+}

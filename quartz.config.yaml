@@ -488,6 +488,9 @@ plugins:
     options:
       seriesTitles:
         deep-learning-basics: "딥러닝 기초 시리즈"
+        obsidian-quartz-blog: "Obsidian과 Quartz로 블로그 만들기"
+        statistics-basics: "통계학 기초"
+        docker-basics: "Airflow를 위한 Docker 기초"
     order: 15
     layout:
       position: beforeBody
@@ -501,10 +504,23 @@ plugins:
     options:
       seriesTitles:
         deep-learning-basics: "딥러닝 기초 시리즈"
+        obsidian-quartz-blog: "Obsidian과 Quartz로 블로그 만들기"
+        statistics-basics: "통계학 기초"
+        docker-basics: "Airflow를 위한 Docker 기초"
     order: 15
     layout:
       position: afterBody
       priority: 30
+  - source: ./plugins/series-roadmap
+    enabled: true
+    # ```series-roadmap 펜스 → 0편 서문 본문의 시리즈 로드맵. 주의: seriesTitles는 series-box·series-pager와 같게 둘 것.
+    options:
+      seriesTitles:
+        deep-learning-basics: "딥러닝 기초 시리즈"
+        obsidian-quartz-blog: "Obsidian과 Quartz로 블로그 만들기"
+        statistics-basics: "통계학 기초"
+        docker-basics: "Airflow를 위한 Docker 기초"
+    order: 57
   - source: ./plugins/related-notes
     enabled: false
     # 노트 하단 "연결된 노트" — 비활성.
