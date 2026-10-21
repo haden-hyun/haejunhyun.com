@@ -1,4 +1,5 @@
 /* Quartz 테마 변수 → Obsidian 테마 변수. .anim 안에서만 정의해 볼트 테마·다른 플러그인과 충돌하지 않는다.
+   (빌드가 anim.scss를 뒤에 이어 붙여 :root에도 --cat이 생기지만, .anim 안에서는 아래 theme-map 값이 이긴다.)
    블로그 anim.scss는 이 변수들만 쓰므로 수정 없이 아래에 그대로 이어 붙는다. */
 .anim {
   --light: var(--background-primary);
