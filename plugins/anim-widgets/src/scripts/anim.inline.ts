@@ -14,7 +14,7 @@ interface Frame {
   util: Util
 }
 
-const COLOR_VARS = ["light", "lightgray", "gray", "darkgray", "dark", "secondary", "tertiary", "highlight"]
+const COLOR_VARS = ["light", "lightgray", "gray", "darkgray", "dark", "secondary", "tertiary", "highlight", "cat1", "cat2", "cat3", "cat4"]
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
 

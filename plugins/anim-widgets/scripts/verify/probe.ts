@@ -2,7 +2,7 @@
 // 런타임 루프와 별개로 원하는 시점의 프레임을 결정론적으로 그려 본다.
 import { makeUtil } from "../../src/util"
 
-const COLOR_VARS = ["light", "lightgray", "gray", "darkgray", "dark", "secondary", "tertiary", "highlight"]
+const COLOR_VARS = ["light", "lightgray", "gray", "darkgray", "dark", "secondary", "tertiary", "highlight", "cat1", "cat2", "cat3", "cat4"]
 
 function readColors() {
   const style = getComputedStyle(document.documentElement)

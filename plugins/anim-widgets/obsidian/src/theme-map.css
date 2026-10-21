@@ -9,8 +9,20 @@
   --secondary: var(--text-accent);
   --tertiary: var(--text-accent-hover);
   --highlight: color-mix(in srgb, var(--text-accent) 15%, transparent);
+  /* 범주색은 Obsidian 테마와 무관하게 블로그 값으로 고정한다(anim.scss의 :root 값과 같게 유지). */
+  --cat1: #8e6012;
+  --cat2: #449f66;
+  --cat3: #8e79c9;
+  --cat4: #8a2755;
   --bodyFont: var(--font-text);
   --codeFont: var(--font-monospace);
+}
+
+.theme-dark .anim {
+  --cat1: #c68404;
+  --cat2: #167340;
+  --cat3: #7055b0;
+  --cat4: #c9618c;
 }
 
 .anim-error {

@@ -1,4 +1,19 @@
 // 색은 전부 테마 변수에서 온다 — 다크모드 전환이 자동으로 반영된다.
+// 범주색 cat1~4: 대등한 범주(군집·스레드·비교 대상)용. Quartz 테마(ColorScheme·joinStyles)는 고정 키만 내보내므로 여기서 정의한다.
+// 주의: 같은 번호 = 같은 색상 계열, 라이트/다크 쌍으로 검증된 팔레트다. 값을 바꾸면 obsidian/src/theme-map.css도 같이 바꾼다.
+:root {
+  --cat1: #8e6012;
+  --cat2: #449f66;
+  --cat3: #8e79c9;
+  --cat4: #8a2755;
+}
+:root[saved-theme="dark"] {
+  --cat1: #c68404;
+  --cat2: #167340;
+  --cat3: #7055b0;
+  --cat4: #c9618c;
+}
+
 .anim {
   margin: 1.75rem 0;
   padding: 1rem 1rem 0.75rem;
