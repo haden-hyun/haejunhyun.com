@@ -36,7 +36,7 @@ const RUNS = [
   { name: "A*", rule: "g + 맨해튼 거리 h", ...search(true) },
 ]
 const MAX = Math.max(...RUNS.map((r) => r.closed.length))
-// 두 패널의 확장 칸은 같은 뜻(처리 완료)이라 같은 tertiary로 칠한다. 강조(secondary)는 결론을 만든 A*의 확장 칸 수 한 곳뿐이다.
+// 두 패널의 확장 칸은 같은 뜻(처리 완료)이라 같은 옅은 secondary(0.35)로 칠한다. 강조(secondary)는 결론을 만든 A*의 확장 칸 수 한 곳뿐이다.
 const BEST = RUNS.reduce((b, r, i) => (r.closed.length < RUNS[b].closed.length ? i : b), 0)
 
 export default function draw(ctx, { progress, width, height, colors, util }) {
@@ -62,7 +62,7 @@ export default function draw(ctx, { progress, width, height, colors, util }) {
       const [x, y] = C(i)
       if (WALL.has(i)) { ctx.fillStyle = colors.darkgray; ctx.fillRect(x, y, cell, cell); continue }
       if (order.has(i)) {
-        ctx.fillStyle = colors.tertiary
+        ctx.fillStyle = colors.secondary
         ctx.globalAlpha = 0.35
         ctx.fillRect(x, y, cell, cell)
         ctx.globalAlpha = 1
