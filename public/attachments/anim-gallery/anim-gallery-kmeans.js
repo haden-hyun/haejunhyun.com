@@ -51,7 +51,7 @@ export default function draw(ctx, { progress, width, height, colors, util }) {
   const it = Math.min(n - 1, Math.floor(p * n)), local = p >= 1 ? 1 : p * n - it
   const pAssign = local >= 0.2, pMove = ease(seg(local, 0.45, 0.9))
   const cur = H[it]
-  const converged = p >= 1 || (it === n - 1 && local > 0.9)
+  const converged = p >= 1 || (it === n - 1 && local >= 0.45) // 마지막 반복은 중심이 움직이지 않으므로 이동 구간 없이 결론으로
   const sse = pAssign ? cur.sse : it > 0 ? H[it - 1].sse : cur.sse
   text(ctx, converged ? (width >= 420 ? `반복 ${n}회 · 중심이 더 움직이지 않음(수렴)` : `반복 ${n}회 · 수렴`) : `반복 ${it + 1} · ${local < 0.45 ? "가장 가까운 중심에 할당" : "군집 평균으로 중심 이동"}`, 0, 10, { size: 13, weight: 600, color: colors.dark })
   text(ctx, `SSE ${sse.toFixed(3)}`, width, 10, { size: 12, weight: converged ? 600 : 400, mono: true, color: converged ? colors.secondary : colors.gray, align: "right" })

@@ -35,6 +35,7 @@ export default function draw(ctx, { progress, width, height, colors, util }) {
   const dist = local < 0.5 ? st.before : st.after
   const done = st.done.map((d, i) => d && (i !== st.cur || local >= 0.2))
   const finished = p >= 1
+  const fade = 0.35 + 0.65 * util.seg(local, 0.5, 0.9) // 이웃 갱신 강조가 서서히 나타난다(계단식 장면도 매 순간 움직인다)
   const r = width < 520 ? 14 : 17
   const top = 40, bottom = height - 26
   const P = (i) => [r + POS[i][0] * (width - 2 * r), top + POS[i][1] * (bottom - top)]
@@ -49,7 +50,7 @@ export default function draw(ctx, { progress, width, height, colors, util }) {
     const relaxing = !finished && local >= 0.5 && (a === st.cur || b === st.cur)
     const best = finished && onPath(a, b)
     ctx.strokeStyle = best || relaxing ? colors.secondary : tree ? colors.secondary : colors.gray
-    ctx.globalAlpha = tree && !best && !relaxing ? 0.4 : 1
+    ctx.globalAlpha = relaxing ? fade : tree && !best ? 0.4 : 1
     ctx.lineWidth = best || relaxing ? 2.5 : tree ? 1.5 : 1
     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke()
     ctx.globalAlpha = 1
@@ -70,6 +71,8 @@ export default function draw(ctx, { progress, width, height, colors, util }) {
     text(ctx, name, x, y, { size: 12, weight: 700, mono: true, color: done[i] ? colors.dark : colors.darkgray, align: "center" })
     const d = dist[i] === Infinity ? "∞" : String(dist[i])
     const changed = (!finished && local >= 0.5 && st.before[i] !== st.after[i]) || (finished && i === 5)
+    if (changed && !finished) ctx.globalAlpha = fade
     text(ctx, d, x, POS[i][1] > 0.5 ? y + r + 11 : y - r - 10, { size: 12, weight: changed ? 700 : 400, mono: true, color: changed ? colors.secondary : colors.darkgray, align: "center" })
+    ctx.globalAlpha = 1
   })
 }

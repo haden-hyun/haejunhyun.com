@@ -45,7 +45,7 @@ export default function draw(ctx, { progress, width, height, colors, util }) {
   const step = 0.14
   const i = Math.min(MODELS - 1, Math.floor(Math.min(progress, 0.7) / step))
   const pModel = ease(seg(progress, i * step, i * step + 0.1))
-  const pAvg = ease(seg(progress, 0.74, 1))
+  const pAvg = ease(seg(progress, 0.69, 1))
   text(ctx, pAvg > 0 ? `${MODELS}개 평균 → 계단이 촘촘해지고 표본에 덜 흔들린다` : `모델 ${i + 1}/${MODELS} · 복원 추출한 표본으로 나무 하나`, 0, 10, { size: 13, weight: 600, color: colors.dark })
   if (width >= 520 && pAvg === 0) text(ctx, "점 크기 = 이 표본에서 뽑힌 횟수", width, 10, { size: 10, color: colors.gray, align: "right" })
 
