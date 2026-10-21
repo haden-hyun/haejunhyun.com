@@ -1,17 +1,7 @@
 // 하니스 페이지에 들어가는 검사용 스크립트. draw가 progress의 순수 함수라는 점을 이용해
 // 런타임 루프와 별개로 원하는 시점의 프레임을 결정론적으로 그려 본다.
 import { makeUtil } from "../../src/util"
-
-const COLOR_VARS = ["light", "lightgray", "gray", "darkgray", "dark", "secondary", "tertiary", "highlight", "cat1", "cat2", "cat3", "cat4"]
-
-function readColors() {
-  const style = getComputedStyle(document.documentElement)
-  const colors: Record<string, string> = {}
-  for (const n of COLOR_VARS) colors[n] = style.getPropertyValue(`--${n}`).trim()
-  colors.font = style.getPropertyValue("--bodyFont").trim() || "sans-serif"
-  colors.mono = style.getPropertyValue("--codeFont").trim() || "monospace"
-  return colors
-}
+import { readColors } from "../../src/runtime/core"
 
 function digest(data: Uint8ClampedArray) {
   let h = 2166136261, inked = 0
@@ -41,9 +31,35 @@ async function render(src: string, o: FrameOpts) {
   return { c, data: ctx.getImageData(0, 0, c.width, c.height).data }
 }
 
+// PNG는 테마 배경 위에 얹어 저장한다(투명 배경이면 다크 프레임이 흰 뷰어에서 흐리게 보인다). 해시·잉크는 원래 캔버스로 잰다.
 async function frame(src: string, o: FrameOpts) {
   const { c, data } = await render(src, o)
-  return { ...digest(data), png: c.toDataURL("image/png") }
+  const out = document.createElement("canvas")
+  out.width = c.width
+  out.height = c.height
+  const octx = out.getContext("2d")!
+  octx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--light").trim() || "white"
+  octx.fillRect(0, 0, out.width, out.height)
+  octx.drawImage(c, 0, 0)
+  return { ...digest(data), png: out.toDataURL("image/png") }
+}
+
+// 재생 구간(progress 0→1)을 stepMs 간격으로 그려 같은 프레임이 가장 오래 이어진 구간을 찾는다.
+// progress 1까지 이어지는 마지막 정지는 결론 화면(hold 앞 머묾)이라 세지 않는다.
+async function longestFreeze(src: string, o: Omit<FrameOpts, "progress">, stepMs = 50) {
+  const n = Math.ceil(o.cycle / stepMs)
+  let prev = "", runStart = 0, best = { ms: 0, from: 0, to: 0 }
+  for (let k = 0; k <= n; k++) {
+    const p = Math.min(1, (k * stepMs) / o.cycle)
+    const { hash } = digest((await render(src, { ...o, progress: p })).data)
+    if (hash !== prev) {
+      const ms = (k - 1 - runStart) * stepMs
+      if (k > 0 && ms > best.ms) best = { ms, from: (runStart * stepMs) / o.cycle, to: ((k - 1) * stepMs) / o.cycle }
+      prev = hash
+      runStart = k
+    }
+  }
+  return best
 }
 
 // 화면에 붙은 런타임 캔버스와 probe 캔버스는 래스터 경로가 달라(GPU·CPU) 플랫폼에 따라
@@ -69,4 +85,4 @@ function runtimeCanvas() {
   return { ...digest(c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data), width: c.clientWidth, height: c.clientHeight }
 }
 
-;(window as unknown as { __probe: object }).__probe = { frame, runtimeCanvas, compareRuntime }
+;(window as unknown as { __probe: object }).__probe = { frame, longestFreeze, runtimeCanvas, compareRuntime }

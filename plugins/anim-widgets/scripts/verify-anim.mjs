@@ -2,6 +2,7 @@
 // verify-anim — ```anim 펜스를 블로그 빌드와 같은 코드로 렌더해 AV1~AV9를 판정한다.
 //   node scripts/verify-anim.mjs --note <note.md> [--assets dir,dir] [--attachments dir] [--out dir] [--allow AV5] [--serve]
 //   node scripts/verify-anim.mjs --fence <fence.yaml> --assets <dir> ...
+//   --at 0.3,0.64  canvas를 지정한 progress에서도 찍는다(at-0.30.png …). 장면 명세의 구간 경계를 확인할 때 쓴다
 // 종료 코드: 0 통과 · 1 AV 실패 · 2 환경 오류(Chrome 없음 등)
 import esbuild from "esbuild"
 import { createServer } from "node:http"
@@ -20,11 +21,14 @@ const flag = (name) => argv.includes(`--${name}`)
 const notePath = arg("note") && path.resolve(arg("note"))
 const fencePath = arg("fence") && path.resolve(arg("fence"))
 if (!notePath && !fencePath) {
-  console.error("사용법: verify-anim.mjs --note <note.md> | --fence <fence.yaml> [--assets dir,dir] [--attachments dir] [--out dir] [--allow AV5] [--serve]")
+  console.error("사용법: verify-anim.mjs --note <note.md> | --fence <fence.yaml> [--assets dir,dir] [--attachments dir] [--out dir] [--allow AV5] [--at p,p] [--serve]")
   process.exit(2)
 }
 const outDir = path.resolve(arg("out") ?? path.join(tmpdir(), `verify-anim-${Date.now()}`))
 const allowTiming = (arg("allow") ?? "").split(",").includes("AV5")
+const atList = (arg("at") ?? "").split(",").filter(Boolean).map(Number).filter((p) => p >= 0 && p <= 1)
+// 재생 중 같은 화면이 이보다 오래 이어지면 AV7 실패. 사건 뒤 멈춤 상한(0.5초, anim-guide [움직임 리듬])보다 조금 길게 잡는다
+const FREEZE_MS = 600
 
 function findAttachmentsRoot(start) {
   for (let d = start; d !== path.dirname(d); d = path.dirname(d)) {
@@ -177,6 +181,9 @@ for (const f of fences) {
       const endDark = await fr(1)
       await setTheme(d.page, "light")
       for (const [name, frm] of [["start.png", start], ["mid.png", mid], ["final-light.png", end], ["final-dark.png", endDark]]) { savePng(path.join(dir, name), frm.png); shots.push(path.join(dir, name)) }
+      for (const p of atList) { const name = `at-${p.toFixed(2)}.png`; savePng(path.join(dir, name), (await fr(p)).png); shots.push(path.join(dir, name)) }
+      const fz = await d.page.evaluate(([s, opt]) => window.__probe.longestFreeze(s, opt), [src, o])
+      add("AV7", fz.ms <= FREEZE_MS, fz.ms <= FREEZE_MS ? `재생 중 최장 정지 ${fz.ms}ms` : `재생 중 ${fz.ms}ms 정지 (progress ${fz.from.toFixed(2)}–${fz.to.toFixed(2)}, 상한 ${FREEZE_MS}ms)`)
       add("AV6", end.inked > 0.003 && endDark.inked > 0.003, `잉크 비율 라이트 ${(end.inked * 100).toFixed(1)}% · 다크 ${(endDark.inked * 100).toFixed(1)}%`)
       add("AV6", end.hash !== endDark.hash, end.hash !== endDark.hash ? "테마 전환 시 다른 색으로 그린다" : "라이트·다크 프레임이 같다 — colors.*를 읽지 않는다")
       add("AV7", start.hash !== end.hash, start.hash !== end.hash ? "progress 0.1과 1의 프레임이 다르다" : "progress가 바뀌어도 그림이 같다")
@@ -194,6 +201,7 @@ for (const f of fences) {
         const got = await fig.evaluate((el) => [...el.querySelectorAll(".is-on")].map((e) => e.id).sort())
         const want = await fig.evaluate((el, ids) => ids.filter((id) => el.querySelector(`[id="${id}"]`)).sort(), spec.steps[k].on)
         if (JSON.stringify(got) !== JSON.stringify(want)) mismatch.push(`${k + 1}단계 켜짐 ${got.join(",")} ≠ ${want.join(",")}`)
+        await sleep(450) // 켜짐 전환(opacity 0.35s)이 끝난 뒤 찍는다
         await shot(fig, `step-${k + 1}.png`)
         if (k < n - 1) await btns.nth(2).click()
       }
