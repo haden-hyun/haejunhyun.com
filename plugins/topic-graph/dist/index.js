@@ -168,6 +168,31 @@ function relations(model) {
   for (let p2 = cur.parent; p2; p2 = byId.get(p2)?.parent ?? null) ancestors.add(p2);
   return { cur, link, series, direct: /* @__PURE__ */ new Set([...link, ...series]), siblings, ancestors };
 }
+function aliasCollisions(notes) {
+  const byBase = /* @__PURE__ */ new Map();
+  for (const n2 of notes) {
+    const base = n2.slug.split("/").pop().toLowerCase();
+    byBase.set(base, [...byBase.get(base) ?? [], n2.slug]);
+  }
+  const out = [];
+  for (const n2 of notes) {
+    for (const alias of n2.aliases) {
+      const parts = alias.startsWith("./") || alias.startsWith("../") ? [...dirOf(n2.slug).split("/"), ...alias.split("/")] : alias.split("/");
+      const resolved = [];
+      for (const p2 of parts) {
+        if (p2 === "." || p2 === "") continue;
+        if (p2 === "..") resolved.pop();
+        else resolved.push(p2);
+      }
+      const target = resolved.join("/");
+      if (!target || target === n2.slug) continue;
+      const hits = byBase.get(target.split("/").pop().toLowerCase()) ?? [];
+      if (hits.length > 0 && target.split("/").length < Math.min(...hits.map((h2) => h2.split("/").length)))
+        out.push({ slug: n2.slug, alias, hits });
+    }
+  }
+  return out;
+}
 
 // src/core/labels.ts
 var FONT = 10;
@@ -1204,6 +1229,16 @@ function tagsOf(f3) {
   if (Array.isArray(raw)) return raw.map(String);
   return typeof raw === "string" && raw.trim() ? [raw.trim()] : [];
 }
+var warned = /* @__PURE__ */ new Set();
+function warnAliasCollisions(files) {
+  const notes = files.filter((f3) => f3.slug && isListedNote(f3)).map((f3) => ({ slug: f3.slug, aliases: (f3.aliases ?? []).map(String) }));
+  for (const c3 of aliasCollisions(notes)) {
+    const key = `${c3.slug}|${c3.alias}`;
+    if (warned.has(key)) continue;
+    warned.add(key);
+    console.warn(`[topic-graph] ${c3.slug}: \uBCC4\uCE6D "${c3.alias}"\uC758 \uB9AC\uB2E4\uC774\uB809\uD2B8 \uC2AC\uB7EC\uADF8\uAC00 \uB178\uD2B8 \uD30C\uC77C\uBA85(${c3.hits.join(", ")})\uACFC \uACB9\uCE5C\uB2E4 \u2014 [[\uD30C\uC77C\uBA85]] \uB9C1\uD06C\uAC00 \uBCC4\uCE6D \uD398\uC774\uC9C0\uB85C \uD480\uB824 Backlinks\uC5D0\uC11C \uBE60\uC9C4\uB2E4`);
+  }
+}
 var R_CURRENT = 5;
 var R_RING = 9;
 var R_DIRECT = 3.8;
@@ -1215,6 +1250,7 @@ var TopicGraph_default = ((userOpts) => {
     const current = fileData;
     const slug = current.slug;
     if (!slug || !isListedNote(current)) return null;
+    warnAliasCollisions(allFiles);
     const notes = allFiles.filter((f3) => f3.slug && isListedNote(f3)).map((f3) => ({
       slug: f3.slug,
       title: String(f3.frontmatter?.title ?? f3.slug),

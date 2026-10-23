@@ -7,7 +7,7 @@ import type {
 import { folderTitle, isListedNote, topicName } from "../../../_shared/notes"
 import { resolveRelative } from "../../../_shared/path"
 import { seriesIndexOf, seriesOf } from "../../../_shared/series"
-import { buildTopicGraph, relations, type GraphNode, type NoteInput } from "../core/graph"
+import { aliasCollisions, buildTopicGraph, relations, type GraphNode, type NoteInput } from "../core/graph"
 import { FONT, placeLabels, type Box } from "../core/labels"
 import { layoutTopicGraph, VIEW_SHORT, VIEW_TALL, type View } from "../core/layout"
 import style from "./styles/topicGraph.scss"
@@ -30,6 +30,18 @@ function tagsOf(f: FileData): string[] {
   return typeof raw === "string" && raw.trim() ? [raw.trim()] : []
 }
 
+// 빌드당 한 번만 — 컴포넌트는 페이지마다 렌더된다.
+const warned = new Set<string>()
+function warnAliasCollisions(files: FileData[]) {
+  const notes = files.filter((f) => f.slug && isListedNote(f)).map((f) => ({ slug: f.slug as string, aliases: ((f.aliases as string[] | undefined) ?? []).map(String) }))
+  for (const c of aliasCollisions(notes)) {
+    const key = `${c.slug}|${c.alias}`
+    if (warned.has(key)) continue
+    warned.add(key)
+    console.warn(`[topic-graph] ${c.slug}: 별칭 "${c.alias}"의 리다이렉트 슬러그가 노트 파일명(${c.hits.join(", ")})과 겹친다 — [[파일명]] 링크가 별칭 페이지로 풀려 Backlinks에서 빠진다`)
+  }
+}
+
 const R_CURRENT = 5
 const R_RING = 9
 const R_DIRECT = 3.8
@@ -43,6 +55,7 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
     const current = fileData as FileData
     const slug = current.slug as string | undefined
     if (!slug || !isListedNote(current)) return null
+    warnAliasCollisions(allFiles as FileData[])
 
     const notes: NoteInput[] = (allFiles as FileData[])
       .filter((f) => f.slug && isListedNote(f))

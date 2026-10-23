@@ -140,3 +140,33 @@ export function relations(model: TopicGraphModel) {
   for (let p = cur.parent; p; p = byId.get(p)?.parent ?? null) ancestors.add(p)
   return { cur, link, series, direct: new Set([...link, ...series]), siblings, ancestors }
 }
+
+/**
+ * 별칭 리다이렉트 슬러그가 노트 파일명과 겹치는 경우. 링크 해석(shortest)이 노트 대신 루트의 별칭 페이지를 골라
+ * 링크는 리다이렉트로 도착하지만 Backlinks에선 빠진다. 상대 별칭(./·../)은 노트 폴더 기준으로 푼다.
+ */
+export function aliasCollisions(notes: { slug: string; aliases: string[] }[]): { slug: string; alias: string; hits: string[] }[] {
+  const byBase = new Map<string, string[]>()
+  for (const n of notes) {
+    const base = n.slug.split("/").pop()!.toLowerCase()
+    byBase.set(base, [...(byBase.get(base) ?? []), n.slug])
+  }
+  const out: { slug: string; alias: string; hits: string[] }[] = []
+  for (const n of notes) {
+    for (const alias of n.aliases) {
+      const parts = alias.startsWith("./") || alias.startsWith("../") ? [...dirOf(n.slug).split("/"), ...alias.split("/")] : alias.split("/")
+      const resolved: string[] = []
+      for (const p of parts) {
+        if (p === "." || p === "") continue
+        if (p === "..") resolved.pop()
+        else resolved.push(p)
+      }
+      const target = resolved.join("/")
+      if (!target || target === n.slug) continue
+      const hits = byBase.get(target.split("/").pop()!.toLowerCase()) ?? []
+      if (hits.length > 0 && target.split("/").length < Math.min(...hits.map((h) => h.split("/").length)))
+        out.push({ slug: n.slug, alias, hits })
+    }
+  }
+  return out
+}
