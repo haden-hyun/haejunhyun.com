@@ -266,6 +266,8 @@ plugins:
       title: "CATALOG"
       moreHref: "topics"
       moreLabel: "← All topics"
+      # 현재 노트 앞뒤 2편 창. 창 밖은 폴더 페이지 링크로.
+      radius: 2
     order: 15
     layout:
       position: left
@@ -275,7 +277,7 @@ plugins:
       condition: not-index
   - source: ./plugins/topic-graph
     enabled: true
-    # 좌측 SPECS 아래 주제 그래프(폴더 클러스터, 빌드 타임 SVG).
+    # 우측 TOC 아래 주제 그래프(폴더 클러스터, 빌드 타임 SVG).
     options:
       title: "GRAPH"
       # 주의: folder-listing의 folderTitles와 같게 둘 것.
@@ -285,8 +287,8 @@ plugins:
         python-operator: "PythonOperator"
     order: 15
     layout:
-      position: left
-      priority: 30
+      position: right
+      priority: 50
       display: desktop-only
       condition: not-index
   # ⌘G 전역 그래프 모달만 쓴다. 사이드바 로컬 그래프는 topic-graph 스크립트가 걷어 내고 custom.scss가 숨긴다.
@@ -295,7 +297,7 @@ plugins:
     enabled: true
     layout:
       position: right
-      priority: 50
+      priority: 60
       condition: not-index
   - source: github:quartz-community/search
     enabled: true
@@ -308,9 +310,10 @@ plugins:
   - source: github:quartz-community/backlinks
     enabled: true
     layout:
-      position: right
-      # TOC 다음. 이전엔 graph(30) 뒤라 남는 높이가 없어 한 줄만 보였다.
-      priority: 30
+      # 좌측 SPECS 다음, CATALOG 앞.
+      position: left
+      priority: 20
+      display: desktop-only
       # 홈에서 제거 — 홈 본문이 비어 있어 백링크가 맥락 없이 뜬다.
       condition: not-index
   - source: ./plugins/global-nav
