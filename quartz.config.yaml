@@ -277,8 +277,7 @@ plugins:
     enabled: true
     layout:
       position: right
-      # ⌘G 전역 그래프 모달 전용 — 사이드바 패널은 related-notes 스크립트가 걷어낸다.
-      # 주의: 끄면 모달도 사라진다(모달 DOM이 이 컴포넌트 안에 있다).
+      # 우측 최하단. 노드가 1~2개뿐인 노트가 많아 TOC/백링크에 자리를 먼저 준다.
       priority: 50
       # 홈에서 제거 — wikilink가 적어 노드 1개짜리 빈 박스로 렌더된다.
       condition: not-index
@@ -545,17 +544,14 @@ plugins:
         docker-basics: "Airflow를 위한 Docker 기초"
     order: 57
   - source: ./plugins/related-notes
-    enabled: true
-    # 우측 Related — 사이드바 로컬 그래프 자리. 기준 점수 미만뿐이면 그리지 않는다.
-    options:
-      limit: 5
-      excludeBacklinks: true
+    enabled: false
+    # 노트 하단 "연결된 노트" — 비활성.
+    # 우측 사이드바 backlinks는 별개 컴포넌트라 그대로 동작한다.
+    options: {}
     order: 15
     layout:
-      position: right
-      # TOC(10) → Backlinks(30) → Related(40) → graph(50, 모달 전용).
-      priority: 40
-      condition: not-index
+      position: afterBody
+      priority: 45
   - source: ./plugins/reading-progress
     enabled: true
     options: {}
