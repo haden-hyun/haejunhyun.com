@@ -204,7 +204,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 | -------------------------------- | ------------------------------------------------------------- |
 | SPECS (`plugins/note-specs`)     | 작성·개정·수정·읽는 시간·토픽(§4.11). 데스크톱 전용          |
 | CATALOG (`plugins/note-catalog`) | 전체 파일 트리 폐기, **형제 노트만**. 길이가 형제 수에만 비례 |
-| TOC                              | 라벨 "TOC". `flex: 1 1 0` + `min-height: 0` — 남는 공간 전부, 내부 스크롤 |
+| TOC                              | 라벨 "TOC". `flex: 1 1 0` + `min-height: 0` — 남는 공간 전부, 내부 스크롤. 데스크톱 island 안에선 `0 1 auto`(§4.15) |
 | Backlinks                        | `0 0 auto`, `max-height: 9rem`                                |
 | Graph                            | `0 0 auto`, 기본 접힘                                         |
 
@@ -297,6 +297,28 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 ### 4.13 시리즈 로드맵
 
 - AA 예외: 카드·칩 호버 강조 중 관련 없는 카드를 `opacity: .38`로 흐리는 것은 호버 동안만의 일시 상태라 AA 4.5에서 뺀다. 평상시 카드는 AA를 지킨다(`plugins/series-roadmap`).
+
+### 4.14 이미지 · 영상 — 헤어라인 프레임
+
+**역할**: 본문 시각 자료를 anim 카드와 같은 문법으로 본문과 가른다. 구현은 `custom.scss` §11.
+
+- 1px `--lightgray` 보더 + `--radius-s`(6px), **그림자 없음**. 대상: 원고 이미지(`p`·`a`·정렬용 `div`·`figure` 직속), `video`(anim 카드 안은 제외 — 카드가 프레임), `.il-frame`. 캐러셀은 컨테이너만 라운드.
+- 제외: 캐러셀 썸네일, 라이트박스 확대본(반경만 맞춤), 그 밖의 깊은 위치 img.
+- 다크에서만 `brightness(0.9)` — 흰 이미지의 밝기 점프 18.3 → 14.6:1. **0.9가 상한**(0.85면 이미지 안 회색 라벨 4.35:1). 라이트박스는 원래 밝기.
+- 이중 자산 opt-in: `.media-light`/`.media-dark` 두 img를 나란히 두면 `saved-theme`로 하나만 보이고, 다크 자산은 디밍하지 않는다. `<picture media="(prefers-color-scheme)">`는 OS를 따라 사이트 토글과 어긋나 쓰지 않는다.
+- 기각: 투명 배경 일괄화(투명 자산 위 검정 글자 1.29:1), 전역 `invert`(색 의미 반전), 그림자 카드(다크에서 안 보이고, 그림자는 코드 창의 의미).
+
+### 4.15 사이드바 island
+
+**역할**: 데스크톱(1200px 초과 — 1200은 tablet 그리드) 사이드바 컬럼을 독립 스크롤 영역으로 보이게 한다. 패널이 하나도 없는 사이드바(폴더·태그·archive·topics)엔 그리지 않는다. 구현은 `custom.scss` §8.5.
+
+- 컬럼당 1개(좌 SPECS+CATALOG / 우 TOC+Backlinks+Graph). 패널마다 씌우지 않는다(§4.7).
+- 보더 `--island-border`(= `--lightgray`, 고대비 설정에선 `--gray`) + 반경 `--radius-m`(코드 창과 같은 10px), **그림자 없음**.
+- 면 `--island-bg` = `--light` + white 50%(라이트 `#fbfaf7`) / 4%(다크 `#181d29`). 페이지와 1.04 / 1.09 — 장식 수준.
+- 대비(island 위): `--gray` 5.48 / **4.87**, `--secondary` 6.45 / 7.32. 주의: 다크 여유 0.37 — 면을 더 띄우거나 패널 행에 hover 배경을 넣지 말 것.
+- 본문 폭 손실 0 — column-gap은 그대로, island를 컬럼 안쪽으로 1rem 들인다. 높이는 내용 크기, 상한에서 TOC가 내부 스크롤.
+- 우측 island는 맨 위로 버튼 영역(4.75rem) 위에서 끝난다 — 1652px 미만에선 버튼과 가로로 겹치기 때문.
+- 본문·상단 바·푸터·beforeBody/afterBody는 평면. 기각: 전면 island(카드 3단 중첩·본문 폭 손실), 패널별 island, 다크 표면 상향, 그림자.
 
 ---
 
