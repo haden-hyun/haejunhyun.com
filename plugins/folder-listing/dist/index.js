@@ -31,7 +31,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 
 // node_modules/inline-style-parser/cjs/index.js
-var require_cjs5 = __commonJS({
+var require_cjs4 = __commonJS({
   "node_modules/inline-style-parser/cjs/index.js"(exports, module) {
     var COMMENT_REGEX = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//g;
     var NEWLINE_REGEX = /\n/g;
@@ -47,7 +47,7 @@ var require_cjs5 = __commonJS({
     var EMPTY_STRING = "";
     var TYPE_COMMENT = "comment";
     var TYPE_DECLARATION = "declaration";
-    function index4(style, options) {
+    function index3(style, options) {
       if (typeof style !== "string") {
         throw new TypeError("First argument must be a string");
       }
@@ -164,19 +164,19 @@ var require_cjs5 = __commonJS({
     function trim(str) {
       return str ? str.replace(TRIM_REGEX, EMPTY_STRING) : EMPTY_STRING;
     }
-    module.exports = index4;
+    module.exports = index3;
   }
 });
 
 // node_modules/style-to-object/cjs/index.js
-var require_cjs6 = __commonJS({
+var require_cjs5 = __commonJS({
   "node_modules/style-to-object/cjs/index.js"(exports) {
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = StyleToObject;
-    var inline_style_parser_1 = __importDefault(require_cjs5());
+    var inline_style_parser_1 = __importDefault(require_cjs4());
     function StyleToObject(style, iterator) {
       let styleObject = null;
       if (!style || typeof style !== "string") {
@@ -202,7 +202,7 @@ var require_cjs6 = __commonJS({
 });
 
 // node_modules/style-to-js/cjs/utilities.js
-var require_utilities3 = __commonJS({
+var require_utilities2 = __commonJS({
   "node_modules/style-to-js/cjs/utilities.js"(exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.camelCase = void 0;
@@ -240,13 +240,13 @@ var require_utilities3 = __commonJS({
 });
 
 // node_modules/style-to-js/cjs/index.js
-var require_cjs7 = __commonJS({
+var require_cjs6 = __commonJS({
   "node_modules/style-to-js/cjs/index.js"(exports, module) {
     var __importDefault = exports && exports.__importDefault || function(mod) {
       return mod && mod.__esModule ? mod : { "default": mod };
     };
-    var style_to_object_1 = __importDefault(require_cjs6());
-    var utilities_1 = require_utilities3();
+    var style_to_object_1 = __importDefault(require_cjs5());
+    var utilities_1 = require_utilities2();
     function StyleToJS(style, options) {
       var output = {};
       if (!style || typeof style !== "string") {
@@ -597,8 +597,8 @@ function S(n22) {
 n = w.slice, l = { __e: function(n22, l22, u32, t2) {
   for (var i2, r2, o2; l22 = l22.__; ) if ((i2 = l22.__c) && !i2.__) try {
     if ((r2 = i2.constructor) && null != r2.getDerivedStateFromError && (i2.setState(r2.getDerivedStateFromError(n22)), o2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n22, t2 || {}), o2 = i2.__d), o2) return i2.__E = i2;
-  } catch (l32) {
-    n22 = l32;
+  } catch (l3) {
+    n22 = l3;
   }
   throw n22;
 } }, u = 0, "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, Math.random().toString(8);
@@ -612,20 +612,20 @@ function u2(e2, t2, n22, o2, i2, u32) {
   return l.vnode && l.vnode(l22), l22;
 }
 function byDateAndAlphabeticalFolderFirst(_cfg) {
-  return (f1, f222) => {
+  return (f1, f22) => {
     const f1IsFolder = isFolderPath(f1.slug ?? "");
-    const f2IsFolder = isFolderPath(f222.slug ?? "");
+    const f2IsFolder = isFolderPath(f22.slug ?? "");
     if (f1IsFolder && !f2IsFolder) return -1;
     if (!f1IsFolder && f2IsFolder) return 1;
-    if (f1.dates && f222.dates) {
-      return (getDate(f222)?.getTime() ?? 0) - (getDate(f1)?.getTime() ?? 0);
-    } else if (f1.dates && !f222.dates) {
+    if (f1.dates && f22.dates) {
+      return (getDate(f22)?.getTime() ?? 0) - (getDate(f1)?.getTime() ?? 0);
+    } else if (f1.dates && !f22.dates) {
       return -1;
-    } else if (!f1.dates && f222.dates) {
+    } else if (!f1.dates && f22.dates) {
       return 1;
     }
     const f1Title = f1.frontmatter?.title?.toLowerCase() ?? "";
-    const f2Title = f222.frontmatter?.title?.toLowerCase() ?? "";
+    const f2Title = f22.frontmatter?.title?.toLowerCase() ?? "";
     return f1Title.localeCompare(f2Title);
   };
 }
@@ -3020,295 +3020,39 @@ var FolderPage = (opts) => {
   };
 };
 
-// node_modules/@quartz-community/folder-page/dist/components/index.js
-var __create3 = Object.create;
-var __defProp3 = Object.defineProperty;
-var __getOwnPropDesc3 = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames3 = Object.getOwnPropertyNames;
-var __getProtoOf3 = Object.getPrototypeOf;
-var __hasOwnProp3 = Object.prototype.hasOwnProperty;
-var __commonJS3 = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames3(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-};
-var __export3 = (target, all) => {
-  for (var name22 in all)
-    __defProp3(target, name22, { get: all[name22], enumerable: true });
-};
-var __copyProps3 = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames3(from))
-      if (!__hasOwnProp3.call(to, key) && key !== except)
-        __defProp3(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc3(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM3 = (mod, isNodeMode, target) => (target = mod != null ? __create3(__getProtoOf3(mod)) : {}, __copyProps3(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  __defProp3(target, "default", { value: mod, enumerable: true }),
-  mod
-));
-var require_cjs4 = __commonJS3({
-  "node_modules/inline-style-parser/cjs/index.js"(exports$1, module) {
-    var COMMENT_REGEX = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//g;
-    var NEWLINE_REGEX = /\n/g;
-    var WHITESPACE_REGEX = /^\s*/;
-    var PROPERTY_REGEX = /^(\*?[-#/*\\\w]+(\[[0-9a-z_-]+\])?)\s*/;
-    var COLON_REGEX = /^:\s*/;
-    var VALUE_REGEX = /^((?:'(?:\\'|.)*?'|"(?:\\"|.)*?"|\([^)]*?\)|[^};])+)/;
-    var SEMICOLON_REGEX = /^[;\s]*/;
-    var TRIM_REGEX = /^\s+|\s+$/g;
-    var NEWLINE = "\n";
-    var FORWARD_SLASH = "/";
-    var ASTERISK = "*";
-    var EMPTY_STRING = "";
-    var TYPE_COMMENT = "comment";
-    var TYPE_DECLARATION = "declaration";
-    function index22(style, options) {
-      if (typeof style !== "string") {
-        throw new TypeError("First argument must be a string");
-      }
-      if (!style) return [];
-      options = options || {};
-      var lineno = 1;
-      var column = 1;
-      function updatePosition(str) {
-        var lines = str.match(NEWLINE_REGEX);
-        if (lines) lineno += lines.length;
-        var i2 = str.lastIndexOf(NEWLINE);
-        column = ~i2 ? str.length - i2 : column + str.length;
-      }
-      function position32() {
-        var start2 = { line: lineno, column };
-        return function(node) {
-          node.position = new Position(start2);
-          whitespace22();
-          return node;
-        };
-      }
-      function Position(start2) {
-        this.start = start2;
-        this.end = { line: lineno, column };
-        this.source = options.source;
-      }
-      Position.prototype.content = style;
-      function error(msg) {
-        var err = new Error(
-          options.source + ":" + lineno + ":" + column + ": " + msg
-        );
-        err.reason = msg;
-        err.filename = options.source;
-        err.line = lineno;
-        err.column = column;
-        err.source = style;
-        if (options.silent) ;
-        else {
-          throw err;
-        }
-      }
-      function match(re22) {
-        var m2 = re22.exec(style);
-        if (!m2) return;
-        var str = m2[0];
-        updatePosition(str);
-        style = style.slice(str.length);
-        return m2;
-      }
-      function whitespace22() {
-        match(WHITESPACE_REGEX);
-      }
-      function comments(rules) {
-        var c2;
-        rules = rules || [];
-        while (c2 = comment()) {
-          if (c2 !== false) {
-            rules.push(c2);
-          }
-        }
-        return rules;
-      }
-      function comment() {
-        var pos = position32();
-        if (FORWARD_SLASH != style.charAt(0) || ASTERISK != style.charAt(1)) return;
-        var i2 = 2;
-        while (EMPTY_STRING != style.charAt(i2) && (ASTERISK != style.charAt(i2) || FORWARD_SLASH != style.charAt(i2 + 1))) {
-          ++i2;
-        }
-        i2 += 2;
-        if (EMPTY_STRING === style.charAt(i2 - 1)) {
-          return error("End of comment missing");
-        }
-        var str = style.slice(2, i2 - 2);
-        column += 2;
-        updatePosition(str);
-        style = style.slice(i2);
-        column += 2;
-        return pos({
-          type: TYPE_COMMENT,
-          comment: str
-        });
-      }
-      function declaration() {
-        var pos = position32();
-        var prop = match(PROPERTY_REGEX);
-        if (!prop) return;
-        comment();
-        if (!match(COLON_REGEX)) return error("property missing ':'");
-        var val = match(VALUE_REGEX);
-        var ret = pos({
-          type: TYPE_DECLARATION,
-          property: trim(prop[0].replace(COMMENT_REGEX, EMPTY_STRING)),
-          value: val ? trim(val[0].replace(COMMENT_REGEX, EMPTY_STRING)) : EMPTY_STRING
-        });
-        match(SEMICOLON_REGEX);
-        return ret;
-      }
-      function declarations() {
-        var decls = [];
-        comments(decls);
-        var decl;
-        while (decl = declaration()) {
-          if (decl !== false) {
-            decls.push(decl);
-            comments(decls);
-          }
-        }
-        return decls;
-      }
-      whitespace22();
-      return declarations();
-    }
-    function trim(str) {
-      return str ? str.replace(TRIM_REGEX, EMPTY_STRING) : EMPTY_STRING;
-    }
-    module.exports = index22;
-  }
-});
-var require_cjs22 = __commonJS3({
-  "node_modules/style-to-object/cjs/index.js"(exports$1) {
-    var __importDefault = exports$1 && exports$1.__importDefault || function(mod) {
-      return mod && mod.__esModule ? mod : { "default": mod };
-    };
-    Object.defineProperty(exports$1, "__esModule", { value: true });
-    exports$1.default = StyleToObject;
-    var inline_style_parser_1 = __importDefault(require_cjs4());
-    function StyleToObject(style, iterator) {
-      let styleObject = null;
-      if (!style || typeof style !== "string") {
-        return styleObject;
-      }
-      const declarations = (0, inline_style_parser_1.default)(style);
-      const hasIterator = typeof iterator === "function";
-      declarations.forEach((declaration) => {
-        if (declaration.type !== "declaration") {
-          return;
-        }
-        const { property, value } = declaration;
-        if (hasIterator) {
-          iterator(property, value, declaration);
-        } else if (value) {
-          styleObject = styleObject || {};
-          styleObject[property] = value;
-        }
-      });
-      return styleObject;
-    }
-  }
-});
-var require_utilities2 = __commonJS3({
-  "node_modules/style-to-js/cjs/utilities.js"(exports$1) {
-    Object.defineProperty(exports$1, "__esModule", { value: true });
-    exports$1.camelCase = void 0;
-    var CUSTOM_PROPERTY_REGEX = /^--[a-zA-Z0-9_-]+$/;
-    var HYPHEN_REGEX = /-([a-z])/g;
-    var NO_HYPHEN_REGEX = /^[^-]+$/;
-    var VENDOR_PREFIX_REGEX = /^-(webkit|moz|ms|o|khtml)-/;
-    var MS_VENDOR_PREFIX_REGEX = /^-(ms)-/;
-    var skipCamelCase = function(property) {
-      return !property || NO_HYPHEN_REGEX.test(property) || CUSTOM_PROPERTY_REGEX.test(property);
-    };
-    var capitalize = function(match, character) {
-      return character.toUpperCase();
-    };
-    var trimHyphen = function(match, prefix) {
-      return "".concat(prefix, "-");
-    };
-    var camelCase = function(property, options) {
-      if (options === void 0) {
-        options = {};
-      }
-      if (skipCamelCase(property)) {
-        return property;
-      }
-      property = property.toLowerCase();
-      if (options.reactCompat) {
-        property = property.replace(MS_VENDOR_PREFIX_REGEX, trimHyphen);
-      } else {
-        property = property.replace(VENDOR_PREFIX_REGEX, trimHyphen);
-      }
-      return property.replace(HYPHEN_REGEX, capitalize);
-    };
-    exports$1.camelCase = camelCase;
-  }
-});
-var require_cjs32 = __commonJS3({
-  "node_modules/style-to-js/cjs/index.js"(exports$1, module) {
-    var __importDefault = exports$1 && exports$1.__importDefault || function(mod) {
-      return mod && mod.__esModule ? mod : { "default": mod };
-    };
-    var style_to_object_1 = __importDefault(require_cjs22());
-    var utilities_1 = require_utilities2();
-    function StyleToJS(style, options) {
-      var output = {};
-      if (!style || typeof style !== "string") {
-        return output;
-      }
-      (0, style_to_object_1.default)(style, function(property, value) {
-        if (property && value) {
-          output[(0, utilities_1.camelCase)(property, options)] = value;
-        }
-      });
-      return output;
-    }
-    StyleToJS.default = StyleToJS;
-    module.exports = StyleToJS;
-  }
-});
-function getDate2(data) {
-  const defaultDateType = data.defaultDateType;
-  if (!defaultDateType) {
-    return void 0;
-  }
-  const dates = data.dates;
-  return dates?.[defaultDateType];
+// node_modules/comma-separated-tokens/index.js
+function stringify3(values, options) {
+  const settings = {};
+  const input = values[values.length - 1] === "" ? [...values, ""] : values;
+  return input.join(
+    (settings.padRight ? " " : "") + "," + (settings.padLeft === false ? "" : " ")
+  ).trim();
 }
-function endsWith2(s2, suffix) {
-  return s2 === suffix || s2.endsWith("/" + suffix);
+
+// node_modules/devlop/lib/default.js
+function ok2() {
 }
-function isFolderPath2(fplike) {
-  return fplike.endsWith("/") || endsWith2(fplike, "index") || endsWith2(fplike, "index.md") || endsWith2(fplike, "index.html");
+
+// node_modules/estree-util-is-identifier-name/lib/index.js
+var nameRe2 = /^[$_\p{ID_Start}][$_\u{200C}\u{200D}\p{ID_Continue}]*$/u;
+var nameReJsx2 = /^[$_\p{ID_Start}][-$_\u{200C}\u{200D}\p{ID_Continue}]*$/u;
+var emptyOptions2 = {};
+function name2(name3, options) {
+  const settings = emptyOptions2;
+  const re3 = settings.jsx ? nameReJsx2 : nameRe2;
+  return re3.test(name3);
 }
-"function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, Math.random().toString(8);
-function byDateAndAlphabeticalFolderFirst2(_cfg) {
-  return (f1, f222) => {
-    const f1IsFolder = isFolderPath2(f1.slug ?? "");
-    const f2IsFolder = isFolderPath2(f222.slug ?? "");
-    if (f1IsFolder && !f2IsFolder) return -1;
-    if (!f1IsFolder && f2IsFolder) return 1;
-    if (f1.dates && f222.dates) {
-      return (getDate2(f222)?.getTime() ?? 0) - (getDate2(f1)?.getTime() ?? 0);
-    } else if (f1.dates && !f222.dates) {
-      return -1;
-    } else if (!f1.dates && f222.dates) {
-      return 1;
-    }
-    const f1Title = f1.frontmatter?.title?.toLowerCase() ?? "";
-    const f2Title = f222.frontmatter?.title?.toLowerCase() ?? "";
-    return f1Title.localeCompare(f2Title);
-  };
+
+// node_modules/hast-util-whitespace/lib/index.js
+var re2 = /[ \t\n\f\r]/g;
+function whitespace2(thing) {
+  return typeof thing === "object" ? thing.type === "text" ? empty2(thing.value) : false : empty2(thing);
 }
+function empty2(value) {
+  return value.replace(re2, "") === "";
+}
+
+// node_modules/property-information/lib/util/schema.js
 var Schema2 = class {
   /**
    * @param {SchemaType['property']} property
@@ -3331,6 +3075,8 @@ var Schema2 = class {
 Schema2.prototype.normal = {};
 Schema2.prototype.property = {};
 Schema2.prototype.space = void 0;
+
+// node_modules/property-information/lib/util/merge.js
 function merge2(definitions, space) {
   const property = {};
   const normal = {};
@@ -3340,9 +3086,13 @@ function merge2(definitions, space) {
   }
   return new Schema2(property, normal, space);
 }
+
+// node_modules/property-information/lib/normalize.js
 function normalize2(value) {
   return value.toLowerCase();
 }
+
+// node_modules/property-information/lib/util/info.js
 var Info2 = class {
   /**
    * @param {string} property
@@ -3369,8 +3119,10 @@ Info2.prototype.overloadedBoolean = false;
 Info2.prototype.property = "";
 Info2.prototype.spaceSeparated = false;
 Info2.prototype.space = void 0;
+
+// node_modules/property-information/lib/util/types.js
 var types_exports2 = {};
-__export3(types_exports2, {
+__export(types_exports2, {
   boolean: () => boolean2,
   booleanish: () => booleanish2,
   commaOrSpaceSeparated: () => commaOrSpaceSeparated2,
@@ -3390,6 +3142,8 @@ var commaOrSpaceSeparated2 = increment2();
 function increment2() {
   return 2 ** ++powers2;
 }
+
+// node_modules/property-information/lib/util/defined-info.js
 var checks2 = (
   /** @type {ReadonlyArray<keyof typeof types>} */
   Object.keys(types_exports2)
@@ -3409,13 +3163,13 @@ var DefinedInfo2 = class extends Info2 {
    *   Info.
    */
   constructor(property, attribute, mask, space) {
-    let index22 = -1;
+    let index3 = -1;
     super(property, attribute);
     mark2(this, "space", space);
     if (typeof mask === "number") {
-      while (++index22 < checks2.length) {
-        const check = checks2[index22];
-        mark2(this, checks2[index22], (mask & types_exports2[check]) === types_exports2[check]);
+      while (++index3 < checks2.length) {
+        const check = checks2[index3];
+        mark2(this, checks2[index3], (mask & types_exports2[check]) === types_exports2[check]);
       }
     }
   }
@@ -3426,6 +3180,8 @@ function mark2(values, key, value) {
     values[key] = value;
   }
 }
+
+// node_modules/property-information/lib/util/create.js
 function create2(definition) {
   const properties = {};
   const normals = {};
@@ -3445,6 +3201,8 @@ function create2(definition) {
   }
   return new Schema2(properties, normals, definition.space);
 }
+
+// node_modules/property-information/lib/aria.js
 var aria2 = create2({
   properties: {
     ariaActiveDescendant: null,
@@ -3501,12 +3259,18 @@ var aria2 = create2({
     return property === "role" ? property : "aria-" + property.slice(4).toLowerCase();
   }
 });
+
+// node_modules/property-information/lib/util/case-sensitive-transform.js
 function caseSensitiveTransform2(attributes, attribute) {
   return attribute in attributes ? attributes[attribute] : attribute;
 }
+
+// node_modules/property-information/lib/util/case-insensitive-transform.js
 function caseInsensitiveTransform2(attributes, property) {
   return caseSensitiveTransform2(attributes, property.toLowerCase());
 }
+
+// node_modules/property-information/lib/html.js
 var html3 = create2({
   attributes: {
     acceptcharset: "accept-charset",
@@ -3526,6 +3290,7 @@ var html3 = create2({
     allowFullScreen: boolean2,
     allowPaymentRequest: boolean2,
     allowUserMedia: boolean2,
+    alpha: boolean2,
     alt: null,
     as: null,
     async: boolean2,
@@ -3539,8 +3304,12 @@ var html3 = create2({
     checked: boolean2,
     cite: null,
     className: spaceSeparated2,
+    closedBy: null,
+    colorSpace: null,
     cols: number2,
-    colSpan: null,
+    colSpan: number2,
+    command: null,
+    commandFor: null,
     content: null,
     contentEditable: booleanish2,
     controls: boolean2,
@@ -3720,8 +3489,10 @@ var html3 = create2({
     seamless: boolean2,
     selected: boolean2,
     shadowRootClonable: boolean2,
+    shadowRootCustomElementRegistry: boolean2,
     shadowRootDelegatesFocus: boolean2,
     shadowRootMode: null,
+    shadowRootSerializable: boolean2,
     shape: null,
     size: number2,
     sizes: null,
@@ -3858,8 +3629,11 @@ var html3 = create2({
     allowTransparency: null,
     autoCorrect: null,
     autoSave: null,
+    credentialless: boolean2,
     disablePictureInPicture: boolean2,
     disableRemotePlayback: boolean2,
+    exportParts: commaSeparated2,
+    part: spaceSeparated2,
     prefix: null,
     property: null,
     results: number2,
@@ -3869,6 +3643,8 @@ var html3 = create2({
   space: "html",
   transform: caseInsensitiveTransform2
 });
+
+// node_modules/property-information/lib/svg.js
 var svg3 = create2({
   attributes: {
     accentHeight: "accent-height",
@@ -3911,6 +3687,7 @@ var svg3 = create2({
     markerEnd: "marker-end",
     markerMid: "marker-mid",
     markerStart: "marker-start",
+    maskType: "mask-type",
     navDown: "nav-down",
     navDownLeft: "nav-down-left",
     navDownRight: "nav-down-right",
@@ -4181,6 +3958,7 @@ var svg3 = create2({
     markerWidth: null,
     mask: null,
     maskContentUnits: null,
+    maskType: null,
     maskUnits: null,
     mathematical: null,
     max: null,
@@ -4429,6 +4207,8 @@ var svg3 = create2({
   space: "svg",
   transform: caseSensitiveTransform2
 });
+
+// node_modules/property-information/lib/xlink.js
 var xlink2 = create2({
   properties: {
     xLinkActuate: null,
@@ -4444,12 +4224,16 @@ var xlink2 = create2({
     return "xlink:" + property.slice(5).toLowerCase();
   }
 });
+
+// node_modules/property-information/lib/xmlns.js
 var xmlns2 = create2({
   attributes: { xmlnsxlink: "xmlns:xlink" },
   properties: { xmlnsXLink: null, xmlns: null },
   space: "xmlns",
   transform: caseInsensitiveTransform2
 });
+
+// node_modules/property-information/lib/xml.js
 var xml2 = create2({
   properties: { xmlBase: null, xmlLang: null, xmlSpace: null },
   space: "xml",
@@ -4457,33 +4241,117 @@ var xml2 = create2({
     return "xml:" + property.slice(3).toLowerCase();
   }
 });
-merge2([aria2, html3, xlink2, xmlns2, xml2], "html");
-merge2([aria2, svg3, xlink2, xmlns2, xml2], "svg");
-__toESM3(require_cjs32());
+
+// node_modules/property-information/lib/hast-to-react.js
+var hastToReact2 = {
+  classId: "classID",
+  dataType: "datatype",
+  itemId: "itemID",
+  strokeDashArray: "strokeDasharray",
+  strokeDashOffset: "strokeDashoffset",
+  strokeLineCap: "strokeLinecap",
+  strokeLineJoin: "strokeLinejoin",
+  strokeMiterLimit: "strokeMiterlimit",
+  typeOf: "typeof",
+  xLinkActuate: "xlinkActuate",
+  xLinkArcRole: "xlinkArcrole",
+  xLinkHref: "xlinkHref",
+  xLinkRole: "xlinkRole",
+  xLinkShow: "xlinkShow",
+  xLinkTitle: "xlinkTitle",
+  xLinkType: "xlinkType",
+  xmlnsXLink: "xmlnsXlink"
+};
+
+// node_modules/property-information/lib/find.js
+var cap3 = /[A-Z]/g;
+var dash2 = /-[a-z]/g;
+var valid2 = /^data[-\w.:]+$/i;
+function find2(schema, value) {
+  const normal = normalize2(value);
+  let property = value;
+  let Type = Info2;
+  if (normal in schema.normal) {
+    return schema.property[schema.normal[normal]];
+  }
+  if (normal.length > 4 && normal.slice(0, 4) === "data" && valid2.test(value)) {
+    if (value.charAt(4) === "-") {
+      const rest = value.slice(5).replace(dash2, camelcase2);
+      property = "data" + rest.charAt(0).toUpperCase() + rest.slice(1);
+    } else {
+      const rest = value.slice(4);
+      if (!dash2.test(rest)) {
+        let dashes = rest.replace(cap3, kebab2);
+        if (dashes.charAt(0) !== "-") {
+          dashes = "-" + dashes;
+        }
+        value = "data" + dashes;
+      }
+    }
+    Type = DefinedInfo2;
+  }
+  return new Type(property, value);
+}
+function kebab2($0) {
+  return "-" + $0.toLowerCase();
+}
+function camelcase2($0) {
+  return $0.charAt(1).toUpperCase();
+}
+
+// node_modules/property-information/index.js
+var html4 = merge2([aria2, html3, xlink2, xmlns2, xml2], "html");
+var svg4 = merge2([aria2, svg3, xlink2, xmlns2, xml2], "svg");
+
+// node_modules/space-separated-tokens/index.js
+function stringify4(values) {
+  return values.join(" ").trim();
+}
+
+// node_modules/hast-util-to-jsx-runtime/lib/index.js
+var import_style_to_js2 = __toESM(require_cjs6());
+var pointStart2 = point3("start");
+function point3(type) {
+  return point5;
+  function point5(node) {
+    const point6 = node && node.position && node.position[type] || {};
+    if (typeof point6.line === "number" && point6.line > 0 && typeof point6.column === "number" && point6.column > 0) {
+      return {
+        line: point6.line,
+        column: point6.column,
+        offset: typeof point6.offset === "number" && point6.offset > -1 ? point6.offset : void 0
+      };
+    }
+  }
+}
+
+// node_modules/unist-util-stringify-position/lib/index.js
 function stringifyPosition2(value) {
   if (!value || typeof value !== "object") {
     return "";
   }
   if ("position" in value || "type" in value) {
-    return position22(value.position);
+    return position3(value.position);
   }
   if ("start" in value || "end" in value) {
-    return position22(value);
+    return position3(value);
   }
   if ("line" in value || "column" in value) {
-    return point22(value);
+    return point4(value);
   }
   return "";
 }
-function point22(point32) {
-  return index2(point32 && point32.line) + ":" + index2(point32 && point32.column);
+function point4(point5) {
+  return index2(point5 && point5.line) + ":" + index2(point5 && point5.column);
 }
-function position22(pos) {
-  return point22(pos && pos.start) + "-" + point22(pos && pos.end);
+function position3(pos) {
+  return point4(pos && pos.start) + "-" + point4(pos && pos.end);
 }
 function index2(value) {
   return value && typeof value === "number" ? value : 1;
 }
+
+// node_modules/vfile-message/lib/index.js
 var VFileMessage2 = class extends Error {
   /**
    * Create a message for `reason`.
@@ -4571,12 +4439,12 @@ var VFileMessage2 = class extends Error {
       options.cause = causeOrReason;
     }
     if (!options.ruleId && !options.source && typeof origin === "string") {
-      const index22 = origin.indexOf(":");
-      if (index22 === -1) {
+      const index3 = origin.indexOf(":");
+      if (index3 === -1) {
         options.ruleId = origin;
       } else {
-        options.source = origin.slice(0, index22);
-        options.ruleId = origin.slice(index22 + 1);
+        options.source = origin.slice(0, index3);
+        options.ruleId = origin.slice(index3 + 1);
       }
     }
     if (!options.place && options.ancestors && options.ancestors) {
@@ -4619,1473 +4487,6 @@ VFileMessage2.prototype.place = void 0;
 VFileMessage2.prototype.ruleId = void 0;
 VFileMessage2.prototype.source = void 0;
 
-// node_modules/comma-separated-tokens/index.js
-function stringify3(values, options) {
-  const settings = {};
-  const input = values[values.length - 1] === "" ? [...values, ""] : values;
-  return input.join(
-    (settings.padRight ? " " : "") + "," + (settings.padLeft === false ? "" : " ")
-  ).trim();
-}
-
-// node_modules/devlop/lib/default.js
-function ok2() {
-}
-
-// node_modules/estree-util-is-identifier-name/lib/index.js
-var nameRe2 = /^[$_\p{ID_Start}][$_\u{200C}\u{200D}\p{ID_Continue}]*$/u;
-var nameReJsx2 = /^[$_\p{ID_Start}][-$_\u{200C}\u{200D}\p{ID_Continue}]*$/u;
-var emptyOptions2 = {};
-function name2(name3, options) {
-  const settings = emptyOptions2;
-  const re3 = settings.jsx ? nameReJsx2 : nameRe2;
-  return re3.test(name3);
-}
-
-// node_modules/hast-util-whitespace/lib/index.js
-var re2 = /[ \t\n\f\r]/g;
-function whitespace2(thing) {
-  return typeof thing === "object" ? thing.type === "text" ? empty2(thing.value) : false : empty2(thing);
-}
-function empty2(value) {
-  return value.replace(re2, "") === "";
-}
-
-// node_modules/property-information/lib/util/schema.js
-var Schema3 = class {
-  /**
-   * @param {SchemaType['property']} property
-   *   Property.
-   * @param {SchemaType['normal']} normal
-   *   Normal.
-   * @param {Space | undefined} [space]
-   *   Space.
-   * @returns
-   *   Schema.
-   */
-  constructor(property, normal, space) {
-    this.normal = normal;
-    this.property = property;
-    if (space) {
-      this.space = space;
-    }
-  }
-};
-Schema3.prototype.normal = {};
-Schema3.prototype.property = {};
-Schema3.prototype.space = void 0;
-
-// node_modules/property-information/lib/util/merge.js
-function merge3(definitions, space) {
-  const property = {};
-  const normal = {};
-  for (const definition of definitions) {
-    Object.assign(property, definition.property);
-    Object.assign(normal, definition.normal);
-  }
-  return new Schema3(property, normal, space);
-}
-
-// node_modules/property-information/lib/normalize.js
-function normalize3(value) {
-  return value.toLowerCase();
-}
-
-// node_modules/property-information/lib/util/info.js
-var Info3 = class {
-  /**
-   * @param {string} property
-   *   Property.
-   * @param {string} attribute
-   *   Attribute.
-   * @returns
-   *   Info.
-   */
-  constructor(property, attribute) {
-    this.attribute = attribute;
-    this.property = property;
-  }
-};
-Info3.prototype.attribute = "";
-Info3.prototype.booleanish = false;
-Info3.prototype.boolean = false;
-Info3.prototype.commaOrSpaceSeparated = false;
-Info3.prototype.commaSeparated = false;
-Info3.prototype.defined = false;
-Info3.prototype.mustUseProperty = false;
-Info3.prototype.number = false;
-Info3.prototype.overloadedBoolean = false;
-Info3.prototype.property = "";
-Info3.prototype.spaceSeparated = false;
-Info3.prototype.space = void 0;
-
-// node_modules/property-information/lib/util/types.js
-var types_exports3 = {};
-__export(types_exports3, {
-  boolean: () => boolean3,
-  booleanish: () => booleanish3,
-  commaOrSpaceSeparated: () => commaOrSpaceSeparated3,
-  commaSeparated: () => commaSeparated3,
-  number: () => number3,
-  overloadedBoolean: () => overloadedBoolean3,
-  spaceSeparated: () => spaceSeparated3
-});
-var powers3 = 0;
-var boolean3 = increment3();
-var booleanish3 = increment3();
-var overloadedBoolean3 = increment3();
-var number3 = increment3();
-var spaceSeparated3 = increment3();
-var commaSeparated3 = increment3();
-var commaOrSpaceSeparated3 = increment3();
-function increment3() {
-  return 2 ** ++powers3;
-}
-
-// node_modules/property-information/lib/util/defined-info.js
-var checks3 = (
-  /** @type {ReadonlyArray<keyof typeof types>} */
-  Object.keys(types_exports3)
-);
-var DefinedInfo3 = class extends Info3 {
-  /**
-   * @constructor
-   * @param {string} property
-   *   Property.
-   * @param {string} attribute
-   *   Attribute.
-   * @param {number | null | undefined} [mask]
-   *   Mask.
-   * @param {Space | undefined} [space]
-   *   Space.
-   * @returns
-   *   Info.
-   */
-  constructor(property, attribute, mask, space) {
-    let index4 = -1;
-    super(property, attribute);
-    mark3(this, "space", space);
-    if (typeof mask === "number") {
-      while (++index4 < checks3.length) {
-        const check = checks3[index4];
-        mark3(this, checks3[index4], (mask & types_exports3[check]) === types_exports3[check]);
-      }
-    }
-  }
-};
-DefinedInfo3.prototype.defined = true;
-function mark3(values, key, value) {
-  if (value) {
-    values[key] = value;
-  }
-}
-
-// node_modules/property-information/lib/util/create.js
-function create3(definition) {
-  const properties = {};
-  const normals = {};
-  for (const [property, value] of Object.entries(definition.properties)) {
-    const info = new DefinedInfo3(
-      property,
-      definition.transform(definition.attributes || {}, property),
-      value,
-      definition.space
-    );
-    if (definition.mustUseProperty && definition.mustUseProperty.includes(property)) {
-      info.mustUseProperty = true;
-    }
-    properties[property] = info;
-    normals[normalize3(property)] = property;
-    normals[normalize3(info.attribute)] = property;
-  }
-  return new Schema3(properties, normals, definition.space);
-}
-
-// node_modules/property-information/lib/aria.js
-var aria3 = create3({
-  properties: {
-    ariaActiveDescendant: null,
-    ariaAtomic: booleanish3,
-    ariaAutoComplete: null,
-    ariaBusy: booleanish3,
-    ariaChecked: booleanish3,
-    ariaColCount: number3,
-    ariaColIndex: number3,
-    ariaColSpan: number3,
-    ariaControls: spaceSeparated3,
-    ariaCurrent: null,
-    ariaDescribedBy: spaceSeparated3,
-    ariaDetails: null,
-    ariaDisabled: booleanish3,
-    ariaDropEffect: spaceSeparated3,
-    ariaErrorMessage: null,
-    ariaExpanded: booleanish3,
-    ariaFlowTo: spaceSeparated3,
-    ariaGrabbed: booleanish3,
-    ariaHasPopup: null,
-    ariaHidden: booleanish3,
-    ariaInvalid: null,
-    ariaKeyShortcuts: null,
-    ariaLabel: null,
-    ariaLabelledBy: spaceSeparated3,
-    ariaLevel: number3,
-    ariaLive: null,
-    ariaModal: booleanish3,
-    ariaMultiLine: booleanish3,
-    ariaMultiSelectable: booleanish3,
-    ariaOrientation: null,
-    ariaOwns: spaceSeparated3,
-    ariaPlaceholder: null,
-    ariaPosInSet: number3,
-    ariaPressed: booleanish3,
-    ariaReadOnly: booleanish3,
-    ariaRelevant: null,
-    ariaRequired: booleanish3,
-    ariaRoleDescription: spaceSeparated3,
-    ariaRowCount: number3,
-    ariaRowIndex: number3,
-    ariaRowSpan: number3,
-    ariaSelected: booleanish3,
-    ariaSetSize: number3,
-    ariaSort: null,
-    ariaValueMax: number3,
-    ariaValueMin: number3,
-    ariaValueNow: number3,
-    ariaValueText: null,
-    role: null
-  },
-  transform(_2, property) {
-    return property === "role" ? property : "aria-" + property.slice(4).toLowerCase();
-  }
-});
-
-// node_modules/property-information/lib/util/case-sensitive-transform.js
-function caseSensitiveTransform3(attributes, attribute) {
-  return attribute in attributes ? attributes[attribute] : attribute;
-}
-
-// node_modules/property-information/lib/util/case-insensitive-transform.js
-function caseInsensitiveTransform3(attributes, property) {
-  return caseSensitiveTransform3(attributes, property.toLowerCase());
-}
-
-// node_modules/property-information/lib/html.js
-var html4 = create3({
-  attributes: {
-    acceptcharset: "accept-charset",
-    classname: "class",
-    htmlfor: "for",
-    httpequiv: "http-equiv"
-  },
-  mustUseProperty: ["checked", "multiple", "muted", "selected"],
-  properties: {
-    // Standard Properties.
-    abbr: null,
-    accept: commaSeparated3,
-    acceptCharset: spaceSeparated3,
-    accessKey: spaceSeparated3,
-    action: null,
-    allow: null,
-    allowFullScreen: boolean3,
-    allowPaymentRequest: boolean3,
-    allowUserMedia: boolean3,
-    alpha: boolean3,
-    alt: null,
-    as: null,
-    async: boolean3,
-    autoCapitalize: null,
-    autoComplete: spaceSeparated3,
-    autoFocus: boolean3,
-    autoPlay: boolean3,
-    blocking: spaceSeparated3,
-    capture: null,
-    charSet: null,
-    checked: boolean3,
-    cite: null,
-    className: spaceSeparated3,
-    closedBy: null,
-    colorSpace: null,
-    cols: number3,
-    colSpan: number3,
-    command: null,
-    commandFor: null,
-    content: null,
-    contentEditable: booleanish3,
-    controls: boolean3,
-    controlsList: spaceSeparated3,
-    coords: number3 | commaSeparated3,
-    crossOrigin: null,
-    data: null,
-    dateTime: null,
-    decoding: null,
-    default: boolean3,
-    defer: boolean3,
-    dir: null,
-    dirName: null,
-    disabled: boolean3,
-    download: overloadedBoolean3,
-    draggable: booleanish3,
-    encType: null,
-    enterKeyHint: null,
-    fetchPriority: null,
-    form: null,
-    formAction: null,
-    formEncType: null,
-    formMethod: null,
-    formNoValidate: boolean3,
-    formTarget: null,
-    headers: spaceSeparated3,
-    height: number3,
-    hidden: overloadedBoolean3,
-    high: number3,
-    href: null,
-    hrefLang: null,
-    htmlFor: spaceSeparated3,
-    httpEquiv: spaceSeparated3,
-    id: null,
-    imageSizes: null,
-    imageSrcSet: null,
-    inert: boolean3,
-    inputMode: null,
-    integrity: null,
-    is: null,
-    isMap: boolean3,
-    itemId: null,
-    itemProp: spaceSeparated3,
-    itemRef: spaceSeparated3,
-    itemScope: boolean3,
-    itemType: spaceSeparated3,
-    kind: null,
-    label: null,
-    lang: null,
-    language: null,
-    list: null,
-    loading: null,
-    loop: boolean3,
-    low: number3,
-    manifest: null,
-    max: null,
-    maxLength: number3,
-    media: null,
-    method: null,
-    min: null,
-    minLength: number3,
-    multiple: boolean3,
-    muted: boolean3,
-    name: null,
-    nonce: null,
-    noModule: boolean3,
-    noValidate: boolean3,
-    onAbort: null,
-    onAfterPrint: null,
-    onAuxClick: null,
-    onBeforeMatch: null,
-    onBeforePrint: null,
-    onBeforeToggle: null,
-    onBeforeUnload: null,
-    onBlur: null,
-    onCancel: null,
-    onCanPlay: null,
-    onCanPlayThrough: null,
-    onChange: null,
-    onClick: null,
-    onClose: null,
-    onContextLost: null,
-    onContextMenu: null,
-    onContextRestored: null,
-    onCopy: null,
-    onCueChange: null,
-    onCut: null,
-    onDblClick: null,
-    onDrag: null,
-    onDragEnd: null,
-    onDragEnter: null,
-    onDragExit: null,
-    onDragLeave: null,
-    onDragOver: null,
-    onDragStart: null,
-    onDrop: null,
-    onDurationChange: null,
-    onEmptied: null,
-    onEnded: null,
-    onError: null,
-    onFocus: null,
-    onFormData: null,
-    onHashChange: null,
-    onInput: null,
-    onInvalid: null,
-    onKeyDown: null,
-    onKeyPress: null,
-    onKeyUp: null,
-    onLanguageChange: null,
-    onLoad: null,
-    onLoadedData: null,
-    onLoadedMetadata: null,
-    onLoadEnd: null,
-    onLoadStart: null,
-    onMessage: null,
-    onMessageError: null,
-    onMouseDown: null,
-    onMouseEnter: null,
-    onMouseLeave: null,
-    onMouseMove: null,
-    onMouseOut: null,
-    onMouseOver: null,
-    onMouseUp: null,
-    onOffline: null,
-    onOnline: null,
-    onPageHide: null,
-    onPageShow: null,
-    onPaste: null,
-    onPause: null,
-    onPlay: null,
-    onPlaying: null,
-    onPopState: null,
-    onProgress: null,
-    onRateChange: null,
-    onRejectionHandled: null,
-    onReset: null,
-    onResize: null,
-    onScroll: null,
-    onScrollEnd: null,
-    onSecurityPolicyViolation: null,
-    onSeeked: null,
-    onSeeking: null,
-    onSelect: null,
-    onSlotChange: null,
-    onStalled: null,
-    onStorage: null,
-    onSubmit: null,
-    onSuspend: null,
-    onTimeUpdate: null,
-    onToggle: null,
-    onUnhandledRejection: null,
-    onUnload: null,
-    onVolumeChange: null,
-    onWaiting: null,
-    onWheel: null,
-    open: boolean3,
-    optimum: number3,
-    pattern: null,
-    ping: spaceSeparated3,
-    placeholder: null,
-    playsInline: boolean3,
-    popover: null,
-    popoverTarget: null,
-    popoverTargetAction: null,
-    poster: null,
-    preload: null,
-    readOnly: boolean3,
-    referrerPolicy: null,
-    rel: spaceSeparated3,
-    required: boolean3,
-    reversed: boolean3,
-    rows: number3,
-    rowSpan: number3,
-    sandbox: spaceSeparated3,
-    scope: null,
-    scoped: boolean3,
-    seamless: boolean3,
-    selected: boolean3,
-    shadowRootClonable: boolean3,
-    shadowRootCustomElementRegistry: boolean3,
-    shadowRootDelegatesFocus: boolean3,
-    shadowRootMode: null,
-    shadowRootSerializable: boolean3,
-    shape: null,
-    size: number3,
-    sizes: null,
-    slot: null,
-    span: number3,
-    spellCheck: booleanish3,
-    src: null,
-    srcDoc: null,
-    srcLang: null,
-    srcSet: null,
-    start: number3,
-    step: null,
-    style: null,
-    tabIndex: number3,
-    target: null,
-    title: null,
-    translate: null,
-    type: null,
-    typeMustMatch: boolean3,
-    useMap: null,
-    value: booleanish3,
-    width: number3,
-    wrap: null,
-    writingSuggestions: null,
-    // Legacy.
-    // See: https://html.spec.whatwg.org/#other-elements,-attributes-and-apis
-    align: null,
-    // Several. Use CSS `text-align` instead,
-    aLink: null,
-    // `<body>`. Use CSS `a:active {color}` instead
-    archive: spaceSeparated3,
-    // `<object>`. List of URIs to archives
-    axis: null,
-    // `<td>` and `<th>`. Use `scope` on `<th>`
-    background: null,
-    // `<body>`. Use CSS `background-image` instead
-    bgColor: null,
-    // `<body>` and table elements. Use CSS `background-color` instead
-    border: number3,
-    // `<table>`. Use CSS `border-width` instead,
-    borderColor: null,
-    // `<table>`. Use CSS `border-color` instead,
-    bottomMargin: number3,
-    // `<body>`
-    cellPadding: null,
-    // `<table>`
-    cellSpacing: null,
-    // `<table>`
-    char: null,
-    // Several table elements. When `align=char`, sets the character to align on
-    charOff: null,
-    // Several table elements. When `char`, offsets the alignment
-    classId: null,
-    // `<object>`
-    clear: null,
-    // `<br>`. Use CSS `clear` instead
-    code: null,
-    // `<object>`
-    codeBase: null,
-    // `<object>`
-    codeType: null,
-    // `<object>`
-    color: null,
-    // `<font>` and `<hr>`. Use CSS instead
-    compact: boolean3,
-    // Lists. Use CSS to reduce space between items instead
-    declare: boolean3,
-    // `<object>`
-    event: null,
-    // `<script>`
-    face: null,
-    // `<font>`. Use CSS instead
-    frame: null,
-    // `<table>`
-    frameBorder: null,
-    // `<iframe>`. Use CSS `border` instead
-    hSpace: number3,
-    // `<img>` and `<object>`
-    leftMargin: number3,
-    // `<body>`
-    link: null,
-    // `<body>`. Use CSS `a:link {color: *}` instead
-    longDesc: null,
-    // `<frame>`, `<iframe>`, and `<img>`. Use an `<a>`
-    lowSrc: null,
-    // `<img>`. Use a `<picture>`
-    marginHeight: number3,
-    // `<body>`
-    marginWidth: number3,
-    // `<body>`
-    noResize: boolean3,
-    // `<frame>`
-    noHref: boolean3,
-    // `<area>`. Use no href instead of an explicit `nohref`
-    noShade: boolean3,
-    // `<hr>`. Use background-color and height instead of borders
-    noWrap: boolean3,
-    // `<td>` and `<th>`
-    object: null,
-    // `<applet>`
-    profile: null,
-    // `<head>`
-    prompt: null,
-    // `<isindex>`
-    rev: null,
-    // `<link>`
-    rightMargin: number3,
-    // `<body>`
-    rules: null,
-    // `<table>`
-    scheme: null,
-    // `<meta>`
-    scrolling: booleanish3,
-    // `<frame>`. Use overflow in the child context
-    standby: null,
-    // `<object>`
-    summary: null,
-    // `<table>`
-    text: null,
-    // `<body>`. Use CSS `color` instead
-    topMargin: number3,
-    // `<body>`
-    valueType: null,
-    // `<param>`
-    version: null,
-    // `<html>`. Use a doctype.
-    vAlign: null,
-    // Several. Use CSS `vertical-align` instead
-    vLink: null,
-    // `<body>`. Use CSS `a:visited {color}` instead
-    vSpace: number3,
-    // `<img>` and `<object>`
-    // Non-standard Properties.
-    allowTransparency: null,
-    autoCorrect: null,
-    autoSave: null,
-    credentialless: boolean3,
-    disablePictureInPicture: boolean3,
-    disableRemotePlayback: boolean3,
-    exportParts: commaSeparated3,
-    part: spaceSeparated3,
-    prefix: null,
-    property: null,
-    results: number3,
-    security: null,
-    unselectable: null
-  },
-  space: "html",
-  transform: caseInsensitiveTransform3
-});
-
-// node_modules/property-information/lib/svg.js
-var svg4 = create3({
-  attributes: {
-    accentHeight: "accent-height",
-    alignmentBaseline: "alignment-baseline",
-    arabicForm: "arabic-form",
-    baselineShift: "baseline-shift",
-    capHeight: "cap-height",
-    className: "class",
-    clipPath: "clip-path",
-    clipRule: "clip-rule",
-    colorInterpolation: "color-interpolation",
-    colorInterpolationFilters: "color-interpolation-filters",
-    colorProfile: "color-profile",
-    colorRendering: "color-rendering",
-    crossOrigin: "crossorigin",
-    dataType: "datatype",
-    dominantBaseline: "dominant-baseline",
-    enableBackground: "enable-background",
-    fillOpacity: "fill-opacity",
-    fillRule: "fill-rule",
-    floodColor: "flood-color",
-    floodOpacity: "flood-opacity",
-    fontFamily: "font-family",
-    fontSize: "font-size",
-    fontSizeAdjust: "font-size-adjust",
-    fontStretch: "font-stretch",
-    fontStyle: "font-style",
-    fontVariant: "font-variant",
-    fontWeight: "font-weight",
-    glyphName: "glyph-name",
-    glyphOrientationHorizontal: "glyph-orientation-horizontal",
-    glyphOrientationVertical: "glyph-orientation-vertical",
-    hrefLang: "hreflang",
-    horizAdvX: "horiz-adv-x",
-    horizOriginX: "horiz-origin-x",
-    horizOriginY: "horiz-origin-y",
-    imageRendering: "image-rendering",
-    letterSpacing: "letter-spacing",
-    lightingColor: "lighting-color",
-    markerEnd: "marker-end",
-    markerMid: "marker-mid",
-    markerStart: "marker-start",
-    maskType: "mask-type",
-    navDown: "nav-down",
-    navDownLeft: "nav-down-left",
-    navDownRight: "nav-down-right",
-    navLeft: "nav-left",
-    navNext: "nav-next",
-    navPrev: "nav-prev",
-    navRight: "nav-right",
-    navUp: "nav-up",
-    navUpLeft: "nav-up-left",
-    navUpRight: "nav-up-right",
-    onAbort: "onabort",
-    onActivate: "onactivate",
-    onAfterPrint: "onafterprint",
-    onBeforePrint: "onbeforeprint",
-    onBegin: "onbegin",
-    onCancel: "oncancel",
-    onCanPlay: "oncanplay",
-    onCanPlayThrough: "oncanplaythrough",
-    onChange: "onchange",
-    onClick: "onclick",
-    onClose: "onclose",
-    onCopy: "oncopy",
-    onCueChange: "oncuechange",
-    onCut: "oncut",
-    onDblClick: "ondblclick",
-    onDrag: "ondrag",
-    onDragEnd: "ondragend",
-    onDragEnter: "ondragenter",
-    onDragExit: "ondragexit",
-    onDragLeave: "ondragleave",
-    onDragOver: "ondragover",
-    onDragStart: "ondragstart",
-    onDrop: "ondrop",
-    onDurationChange: "ondurationchange",
-    onEmptied: "onemptied",
-    onEnd: "onend",
-    onEnded: "onended",
-    onError: "onerror",
-    onFocus: "onfocus",
-    onFocusIn: "onfocusin",
-    onFocusOut: "onfocusout",
-    onHashChange: "onhashchange",
-    onInput: "oninput",
-    onInvalid: "oninvalid",
-    onKeyDown: "onkeydown",
-    onKeyPress: "onkeypress",
-    onKeyUp: "onkeyup",
-    onLoad: "onload",
-    onLoadedData: "onloadeddata",
-    onLoadedMetadata: "onloadedmetadata",
-    onLoadStart: "onloadstart",
-    onMessage: "onmessage",
-    onMouseDown: "onmousedown",
-    onMouseEnter: "onmouseenter",
-    onMouseLeave: "onmouseleave",
-    onMouseMove: "onmousemove",
-    onMouseOut: "onmouseout",
-    onMouseOver: "onmouseover",
-    onMouseUp: "onmouseup",
-    onMouseWheel: "onmousewheel",
-    onOffline: "onoffline",
-    onOnline: "ononline",
-    onPageHide: "onpagehide",
-    onPageShow: "onpageshow",
-    onPaste: "onpaste",
-    onPause: "onpause",
-    onPlay: "onplay",
-    onPlaying: "onplaying",
-    onPopState: "onpopstate",
-    onProgress: "onprogress",
-    onRateChange: "onratechange",
-    onRepeat: "onrepeat",
-    onReset: "onreset",
-    onResize: "onresize",
-    onScroll: "onscroll",
-    onSeeked: "onseeked",
-    onSeeking: "onseeking",
-    onSelect: "onselect",
-    onShow: "onshow",
-    onStalled: "onstalled",
-    onStorage: "onstorage",
-    onSubmit: "onsubmit",
-    onSuspend: "onsuspend",
-    onTimeUpdate: "ontimeupdate",
-    onToggle: "ontoggle",
-    onUnload: "onunload",
-    onVolumeChange: "onvolumechange",
-    onWaiting: "onwaiting",
-    onZoom: "onzoom",
-    overlinePosition: "overline-position",
-    overlineThickness: "overline-thickness",
-    paintOrder: "paint-order",
-    panose1: "panose-1",
-    pointerEvents: "pointer-events",
-    referrerPolicy: "referrerpolicy",
-    renderingIntent: "rendering-intent",
-    shapeRendering: "shape-rendering",
-    stopColor: "stop-color",
-    stopOpacity: "stop-opacity",
-    strikethroughPosition: "strikethrough-position",
-    strikethroughThickness: "strikethrough-thickness",
-    strokeDashArray: "stroke-dasharray",
-    strokeDashOffset: "stroke-dashoffset",
-    strokeLineCap: "stroke-linecap",
-    strokeLineJoin: "stroke-linejoin",
-    strokeMiterLimit: "stroke-miterlimit",
-    strokeOpacity: "stroke-opacity",
-    strokeWidth: "stroke-width",
-    tabIndex: "tabindex",
-    textAnchor: "text-anchor",
-    textDecoration: "text-decoration",
-    textRendering: "text-rendering",
-    transformOrigin: "transform-origin",
-    typeOf: "typeof",
-    underlinePosition: "underline-position",
-    underlineThickness: "underline-thickness",
-    unicodeBidi: "unicode-bidi",
-    unicodeRange: "unicode-range",
-    unitsPerEm: "units-per-em",
-    vAlphabetic: "v-alphabetic",
-    vHanging: "v-hanging",
-    vIdeographic: "v-ideographic",
-    vMathematical: "v-mathematical",
-    vectorEffect: "vector-effect",
-    vertAdvY: "vert-adv-y",
-    vertOriginX: "vert-origin-x",
-    vertOriginY: "vert-origin-y",
-    wordSpacing: "word-spacing",
-    writingMode: "writing-mode",
-    xHeight: "x-height",
-    // These were camelcased in Tiny. Now lowercased in SVG 2
-    playbackOrder: "playbackorder",
-    timelineBegin: "timelinebegin"
-  },
-  properties: {
-    about: commaOrSpaceSeparated3,
-    accentHeight: number3,
-    accumulate: null,
-    additive: null,
-    alignmentBaseline: null,
-    alphabetic: number3,
-    amplitude: number3,
-    arabicForm: null,
-    ascent: number3,
-    attributeName: null,
-    attributeType: null,
-    azimuth: number3,
-    bandwidth: null,
-    baselineShift: null,
-    baseFrequency: null,
-    baseProfile: null,
-    bbox: null,
-    begin: null,
-    bias: number3,
-    by: null,
-    calcMode: null,
-    capHeight: number3,
-    className: spaceSeparated3,
-    clip: null,
-    clipPath: null,
-    clipPathUnits: null,
-    clipRule: null,
-    color: null,
-    colorInterpolation: null,
-    colorInterpolationFilters: null,
-    colorProfile: null,
-    colorRendering: null,
-    content: null,
-    contentScriptType: null,
-    contentStyleType: null,
-    crossOrigin: null,
-    cursor: null,
-    cx: null,
-    cy: null,
-    d: null,
-    dataType: null,
-    defaultAction: null,
-    descent: number3,
-    diffuseConstant: number3,
-    direction: null,
-    display: null,
-    dur: null,
-    divisor: number3,
-    dominantBaseline: null,
-    download: boolean3,
-    dx: null,
-    dy: null,
-    edgeMode: null,
-    editable: null,
-    elevation: number3,
-    enableBackground: null,
-    end: null,
-    event: null,
-    exponent: number3,
-    externalResourcesRequired: null,
-    fill: null,
-    fillOpacity: number3,
-    fillRule: null,
-    filter: null,
-    filterRes: null,
-    filterUnits: null,
-    floodColor: null,
-    floodOpacity: null,
-    focusable: null,
-    focusHighlight: null,
-    fontFamily: null,
-    fontSize: null,
-    fontSizeAdjust: null,
-    fontStretch: null,
-    fontStyle: null,
-    fontVariant: null,
-    fontWeight: null,
-    format: null,
-    fr: null,
-    from: null,
-    fx: null,
-    fy: null,
-    g1: commaSeparated3,
-    g2: commaSeparated3,
-    glyphName: commaSeparated3,
-    glyphOrientationHorizontal: null,
-    glyphOrientationVertical: null,
-    glyphRef: null,
-    gradientTransform: null,
-    gradientUnits: null,
-    handler: null,
-    hanging: number3,
-    hatchContentUnits: null,
-    hatchUnits: null,
-    height: null,
-    href: null,
-    hrefLang: null,
-    horizAdvX: number3,
-    horizOriginX: number3,
-    horizOriginY: number3,
-    id: null,
-    ideographic: number3,
-    imageRendering: null,
-    initialVisibility: null,
-    in: null,
-    in2: null,
-    intercept: number3,
-    k: number3,
-    k1: number3,
-    k2: number3,
-    k3: number3,
-    k4: number3,
-    kernelMatrix: commaOrSpaceSeparated3,
-    kernelUnitLength: null,
-    keyPoints: null,
-    // SEMI_COLON_SEPARATED
-    keySplines: null,
-    // SEMI_COLON_SEPARATED
-    keyTimes: null,
-    // SEMI_COLON_SEPARATED
-    kerning: null,
-    lang: null,
-    lengthAdjust: null,
-    letterSpacing: null,
-    lightingColor: null,
-    limitingConeAngle: number3,
-    local: null,
-    markerEnd: null,
-    markerMid: null,
-    markerStart: null,
-    markerHeight: null,
-    markerUnits: null,
-    markerWidth: null,
-    mask: null,
-    maskContentUnits: null,
-    maskType: null,
-    maskUnits: null,
-    mathematical: null,
-    max: null,
-    media: null,
-    mediaCharacterEncoding: null,
-    mediaContentEncodings: null,
-    mediaSize: number3,
-    mediaTime: null,
-    method: null,
-    min: null,
-    mode: null,
-    name: null,
-    navDown: null,
-    navDownLeft: null,
-    navDownRight: null,
-    navLeft: null,
-    navNext: null,
-    navPrev: null,
-    navRight: null,
-    navUp: null,
-    navUpLeft: null,
-    navUpRight: null,
-    numOctaves: null,
-    observer: null,
-    offset: null,
-    onAbort: null,
-    onActivate: null,
-    onAfterPrint: null,
-    onBeforePrint: null,
-    onBegin: null,
-    onCancel: null,
-    onCanPlay: null,
-    onCanPlayThrough: null,
-    onChange: null,
-    onClick: null,
-    onClose: null,
-    onCopy: null,
-    onCueChange: null,
-    onCut: null,
-    onDblClick: null,
-    onDrag: null,
-    onDragEnd: null,
-    onDragEnter: null,
-    onDragExit: null,
-    onDragLeave: null,
-    onDragOver: null,
-    onDragStart: null,
-    onDrop: null,
-    onDurationChange: null,
-    onEmptied: null,
-    onEnd: null,
-    onEnded: null,
-    onError: null,
-    onFocus: null,
-    onFocusIn: null,
-    onFocusOut: null,
-    onHashChange: null,
-    onInput: null,
-    onInvalid: null,
-    onKeyDown: null,
-    onKeyPress: null,
-    onKeyUp: null,
-    onLoad: null,
-    onLoadedData: null,
-    onLoadedMetadata: null,
-    onLoadStart: null,
-    onMessage: null,
-    onMouseDown: null,
-    onMouseEnter: null,
-    onMouseLeave: null,
-    onMouseMove: null,
-    onMouseOut: null,
-    onMouseOver: null,
-    onMouseUp: null,
-    onMouseWheel: null,
-    onOffline: null,
-    onOnline: null,
-    onPageHide: null,
-    onPageShow: null,
-    onPaste: null,
-    onPause: null,
-    onPlay: null,
-    onPlaying: null,
-    onPopState: null,
-    onProgress: null,
-    onRateChange: null,
-    onRepeat: null,
-    onReset: null,
-    onResize: null,
-    onScroll: null,
-    onSeeked: null,
-    onSeeking: null,
-    onSelect: null,
-    onShow: null,
-    onStalled: null,
-    onStorage: null,
-    onSubmit: null,
-    onSuspend: null,
-    onTimeUpdate: null,
-    onToggle: null,
-    onUnload: null,
-    onVolumeChange: null,
-    onWaiting: null,
-    onZoom: null,
-    opacity: null,
-    operator: null,
-    order: null,
-    orient: null,
-    orientation: null,
-    origin: null,
-    overflow: null,
-    overlay: null,
-    overlinePosition: number3,
-    overlineThickness: number3,
-    paintOrder: null,
-    panose1: null,
-    path: null,
-    pathLength: number3,
-    patternContentUnits: null,
-    patternTransform: null,
-    patternUnits: null,
-    phase: null,
-    ping: spaceSeparated3,
-    pitch: null,
-    playbackOrder: null,
-    pointerEvents: null,
-    points: null,
-    pointsAtX: number3,
-    pointsAtY: number3,
-    pointsAtZ: number3,
-    preserveAlpha: null,
-    preserveAspectRatio: null,
-    primitiveUnits: null,
-    propagate: null,
-    property: commaOrSpaceSeparated3,
-    r: null,
-    radius: null,
-    referrerPolicy: null,
-    refX: null,
-    refY: null,
-    rel: commaOrSpaceSeparated3,
-    rev: commaOrSpaceSeparated3,
-    renderingIntent: null,
-    repeatCount: null,
-    repeatDur: null,
-    requiredExtensions: commaOrSpaceSeparated3,
-    requiredFeatures: commaOrSpaceSeparated3,
-    requiredFonts: commaOrSpaceSeparated3,
-    requiredFormats: commaOrSpaceSeparated3,
-    resource: null,
-    restart: null,
-    result: null,
-    rotate: null,
-    rx: null,
-    ry: null,
-    scale: null,
-    seed: null,
-    shapeRendering: null,
-    side: null,
-    slope: null,
-    snapshotTime: null,
-    specularConstant: number3,
-    specularExponent: number3,
-    spreadMethod: null,
-    spacing: null,
-    startOffset: null,
-    stdDeviation: null,
-    stemh: null,
-    stemv: null,
-    stitchTiles: null,
-    stopColor: null,
-    stopOpacity: null,
-    strikethroughPosition: number3,
-    strikethroughThickness: number3,
-    string: null,
-    stroke: null,
-    strokeDashArray: commaOrSpaceSeparated3,
-    strokeDashOffset: null,
-    strokeLineCap: null,
-    strokeLineJoin: null,
-    strokeMiterLimit: number3,
-    strokeOpacity: number3,
-    strokeWidth: null,
-    style: null,
-    surfaceScale: number3,
-    syncBehavior: null,
-    syncBehaviorDefault: null,
-    syncMaster: null,
-    syncTolerance: null,
-    syncToleranceDefault: null,
-    systemLanguage: commaOrSpaceSeparated3,
-    tabIndex: number3,
-    tableValues: null,
-    target: null,
-    targetX: number3,
-    targetY: number3,
-    textAnchor: null,
-    textDecoration: null,
-    textRendering: null,
-    textLength: null,
-    timelineBegin: null,
-    title: null,
-    transformBehavior: null,
-    type: null,
-    typeOf: commaOrSpaceSeparated3,
-    to: null,
-    transform: null,
-    transformOrigin: null,
-    u1: null,
-    u2: null,
-    underlinePosition: number3,
-    underlineThickness: number3,
-    unicode: null,
-    unicodeBidi: null,
-    unicodeRange: null,
-    unitsPerEm: number3,
-    values: null,
-    vAlphabetic: number3,
-    vMathematical: number3,
-    vectorEffect: null,
-    vHanging: number3,
-    vIdeographic: number3,
-    version: null,
-    vertAdvY: number3,
-    vertOriginX: number3,
-    vertOriginY: number3,
-    viewBox: null,
-    viewTarget: null,
-    visibility: null,
-    width: null,
-    widths: null,
-    wordSpacing: null,
-    writingMode: null,
-    x: null,
-    x1: null,
-    x2: null,
-    xChannelSelector: null,
-    xHeight: number3,
-    y: null,
-    y1: null,
-    y2: null,
-    yChannelSelector: null,
-    z: null,
-    zoomAndPan: null
-  },
-  space: "svg",
-  transform: caseSensitiveTransform3
-});
-
-// node_modules/property-information/lib/xlink.js
-var xlink3 = create3({
-  properties: {
-    xLinkActuate: null,
-    xLinkArcRole: null,
-    xLinkHref: null,
-    xLinkRole: null,
-    xLinkShow: null,
-    xLinkTitle: null,
-    xLinkType: null
-  },
-  space: "xlink",
-  transform(_2, property) {
-    return "xlink:" + property.slice(5).toLowerCase();
-  }
-});
-
-// node_modules/property-information/lib/xmlns.js
-var xmlns3 = create3({
-  attributes: { xmlnsxlink: "xmlns:xlink" },
-  properties: { xmlnsXLink: null, xmlns: null },
-  space: "xmlns",
-  transform: caseInsensitiveTransform3
-});
-
-// node_modules/property-information/lib/xml.js
-var xml3 = create3({
-  properties: { xmlBase: null, xmlLang: null, xmlSpace: null },
-  space: "xml",
-  transform(_2, property) {
-    return "xml:" + property.slice(3).toLowerCase();
-  }
-});
-
-// node_modules/property-information/lib/hast-to-react.js
-var hastToReact2 = {
-  classId: "classID",
-  dataType: "datatype",
-  itemId: "itemID",
-  strokeDashArray: "strokeDasharray",
-  strokeDashOffset: "strokeDashoffset",
-  strokeLineCap: "strokeLinecap",
-  strokeLineJoin: "strokeLinejoin",
-  strokeMiterLimit: "strokeMiterlimit",
-  typeOf: "typeof",
-  xLinkActuate: "xlinkActuate",
-  xLinkArcRole: "xlinkArcrole",
-  xLinkHref: "xlinkHref",
-  xLinkRole: "xlinkRole",
-  xLinkShow: "xlinkShow",
-  xLinkTitle: "xlinkTitle",
-  xLinkType: "xlinkType",
-  xmlnsXLink: "xmlnsXlink"
-};
-
-// node_modules/property-information/lib/find.js
-var cap3 = /[A-Z]/g;
-var dash2 = /-[a-z]/g;
-var valid2 = /^data[-\w.:]+$/i;
-function find2(schema, value) {
-  const normal = normalize3(value);
-  let property = value;
-  let Type = Info3;
-  if (normal in schema.normal) {
-    return schema.property[schema.normal[normal]];
-  }
-  if (normal.length > 4 && normal.slice(0, 4) === "data" && valid2.test(value)) {
-    if (value.charAt(4) === "-") {
-      const rest = value.slice(5).replace(dash2, camelcase2);
-      property = "data" + rest.charAt(0).toUpperCase() + rest.slice(1);
-    } else {
-      const rest = value.slice(4);
-      if (!dash2.test(rest)) {
-        let dashes = rest.replace(cap3, kebab2);
-        if (dashes.charAt(0) !== "-") {
-          dashes = "-" + dashes;
-        }
-        value = "data" + dashes;
-      }
-    }
-    Type = DefinedInfo3;
-  }
-  return new Type(property, value);
-}
-function kebab2($0) {
-  return "-" + $0.toLowerCase();
-}
-function camelcase2($0) {
-  return $0.charAt(1).toUpperCase();
-}
-
-// node_modules/property-information/index.js
-var html5 = merge3([aria3, html4, xlink3, xmlns3, xml3], "html");
-var svg5 = merge3([aria3, svg4, xlink3, xmlns3, xml3], "svg");
-
-// node_modules/space-separated-tokens/index.js
-function stringify4(values) {
-  return values.join(" ").trim();
-}
-
-// node_modules/hast-util-to-jsx-runtime/lib/index.js
-var import_style_to_js3 = __toESM(require_cjs7());
-var pointStart3 = point4("start");
-function point4(type) {
-  return point6;
-  function point6(node) {
-    const point7 = node && node.position && node.position[type] || {};
-    if (typeof point7.line === "number" && point7.line > 0 && typeof point7.column === "number" && point7.column > 0) {
-      return {
-        line: point7.line,
-        column: point7.column,
-        offset: typeof point7.offset === "number" && point7.offset > -1 ? point7.offset : void 0
-      };
-    }
-  }
-}
-
-// node_modules/unist-util-stringify-position/lib/index.js
-function stringifyPosition3(value) {
-  if (!value || typeof value !== "object") {
-    return "";
-  }
-  if ("position" in value || "type" in value) {
-    return position3(value.position);
-  }
-  if ("start" in value || "end" in value) {
-    return position3(value);
-  }
-  if ("line" in value || "column" in value) {
-    return point5(value);
-  }
-  return "";
-}
-function point5(point6) {
-  return index3(point6 && point6.line) + ":" + index3(point6 && point6.column);
-}
-function position3(pos) {
-  return point5(pos && pos.start) + "-" + point5(pos && pos.end);
-}
-function index3(value) {
-  return value && typeof value === "number" ? value : 1;
-}
-
-// node_modules/vfile-message/lib/index.js
-var VFileMessage3 = class extends Error {
-  /**
-   * Create a message for `reason`.
-   *
-   * > 🪦 **Note**: also has obsolete signatures.
-   *
-   * @overload
-   * @param {string} reason
-   * @param {Options | null | undefined} [options]
-   * @returns
-   *
-   * @overload
-   * @param {string} reason
-   * @param {Node | NodeLike | null | undefined} parent
-   * @param {string | null | undefined} [origin]
-   * @returns
-   *
-   * @overload
-   * @param {string} reason
-   * @param {Point | Position | null | undefined} place
-   * @param {string | null | undefined} [origin]
-   * @returns
-   *
-   * @overload
-   * @param {string} reason
-   * @param {string | null | undefined} [origin]
-   * @returns
-   *
-   * @overload
-   * @param {Error | VFileMessage} cause
-   * @param {Node | NodeLike | null | undefined} parent
-   * @param {string | null | undefined} [origin]
-   * @returns
-   *
-   * @overload
-   * @param {Error | VFileMessage} cause
-   * @param {Point | Position | null | undefined} place
-   * @param {string | null | undefined} [origin]
-   * @returns
-   *
-   * @overload
-   * @param {Error | VFileMessage} cause
-   * @param {string | null | undefined} [origin]
-   * @returns
-   *
-   * @param {Error | VFileMessage | string} causeOrReason
-   *   Reason for message, should use markdown.
-   * @param {Node | NodeLike | Options | Point | Position | string | null | undefined} [optionsOrParentOrPlace]
-   *   Configuration (optional).
-   * @param {string | null | undefined} [origin]
-   *   Place in code where the message originates (example:
-   *   `'my-package:my-rule'` or `'my-rule'`).
-   * @returns
-   *   Instance of `VFileMessage`.
-   */
-  // eslint-disable-next-line complexity
-  constructor(causeOrReason, optionsOrParentOrPlace, origin) {
-    super();
-    if (typeof optionsOrParentOrPlace === "string") {
-      origin = optionsOrParentOrPlace;
-      optionsOrParentOrPlace = void 0;
-    }
-    let reason = "";
-    let options = {};
-    let legacyCause = false;
-    if (optionsOrParentOrPlace) {
-      if ("line" in optionsOrParentOrPlace && "column" in optionsOrParentOrPlace) {
-        options = { place: optionsOrParentOrPlace };
-      } else if ("start" in optionsOrParentOrPlace && "end" in optionsOrParentOrPlace) {
-        options = { place: optionsOrParentOrPlace };
-      } else if ("type" in optionsOrParentOrPlace) {
-        options = {
-          ancestors: [optionsOrParentOrPlace],
-          place: optionsOrParentOrPlace.position
-        };
-      } else {
-        options = { ...optionsOrParentOrPlace };
-      }
-    }
-    if (typeof causeOrReason === "string") {
-      reason = causeOrReason;
-    } else if (!options.cause && causeOrReason) {
-      legacyCause = true;
-      reason = causeOrReason.message;
-      options.cause = causeOrReason;
-    }
-    if (!options.ruleId && !options.source && typeof origin === "string") {
-      const index4 = origin.indexOf(":");
-      if (index4 === -1) {
-        options.ruleId = origin;
-      } else {
-        options.source = origin.slice(0, index4);
-        options.ruleId = origin.slice(index4 + 1);
-      }
-    }
-    if (!options.place && options.ancestors && options.ancestors) {
-      const parent = options.ancestors[options.ancestors.length - 1];
-      if (parent) {
-        options.place = parent.position;
-      }
-    }
-    const start2 = options.place && "start" in options.place ? options.place.start : options.place;
-    this.ancestors = options.ancestors || void 0;
-    this.cause = options.cause || void 0;
-    this.column = start2 ? start2.column : void 0;
-    this.fatal = void 0;
-    this.file = "";
-    this.message = reason;
-    this.line = start2 ? start2.line : void 0;
-    this.name = stringifyPosition3(options.place) || "1:1";
-    this.place = options.place || void 0;
-    this.reason = this.message;
-    this.ruleId = options.ruleId || void 0;
-    this.source = options.source || void 0;
-    this.stack = legacyCause && options.cause && typeof options.cause.stack === "string" ? options.cause.stack : "";
-    this.actual = void 0;
-    this.expected = void 0;
-    this.note = void 0;
-    this.url = void 0;
-  }
-};
-VFileMessage3.prototype.file = "";
-VFileMessage3.prototype.name = "";
-VFileMessage3.prototype.reason = "";
-VFileMessage3.prototype.message = "";
-VFileMessage3.prototype.stack = "";
-VFileMessage3.prototype.column = void 0;
-VFileMessage3.prototype.line = void 0;
-VFileMessage3.prototype.ancestors = void 0;
-VFileMessage3.prototype.cause = void 0;
-VFileMessage3.prototype.fatal = void 0;
-VFileMessage3.prototype.place = void 0;
-VFileMessage3.prototype.ruleId = void 0;
-VFileMessage3.prototype.source = void 0;
-
 // node_modules/hast-util-to-jsx-runtime/lib/index.js
 var own = {}.hasOwnProperty;
 var emptyMap2 = /* @__PURE__ */ new Map();
@@ -6098,14 +4499,14 @@ function toJsxRuntime2(tree, options) {
     throw new TypeError("Expected `Fragment` in options");
   }
   const filePath = options.filePath || void 0;
-  let create4;
+  let create3;
   if (options.development) {
     if (typeof options.jsxDEV !== "function") {
       throw new TypeError(
         "Expected `jsxDEV` in options when `development: true`"
       );
     }
-    create4 = developmentCreate2(filePath, options.jsxDEV);
+    create3 = developmentCreate2(filePath, options.jsxDEV);
   } else {
     if (typeof options.jsx !== "function") {
       throw new TypeError("Expected `jsx` in production options");
@@ -6113,20 +4514,20 @@ function toJsxRuntime2(tree, options) {
     if (typeof options.jsxs !== "function") {
       throw new TypeError("Expected `jsxs` in production options");
     }
-    create4 = productionCreate2(filePath, options.jsx, options.jsxs);
+    create3 = productionCreate2(filePath, options.jsx, options.jsxs);
   }
   const state = {
     Fragment: options.Fragment,
     ancestors: [],
     components: options.components || {},
-    create: create4,
+    create: create3,
     elementAttributeNameCase: options.elementAttributeNameCase || "react",
     evaluater: options.createEvaluater ? options.createEvaluater() : void 0,
     filePath,
     ignoreInvalidStyle: options.ignoreInvalidStyle || false,
     passKeys: options.passKeys !== false,
     passNode: options.passNode || false,
-    schema: options.space === "svg" ? svg5 : html5,
+    schema: options.space === "svg" ? svg4 : html4,
     stylePropertyNameCase: options.stylePropertyNameCase || "dom",
     tableCellAlignToStyle: options.tableCellAlignToStyle !== false
   };
@@ -6165,7 +4566,7 @@ function element2(state, node, key) {
   const parentSchema = state.schema;
   let schema = parentSchema;
   if (node.tagName.toLowerCase() === "svg" && parentSchema.space === "html") {
-    schema = svg5;
+    schema = svg4;
     state.schema = schema;
   }
   state.ancestors.push(node);
@@ -6208,7 +4609,7 @@ function mdxJsxElement2(state, node, key) {
   const parentSchema = state.schema;
   let schema = parentSchema;
   if (node.name === "svg" && parentSchema.space === "html") {
-    schema = svg5;
+    schema = svg4;
     state.schema = schema;
   }
   state.ancestors.push(node);
@@ -6243,27 +4644,27 @@ function addChildren2(props, children) {
   }
 }
 function productionCreate2(_2, jsx, jsxs) {
-  return create4;
-  function create4(_3, type, props, key) {
+  return create3;
+  function create3(_3, type, props, key) {
     const isStaticChildren = Array.isArray(props.children);
     const fn = isStaticChildren ? jsxs : jsx;
     return key ? fn(type, props, key) : fn(type, props);
   }
 }
 function developmentCreate2(filePath, jsxDEV) {
-  return create4;
-  function create4(node, type, props, key) {
+  return create3;
+  function create3(node, type, props, key) {
     const isStaticChildren = Array.isArray(props.children);
-    const point6 = pointStart3(node);
+    const point5 = pointStart2(node);
     return jsxDEV(
       type,
       props,
       key,
       isStaticChildren,
       {
-        columnNumber: point6 ? point6.column - 1 : void 0,
+        columnNumber: point5 ? point5.column - 1 : void 0,
         fileName: filePath,
-        lineNumber: point6 ? point6.line : void 0
+        lineNumber: point5 ? point5.line : void 0
       },
       void 0
     );
@@ -6337,10 +4738,10 @@ function createJsxElementProps2(state, node) {
 }
 function createChildren2(state, node) {
   const children = [];
-  let index4 = -1;
+  let index3 = -1;
   const countsByName = state.passKeys ? /* @__PURE__ */ new Map() : emptyMap2;
-  while (++index4 < node.children.length) {
-    const child = node.children[index4];
+  while (++index3 < node.children.length) {
+    const child = node.children[index3];
     let key;
     if (state.passKeys) {
       const name3 = child.type === "element" ? child.tagName : child.type === "mdxJsxFlowElement" || child.type === "mdxJsxTextElement" ? child.name : void 0;
@@ -6377,7 +4778,7 @@ function createProperty2(state, prop, value) {
 }
 function parseStyle2(state, value) {
   try {
-    return (0, import_style_to_js3.default)(value, { reactCompat: true });
+    return (0, import_style_to_js2.default)(value, { reactCompat: true });
   } catch (error) {
     if (state.ignoreInvalidStyle) {
       return {};
@@ -6386,7 +4787,7 @@ function parseStyle2(state, value) {
       /** @type {Error} */
       error
     );
-    const message = new VFileMessage3("Cannot parse `style` attribute", {
+    const message = new VFileMessage2("Cannot parse `style` attribute", {
       ancestors: state.ancestors,
       cause,
       ruleId: "style",
@@ -6403,15 +4804,15 @@ function findComponentFromName2(state, name3, allowExpression) {
     result = { type: "Literal", value: name3 };
   } else if (name3.includes(".")) {
     const identifiers = name3.split(".");
-    let index4 = -1;
+    let index3 = -1;
     let node;
-    while (++index4 < identifiers.length) {
-      const prop = name2(identifiers[index4]) ? { type: "Identifier", name: identifiers[index4] } : { type: "Literal", value: identifiers[index4] };
+    while (++index3 < identifiers.length) {
+      const prop = name2(identifiers[index3]) ? { type: "Identifier", name: identifiers[index3] } : { type: "Literal", value: identifiers[index3] };
       node = node ? {
         type: "MemberExpression",
         object: node,
         property: prop,
-        computed: Boolean(index4 && prop.type === "Literal"),
+        computed: Boolean(index3 && prop.type === "Literal"),
         optional: false
       } : prop;
     }
@@ -6432,7 +4833,7 @@ function findComponentFromName2(state, name3, allowExpression) {
   crashEstree2(state);
 }
 function crashEstree2(state, place) {
-  const message = new VFileMessage3(
+  const message = new VFileMessage2(
     "Cannot handle MDX estrees without `createEvaluater`",
     {
       ancestors: state.ancestors,
@@ -6463,61 +4864,50 @@ function transformStyleToCssCasing2(from) {
 function toDash2($0) {
   return "-" + $0.toLowerCase();
 }
-var l3;
-function S2(n4) {
-  return n4.children;
+var l2;
+function S2(n3) {
+  return n3.children;
 }
-l3 = { __e: function(n4, l4, u6, t2) {
-  for (var i2, r2, o2; l4 = l4.__; ) if ((i2 = l4.__c) && !i2.__) try {
-    if ((r2 = i2.constructor) && null != r2.getDerivedStateFromError && (i2.setState(r2.getDerivedStateFromError(n4)), o2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n4, t2 || {}), o2 = i2.__d), o2) return i2.__E = i2;
-  } catch (l5) {
-    n4 = l5;
+l2 = { __e: function(n3, l3, u5, t2) {
+  for (var i2, r2, o2; l3 = l3.__; ) if ((i2 = l3.__c) && !i2.__) try {
+    if ((r2 = i2.constructor) && null != r2.getDerivedStateFromError && (i2.setState(r2.getDerivedStateFromError(n3)), o2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n3, t2 || {}), o2 = i2.__d), o2) return i2.__E = i2;
+  } catch (l4) {
+    n3 = l4;
   }
-  throw n4;
+  throw n3;
 } }, "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, Math.random().toString(8);
 
 // node_modules/preact/jsx-runtime/dist/jsxRuntime.mjs
 var f3 = 0;
-function u5(e2, t2, n4, o2, i2, u6) {
+function u4(e2, t2, n3, o2, i2, u5) {
   t2 || (t2 = {});
   var a2, c2, p2 = t2;
   if ("ref" in p2) for (c2 in p2 = {}, t2) "ref" == c2 ? a2 = t2[c2] : p2[c2] = t2[c2];
-  var l4 = { type: e2, props: p2, key: n4, ref: a2, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: --f3, __i: -1, __u: 0, __source: i2, __self: u6 };
+  var l3 = { type: e2, props: p2, key: n3, ref: a2, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: --f3, __i: -1, __u: 0, __source: i2, __self: u5 };
   if ("function" == typeof e2 && (a2 = e2.defaultProps)) for (c2 in a2) void 0 === p2[c2] && (p2[c2] = a2[c2]);
-  return l3.vnode && l3.vnode(l4), l4;
+  return l2.vnode && l2.vnode(l3), l3;
 }
 
-// ../_shared/path.ts
-function endsWith3(s2, suffix) {
-  return s2 === suffix || s2.endsWith("/" + suffix);
+// ../_shared/noteMeta.ts
+function toDate(value) {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? void 0 : value;
+  if (typeof value !== "string" && typeof value !== "number") return void 0;
+  const d2 = new Date(value);
+  return Number.isNaN(d2.getTime()) ? void 0 : d2;
 }
-function trimSuffix3(s2, suffix) {
-  return endsWith3(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
+function formatYmd(date) {
+  return date.toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
 }
-function stripSlashes3(s2, onlyStripPrefix) {
-  if (s2.startsWith("/")) s2 = s2.substring(1);
-  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
-  return s2;
+function getNoteDates(file) {
+  const created = file.dates?.created ?? file.dates?.published;
+  const differs = (d2, ...others) => d2 && !others.some((o2) => o2 && formatYmd(o2) === formatYmd(d2)) ? d2 : void 0;
+  const revised = differs(toDate(file.frontmatter?.posted), created);
+  const updated = differs(file.dates?.modified, created, revised);
+  return { created, revised, updated };
 }
-function simplifySlug3(fp) {
-  const res = stripSlashes3(trimSuffix3(fp, "index"), true);
-  return res.length === 0 ? "/" : res;
-}
-function joinSegments3(...args) {
-  if (args.length === 0) return "";
-  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes3(segment)).join("/");
-  const first = args[0];
-  const last = args[args.length - 1];
-  if (first?.startsWith("/")) joined = "/" + joined;
-  if (last?.endsWith("/")) joined = joined + "/";
-  return joined;
-}
-function pathToRoot3(slug) {
-  const rootPath = slug.split("/").filter((x3) => x3 !== "").slice(0, -1).map(() => "..").join("/");
-  return rootPath.length === 0 ? "." : rootPath;
-}
-function resolveRelative3(current, target) {
-  return joinSegments3(pathToRoot3(current), simplifySlug3(target));
+function getListDate(file) {
+  const { created, revised } = getNoteDates(file);
+  return revised ?? created;
 }
 
 // ../_shared/notes.ts
@@ -6548,6 +4938,40 @@ function folderTitle(path2, overrides = {}) {
   const segment = path2.split("/").pop() ?? path2;
   return overrides[path2] ?? overrides[segment] ?? TOPIC_NAMES[segment] ?? titleCase(segment);
 }
+var byListDateDesc = (a2, b2) => (getListDate(b2)?.getTime() ?? 0) - (getListDate(a2)?.getTime() ?? 0);
+
+// ../_shared/path.ts
+function endsWith2(s2, suffix) {
+  return s2 === suffix || s2.endsWith("/" + suffix);
+}
+function trimSuffix2(s2, suffix) {
+  return endsWith2(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
+}
+function stripSlashes2(s2, onlyStripPrefix) {
+  if (s2.startsWith("/")) s2 = s2.substring(1);
+  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
+  return s2;
+}
+function simplifySlug2(fp) {
+  const res = stripSlashes2(trimSuffix2(fp, "index"), true);
+  return res.length === 0 ? "/" : res;
+}
+function joinSegments2(...args) {
+  if (args.length === 0) return "";
+  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes2(segment)).join("/");
+  const first = args[0];
+  const last = args[args.length - 1];
+  if (first?.startsWith("/")) joined = "/" + joined;
+  if (last?.endsWith("/")) joined = joined + "/";
+  return joined;
+}
+function pathToRoot2(slug) {
+  const rootPath = slug.split("/").filter((x3) => x3 !== "").slice(0, -1).map(() => "..").join("/");
+  return rootPath.length === 0 ? "." : rootPath;
+}
+function resolveRelative2(current, target) {
+  return joinSegments2(pathToRoot2(current), simplifySlug2(target));
+}
 
 // ../_shared/series.ts
 function seriesOf(file) {
@@ -6558,14 +4982,14 @@ function seriesIndexOf(file) {
   const raw = file.frontmatter?.series_index;
   if (typeof raw === "number") return Number.isFinite(raw) ? raw : void 0;
   if (typeof raw === "string" && raw.trim() !== "") {
-    const index4 = Number(raw);
-    return Number.isFinite(index4) ? index4 : void 0;
+    const index3 = Number(raw);
+    return Number.isFinite(index3) ? index3 : void 0;
   }
   return void 0;
 }
 function seriesLabel(file) {
-  const index4 = seriesIndexOf(file);
-  return seriesOf(file) && index4 !== void 0 ? `${index4}\uD3B8` : void 0;
+  const index3 = seriesIndexOf(file);
+  return seriesOf(file) && index3 !== void 0 ? `${index3}\uD3B8` : void 0;
 }
 function groupBySeries(sorted) {
   const groups = [];
@@ -6618,7 +5042,7 @@ function buildSection(node, overrides, collapse) {
     intro: folderNote(node),
     notes,
     children,
-    count: notes.length + children.reduce((n4, c2) => n4 + c2.count, 0)
+    count: notes.length + children.reduce((n3, c2) => n3 + c2.count, 0)
   };
   while (collapse && section.notes.length === 0 && !section.intro && section.children.length === 1) {
     const only = section.children[0];
@@ -6634,116 +5058,126 @@ function flattenSections(sections, prefix = "") {
 }
 
 // src/components/styles/folderListing.scss
-var folderListing_default = '@charset "UTF-8";\nul.section-ul {\n  list-style: none;\n  margin-top: 2em;\n  padding-left: 0;\n}\n\nli.section-li {\n  margin-bottom: 1em;\n}\nli.section-li > .section {\n  display: grid;\n  grid-template-columns: fit-content(8em) 3fr 1fr;\n}\n@media all and (max-width: 600px) {\n  li.section-li > .section > .tags {\n    display: none;\n  }\n}\nli.section-li > .section > .desc > h3 > a {\n  background-color: transparent;\n}\nli.section-li > .section .meta {\n  margin: 0 1em 0 0;\n  opacity: 0.6;\n}\n\n.popover .section {\n  grid-template-columns: fit-content(8em) 1fr !important;\n}\n.popover .section > .tags {\n  display: none;\n}\n\n.page-listing .section .desc h3 .series-index {\n  margin-right: 0.5em;\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--darkgray);\n  white-space: nowrap;\n}\n\n.folder-index ul.section-ul {\n  margin: 0.75rem 0 0;\n}\n.folder-index .folder-meta {\n  margin: 1.5rem 0 0;\n  font-size: 0.85rem;\n  line-height: 1.5;\n  color: var(--gray);\n}\n.folder-index .folder-heading a,\n.folder-index .folder-subheading a {\n  color: inherit;\n  background-color: transparent;\n  text-decoration: none;\n}\n.folder-index .folder-heading a:hover,\n.folder-index .folder-subheading a:hover {\n  text-decoration: underline;\n  text-underline-offset: 0.2em;\n}\n.folder-index .folder-count {\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}\n.folder-index .folder-heading {\n  margin-top: 2.5rem;\n  scroll-margin-top: 1.5rem;\n}\n.folder-index .folder-sub {\n  margin-top: 1.75rem;\n  padding-left: 1rem;\n}\n@media all and (max-width: 600px) {\n  .folder-index .folder-sub {\n    padding-left: 0;\n  }\n}\n.folder-index .folder-subheading {\n  margin: 0;\n  padding-bottom: 0.3rem;\n  font-size: 0.95rem;\n  color: var(--darkgray);\n  border-bottom: 1px dashed var(--lightgray);\n  scroll-margin-top: 1.5rem;\n}\n.folder-index .folder-intro .section {\n  border-style: dashed;\n}\n.folder-index .intro-desc {\n  order: 2;\n  margin: 0;\n  font-size: 0.85rem;\n  line-height: 1.6;\n  color: var(--gray);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.folder-jump ul {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem;\n  margin: 0.75rem 0 0;\n  padding: 0;\n  list-style: none;\n}\n.folder-jump ul a {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n  min-height: 2.25rem;\n  padding: 0 0.85rem;\n  border-radius: var(--radius-s);\n  background: rgba(var(--accent-rgb), 0.08);\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 700;\n  color: var(--secondary);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-jump ul a:hover {\n    background: rgba(var(--accent-rgb), 0.16);\n  }\n}\n.folder-jump ul a:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n@media all and (max-width: 600px) {\n  .folder-jump ul a {\n    min-height: 2.75rem;\n  }\n}\n.folder-jump ul .folder-jump-count {\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}\n\n.folder-index li.series-li {\n  margin-bottom: 0.5rem;\n}\n\n.folder-index .series-head {\n  display: flex;\n  flex-direction: column;\n  gap: 0.2rem;\n}\n\n.folder-index .series-eyebrow {\n  font-size: 0.73rem;\n  line-height: 1.4;\n  color: var(--gray);\n}\n\n.folder-index .series-name {\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 700;\n  line-height: 1.3;\n  color: var(--dark);\n}\n\n.folder-index .series-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.25rem 1rem;\n  margin: 0.35rem 0 0;\n  font-family: var(--headerFont);\n  font-size: 0.85rem;\n  font-weight: 600;\n  line-height: 1.5;\n}\n.folder-index .series-actions a {\n  color: var(--secondary);\n  background-color: transparent;\n}\n.folder-index .series-actions a:first-child::after {\n  content: " \u2192";\n}\n\n.folder-index .series-group {\n  padding-left: 0.85rem;\n  border-left: 2px solid var(--lightgray);\n}\n.folder-index .series-group .series-rows {\n  margin-top: 0.6rem;\n}\n\n.folder-index .series-card {\n  position: relative;\n  border: 1px solid var(--lightgray);\n  border-radius: var(--radius-s);\n  transition: border-color var(--dur-fast) var(--ease);\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-index .series-card:has(> details > summary:hover) {\n    border-color: var(--secondary);\n  }\n}\n.folder-index .series-card summary {\n  position: relative;\n  min-height: 2.75rem;\n  padding: 0.85rem 13rem 0.85rem 2.6rem;\n  list-style: none;\n  cursor: pointer;\n  border-radius: inherit;\n}\n.folder-index .series-card summary::-webkit-details-marker {\n  display: none;\n}\n.folder-index .series-card summary:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n.folder-index .series-card .series-chevron {\n  position: absolute;\n  top: 50%;\n  left: 1.1rem;\n  width: 0.5rem;\n  height: 0.5rem;\n  margin-top: -0.3rem;\n  border-right: 2px solid var(--gray);\n  border-bottom: 2px solid var(--gray);\n  transform: rotate(-45deg);\n  transition: transform var(--dur-base) var(--ease);\n}\n.folder-index .series-card details[open] .series-chevron {\n  transform: rotate(45deg);\n}\n.folder-index .series-card .series-rows {\n  margin: 0;\n  padding: 0 0.6rem 0.1rem;\n}\n.folder-index .series-card .series-actions {\n  position: absolute;\n  top: 0;\n  right: 1.1rem;\n  height: 4.45rem;\n  margin: 0;\n  align-items: center;\n}\n@media all and (max-width: 600px) {\n  .folder-index .series-card summary {\n    padding-right: 1.1rem;\n  }\n  .folder-index .series-card .series-actions {\n    position: static;\n    height: auto;\n    padding: 0 1.1rem 0.85rem 2.6rem;\n  }\n  .folder-index .series-card details[open] + .series-actions {\n    padding-top: 0.25rem;\n  }\n}';
+var folderListing_default = ".folder-index {\n  container-type: inline-size;\n}\n.folder-index .folder-meta {\n  margin: 1.5rem 0 0;\n  font-size: 0.85rem;\n  line-height: 1.5;\n  color: var(--gray);\n}\n.folder-index ul.fi-rows {\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n.folder-index ul.fi-rows > li {\n  margin: 0;\n}\n.folder-index ul.fi-root {\n  margin-top: 1.75rem;\n  border-top: 1px solid var(--lightgray);\n}\n\n.folder-index .folder-section {\n  margin-top: 2.5rem;\n}\n\n.folder-index .folder-sub {\n  margin-top: 1.75rem;\n}\n\n.folder-index .fi-label {\n  display: flex;\n  align-items: baseline;\n  gap: 0.75rem;\n  padding-bottom: 10px;\n  border-bottom: 1px solid var(--lightgray);\n}\n.folder-index .fi-label h2,\n.folder-index .fi-label h3 {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-family: var(--headerFont);\n  font-weight: 700;\n  line-height: 1.3;\n  scroll-margin-top: 1.5rem;\n}\n.folder-index .fi-label h2 {\n  font-size: 1.15rem;\n  color: var(--secondary);\n}\n.folder-index .fi-label.is-sub {\n  gap: 0.6rem;\n  padding-bottom: 6px;\n}\n.folder-index .fi-label.is-sub h3 {\n  font-size: 0.95rem;\n  color: var(--darkgray);\n}\n.folder-index .fi-label.is-sub .fi-open {\n  font-size: 0.8rem;\n}\n\n.folder-index .fi-count {\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}\n\n.folder-index .fi-open,\n.folder-index .fi-acts a {\n  display: inline-flex;\n  align-items: center;\n  min-height: 2.75rem;\n  font-family: var(--headerFont);\n  font-weight: 600;\n  color: var(--secondary);\n  text-decoration: none;\n  white-space: nowrap;\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-index .fi-open:hover,\n  .folder-index .fi-acts a:hover {\n    color: var(--secondary);\n    text-decoration: underline;\n    text-underline-offset: 3px;\n  }\n}\n.folder-index .fi-open:focus-visible,\n.folder-index .fi-acts a:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n\n.folder-index .fi-open {\n  margin: -0.75rem 0 -0.75rem auto;\n  font-size: 0.85rem;\n}\n\n.folder-index .fi-row {\n  display: grid;\n  grid-template-columns: 6.25rem minmax(0, 1fr);\n  column-gap: 14px;\n  align-items: baseline;\n  box-sizing: border-box;\n  min-height: 44px;\n  padding: 0.6rem 0.4rem;\n  border-bottom: 1px solid var(--lightgray);\n  font-weight: 400;\n  color: var(--darkgray);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.folder-index .fi-row.is-track, .folder-index .fi-row.is-series {\n  grid-template-columns: 6.25rem minmax(0, 1fr) auto;\n}\n.folder-index .fi-row:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: -2px;\n}\n\n.folder-index li:nth-child(even) > .fi-row,\n.folder-index li:nth-child(even) > details > summary.fi-row {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n\n@media (hover: hover) and (pointer: fine) {\n  .folder-index li > .fi-row:hover,\n  .folder-index li > details > summary.fi-row:hover {\n    background: rgba(var(--accent-rgb), 0.1);\n    color: var(--darkgray);\n  }\n  .folder-index li > .fi-row:hover .fi-title,\n  .folder-index li > details > summary.fi-row:hover .fi-title {\n    text-decoration: underline;\n    text-underline-offset: 3px;\n  }\n}\n.folder-index li > .fi-row:active,\n.folder-index li > details > summary.fi-row:active {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n\n.folder-index .fi-date,\n.folder-index .fi-kind {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  font-weight: 400;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n  white-space: nowrap;\n}\n\n.folder-index .fi-end {\n  justify-self: end;\n}\n\n.folder-index .fi-no {\n  font-family: var(--bodyFont);\n  font-size: 0.8rem;\n  font-weight: 600;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--darkgray);\n  white-space: nowrap;\n}\n\n.folder-index .fi-title {\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 620;\n  line-height: 1.45;\n  color: var(--dark);\n  word-break: keep-all;\n}\n\n.folder-index .fi-desc {\n  grid-column: 2/-1;\n  margin-top: 0.15rem;\n  overflow: hidden;\n  font-size: 0.82rem;\n  line-height: 1.55;\n  color: var(--darkgray);\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.folder-index .fi-row.is-intro .fi-kind {\n  font-family: var(--bodyFont);\n  font-weight: 600;\n}\n.folder-index .fi-row.is-intro .fi-title {\n  font-weight: 700;\n}\n\n.folder-index .fi-series-head {\n  display: grid;\n  grid-template-columns: 6.25rem minmax(0, 1fr) auto;\n  column-gap: 14px;\n  align-items: baseline;\n  padding: 0.9rem 0.4rem 0.55rem;\n  border-bottom: 1px solid var(--border-strong);\n}\n.folder-index .fi-series-head .fi-acts a {\n  margin-block: -0.9rem;\n}\n\n.folder-index .fi-series-name {\n  font-family: var(--headerFont);\n  font-size: 1.02rem;\n  font-weight: 700;\n  line-height: 1.4;\n  color: var(--dark);\n  word-break: keep-all;\n}\n\n.folder-index .fi-acts {\n  display: flex;\n  gap: 0 1rem;\n  margin: 0;\n  font-size: 0.85rem;\n}\n\n.folder-index summary.fi-row {\n  cursor: pointer;\n  list-style: none;\n}\n.folder-index summary.fi-row::-webkit-details-marker {\n  display: none;\n}\n.folder-index summary.fi-row .fi-title {\n  font-weight: 700;\n}\n\n.folder-index .fi-chev {\n  align-self: center;\n  width: 0.45rem;\n  height: 0.45rem;\n  margin-right: 0.3rem;\n  border-right: 2px solid var(--gray);\n  border-bottom: 2px solid var(--gray);\n  transform: rotate(-45deg);\n  transition: transform var(--dur-base) var(--ease);\n}\n\n.folder-index details[open] > summary .fi-chev {\n  transform: rotate(45deg);\n}\n\n.folder-index .fi-fold-body {\n  margin-left: 6.25rem;\n  border-left: 1px solid var(--lightgray);\n}\n.folder-index .fi-fold-body .fi-row.is-track {\n  grid-template-columns: 3rem minmax(0, 1fr) auto;\n}\n.folder-index .fi-fold-body .fi-acts {\n  padding: 0.55rem 0.4rem;\n  border-bottom: 1px solid var(--lightgray);\n}\n.folder-index .fi-fold-body .fi-acts a {\n  margin-block: -0.6rem;\n}\n\n@container (max-width: 600px) {\n  .folder-index .fi-open-word {\n    display: none;\n  }\n  .folder-index .fi-row {\n    grid-template-columns: minmax(0, 1fr);\n    row-gap: 2px;\n    padding: 0.7rem 0.25rem;\n  }\n  .folder-index .fi-row .fi-desc {\n    grid-column: 1;\n  }\n  .folder-index .fi-row.is-track {\n    grid-template-columns: 2.75rem minmax(0, 1fr);\n  }\n  .folder-index .fi-row.is-track .fi-end {\n    display: none;\n  }\n  .folder-index .fi-row.is-track .fi-desc {\n    grid-column: 2;\n  }\n  .folder-index .fi-row.is-series {\n    grid-template-columns: minmax(0, 1fr) auto;\n  }\n  .folder-index .fi-row.is-series .fi-kind {\n    grid-column: 1/-1;\n  }\n  .folder-index .fi-row.is-series .fi-chev {\n    grid-row: 2;\n    grid-column: 2;\n  }\n  .folder-index .fi-series-head {\n    grid-template-columns: minmax(0, 1fr);\n    row-gap: 2px;\n  }\n  .folder-index .fi-series-head .fi-acts {\n    margin-top: 0.35rem;\n  }\n  .folder-index .fi-series-head .fi-acts a {\n    margin-block: -0.4rem;\n  }\n  .folder-index .fi-fold-body {\n    margin-left: 0.75rem;\n  }\n  .folder-index .fi-fold-body .fi-row.is-track {\n    grid-template-columns: 2.75rem minmax(0, 1fr);\n  }\n}\n.folder-jump ul {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem;\n  margin: 0.75rem 0 0;\n  padding: 0;\n  list-style: none;\n}\n.folder-jump ul a {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n  min-height: 2.25rem;\n  padding: 0 0.85rem;\n  border-radius: var(--radius-s);\n  background: rgba(var(--accent-rgb), 0.08);\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 700;\n  color: var(--secondary);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-jump ul a:hover {\n    background: rgba(var(--accent-rgb), 0.16);\n  }\n}\n.folder-jump ul a:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n@media all and (max-width: 600px) {\n  .folder-jump ul a {\n    min-height: 2.75rem;\n  }\n}\n.folder-jump ul .folder-jump-count {\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}";
 
 // src/components/FolderListing.tsx
-function getDate3(page) {
-  const type = page.defaultDateType;
-  return type ? page.dates?.[type] : void 0;
-}
 var sectionId = (path2) => `folder-${path2.replace(/\//g, "-")}`;
-function isPathTag(tag, page) {
-  const folder = (page.slug ?? "").split("/").slice(0, -1).join("/");
-  return `/${folder}/`.includes(`/${tag}/`);
+var byListDate = (a2, b2) => byListDateDesc(a2, b2) || String(a2.frontmatter?.title ?? "").localeCompare(String(b2.frontmatter?.title ?? ""), "ko", { numeric: true });
+var descOf = (page) => typeof page.description === "string" ? page.description.trim() : "";
+function Ymd({ page, class: cls }) {
+  const date = getListDate(page);
+  return date ? /* @__PURE__ */ u4("time", { class: cls, dateTime: formatYmd(date), children: formatYmd(date) }) : /* @__PURE__ */ u4("span", { class: cls });
 }
-function PageRow({ page, ctx }) {
-  const date = getDate3(page);
-  const tags = (page.frontmatter?.tags ?? []).filter((t2) => !isPathTag(t2, page));
-  const label = seriesLabel(page);
-  return /* @__PURE__ */ u5("li", { class: "section-li", children: /* @__PURE__ */ u5("div", { class: "section", children: [
-    /* @__PURE__ */ u5("p", { class: "meta", children: date && /* @__PURE__ */ u5("time", { dateTime: date.toISOString(), children: date.toLocaleDateString(ctx.locale, { year: "numeric", month: "short", day: "2-digit" }) }) }),
-    /* @__PURE__ */ u5("div", { class: "desc", children: /* @__PURE__ */ u5("h3", { children: [
-      label && /* @__PURE__ */ u5("span", { class: "series-index", children: label }),
-      /* @__PURE__ */ u5("a", { href: resolveRelative3(ctx.slug, page.slug), class: "internal", children: page.frontmatter?.title })
-    ] }) }),
-    tags.length > 0 && /* @__PURE__ */ u5("ul", { class: "tags", children: tags.map((tag) => /* @__PURE__ */ u5("li", { children: /* @__PURE__ */ u5("a", { class: "internal tag-link", href: resolveRelative3(ctx.slug, `tags/${tag}`), children: tag }) })) })
-  ] }) });
+function PageRow({ page, ctx, track }) {
+  const desc = descOf(page);
+  return /* @__PURE__ */ u4("li", { children: /* @__PURE__ */ u4(
+    "a",
+    {
+      class: track ? "fi-row is-track" : "fi-row",
+      href: resolveRelative2(ctx.slug, page.slug),
+      "data-no-popover": "true",
+      children: [
+        track ? /* @__PURE__ */ u4("span", { class: "fi-no", children: seriesLabel(page) }) : /* @__PURE__ */ u4(Ymd, { page, class: "fi-date" }),
+        /* @__PURE__ */ u4("span", { class: "fi-title", children: page.frontmatter?.title }),
+        track && /* @__PURE__ */ u4(Ymd, { page, class: "fi-date fi-end" }),
+        desc && /* @__PURE__ */ u4("span", { class: "fi-desc", children: desc })
+      ]
+    }
+  ) });
 }
 function IntroRow({ page, ctx }) {
-  const desc = page.description;
-  return /* @__PURE__ */ u5("ul", { class: "section-ul folder-intro", children: /* @__PURE__ */ u5("li", { class: "section-li", children: /* @__PURE__ */ u5("div", { class: "section", children: [
-    /* @__PURE__ */ u5("p", { class: "meta", children: "\uD3F4\uB354 \uC18C\uAC1C" }),
-    /* @__PURE__ */ u5("div", { class: "desc", children: /* @__PURE__ */ u5("h3", { children: /* @__PURE__ */ u5("a", { href: resolveRelative3(ctx.slug, page.slug), class: "internal", children: page.frontmatter?.title }) }) }),
-    typeof desc === "string" && desc !== "" && /* @__PURE__ */ u5("p", { class: "intro-desc", children: desc })
+  const desc = descOf(page);
+  return /* @__PURE__ */ u4("ul", { class: "fi-rows", children: /* @__PURE__ */ u4("li", { children: /* @__PURE__ */ u4("a", { class: "fi-row is-intro", href: resolveRelative2(ctx.slug, page.slug), "data-no-popover": "true", children: [
+    /* @__PURE__ */ u4("span", { class: "fi-kind", children: "\uD3F4\uB354 \uC18C\uAC1C" }),
+    /* @__PURE__ */ u4("span", { class: "fi-title", children: page.frontmatter?.title }),
+    desc && /* @__PURE__ */ u4("span", { class: "fi-desc", children: desc })
   ] }) }) });
 }
 function SeriesActions({ group, ctx }) {
   const first = group.items[0];
   const roadmap = ctx.roadmaps.get(group.series);
-  return /* @__PURE__ */ u5("p", { class: "series-actions", children: [
-    /* @__PURE__ */ u5("a", { href: resolveRelative3(ctx.slug, first.slug), class: "internal", "data-no-popover": "true", children: [
+  return /* @__PURE__ */ u4(S2, { children: [
+    /* @__PURE__ */ u4("a", { href: resolveRelative2(ctx.slug, first.slug), "data-no-popover": "true", children: [
       seriesLabel(first) ?? "1\uD3B8",
-      "\uBD80\uD130 \uC77D\uAE30"
+      "\uBD80\uD130 \uC77D\uAE30 \u2192"
     ] }),
-    roadmap && /* @__PURE__ */ u5(
+    roadmap && /* @__PURE__ */ u4("a", { href: `${resolveRelative2(ctx.slug, roadmap.slug)}#series-roadmap`, "data-no-popover": "true", children: "\uB85C\uB4DC\uB9F5" })
+  ] });
+}
+function SeriesRows({ group, ctx }) {
+  return /* @__PURE__ */ u4("ul", { class: "fi-rows", children: group.items.map((page) => /* @__PURE__ */ u4(PageRow, { page, ctx, track: true })) });
+}
+function SeriesRun(props) {
+  const { group, ctx } = props;
+  const kind = /* @__PURE__ */ u4("span", { class: "fi-kind", children: [
+    "\uC2DC\uB9AC\uC988 \xB7 ",
+    group.items.length,
+    "\uD3B8"
+  ] });
+  const name3 = ctx.seriesTitles[group.series] ?? group.series;
+  if (!props.folded) {
+    return /* @__PURE__ */ u4("li", { class: "fi-series", children: [
+      /* @__PURE__ */ u4("div", { class: "fi-series-head", children: [
+        kind,
+        /* @__PURE__ */ u4("span", { class: "fi-series-name", children: name3 }),
+        /* @__PURE__ */ u4("span", { class: "fi-acts", children: /* @__PURE__ */ u4(SeriesActions, { group, ctx }) })
+      ] }),
+      /* @__PURE__ */ u4(SeriesRows, { group, ctx })
+    ] });
+  }
+  return /* @__PURE__ */ u4("li", { children: /* @__PURE__ */ u4("details", { class: "fi-fold", children: [
+    /* @__PURE__ */ u4("summary", { class: "fi-row is-series", children: [
+      kind,
+      /* @__PURE__ */ u4("span", { class: "fi-title", children: name3 }),
+      /* @__PURE__ */ u4("span", { class: "fi-chev", "aria-hidden": "true" })
+    ] }),
+    /* @__PURE__ */ u4("div", { class: "fi-fold-body", children: [
+      /* @__PURE__ */ u4(SeriesRows, { group, ctx }),
+      /* @__PURE__ */ u4("p", { class: "fi-acts", children: /* @__PURE__ */ u4(SeriesActions, { group, ctx }) })
+    ] })
+  ] }) });
+}
+function NoteList({ notes, ctx, root: root3 }) {
+  if (notes.length === 0) return null;
+  const groups = groupBySeries([...notes].sort(byListDate));
+  const folded = groups.some((g2) => !g2.series) && groups.some((g2) => g2.series);
+  return /* @__PURE__ */ u4("ul", { class: root3 ? "fi-rows fi-root" : "fi-rows", children: groups.map(
+    (group) => group.series ? /* @__PURE__ */ u4(SeriesRun, { group, ctx, folded }) : /* @__PURE__ */ u4(PageRow, { page: group.items[0], ctx })
+  ) });
+}
+function SectionBody({ section, ctx }) {
+  return /* @__PURE__ */ u4(S2, { children: [
+    section.intro && /* @__PURE__ */ u4(IntroRow, { page: section.intro, ctx }),
+    /* @__PURE__ */ u4(NoteList, { notes: section.notes, ctx })
+  ] });
+}
+function SectionLabel({ section, slug, sub }) {
+  const Heading = sub ? "h3" : "h2";
+  return /* @__PURE__ */ u4("div", { class: sub ? "fi-label is-sub" : "fi-label", children: [
+    /* @__PURE__ */ u4(Heading, { id: sectionId(section.path), children: section.title }),
+    /* @__PURE__ */ u4("span", { class: "fi-count", children: section.count }),
+    /* @__PURE__ */ u4(
       "a",
       {
-        href: `${resolveRelative3(ctx.slug, roadmap.slug)}#series-roadmap`,
-        class: "internal",
+        class: "fi-open",
+        href: resolveRelative2(slug, `${section.path}/index`),
+        "aria-label": `${section.title} \uD3F4\uB354 \uC5F4\uAE30`,
         "data-no-popover": "true",
-        children: "\uB85C\uB4DC\uB9F5"
+        children: [
+          !sub && /* @__PURE__ */ u4("span", { class: "fi-open-word", children: "\uD3F4\uB354\xA0" }),
+          "\uC5F4\uAE30 \u2192"
+        ]
       }
     )
   ] });
 }
-function SeriesHead({ group, ctx }) {
-  return /* @__PURE__ */ u5(S2, { children: [
-    /* @__PURE__ */ u5("span", { class: "series-eyebrow", children: [
-      "\uC2DC\uB9AC\uC988 \xB7 ",
-      group.items.length,
-      "\uD3B8"
-    ] }),
-    /* @__PURE__ */ u5("span", { class: "series-name", children: ctx.seriesTitles[group.series] ?? group.series })
-  ] });
-}
-function SeriesRows({ group, ctx }) {
-  return /* @__PURE__ */ u5("ul", { class: "section-ul series-rows", children: group.items.map((page) => /* @__PURE__ */ u5(PageRow, { page, ctx })) });
-}
-function SeriesRun(props) {
-  const { group, ctx } = props;
-  if (!props.folded) {
-    return /* @__PURE__ */ u5("li", { class: "series-li", children: /* @__PURE__ */ u5("div", { class: "series-group", children: [
-      /* @__PURE__ */ u5("div", { class: "series-head", children: /* @__PURE__ */ u5(SeriesHead, { group, ctx }) }),
-      /* @__PURE__ */ u5(SeriesActions, { group, ctx }),
-      /* @__PURE__ */ u5(SeriesRows, { group, ctx })
-    ] }) });
-  }
-  return /* @__PURE__ */ u5("li", { class: "series-li", children: /* @__PURE__ */ u5("div", { class: "series-card", children: [
-    /* @__PURE__ */ u5("details", { children: [
-      /* @__PURE__ */ u5("summary", { class: "series-head", children: [
-        /* @__PURE__ */ u5(SeriesHead, { group, ctx }),
-        /* @__PURE__ */ u5("span", { class: "series-chevron", "aria-hidden": "true" })
-      ] }),
-      /* @__PURE__ */ u5(SeriesRows, { group, ctx })
-    ] }),
-    /* @__PURE__ */ u5(SeriesActions, { group, ctx })
-  ] }) });
-}
-function NoteList({ notes, ctx }) {
-  if (notes.length === 0) return null;
-  const groups = groupBySeries([...notes].sort(ctx.sort));
-  const folded = groups.some((g2) => !g2.series) && groups.some((g2) => g2.series);
-  return /* @__PURE__ */ u5("ul", { class: "section-ul", children: groups.map(
-    (group) => group.series ? /* @__PURE__ */ u5(SeriesRun, { group, ctx, folded }) : /* @__PURE__ */ u5(PageRow, { page: group.items[0], ctx })
-  ) });
-}
-function SectionBody({ section, ctx }) {
-  return /* @__PURE__ */ u5(S2, { children: [
-    section.intro && /* @__PURE__ */ u5(IntroRow, { page: section.intro, ctx }),
-    /* @__PURE__ */ u5(NoteList, { notes: section.notes, ctx })
-  ] });
-}
-var Count = ({ n: n4 }) => /* @__PURE__ */ u5("span", { class: "folder-count", children: [
-  " \xB7 ",
-  n4
-] });
-var plural = (n4, word) => `${n4} ${word}${n4 === 1 ? "" : "s"}`;
+var plural = (n3, word) => `${n3} ${word}${n3 === 1 ? "" : "s"}`;
 var FolderListing_default = (opts) => {
   const showFolderCount = opts?.showFolderCount ?? true;
   const folderTitles = opts?.folderTitles ?? {};
   const seriesTitles = opts?.seriesTitles ?? {};
   const FolderListing = (props) => {
-    const { tree, fileData, cfg, allFiles } = props;
+    const { tree, fileData, allFiles } = props;
     const slug = fileData.slug;
     const folder = props.ctx?.trie?.findNode(slug?.split("/") ?? []);
     if (!slug || !folder) return null;
@@ -6752,50 +5186,30 @@ var FolderListing_default = (opts) => {
       const series = file.seriesRoadmap;
       if (typeof series === "string" && !roadmaps.has(series)) roadmaps.set(series, file);
     }
-    const ctx = {
-      slug,
-      locale: cfg?.locale ?? "en-US",
-      sort: byDateAndAlphabeticalFolderFirst2(),
-      seriesTitles,
-      roadmaps
-    };
+    const ctx = { slug, seriesTitles, roadmaps };
     const root3 = buildSection(folder, folderTitles, false);
     const sections = root3.children;
     const ast = tree;
-    const content = ast.children.length === 0 ? fileData.description : toJsxRuntime2(ast, { Fragment: S2, jsx: u5, jsxs: u5, elementAttributeNameCase: "html" });
+    const content = ast.children.length === 0 ? fileData.description : toJsxRuntime2(ast, { Fragment: S2, jsx: u4, jsxs: u4, elementAttributeNameCase: "html" });
     const classes = (fileData.frontmatter?.cssclasses ?? []).join(" ");
-    return /* @__PURE__ */ u5("div", { class: "popover-hint", children: [
-      /* @__PURE__ */ u5("article", { class: classes, children: /* @__PURE__ */ u5("div", { class: "markdown-preview-view markdown-rendered", children: content }) }),
-      /* @__PURE__ */ u5("div", { class: "page-listing folder-index", children: [
-        showFolderCount && /* @__PURE__ */ u5("p", { class: "folder-meta", children: [
+    return /* @__PURE__ */ u4("div", { class: "popover-hint", children: [
+      /* @__PURE__ */ u4("article", { class: classes, children: /* @__PURE__ */ u4("div", { class: "markdown-preview-view markdown-rendered", children: content }) }),
+      /* @__PURE__ */ u4("div", { class: "page-listing folder-index", children: [
+        showFolderCount && /* @__PURE__ */ u4("p", { class: "folder-meta", children: [
           plural(root3.count, "note"),
           sections.length > 0 && ` \xB7 ${plural(sections.length, "section")}`
         ] }),
-        sections.length > 1 && /* @__PURE__ */ u5("nav", { class: "folder-jump", "aria-label": "\uC139\uC158 \uBC14\uB85C\uAC00\uAE30", children: /* @__PURE__ */ u5("ul", { children: sections.map((s2) => /* @__PURE__ */ u5("li", { children: /* @__PURE__ */ u5("a", { href: `#${sectionId(s2.path)}`, "data-no-popover": "true", children: [
+        sections.length > 1 && /* @__PURE__ */ u4("nav", { class: "folder-jump", "aria-label": "\uC139\uC158 \uBC14\uB85C\uAC00\uAE30", children: /* @__PURE__ */ u4("ul", { children: sections.map((s2) => /* @__PURE__ */ u4("li", { children: /* @__PURE__ */ u4("a", { href: `#${sectionId(s2.path)}`, "data-no-popover": "true", children: [
           s2.title,
-          /* @__PURE__ */ u5("span", { class: "folder-jump-count", children: s2.count })
+          /* @__PURE__ */ u4("span", { class: "folder-jump-count", children: s2.count })
         ] }) })) }) }),
-        /* @__PURE__ */ u5(NoteList, { notes: root3.notes, ctx }),
-        sections.map((s2) => /* @__PURE__ */ u5("section", { class: "folder-section", "aria-labelledby": sectionId(s2.path), children: [
-          /* @__PURE__ */ u5("h2", { id: sectionId(s2.path), class: "folder-heading", children: [
-            /* @__PURE__ */ u5("a", { href: resolveRelative3(slug, `${s2.path}/index`), class: "internal", "data-no-popover": "true", children: s2.title }),
-            /* @__PURE__ */ u5(Count, { n: s2.count })
-          ] }),
-          /* @__PURE__ */ u5(SectionBody, { section: s2, ctx }),
-          flattenSections(s2.children).map((sub) => /* @__PURE__ */ u5("section", { class: "folder-sub", "aria-labelledby": sectionId(sub.path), children: [
-            /* @__PURE__ */ u5("h3", { id: sectionId(sub.path), class: "folder-subheading", children: [
-              /* @__PURE__ */ u5(
-                "a",
-                {
-                  href: resolveRelative3(slug, `${sub.path}/index`),
-                  class: "internal",
-                  "data-no-popover": "true",
-                  children: sub.title
-                }
-              ),
-              /* @__PURE__ */ u5(Count, { n: sub.count })
-            ] }),
-            /* @__PURE__ */ u5(SectionBody, { section: sub, ctx })
+        /* @__PURE__ */ u4(NoteList, { notes: root3.notes, ctx, root: true }),
+        sections.map((s2) => /* @__PURE__ */ u4("section", { class: "folder-section", "aria-labelledby": sectionId(s2.path), children: [
+          /* @__PURE__ */ u4(SectionLabel, { section: s2, slug }),
+          /* @__PURE__ */ u4(SectionBody, { section: s2, ctx }),
+          flattenSections(s2.children).map((sub) => /* @__PURE__ */ u4("section", { class: "folder-sub", "aria-labelledby": sectionId(sub.path), children: [
+            /* @__PURE__ */ u4(SectionLabel, { section: sub, slug, sub: true }),
+            /* @__PURE__ */ u4(SectionBody, { section: sub, ctx })
           ] }))
         ] }))
       ] })

@@ -277,9 +277,9 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 | 읽는 시간 | `readingMinutes(text)` — reading-time 이식, CJK 대응, 200wpm | 0분이 아닐 때                    |
 
 - 형식은 `YYYY-MM-DD`, KST 기준(`formatYmd`). 빌드 머신 시간대와 무관하다.
-- **목록 날짜 `getListDate` = `posted` → `created`** (Recent Notes · Featured · Notes 목적지). Archive는 작성일로 묶고 개정일(`posted`)을 보조 표기한다.
+- **목록 날짜 `getListDate` = `posted` → `created`** (Recent Notes · Featured · Notes 목적지 · 폴더 페이지 — 표시와 정렬 둘 다). Archive는 작성일로 묶고 개정일(`posted`)을 보조 표기한다.
 - **Prev/Next는 `created` 순**이다. 읽는 순서가 목적인데, `posted`는 개정 때 오늘로 덮어써져 개정한 글이 시리즈 맨 뒤로 밀리기 때문이다.
-- 주의: `updated`(note-properties가 `modified`로 매핑)는 작업마다 바뀌므로 정렬에 쓰지 않는다. `modified`는 SPECS `Updated`·content-meta 날짜와 folder/tag 페이지 정렬(`defaultDateType`)에만 남아 있다. folder 페이지는 그 위에서 시리즈 편만 다시 모은다(§4.13).
+- 주의: `updated`(note-properties가 `modified`로 매핑)는 작업마다 바뀌므로 정렬에 쓰지 않는다. `modified`는 SPECS `Updated`·content-meta 날짜와 tag 페이지 정렬(`defaultDateType`)에만 남아 있다. folder 페이지는 `getListDate` 정렬 위에서 시리즈 편만 다시 모은다(§4.13).
 - 주의: content-meta(모바일 메타 줄)는 외부 플러그인이라 날짜 형식을 locale에 맡긴다. 읽는 시간은 같은 알고리즘이라 숫자가 같다.
 
 ### 4.12 모션
@@ -301,10 +301,10 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 ### 4.13 시리즈 로드맵 · 목록의 편 순서
 
 - 폴더 목록(`plugins/folder-listing`)과 CATALOG는 기존 정렬을 유지하되, 같은 시리즈 편을 **그 시리즈가 기존 정렬에서 처음 나오는 자리**에 `series_index` 오름차순으로 모은다(`_shared/series.ts`의 `groupBySeries`). 비시리즈 노트의 상대 순서는 그대로다.
-- 행 제목 앞에 `N편` — SeriesBox 위치 표기와 같은 문자열(`seriesLabel`, 0편도 `0편`). 번호는 실제 `series_index`(공백 2·4·6 그대로), 분수 `N/M`은 쓰지 않는다. 원고 title에는 번호를 넣지 않는다.
-- `N편`은 색이 아니라 무게로 구분한다: 폴더 목록은 600 `--darkgray` tabular 숫자, CATALOG는 링크 색을 따르고 숫자 폭만 고정. 모션 없음.
-- 시리즈 묶음의 렌더 지점은 `FolderListing.tsx`의 `SeriesRun` 하나다. 한 섹션(폴더 직속 노트)에 비시리즈 노트가 섞이면 **접힌 묶음 카드**(`<details>`, 노트 카드와 같은 보더·반경), 시리즈뿐이면 **펼친 그룹**(좌측 2px 괘선 + 헤더 + 편 행). 헤더는 `시리즈 · N편`(0.73rem `--gray`) + 시리즈명(Hahmlet 700 `--dark`). tag 페이지와 Archive·Recent(시간축 목록)는 묶지 않는다.
-- 카드 링크 `N편부터 읽기 →`(가장 작은 `series_index`)·`로드맵`(펜스가 있는 노트의 `#series-roadmap`)은 **summary 밖 형제**다 — summary 안 링크는 스크린리더에서 버튼 자식으로 묻힌다. 데스크톱은 summary 줄 오른쪽에 겹쳐 놓고, 600px 이하는 summary 아래 줄로 내린다. 모션은 화살표 회전(`--dur-base`)뿐.
+- 편 번호는 `N편` — SeriesBox 위치 표기와 같은 문자열(`seriesLabel`, 0편도 `0편`). 번호는 실제 `series_index`(공백 2·4·6 그대로), 분수 `N/M`은 쓰지 않는다. 원고 title에는 번호를 넣지 않는다.
+- `N편`은 색이 아니라 무게로 구분한다: 폴더 목록은 날짜 열 자리의 **번호 열**(600 `--darkgray` tabular, Featured 번호 열 문법), CATALOG는 제목 앞 인라인으로 링크 색을 따르고 숫자 폭만 고정. 모션 없음.
+- 시리즈 묶음의 렌더 지점은 `FolderListing.tsx`의 `SeriesRun` 하나다. 시리즈뿐인 섹션은 **펼친 그룹** — 헤더 행(`시리즈 · N편` Mono `--gray` │ 시리즈명 Hahmlet 700 `--dark` │ `N편부터 읽기 →` · `로드맵`, 하단선만 `--border-strong`) + 트랙 행(`N편 │ 제목 + 요약 │ 날짜`, 날짜는 끝 열). 비시리즈 노트가 섞이면 **접힌 행**(`<details>`의 summary가 노트 행과 같은 높이·얼룩·hover, `시리즈 · N편 │ 시리즈명 │ ⌄`). tag 페이지와 Archive·Recent(시간축 목록)는 묶지 않는다.
+- 접힌 행의 링크(`N편부터 읽기 →`·`로드맵`)는 summary 밖, **펼친 안쪽 마지막 줄**이다 — summary 안 링크는 스크린리더에서 버튼 자식으로 묻힌다. 펼친 편 행은 제목 열 x에서 시작하는 1px `--lightgray` 괘선 안에 놓인다. 모션은 화살표 회전(`--dur-base`)뿐.
 
 - AA 예외: 카드·칩 호버 강조 중 관련 없는 카드를 `opacity: .38`로 흐리는 것은 호버 동안만의 일시 상태라 AA 4.5에서 뺀다. 평상시 카드는 AA를 지킨다(`plugins/series-roadmap`).
 
@@ -334,11 +334,13 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 
 **역할**: 모든 폴더 페이지가 자기 아래 전체를 한 화면에 펼친다(`plugins/folder-listing`). 토픽에서 어느 노트든 1클릭.
 
-- **폴더는 섹션 제목이지 카드가 아니다.** 직계 하위 폴더 = h2(본문 h2 규칙 그대로, 편수 `· N` `--gray`), 그 아래 = h3(0.95rem `--darkgray`, 점선 괘선). 깊이는 제목 2단 + 들여쓰기 1단(1rem, 600px 이하 0)까지 — 더 깊으면 `B / C`로 이어 붙인다.
-- **노트는 어느 깊이든 같은 카드 행**(§10 Card List, stretched link). 폴더 경로를 되풀이하는 태그는 뺀다.
+- **폴더는 섹션 라벨이지 카드가 아니다** — 홈 섹션 라벨 문법. 직계 하위 폴더 = h2 라벨(Hahmlet 700 1.15rem `--secondary` · Mono 편수 `--gray` · 우측 `폴더 열기 →` + 1px `--lightgray` 괘선), 그 아래 = h3 라벨(0.95rem `--darkgray` · `열기 →`). 라벨 이름은 텍스트이고 이동은 우측 링크가 맡는다(터치 44px, 음수 margin으로 줄 높이 유지, 목록 폭 600px 이하에선 `열기 →`만). 들여쓰기 없음 — 깊이는 라벨 크기로 구분하고 제목 열 x는 하나다. 더 깊으면 `B / C`로 이어 붙인다.
+- **노트는 어느 깊이든 같은 레코드 행** — 표 모양 목록(§4.3)의 Archive 행 문법. `YYYY-MM-DD`(Mono 0.72rem `--gray`, `getListDate`) │ 제목(Hahmlet 620 0.95rem `--dark`) + 요약 1줄(`description`, 0.82rem `--darkgray`, 말줄임, 없으면 생략). 면 없음 — 하단 헤어라인 + 얼룩 3.5% / hover·active 10% + 제목 밑줄 / focus-visible 2px 인셋. 행 전체가 `<a>` 하나(`data-no-popover`), 최소 44px. 태그는 목록에서 뺀다(행 전체 링크와 중첩되고, 노트 SPECS·태그 페이지가 맡는다).
+- 격자는 `메타 열 6.25rem │ 제목 열 │ 끝 열` 하나다 — 메타 열이 날짜·`N편`·`시리즈 · N편`·`폴더 소개`를 모두 받아 항목 종류와 무관하게 제목 x가 같다. 목록 폭 600px 이하(container query)에선 메타를 제목 위 줄로 올리고 트랙 행 날짜는 숨긴다. 행 높이 실측: 요약 포함 65px(390px 87px), 요약 없는 행·접힌 시리즈 행 44px.
 - 노트·폴더 노트 없이 자식 폴더 하나뿐인 사슬은 한 제목으로 접는다(`Quartz / Build`). 폴더 직속 노트가 하위 섹션보다 먼저 온다.
 - 표시명: 폴더 노트 title → `folderTitles` 옵션 → 토픽 표 → Title Case(`_shared/notes.ts`의 `folderTitle`). H1·`<title>`·섹션·breadcrumb가 같은 이름을 쓴다.
-- 폴더 노트(`datetime.md`처럼 index로 흡수된 노트)는 부모 페이지에서 그 섹션 맨 위 **소개 행**(점선 보더, `폴더 소개` + 요약 1줄)이다.
+- 폴더 노트(`datetime.md`처럼 index로 흡수된 노트)는 부모 페이지에서 그 섹션 맨 위 **소개 행**(메타 열에 `폴더 소개`(본문 서체 600), 제목 700, 요약 1줄)이다.
+- 태그 페이지는 아직 §10 카드다(외부 `tag-page`) — 같은 "노트 목록"이 두 문법으로 갈라져 있다.
 - 섹션이 2개 이상이면 상단에 점프 칩(accent 8% 배경, Hahmlet 700 `--secondary`, 36px / 모바일 44px). 줄바꿈하며 가로 스크롤은 없다.
 
 ---

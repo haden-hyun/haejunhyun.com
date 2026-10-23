@@ -878,8 +878,8 @@ tbody td {
   color: var(--darkgray);
 }
 
-// ── 10. Card List (folder/tag 목록 페이지) ─────────────────────────────────
-// tag/folder-page 플러그인의 listPage.scss 기본 그리드를 flex 세로 카드형으로 덮는다.
+// ── 10. Card List (tag 목록 페이지 — 폴더 페이지는 folder-listing의 행) ─────────
+// tag-page 플러그인의 listPage.scss 기본 그리드를 flex 세로 카드형으로 덮는다.
 
 .page-listing ul.section-ul {
   padding-left: 0;

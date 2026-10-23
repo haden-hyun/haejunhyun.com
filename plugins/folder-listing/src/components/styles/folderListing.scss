@@ -1,56 +1,8 @@
-// 업스트림 folder-page listPage.scss 사본 — 이 플러그인이 FolderContent를 대체하므로 같이 싣는다.
-ul.section-ul {
-  list-style: none;
-  margin-top: 2em;
-  padding-left: 0;
-}
+// ── 하위 트리 색인: 폴더 = 섹션 라벨, 노트 = 표 모양 목록 행(DESIGN-SYSTEM §4.3·§4.16) ──
+$meta-col: 6.25rem;
 
-li.section-li {
-  margin-bottom: 1em;
-
-  & > .section {
-    display: grid;
-    grid-template-columns: fit-content(8em) 3fr 1fr;
-
-    @media all and (max-width: 600px) {
-      & > .tags {
-        display: none;
-      }
-    }
-
-    & > .desc > h3 > a {
-      background-color: transparent;
-    }
-
-    & .meta {
-      margin: 0 1em 0 0;
-      opacity: 0.6;
-    }
-  }
-}
-
-.popover .section {
-  grid-template-columns: fit-content(8em) 1fr !important;
-
-  & > .tags {
-    display: none;
-  }
-}
-
-// 편 번호 — 색이 아니라 무게로 구분하고, 숫자 폭을 고정해 편끼리 제목 시작점이 맞는다.
-.page-listing .section .desc h3 .series-index {
-  margin-right: 0.5em;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--darkgray);
-  white-space: nowrap;
-}
-
-// ── 하위 트리 색인: 폴더 = 섹션 제목, 노트 = 카드 행 ──
 .folder-index {
-  ul.section-ul {
-    margin: 0.75rem 0 0;
-  }
+  container-type: inline-size;
 
   .folder-meta {
     margin: 1.5rem 0 0;
@@ -59,61 +11,352 @@ li.section-li {
     color: var(--gray);
   }
 
-  .folder-heading a,
-  .folder-subheading a {
-    color: inherit;
-    background-color: transparent;
-    text-decoration: none;
+  ul.fi-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 
-    &:hover {
-      text-decoration: underline;
-      text-underline-offset: 0.2em;
+    & > li {
+      margin: 0;
     }
   }
 
-  .folder-count {
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: var(--gray);
-  }
-
-  .folder-heading {
-    margin-top: 2.5rem;
-    scroll-margin-top: 1.5rem;
-  }
-
-  // 하위 제목은 h2(섹션)보다 한 단 작고, 들여쓰기 1단까지만.
-  .folder-sub {
+  ul.fi-root {
     margin-top: 1.75rem;
-    padding-left: 1rem;
-
-    @media all and (max-width: 600px) {
-      padding-left: 0;
-    }
+    border-top: 1px solid var(--lightgray);
   }
+}
 
-  .folder-subheading {
+// ── 섹션 라벨 — 홈 섹션 라벨 문법(이름 · 편수 · 우측 이동 링크) ──
+.folder-index .folder-section {
+  margin-top: 2.5rem;
+}
+
+.folder-index .folder-sub {
+  margin-top: 1.75rem;
+}
+
+.folder-index .fi-label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--lightgray);
+
+  h2,
+  h3 {
     margin: 0;
-    padding-bottom: 0.3rem;
-    font-size: 0.95rem;
-    color: var(--darkgray);
-    border-bottom: 1px dashed var(--lightgray);
+    padding: 0;
+    border: 0;
+    font-family: var(--headerFont);
+    font-weight: 700;
+    line-height: 1.3;
     scroll-margin-top: 1.5rem;
   }
 
-  .folder-intro .section {
-    border-style: dashed;
+  h2 {
+    font-size: 1.15rem;
+    color: var(--secondary);
   }
 
-  .intro-desc {
-    order: 2;
-    margin: 0;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    color: var(--gray);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  &.is-sub {
+    gap: 0.6rem;
+    padding-bottom: 6px;
+
+    h3 {
+      font-size: 0.95rem;
+      color: var(--darkgray);
+    }
+
+    .fi-open {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.folder-index .fi-count {
+  font-family: var(--codeFont);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
+// 터치 44px — 음수 margin-block으로 라벨 줄 높이는 그대로 둔다.
+.folder-index .fi-open,
+.folder-index .fi-acts a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-family: var(--headerFont);
+  font-weight: 600;
+  color: var(--secondary);
+  text-decoration: none;
+  white-space: nowrap;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--secondary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}
+
+.folder-index .fi-open {
+  margin: -0.75rem 0 -0.75rem auto;
+  font-size: 0.85rem;
+}
+
+// ── 행 — Archive 행 값(하단 헤어라인 · 얼룩말 3.5% · hover 10%) ──
+.folder-index .fi-row {
+  display: grid;
+  grid-template-columns: $meta-col minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: baseline;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0.6rem 0.4rem;
+  border-bottom: 1px solid var(--lightgray);
+  font-weight: 400;
+  color: var(--darkgray);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease);
+
+  &.is-track,
+  &.is-series {
+    grid-template-columns: $meta-col minmax(0, 1fr) auto;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: -2px; // 행이 맞붙어 바깥 offset은 이웃 행에 가린다
+  }
+}
+
+// 주의: 얼룩과 hover는 명시도가 같아 순서 의존 — hover가 뒤에 와야 한다.
+.folder-index li:nth-child(even) > .fi-row,
+.folder-index li:nth-child(even) > details > summary.fi-row {
+  background: rgba(var(--accent-rgb), 0.035);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .folder-index li > .fi-row:hover,
+  .folder-index li > details > summary.fi-row:hover {
+    background: rgba(var(--accent-rgb), 0.1);
+    color: var(--darkgray);
+
+    .fi-title {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+}
+
+// 주의: 10%를 넘기면 그 위 --gray 메타가 AA를 잃는다(14%면 4.27).
+.folder-index li > .fi-row:active,
+.folder-index li > details > summary.fi-row:active {
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+.folder-index .fi-date,
+.folder-index .fi-kind {
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-weight: 400;
+  line-height: 1.3; // 주의: 행의 1.6을 물려받으면 baseline 정렬로 첫 줄이 4px 늘어난다
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.folder-index .fi-end {
+  justify-self: end;
+}
+
+.folder-index .fi-no {
+  font-family: var(--bodyFont);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  color: var(--darkgray);
+  white-space: nowrap;
+}
+
+.folder-index .fi-title {
+  font-family: var(--headerFont);
+  font-size: 0.95rem;
+  font-weight: 620;
+  line-height: 1.45;
+  color: var(--dark);
+  word-break: keep-all;
+}
+
+.folder-index .fi-desc {
+  grid-column: 2 / -1;
+  margin-top: 0.15rem;
+  overflow: hidden;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--darkgray);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.folder-index .fi-row.is-intro {
+  .fi-kind {
+    font-family: var(--bodyFont);
+    font-weight: 600;
+  }
+
+  .fi-title {
+    font-weight: 700;
+  }
+}
+
+// ── 시리즈 — 펼친 그룹: 헤더 + 트랙 행 ──
+.folder-index .fi-series-head {
+  display: grid;
+  grid-template-columns: $meta-col minmax(0, 1fr) auto;
+  column-gap: 14px;
+  align-items: baseline;
+  padding: 0.9rem 0.4rem 0.55rem;
+  border-bottom: 1px solid var(--border-strong);
+
+  .fi-acts a {
+    margin-block: -0.9rem;
+  }
+}
+
+.folder-index .fi-series-name {
+  font-family: var(--headerFont);
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--dark);
+  word-break: keep-all;
+}
+
+.folder-index .fi-acts {
+  display: flex;
+  gap: 0 1rem;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+// ── 시리즈 — 섞인 섹션: summary가 그 자체로 한 행 ──
+.folder-index summary.fi-row {
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  .fi-title {
+    font-weight: 700;
+  }
+}
+
+.folder-index .fi-chev {
+  align-self: center; // 빈 상자의 baseline은 아래 끝이라 baseline 정렬에서 빼야 행이 늘지 않는다
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-right: 0.3rem;
+  border-right: 2px solid var(--gray);
+  border-bottom: 2px solid var(--gray);
+  transform: rotate(-45deg);
+  transition: transform var(--dur-base) var(--ease);
+}
+
+.folder-index details[open] > summary .fi-chev {
+  transform: rotate(45deg);
+}
+
+.folder-index .fi-fold-body {
+  margin-left: $meta-col;
+  border-left: 1px solid var(--lightgray);
+
+  .fi-row.is-track {
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+  }
+
+  .fi-acts {
+    padding: 0.55rem 0.4rem;
+    border-bottom: 1px solid var(--lightgray);
+
+    a {
+      margin-block: -0.6rem;
+    }
+  }
+}
+
+// ── 좁은 폭(목록 폭 600px 이하) — 메타를 제목 위 줄로 ──
+@container (max-width: 600px) {
+  .folder-index .fi-open-word {
+    display: none;
+  }
+
+  .folder-index .fi-row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2px;
+    padding: 0.7rem 0.25rem;
+
+    .fi-desc {
+      grid-column: 1;
+    }
+
+    &.is-track {
+      grid-template-columns: 2.75rem minmax(0, 1fr);
+
+      .fi-end {
+        display: none;
+      }
+
+      .fi-desc {
+        grid-column: 2;
+      }
+    }
+
+    &.is-series {
+      grid-template-columns: minmax(0, 1fr) auto;
+
+      .fi-kind {
+        grid-column: 1 / -1;
+      }
+
+      .fi-chev {
+        grid-row: 2;
+        grid-column: 2;
+      }
+    }
+  }
+
+  .folder-index .fi-series-head {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 2px;
+
+    .fi-acts {
+      margin-top: 0.35rem;
+    }
+
+    .fi-acts a {
+      margin-block: -0.4rem;
+    }
+  }
+
+  .folder-index .fi-fold-body {
+    margin-left: 0.75rem;
+
+    .fi-row.is-track {
+      grid-template-columns: 2.75rem minmax(0, 1fr);
+    }
   }
 }
 
@@ -161,138 +404,5 @@ li.section-li {
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     color: var(--gray);
-  }
-}
-
-// ── 시리즈 묶음: 섞인 섹션은 접힌 카드, 시리즈뿐인 섹션은 펼친 그룹 ──
-.folder-index li.series-li {
-  margin-bottom: 0.5rem;
-}
-
-.folder-index .series-head {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.folder-index .series-eyebrow {
-  font-size: 0.73rem;
-  line-height: 1.4;
-  color: var(--gray);
-}
-
-.folder-index .series-name {
-  font-family: var(--headerFont);
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--dark);
-}
-
-.folder-index .series-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1rem;
-  margin: 0.35rem 0 0;
-  font-family: var(--headerFont);
-  font-size: 0.85rem;
-  font-weight: 600;
-  line-height: 1.5;
-
-  a {
-    color: var(--secondary);
-    background-color: transparent;
-  }
-
-  a:first-child::after {
-    content: " →";
-  }
-}
-
-.folder-index .series-group {
-  padding-left: 0.85rem;
-  border-left: 2px solid var(--lightgray);
-
-  .series-rows {
-    margin-top: 0.6rem;
-  }
-}
-
-.folder-index .series-card {
-  position: relative;
-  border: 1px solid var(--lightgray);
-  border-radius: var(--radius-s);
-  transition: border-color var(--dur-fast) var(--ease);
-
-  @media (hover: hover) and (pointer: fine) {
-    &:has(> details > summary:hover) {
-      border-color: var(--secondary);
-    }
-  }
-
-  summary {
-    position: relative;
-    min-height: 2.75rem;
-    padding: 0.85rem 13rem 0.85rem 2.6rem;
-    list-style: none;
-    cursor: pointer;
-    border-radius: inherit;
-
-    &::-webkit-details-marker {
-      display: none;
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--secondary);
-      outline-offset: 2px;
-    }
-  }
-
-  .series-chevron {
-    position: absolute;
-    top: 50%;
-    left: 1.1rem;
-    width: 0.5rem;
-    height: 0.5rem;
-    margin-top: -0.3rem;
-    border-right: 2px solid var(--gray);
-    border-bottom: 2px solid var(--gray);
-    transform: rotate(-45deg);
-    transition: transform var(--dur-base) var(--ease);
-  }
-
-  details[open] .series-chevron {
-    transform: rotate(45deg);
-  }
-
-  .series-rows {
-    margin: 0;
-    padding: 0 0.6rem 0.1rem;
-  }
-
-  // 링크는 summary 밖 형제 — 데스크톱은 summary 줄 오른쪽에 겹쳐 놓는다.
-  .series-actions {
-    position: absolute;
-    top: 0;
-    right: 1.1rem;
-    height: 4.45rem;
-    margin: 0;
-    align-items: center;
-  }
-
-  @media all and (max-width: 600px) {
-    summary {
-      padding-right: 1.1rem;
-    }
-
-    .series-actions {
-      position: static;
-      height: auto;
-      padding: 0 1.1rem 0.85rem 2.6rem;
-    }
-
-    details[open] + .series-actions {
-      padding-top: 0.25rem;
-    }
   }
 }
