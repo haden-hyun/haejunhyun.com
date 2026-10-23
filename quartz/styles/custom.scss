@@ -634,9 +634,13 @@ a.tag-link {
   min-height: 0;
 }
 
-// 목록은 3줄(제목·경로·더보기 포함 12.4rem) 아래로 줄지 않는다 — 모자라면 island 전체가 스크롤한다.
+// 목록은 3줄(제목·경로·더보기 포함 12.4rem), 높이 760px 이하에선 2줄 아래로 줄지 않는다 — 모자라면 island 전체가 스크롤한다.
 .sidebar.left .note-catalog:has(.note-catalog-list > li:nth-child(3)) {
   min-height: 12.4rem;
+
+  @media (max-height: 760px) {
+    min-height: 10.4rem;
+  }
 }
 .sidebar.left .note-catalog:not(:has(.note-catalog-list > li:nth-child(3))) {
   flex-shrink: 0;

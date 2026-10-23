@@ -6,6 +6,8 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import style from "./styles/noteCatalog.scss"
+// @ts-expect-error - Inline script loaded as text by esbuild plugin
+import script from "./scripts/noteCatalog.inline.ts"
 import { isListedNote, isRealNote } from "../../../_shared/notes"
 import { groupBySeries, seriesLabel } from "../../../_shared/series"
 
@@ -87,5 +89,6 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
   }
 
   NoteCatalog.css = style
+  NoteCatalog.afterDOMLoaded = script
   return NoteCatalog
 }) satisfies QuartzComponentConstructor<Partial<NoteCatalogOptions>>

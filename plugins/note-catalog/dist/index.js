@@ -34,6 +34,9 @@ function resolveRelative(current, target) {
 // src/components/styles/noteCatalog.scss
 var noteCatalog_default = ".note-catalog {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-catalog .note-catalog-title {\n  margin: 0;\n}\n.note-catalog .note-catalog-path {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  letter-spacing: 0.06em;\n  color: var(--gray);\n  word-break: break-all;\n}\n.note-catalog .note-catalog-path:hover {\n  color: var(--secondary);\n}\n.note-catalog .note-catalog-list {\n  margin: 0.7rem 0 0;\n  padding: 0;\n  list-style: none;\n  min-height: 0;\n  overflow-y: auto;\n}\n.note-catalog .note-catalog-link {\n  display: block;\n  padding: 4px 0 4px 0.6rem;\n  border-left: 2px solid transparent;\n  line-height: 1.45;\n  word-break: keep-all;\n  transition: color var(--dur-fast) var(--ease);\n}\n.note-catalog .note-catalog-link.active {\n  color: var(--secondary);\n  font-weight: 600;\n  border-left-color: var(--secondary);\n}\n.note-catalog .note-catalog-index {\n  margin-right: 0.4em;\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n.note-catalog .note-catalog-more {\n  margin-top: 0.9rem;\n  padding-top: 0.7rem;\n  border-top: 1px solid var(--lightgray);\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-catalog .note-catalog-more:hover {\n  color: var(--secondary);\n}";
 
+// src/components/scripts/noteCatalog.inline.ts
+var noteCatalog_inline_default = 'function n(){for(let t of document.querySelectorAll(".note-catalog-list")){let e=t.querySelector(".note-catalog-link.active");if(!e||t.scrollHeight<=t.clientHeight)continue;let o=e.getBoundingClientRect().top-t.getBoundingClientRect().top+t.scrollTop,c=t.scrollHeight-t.clientHeight;t.scrollTop=Math.max(0,Math.min(c,o-(t.clientHeight-e.offsetHeight)/2))}}n();document.addEventListener("nav",n);\n';
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
@@ -158,6 +161,7 @@ var NoteCatalog_default = ((userOpts) => {
     ] });
   };
   NoteCatalog.css = noteCatalog_default;
+  NoteCatalog.afterDOMLoaded = noteCatalog_inline_default;
   return NoteCatalog;
 });
 
