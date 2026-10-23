@@ -198,7 +198,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 
 ### 4.7 노트 상세 3패널
 
-**역할**: 좌측 = 이 음반은 무엇인가(SPECS → CATALOG) / 본문 / 우측 = 본문 탐색(TOC → Backlinks → Graph).
+**역할**: 좌측 = 이 음반은 무엇인가(SPECS → CATALOG) / 본문 / 우측 = 본문 탐색(TOC → Backlinks → Related).
 
 | 패널                             | 핵심                                                          |
 | -------------------------------- | ------------------------------------------------------------- |
@@ -206,10 +206,14 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 | CATALOG (`plugins/note-catalog`) | 전체 파일 트리 폐기, **형제 노트만**. 길이가 형제 수에만 비례 |
 | TOC                              | 라벨 "TOC". `flex: 1 1 0` + `min-height: 0` — 남는 공간 전부, 내부 스크롤. 데스크톱 island 안에선 `0 1 auto`(§4.15) |
 | Backlinks                        | `0 0 auto`, `max-height: 9rem`                                |
-| Graph                            | `0 0 auto`, 기본 접힘                                         |
+| Related (`plugins/related-notes`) | `0 0 auto`, 최대 5편. 기준 점수 미만뿐이면 패널 없음. 로컬 그래프 자리 |
+| Graph                            | 사이드바 패널 없음 — ⌘G 전역 그래프 모달만(`.graph`는 `display: contents`로 남는다) |
 
 - **패널 라벨 5종은 한 규칙**(Hahmlet 700 / 1rem / `--darkgray`). 패널별로 나누면 라벨이 콘텐츠보다 시끄러워진다.
-- **패널 항목도 한 규칙**(Hahmlet / 0.8rem / `--gray`). 셋 다 "다른 곳으로 가는 링크"라 같은 물건이다.
+- **패널 항목도 한 규칙**(Hahmlet / 0.8rem / `--gray`). 넷(CATALOG·TOC·Backlinks·Related) 다 "다른 곳으로 가는 링크"라 같은 물건이다.
+- Related 순위: 직접 링크 100 > 같은 시리즈 50−10·(순번 거리−1, 하한 20) > 개념 태그 10·log2(N/df). 기준 10. 폴더 미러 태그(태그가 노트 폴더 경로와 같거나 그 접두)는 제외, 같은 폴더는 동점일 때 **뒤로**(형제는 CATALOG가 보여 준다). Backlinks에 있는 노트는 뺀다.
+- 1200px 미만에선 우측 패널이 본문 아래로 내려온다 — 태블릿은 가로 등분, 모바일은 세로로 쌓는다.
+- 기각: 로컬 그래프 패널(링크 0 노트 80%에서 점 1~3개, 라벨 없는 canvas — 다음 읽을 글에 답하지 못한다). 링크 밀도가 오르면 전역 그래프 강조부터 재평가.
 - **색은 "지금 여기" 한 줄에만.** CATALOG 현재 노트와 TOC 현재 절만 `--secondary`.
 - 주의: `min-height: 0`을 빼면 flex 값을 뭘 주든 줄지 않는다.
 - 주의: `.note-catalog-link.active` 색은 `custom.scss`에도 있어야 한다. 플러그인 규칙은 레이어 안이라 명시도와 무관하게 진다.
@@ -318,7 +322,7 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 
 **역할**: 데스크톱(1200px 초과 — 1200은 tablet 그리드) 사이드바 컬럼을 독립 스크롤 영역으로 보이게 한다. 패널이 하나도 없는 사이드바(폴더·태그·archive·topics)엔 그리지 않는다. 구현은 `custom.scss` §8.5.
 
-- 컬럼당 1개(좌 SPECS+CATALOG / 우 TOC+Backlinks+Graph). 패널마다 씌우지 않는다(§4.7).
+- 컬럼당 1개(좌 SPECS+CATALOG / 우 TOC+Backlinks+Related). 패널마다 씌우지 않는다(§4.7).
 - 보더 `--island-border`(= `--lightgray`, 고대비 설정에선 `--gray`) + 반경 `--radius-m`(코드 창과 같은 10px), **그림자 없음**.
 - 면 `--island-bg` = `--light` + white 50%(라이트 `#fbfaf7`) / 4%(다크 `#181d29`). 페이지와 1.04 / 1.09 — 장식 수준.
 - 대비(island 위): `--gray` 5.48 / **4.87**, `--secondary` 6.45 / 7.32. 주의: 다크 여유 0.37 — 면을 더 띄우거나 패널 행에 hover 배경을 넣지 말 것.

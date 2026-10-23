@@ -6,8 +6,6 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import style from "./styles/noteCatalog.scss"
-// @ts-expect-error - Inline script loaded as text by esbuild plugin
-import graphFoldScript from "./scripts/graphFold.inline.ts"
 import { isListedNote, isRealNote } from "../../../_shared/notes"
 import { groupBySeries, seriesLabel } from "../../../_shared/series"
 
@@ -89,10 +87,5 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
   }
 
   NoteCatalog.css = style
-  // 주의: 우측 graph 접기 스크립트가 여기 붙어 있는 이유: config-loader는 플러그인
-  // 엔트리 하나당 컴포넌트 하나만 배치하므로(config-loader.ts:753) 스크립트
-  // 전용 컴포넌트를 따로 둘 수 없다. DesktopOnly/ConditionalRender 래퍼는
-  // beforeDOMLoaded를 보존하므로 layout 조건이 붙어도 스크립트는 실린다.
-  NoteCatalog.beforeDOMLoaded = graphFoldScript
   return NoteCatalog
 }) satisfies QuartzComponentConstructor<Partial<NoteCatalogOptions>>

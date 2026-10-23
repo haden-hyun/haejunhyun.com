@@ -1,55 +1,19 @@
+// 라벨·항목 타이포는 custom.scss §8의 사이드바 패널 공용 규칙이 맡는다 — 여기는 목록 골격만.
 .related-notes {
-  margin: 2rem 0;
-
-  h3 {
-    margin: 0 0 0.8rem 0;
-    padding: 0;
-    border: none;
-    font-family: var(--headerFont);
-    font-size: 1rem;
-    font-weight: 700;
-  }
-}
-
-.related-notes-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-
-  @media all and (max-width: 600px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.related-note-card {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius, 10px);
-  background: var(--surface);
-  text-decoration: none;
-  transition: border-color var(--dur-fast) var(--ease);
 
-  &:hover {
-    border-color: var(--accent);
+  & > h3 {
+    margin: 0;
   }
-}
 
-.related-note-cat {
-  font-family: var(--codeFont);
-  font-size: 0.66rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  color: var(--text-3);
-}
+  & > ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0;
 
-.related-note-title {
-  font-family: var(--headerFont);
-  font-size: 0.92rem;
-  font-weight: 630;
-  line-height: 1.4;
-  color: var(--text);
-  word-break: keep-all;
+    & > li > a {
+      background-color: transparent;
+    }
+  }
 }

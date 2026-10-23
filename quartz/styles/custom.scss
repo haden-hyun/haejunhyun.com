@@ -645,13 +645,13 @@ a.tag-link {
   }
 }
 
-// ── 8. 우측 사이드바 — TOC / Backlinks / Graph ────────────────────────────
+// ── 8. 우측 사이드바 — TOC / Backlinks / Related ──────────────────────────
 // 순서는 quartz.config.yaml의 layout priority가 정하고, 여기선 높이 배분만 고정한다.
 //
 // 주의: `min-height: 0`을 빼지 말 것 — flex 자식 기본값이 `min-height: auto`라
 //       내용보다 작아지지 않고, 이게 없으면 flex 값을 뭘 주든 줄지 않는다.
 // 주의: TOC를 감싼 `.desktop-only`는 `display: contents`라 flex에 투명하다 —
-//       래퍼가 아니라 .toc/.backlinks/.graph를 직접 타겟할 것.
+//       래퍼가 아니라 .toc/.backlinks/.related-notes를 직접 타겟할 것.
 
 // 패널 라벨 5종은 한 규칙으로 통일한다 — 기준은 SPECS(Hahmlet 700 / 1rem).
 // 주의: 패널별 색·조판으로 나누지 말 것. 라벨이 콘텐츠보다 시끄러워진다.
@@ -659,7 +659,7 @@ a.tag-link {
 .note-catalog-title,
 button.toc-header h3,
 .backlinks > h3,
-.graph > h3 {
+.related-notes > h3 {
   font-family: var(--headerFont);
   font-size: 1rem;
   font-weight: 700;
@@ -691,9 +691,28 @@ button.toc-header h3 {
     max-height: 9rem;
   }
 
-  .graph {
+  .related-notes {
     flex: 0 0 auto;
     min-height: 0;
+  }
+
+  // 본문 아래로 내려오는 폭에선 base가 가로 배치다 — 위 `0 0 auto`가 제목 폭으로 늘어 화면 밖으로 밀리므로 등분하고, 모바일은 쌓는다.
+  // 주의: base의 not($desktop)은 1200 미만이다 — 1200에서 켜면 세로 배치에 basis 0이 걸려 패널이 접힌다.
+  @media all and (max-width: #{map.get($breakpoints, desktop) - 0.02px}) {
+    > .backlinks,
+    > .related-notes {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
+  @media all and ($mobile) {
+    flex-direction: column;
+
+    > .backlinks,
+    > .related-notes {
+      flex: 0 0 auto;
+    }
   }
 }
 
@@ -707,40 +726,26 @@ button.toc-header h3 {
   overflow-y: auto;
 }
 
-// graph는 note-catalog의 graphFold 스크립트가 페이지마다 기본 접힘으로 되돌린다.
-.graph > h3 {
-  cursor: pointer;
-  user-select: none;
+// graph는 ⌘G 모달만 남긴다 — 패널 DOM은 related-notes 스크립트가 지우고, 이 규칙은 그 전 한 프레임을 가린다.
+// 주의: .graph 자체를 숨기지 말 것 — 모달(.global-graph-outer)이 그 안에 있다. contents라 flex 간격도 차지하지 않는다.
+.sidebar .graph {
+  display: contents;
 
-  &::after {
-    content: "▾";
-    margin-left: 0.4rem;
-    font-size: 0.7em;
-    color: var(--gray);
-  }
-}
-
-.graph.folded {
-  // 주의: display:none이면 그래프가 폭 0 캔버스로 그려져 펼쳐도 빈 상자다 — 높이만 접는다.
+  > h3,
   > .graph-outer {
-    height: 0;
-    margin: 0;
-    border-block-width: 0; // 주의: 좌우 보더는 남긴다 — 빼면 캔버스가 펼친 컨테이너보다 2px 넓게 그려진다.
-    visibility: hidden;
-  }
-  > h3::after {
-    content: "▸";
+    display: none;
   }
 }
 
-// 패널 항목 3종(CATALOG 노트 · TOC 절 · Backlinks 노트) — 셋 다 "다른 곳으로 가는
+// 패널 항목 4종(CATALOG 노트 · TOC 절 · Backlinks 노트 · Related 노트) — 모두 "다른 곳으로 가는
 // 링크"라 한 규칙에 둔다. 기본은 --gray, 현재 위치만 블루로 칠한다.
 // 주의: 항목 전체를 --secondary로 채우지 말 것 — 사이드바가 통째로 파래져 "지금
 //       여기"가 묻힌다. 웜 액센트도 안 된다(읽기 진행바·CTA와 신호가 겹친다).
 // 주의: CATALOG 항목 규칙은 플러그인의 noteCatalog.scss에도 있다 — 둘을 같이 고칠 것.
 .note-catalog .note-catalog-link,
 .toc-content li > a,
-.backlinks ul li a {
+.backlinks ul li a,
+.related-notes ul li a {
   font-family: var(--headerFont);
   font-size: 0.8rem;
   color: var(--gray);
@@ -796,7 +801,7 @@ button.toc-header h3 {
 // 주의: $desktop·$tablet이 1200px에서 겹친다(1200은 우측 사이드바가 본문 아래인 tablet 그리드) — 1px 올린다.
 // 주의: 폴더·태그·archive·topics는 사이드바가 비어 있다 — 패널이 있을 때만 그린다.
 @media all and (min-width: #{map.get($breakpoints, desktop) + 1px}) {
-  .page > #quartz-body .sidebar:has(.note-specs, .note-catalog, .toc, .backlinks, .graph) {
+  .page > #quartz-body .sidebar:has(.note-specs, .note-catalog, .toc, .backlinks, .related-notes) {
     top: calc(var(--topbar-h) + var(--island-inset));
     height: auto;
     max-height: calc(100vh - var(--topbar-h) - var(--island-inset) * 2);

@@ -6,90 +6,85 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import style from "./styles/relatedNotes.scss"
-import { isRealNote } from "../../../_shared/notes"
-
-/**
- * RelatedNotes — 노트 하단(afterBody)의 백링크 + 아웃고잉 링크, 최대 4개.
- * 현재 quartz.config.yaml에서 비활성.
- *
- * - 사이드바(320px 고정)가 아닌 본문 폭에 둔다. 2열 카드 그리드에 필요한 폭
- * - 우측 사이드바의 backlinks 플러그인과 공존한다
- *
- * 주의: 위키링크 일부가 부분 슬러그로 저장돼 대상을 못 찾는다. 그런 링크는 조용히
- * 건너뛴다(깨진 카드를 만들지 않는다). 근본 수정은 vault 쪽 표기 정리.
- */
+import { isListedNote } from "../../../_shared/notes"
+import { seriesIndexOf, seriesOf } from "../../../_shared/series"
+import { scoreRelated } from "./score"
+import graphPanelScript from "./graphPanel"
 
 type FileData = QuartzPluginData & Record<string, unknown>
 
-const CATEGORY_NAMES: Record<string, string> = {
-  "computer-science": "Computer Science",
-  "data-engineering": "Data Engineering",
-  "data-science": "Data Science",
-  gis: "GIS",
-  programming: "Programming",
-  "finance-property": "Finance & Property",
-  tools: "Tools",
+export interface RelatedNotesOptions {
+  limit: number
+  /** Backlinks 패널에 이미 있는 노트는 뺀다(같은 island에 같은 제목이 두 번 뜨지 않게). */
+  excludeBacklinks: boolean
 }
 
-function getCategoryName(slug: string): string {
-  const key = slug.split("/")[0] ?? ""
-  return CATEGORY_NAMES[key] ?? key.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+const defaultOptions: RelatedNotesOptions = {
+  limit: 5,
+  excludeBacklinks: true,
 }
 
-export default (() => {
+const tagsOf = (f: FileData): string[] => {
+  const raw = (f.frontmatter as { tags?: unknown } | undefined)?.tags
+  return Array.isArray(raw) ? raw.map(String) : []
+}
+
+/** 우측 사이드바 Related — 링크 > 같은 시리즈 > 개념 태그 순위로 최대 limit편. 기준 점수를 넘는 노트가 없으면 그리지 않는다. */
+export default ((userOpts?: Partial<RelatedNotesOptions>) => {
+  const opts = { ...defaultOptions, ...userOpts }
+
   const RelatedNotes: QuartzComponent = ({
     fileData,
     allFiles,
     displayClass,
   }: QuartzComponentProps) => {
-    const currentSlug = fileData.slug as string
-    if (currentSlug === "index") return <></>
+    const current = fileData as FileData
+    const currentSlug = current.slug as string | undefined
+    if (!currentSlug || !isListedNote(current)) return null
 
     const files = allFiles as FileData[]
+    const notes = files
+      .filter((f) => isListedNote(f))
+      .map((f) => ({
+        slug: f.slug as string,
+        links: (f.links as string[] | undefined) ?? [],
+        tags: tagsOf(f),
+        series: seriesOf(f),
+        seriesIndex: seriesIndexOf(f),
+        title: String(f.frontmatter?.title ?? f.slug),
+      }))
+    const self = notes.find((n) => n.slug === currentSlug)
+    if (!self) return null
 
-    // 백링크: 다른 노트의 links 배열에 이 페이지가 포함된 경우.
-    const backlinks = files.filter(
-      (f) =>
-        f.unlisted !== true &&
-        (f.links as string[] | undefined)?.includes(currentSlug) &&
-        isRealNote(f.slug as string | undefined),
+    // 주의: Backlinks 패널과 같은 판정(unlisted 제외, links 포함)이어야 중복이 정확히 빠진다.
+    const backlinkSlugs = new Set(
+      files
+        .filter((f) => f.unlisted !== true && (f.links as string[] | undefined)?.includes(currentSlug))
+        .map((f) => f.slug as string),
     )
 
-    // 아웃고잉: 실제로 존재하는 노트에 매칭되는 링크만(깨진 링크는 버린다).
-    const outgoingTargets = (fileData.links as string[] | undefined) ?? []
-    const outgoing = outgoingTargets
-      .map((target) => files.find((f) => f.slug === target))
-      .filter((f): f is FileData => f !== undefined && isRealNote(f.slug as string | undefined))
-
-    const seen = new Set<string>([currentSlug])
-    const related: FileData[] = []
-    for (const f of [...outgoing, ...backlinks]) {
-      const slug = f.slug as string
-      if (seen.has(slug)) continue
-      seen.add(slug)
-      related.push(f)
-      if (related.length >= 4) break
-    }
-
-    if (related.length === 0) return <></>
+    const related = scoreRelated(self, notes, backlinkSlugs)
+      .filter((r) => !(opts.excludeBacklinks && backlinkSlugs.has(r.note.slug)))
+      .slice(0, opts.limit)
+    if (related.length === 0) return null
 
     return (
       <div class={`${displayClass ?? ""} related-notes`}>
-        <h3>Related Notes</h3>
-        <div class="related-notes-grid">
-          {related.map((f) => (
-            <a class="related-note-card" href={resolveRelative(currentSlug, f.slug as string)}>
-              <span class="related-note-cat">{getCategoryName((f.slug as string) ?? "")}</span>
-              <span class="related-note-title">
-                {(f.frontmatter as { title?: string } | undefined)?.title ?? "Untitled"}
-              </span>
-            </a>
+        <h3>Related</h3>
+        <ul>
+          {related.map(({ note }) => (
+            <li>
+              <a class="internal" href={resolveRelative(currentSlug, note.slug)}>
+                {note.title}
+              </a>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     )
   }
 
   RelatedNotes.css = style
+  RelatedNotes.afterDOMLoaded = graphPanelScript
   return RelatedNotes
-}) satisfies QuartzComponentConstructor
+}) satisfies QuartzComponentConstructor<Partial<RelatedNotesOptions>>

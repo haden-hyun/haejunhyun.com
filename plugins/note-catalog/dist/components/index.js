@@ -34,9 +34,6 @@ function resolveRelative(current, target) {
 // src/components/styles/noteCatalog.scss
 var noteCatalog_default = ".note-catalog {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-catalog .note-catalog-title {\n  margin: 0;\n}\n.note-catalog .note-catalog-path {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  letter-spacing: 0.06em;\n  color: var(--gray);\n  word-break: break-all;\n}\n.note-catalog .note-catalog-path:hover {\n  color: var(--secondary);\n}\n.note-catalog .note-catalog-list {\n  margin: 0.7rem 0 0;\n  padding: 0;\n  list-style: none;\n  min-height: 0;\n  overflow-y: auto;\n}\n.note-catalog .note-catalog-link {\n  display: block;\n  padding: 4px 0 4px 0.6rem;\n  border-left: 2px solid transparent;\n  line-height: 1.45;\n  word-break: keep-all;\n  transition: color var(--dur-fast) var(--ease);\n}\n.note-catalog .note-catalog-link.active {\n  color: var(--secondary);\n  font-weight: 600;\n  border-left-color: var(--secondary);\n}\n.note-catalog .note-catalog-index {\n  margin-right: 0.4em;\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n.note-catalog .note-catalog-more {\n  margin-top: 0.9rem;\n  padding-top: 0.7rem;\n  border-top: 1px solid var(--lightgray);\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-catalog .note-catalog-more:hover {\n  color: var(--secondary);\n}";
 
-// src/components/scripts/graphFold.inline.ts
-var graphFold_inline_default = 'document.addEventListener("nav",()=>{let n=document.querySelector(".graph");if(!n)return;let e=n.querySelector("h3");if(!e||(n.classList.add("folded"),e.setAttribute("aria-expanded","false"),e.dataset.foldWired==="true"))return;e.dataset.foldWired="true",e.setAttribute("role","button"),e.setAttribute("tabindex","0");let r=()=>{let t=n.classList.toggle("folded");e.setAttribute("aria-expanded",String(!t))},d=t=>{t.key!=="Enter"&&t.key!==" "||(t.preventDefault(),r())};e.addEventListener("click",r),e.addEventListener("keydown",d),window.addCleanup(()=>{e.removeEventListener("click",r),e.removeEventListener("keydown",d)})});\n';
-
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
@@ -161,7 +158,6 @@ var NoteCatalog_default = ((userOpts) => {
     ] });
   };
   NoteCatalog.css = noteCatalog_default;
-  NoteCatalog.beforeDOMLoaded = graphFold_inline_default;
   return NoteCatalog;
 });
 

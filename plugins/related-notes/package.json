@@ -1,7 +1,7 @@
 {
   "name": "@haejunhyun/related-notes",
   "version": "0.1.0",
-  "description": "Note detail page RelatedNotes — merges outgoing wikilinks and backlinks into a 2-up card grid (up to 4) at the bottom of the note body. Complements (not replaces) the built-in right-sidebar Backlinks list.",
+  "description": "Right-sidebar Related list — ranks notes by direct link, same series (by episode distance) and shared concept tags (idf-weighted, folder-mirror tags excluded). Also strips the sidebar local graph panel, keeping only the ⌘G global graph modal.",
   "type": "module",
   "license": "MIT",
   "private": true,
@@ -55,12 +55,15 @@
     "dependencies": [],
     "defaultOrder": 15,
     "defaultEnabled": true,
-    "defaultOptions": {},
+    "defaultOptions": {
+      "limit": 5,
+      "excludeBacklinks": true
+    },
     "components": {
       "RelatedNotes": {
         "displayName": "Related Notes",
-        "defaultPosition": "afterBody",
-        "defaultPriority": 45
+        "defaultPosition": "right",
+        "defaultPriority": 40
       }
     }
   }
