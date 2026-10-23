@@ -1,15 +1,9 @@
-// 3D ASCII 색소폰 — 빌드 시 첫 프레임 프리렌더와 브라우저 애니메이션이 같은 함수를 쓴다.
-// 주의: 두 함수는 toString()으로 인라인 스크립트에 직렬화된다. 바깥 식별자·import를 참조하지 말 것.
+// 음표로 그린 색소폰 — 빌드 시 정지 자세 프리렌더(SVG)와 브라우저 캔버스가 같은 함수를 쓴다.
+// 주의: 함수들은 toString()으로 인라인 스크립트에 직렬화된다. 바깥 식별자·import를 참조하지 말 것(상수는 인자로).
 
 export interface SaxModel {
   pts: Float32Array
   bell: [number, number, number]
-}
-
-export interface SaxBuffers {
-  zb?: Float32Array
-  br?: Float32Array
-  fxg?: Float32Array
 }
 
 export const SAX_REST = { ay: -0.35, ax: -0.25 }
@@ -107,32 +101,79 @@ export function buildSax(): SaxModel {
     for (let a = 0; a < 1; a += 0.02) {
       for (let b = 0; b < Math.PI * 2; b += 0.12) {
         const rr = 0.06 * a
-        push(rr * Math.cos(b), y + rr * Math.sin(b), -(r + 0.015) - 0.01 * (1 - a), 0, 0, -1, 1)
+        push(rr * Math.cos(b), y + rr * Math.sin(b), -(r + 0.015) - 0.01 * (1 - a), 0, 0, -1, 4)
       }
     }
   })
   return { pts: Float32Array.from(P), bell: [e[0]!, e[1]! + 0.04, e[2]!] }
 }
 
-/** 회전각(ay, ax)과 시간으로 본체(ink)·소리 파티클(fx) 두 레이어의 80×44 글자 화면을 만든다. */
-export function renderSax(
-  sax: SaxModel,
-  buf: SaxBuffers,
+/** 래스터 결과. 셀마다 밝기(v, 비어 있으면 -1)·최전면 재질(m)·정반사(s). */
+export interface SaxRaster {
+  zb: Float32Array
+  br: Float32Array
+  sp: Float32Array
+  mt: Uint8Array
+  v: Float32Array
+  s: Float32Array
+  m: Uint8Array
+  proj: (x: number, y: number, z: number) => [number, number, number]
+}
+
+/** 정지 자세 실루엣이 rows행을 꽉 채우는 배율과 격자 원점. */
+export interface SaxFit {
+  scl: number
+  cols: number
+  cx: number
+  cy: number
+}
+
+/** 칠할 글자 하나: x·y(px), 문자, 단(0 그림자 · 1 가운데 · 2 밝은 면 · 3 벨), 물결이 지나는 중인지. */
+export type SaxGlyph = [number, number, string, number, boolean]
+
+/** 그리기 상수. 주의: 아래 함수들은 이 객체를 인자로만 받는다(인라인 직렬화). */
+export const SAX_CFG = {
+  cw: 4.6, // 셀 가로 피치 — 기호 사이 숨 쉴 틈
+  ch: 8.2,
+  rows: 41,
+  glyphTop: 1.5, // 글자 위 여백 — 캔버스를 이만큼 올려 칠해진 윗끝 = 탭 윗끝
+  glyphBottom: 3.0,
+  keyY: [0.78, 0.62, 0.46, 0.3, 0.14, -0.02, -0.18],
+  // 키 7개는 모두 몸통 앞면 원판. 맨 위(넥 쪽)를 옥타브 키 자리로 보고 ♭, 아래 6개 = 왼손 H·A·E / 오른손 J·U·N
+  keyChars: ["♭", "H", "A", "E", "J", "U", "N"],
+}
+
+/** 회전·투영·램버트+정반사로 셀별 커버리지·밝기·최전면 재질·정반사를 굽는다. */
+export function rasterSax(
+  model: SaxModel,
+  buf: Partial<SaxRaster>,
+  C: number,
+  R: number,
+  cxp: number,
+  cyp: number,
   ay: number,
   ax: number,
-  time: number,
-): { ink: string; fx: string } {
-  const COLS = 80
-  const ROWS = 44
+  scl: number,
+): SaxRaster {
   const SX = 2
   const SY = 3
-  const W = COLS * SX
-  const H = ROWS * SY
-  const ramp = "·.-:~;+=*o%#@"
-  const zb = buf.zb || (buf.zb = new Float32Array(W * H))
-  const br = buf.br || (buf.br = new Float32Array(W * H))
+  const W = C * SX
+  const H = R * SY
+  if (!buf.zb || buf.zb.length !== W * H) {
+    buf.zb = new Float32Array(W * H)
+    buf.br = new Float32Array(W * H)
+    buf.sp = new Float32Array(W * H)
+    buf.mt = new Uint8Array(W * H)
+    buf.v = new Float32Array(C * R)
+    buf.s = new Float32Array(C * R)
+    buf.m = new Uint8Array(C * R)
+  }
+  const zb = buf.zb
+  const br = buf.br!
+  const sp = buf.sp!
+  const mt = buf.mt!
   zb.fill(0)
-  const P = sax.pts
+  const P = model.pts
   const cy = Math.cos(ay)
   const sy = Math.sin(ay)
   const cx = Math.cos(ax)
@@ -142,7 +183,7 @@ export function renderSax(
   const Hx = L[0]! / hl
   const Hy = L[1]! / hl
   const Hz = (L[2]! - 1) / hl
-  const proj = (x: number, y: number, z: number) => {
+  const proj = (x: number, y: number, z: number): [number, number, number] => {
     x -= 0.12
     y -= 0.24
     const x1 = x * cy + z * sy
@@ -150,7 +191,7 @@ export function renderSax(
     const y2 = y * cx - z1 * sx
     const z2 = y * sx + z1 * cx
     const d = 1 / (z2 + 4.2)
-    return [COLS / 2 + 74 * 1.6667 * x1 * d, ROWS / 2 - 74 * y2 * d, d]
+    return [cxp + scl * 1.6667 * x1 * d, cyp - scl * y2 * d, d]
   }
   for (let i = 0; i < P.length; i += 7) {
     const pr = proj(P[i]!, P[i + 1]!, P[i + 2]!)
@@ -160,81 +201,146 @@ export function renderSax(
     nz = P[i + 4]! * sx + nz * cx
     const lam = Math.max(0, nx * L[0]! + ny * L[1]! + nz * L[2]!)
     const spec = Math.pow(Math.max(0, nx * Hx + ny * Hy + nz * Hz), 20)
-    const m = P[i + 6]
+    const m = P[i + 6]!
     let b = 0.06 + 0.8 * lam + 0.5 * spec
     if (nz > 0.05 && m !== 2) b *= 0.35
     if (m === 2) b = 0.32
     else if (m === 3) b = 0.2 + 0.3 * lam
-    else if (m === 1) b = Math.min(1, b + 0.25)
-    const sc = Math.round(pr[0]! * SX)
-    const sr = Math.round(pr[1]! * SY)
-    const d = pr[2]!
-    for (let dy = 0; dy < 2; dy++)
+    else if (m === 1 || m === 4) b = Math.min(1, b + 0.25)
+    const sc = Math.round(pr[0] * SX)
+    const sr = Math.round(pr[1] * SY)
+    for (let dy = 0; dy < 2; dy++) {
       for (let dx = 0; dx < 2; dx++) {
         const c = sc + dx
         const r = sr + dy
         if (c < 0 || c >= W || r < 0 || r >= H) continue
         const k = r * W + c
-        if (d > zb[k]!) {
-          zb[k] = d
+        if (pr[2] > zb[k]!) {
+          zb[k] = pr[2]
           br[k] = b > 1 ? 1 : b
+          sp[k] = nz > 0.05 ? 0 : spec
+          mt[k] = m
         }
-      }
-  }
-  const fxg = buf.fxg || (buf.fxg = new Float32Array(COLS * ROWS))
-  fxg.fill(0)
-  const bp = proj(sax.bell[0], sax.bell[1], sax.bell[2])
-  const streams = [
-    { dx: -3, ph: 0, sp: 0.16 },
-    { dx: 1.5, ph: 2.1, sp: 0.21 },
-    { dx: 5, ph: 4.2, sp: 0.13 },
-  ]
-  for (const s of streams) {
-    const amp = 0.6 + 0.4 * Math.sin(time * 0.8 + s.ph)
-    for (let j = 0; j < 14; j++) {
-      const f = (time * s.sp + j / 14 + s.ph) % 1
-      const c = Math.round(
-        bp[0]! + s.dx + f * 6 + Math.sin(f * 6 + s.ph + time * 0.6) * (0.6 + f * 2.2),
-      )
-      const r = Math.round(bp[1]! - 2 - f * 11)
-      if (c >= 0 && c < COLS && r >= 0 && r < ROWS) {
-        const k = r * COLS + c
-        fxg[k] = fxg[k]! + Math.pow(Math.sin(f * Math.PI), 1.5) * amp
       }
     }
   }
-  const fxc = " ·.:~"
-  let ink = ""
-  let fx = ""
-  for (let r = 0; r < ROWS; r++) {
-    let li = ""
-    let lf = ""
-    for (let c = 0; c < COLS; c++) {
+  const v = buf.v!
+  const s = buf.s!
+  const mm = buf.m!
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
       let n = 0
       let tot = 0
-      for (let a = 0; a < SY; a++)
+      let fd = 0
+      let fm = 0
+      let fs = 0
+      for (let a = 0; a < SY; a++) {
         for (let b2 = 0; b2 < SX; b2++) {
           const k = (r * SY + a) * W + c * SX + b2
           if (zb[k]! > 0) {
             n++
             tot += br[k]!
+            if (zb[k]! > fd) {
+              fd = zb[k]!
+              fm = mt[k]!
+              fs = sp[k]!
+            }
           }
         }
-      const cov = n / (SX * SY)
-      const fv = fxg[r * COLS + c]!
-      if (cov >= 0.34) {
-        li += ramp[Math.min(ramp.length - 1, Math.round((tot / n) * (ramp.length - 1)))]
-        lf += " "
-      } else if (fv > 0.12) {
-        li += " "
-        lf += fxc[Math.min(4, 1 + Math.floor(fv * 4))]
-      } else {
-        li += " "
-        lf += " "
+      }
+      const on = n / (SX * SY) >= 0.34
+      v[r * C + c] = on ? tot / n : -1
+      mm[r * C + c] = fm
+      s[r * C + c] = fs
+    }
+  }
+  buf.proj = proj
+  return buf as SaxRaster
+}
+
+/** 정지 자세 실루엣이 정확히 rows행을 채우는 배율·열 수·원점을 찾는다. */
+export function fitSax(model: SaxModel, raster: typeof rasterSax, rest: { ay: number; ax: number }, rows: number): SaxFit {
+  const bb = (scl: number) => {
+    const b = raster(model, {}, 140, 90, 70, 45, rest.ay, rest.ax, scl)
+    let c0 = 1e9
+    let c1 = -1
+    let r0 = 1e9
+    let r1 = -1
+    for (let r = 0; r < 90; r++) {
+      for (let c = 0; c < 140; c++) {
+        if (b.v[r * 140 + c]! >= 0) {
+          c0 = Math.min(c0, c)
+          c1 = Math.max(c1, c)
+          r0 = Math.min(r0, r)
+          r1 = Math.max(r1, r)
+        }
       }
     }
-    ink += li.replace(/\s+$/, "") + (r < ROWS - 1 ? "\n" : "")
-    fx += lf.replace(/\s+$/, "") + (r < ROWS - 1 ? "\n" : "")
+    return { c0, c1, r0, r1 }
   }
-  return { ink, fx }
+  let b = bb(74)
+  let scl = (74 * rows) / (b.r1 - b.r0 + 1)
+  b = bb(scl)
+  for (let i = 0; i < 6 && b.r1 - b.r0 + 1 !== rows; i++) {
+    const h = b.r1 - b.r0 + 1
+    scl *= (rows / h) * (h < rows ? 1.004 : 0.998)
+    b = bb(scl)
+  }
+  return { scl, cols: b.c1 - b.c0 + 3, cx: 70 - b.c0 + 1, cy: 45 - b.r0 }
+}
+
+/**
+ * 한 프레임의 글자 목록. 문자는 밝기가 아니라 부위·칸 위치로 정한다(밝기 램프 문법을 쓰지 않는다).
+ * 관 = ♩♪♫♬ 칸 고정 패턴, 벨 안·벨 테 윗쪽 = ♫, 명암 = 단(색), 물결 = 한 단 위 + 크게.
+ */
+export function composeSax(
+  model: SaxModel,
+  raster: typeof rasterSax,
+  buf: Partial<SaxRaster>,
+  fit: SaxFit,
+  cfg: typeof SAX_CFG,
+  ay: number,
+  ax: number,
+  sweepAt: (x: number) => number,
+): { glyphs: SaxGlyph[]; keys: [number, number][] } {
+  const C = fit.cols
+  const R = cfg.rows
+  const ras = raster(model, buf, C, R, fit.cx, fit.cy, ay, ax, fit.scl)
+  const bell = ras.proj(model.bell[0], model.bell[1], model.bell[2])
+  const on = (c: number, r: number) => c >= 0 && r >= 0 && c < C && r < R && ras.v[r * C + c]! >= 0
+  const glyphs: SaxGlyph[] = []
+  for (let r = 0; r < R; r++) {
+    for (let c = 0; c < C; c++) {
+      const i = r * C + c
+      const v = ras.v[i]!
+      if (v < 0) continue
+      const x = (c + 0.5) * cfg.cw
+      const y = (r + 0.5) * cfg.ch
+      const m = ras.m[i]!
+      const lit = sweepAt(x) > 0.45
+      if (m === 2 || (m === 1 && r < bell[1] - 0.5)) {
+        glyphs.push([x, y, "♫", 3, lit])
+        continue
+      }
+      const ch = "♩♪♫♬"[(c + r * 2) % 4]!
+      if (ras.s[i]! > 0.6) {
+        glyphs.push([x, y, ch, 2, lit])
+        continue
+      }
+      const edge = !on(c - 1, r) || !on(c + 1, r) || !on(c, r - 1) || !on(c, r + 1)
+      if (edge) {
+        glyphs.push([x, y, ch, 1, lit])
+        continue
+      }
+      let tier = v < 0.33 ? 0 : v < 0.66 ? 1 : 2
+      if (lit) tier = Math.min(2, tier + 1)
+      glyphs.push([x, y, ch, tier, lit])
+    }
+  }
+  const keys = cfg.keyY.map((y): [number, number] => {
+    const r0 = 0.07 + 0.075 * ((0.95 - y) / 1.5)
+    const p = ras.proj(0, y, -(r0 + 0.02))
+    return [p[0] * cfg.cw, p[1] * cfg.ch]
+  })
+  return { glyphs, keys }
 }

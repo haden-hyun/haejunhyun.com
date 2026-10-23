@@ -4,27 +4,30 @@
 $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 
 .home-hero {
-  display: flex;
-  align-items: center;
-  gap: 24px 48px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(440px, 38%, 600px) auto;
+  grid-template-areas: "text shelf sax";
+  align-items: end;
+  gap: 24px 40px;
   padding: 56px 0 88px;
 
+  @media all and (max-width: 1279px) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "text text" "shelf sax";
+  }
+
   @media all and (max-width: 800px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "sax" "text" "shelf";
+    gap: 18px;
     padding: 12px 0 56px;
   }
 }
 
 .hero-text {
-  flex: 1 1 420px;
+  grid-area: text;
+  align-self: center;
   min-width: 0;
-
-  // 주의: 세로 배치에선 flex-basis가 높이가 되어 아래 빈 공간이 생긴다.
-  @media all and (max-width: 800px) {
-    flex-basis: auto;
-  }
 }
 
 .hero-headline {
@@ -131,60 +134,500 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   text-align: right;
 }
 
-.hero-sax-figure {
-  flex: 0 0 auto;
-  margin: 0;
-
-  @media all and (max-width: 800px) {
-    order: -1;
-    margin: 0 auto;
-  }
+// 노트 선반 — 노트 1편 = 등 1개. 배치는 스크립트(균등 분할 + 단별 양쪽 맞춤), JS가 없으면 줄바꿈 목록.
+// 입체는 그림자·그라데이션 없이 헤어라인과 토큰 혼합색만(DESIGN-SYSTEM §4.9 히어로 예외 참고).
+.hero-shelf-wrap {
+  grid-area: shelf;
+  min-width: 0;
 }
 
-.hero-sax {
+.hero-shelf {
+  --sp-face: color-mix(in srgb, var(--gray) 9%, var(--light));
+  --sp-hi: color-mix(in srgb, var(--light) 60%, #fff);
+  --sp-lo: color-mix(in srgb, var(--gray) 48%, var(--light));
+  --sp-top: color-mix(in srgb, var(--gray) 22%, var(--light));
   position: relative;
-  width: 340px;
-  height: 336px;
-  cursor: grab;
-  touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  align-items: flex-end;
 
-  &.is-dragging {
-    cursor: grabbing;
+  &:not(.is-laid) {
+    min-height: var(--shelf-h);
   }
 
-  @media all and (max-width: 800px) {
-    width: 250px;
-    height: 250px;
+  &.is-laid {
+    display: block;
   }
 }
 
-.hero-sax-ink,
-.hero-sax-fx {
+:root[saved-theme="dark"] .hero-shelf {
+  --sp-hi: color-mix(in srgb, var(--gray) 32%, var(--light));
+}
+
+.hero-spine {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 7px;
+  height: 92px;
+  background: var(--sp-face);
+  border-left: 1px solid var(--sp-hi);
+  border-right: 1px solid var(--sp-lo);
+  text-decoration: none;
+  transition: transform var(--dur-fast) $ease, background-color var(--dur-fast) $ease;
+
+  .is-laid & {
+    position: absolute;
+  }
+
+  // 윗면 두께
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: -1px;
+    top: -3px;
+    height: 3px;
+    background: var(--sp-top);
+    transform: skewX(-45deg);
+    transform-origin: bottom left;
+  }
+
+  &.is-new {
+    background: color-mix(in srgb, var(--secondary) 12%, var(--light));
+    border-right-color: var(--secondary);
+    transform: translateY(-8px);
+
+    &::before {
+      background: color-mix(in srgb, var(--secondary) 35%, var(--light));
+    }
+
+    .hero-spine-band {
+      border-color: var(--secondary);
+    }
+  }
+
+  &:hover,
+  &.is-hot,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--secondary) 16%, var(--light));
+    border-right-color: var(--secondary);
+    transform: translateY(-14px);
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--light), 0 0 0 3.5px var(--secondary);
+  }
+}
+
+.hero-spine-no {
   position: absolute;
-  inset: 0;
-  margin: 0;
-  font-family: var(--codeFont);
-  font-size: 7px;
-  line-height: 7.6px;
-  letter-spacing: 0.02px;
-  white-space: pre;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  writing-mode: vertical-rl;
+  font: 700 6.5px/1 var(--codeFont);
+  letter-spacing: 0.04em;
+  color: var(--gray);
+  pointer-events: none;
+}
+
+.hero-spine-band {
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  top: 22%;
+  height: 3px;
+  border-top: 1px solid var(--sp-lo);
+  border-bottom: 1px solid var(--sp-lo);
+  pointer-events: none;
+}
+
+.hero-spine-foot {
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 50%;
+  background: var(--sp-lo);
+  pointer-events: none;
+}
+
+.hero-divider {
+  position: absolute;
+  box-sizing: border-box;
+  background: var(--light);
+  border: 1px solid var(--sp-lo);
+  border-bottom: 0;
+}
+
+.hero-tab {
+  position: absolute;
+  z-index: 2;
+  height: 14px;
+  padding: 0 4px 0 5px;
+  font: 700 9px/13px var(--codeFont);
+  letter-spacing: 0.04em;
+  color: var(--darkgray);
+  white-space: nowrap;
+  background: var(--light);
+  border: 1px solid var(--sp-lo);
+  border-left: 0;
+  border-radius: 0 3px 3px 0;
   pointer-events: none;
 
-  @media all and (max-width: 800px) {
-    font-size: 5.2px;
-    line-height: 5.65px;
+  &.is-cont {
+    border-style: dashed;
+    border-left: 0;
+  }
+
+  &.is-arc {
+    color: var(--secondary);
+    border-color: var(--secondary);
   }
 }
 
-.hero-sax-ink {
-  color: var(--secondary);
+.hero-cap {
+  position: absolute;
+  z-index: 1;
+  height: 3px;
+  border-radius: 1px;
+  background: var(--sp-lo);
+  pointer-events: none;
 }
 
-// 소리 파티클 — 본체보다 연한 블루. 장식(aria-hidden)이라 대비 요구 없음.
-.hero-sax-fx {
-  color: color-mix(in srgb, var(--secondary) 50%, var(--light));
+.hero-board,
+.hero-front {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.hero-board {
+  height: 1px;
+  background: var(--gray);
+  opacity: 0.55;
+
+  &.is-lower {
+    opacity: 0.28;
+  }
+}
+
+.hero-front {
+  height: 3px;
+  background: color-mix(in srgb, var(--gray) 14%, var(--light));
+}
+
+// 음표로 그린 색소폰 — 정지 자세 SVG를 먼저 보이고, 캔버스가 그려지면 갈아 끼운다.
+// 명암 3단은 모두 배경 대비 4.5 이상(라이트 15.6/6.17/4.99, 다크 4.52/8.00/15.9).
+.hero-sax {
+  --t0: var(--dark);
+  --t1: var(--secondary);
+  --t2: color-mix(in srgb, var(--secondary) 90%, var(--light));
+  --tb: var(--dark);
+  grid-area: sax;
+  position: relative;
+  justify-self: end;
+  width: var(--sax-w);
+  height: var(--box-h);
+  touch-action: pan-y;
+
+  @media all and (max-width: 800px) {
+    justify-self: center;
+    width: calc(260px * var(--sax-ar));
+    height: 260px;
+  }
+}
+
+:root[saved-theme="dark"] .hero-sax {
+  --t0: color-mix(in srgb, var(--secondary) 70%, var(--light));
+  --t2: var(--dark);
+}
+
+// 글자 위 여백만큼 올려 칠해진 윗끝 = 첫 칸막이 탭 윗끝, 아래끝 = 선반 바닥 괘선
+.hero-sax-pre,
+.hero-sax-cv,
+.hero-keys {
+  position: absolute;
+  left: 0;
+  top: calc(-1 * var(--g-top));
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--sax-ar);
+
+  @media all and (max-width: 800px) {
+    top: 0;
+  }
+}
+
+.hero-sax-pre {
+  overflow: visible;
+  font-family: "Noto Music", sans-serif;
+  font-size: 7.5px;
+  text-anchor: middle;
+  dominant-baseline: central;
+
+  .t0 {
+    fill: var(--t0);
+  }
+  .t1 {
+    fill: var(--t1);
+  }
+  .t2 {
+    fill: var(--t2);
+  }
+  .t3 {
+    fill: var(--tb);
+  }
+  .k {
+    font: 800 11.5px Inter, var(--bodyFont);
+    fill: var(--t1);
+  }
+  .k.is-music {
+    font-family: "Noto Music", sans-serif;
+    font-size: 12px;
+  }
+  .k.is-pressed {
+    fill: var(--tb);
+  }
+
+  .is-live & {
+    visibility: hidden;
+  }
+}
+
+.hero-sax-cv {
+  cursor: grab;
+  visibility: hidden;
+
+  .is-live & {
+    visibility: visible;
+  }
+
+  .is-dragging & {
+    cursor: grabbing;
+  }
+}
+
+.hero-keys {
+  pointer-events: none;
+}
+
+.hero-key {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: help;
+  pointer-events: auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 1px;
+  }
+}
+
+.hero-keytip {
+  position: absolute;
+  z-index: 3;
+  margin-top: calc(-1 * var(--g-top));
+  transform: translate(18px, -50%);
+  padding: 3px 8px;
+  font: 500 12px var(--bodyFont);
+  white-space: nowrap;
+  color: var(--darkgray);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 6px;
+  pointer-events: none;
+
+  b {
+    color: var(--dark);
+  }
+}
+
+// 캔버스가 테마 색을 읽어 가는 견본(화면에 보이지 않음)
+.hero-tone {
+  display: none;
+
+  &.t0 {
+    color: var(--t0);
+  }
+  &.t1 {
+    color: var(--t1);
+  }
+  &.t2 {
+    color: var(--t2);
+  }
+  &.tb {
+    color: var(--tb);
+  }
+}
+
+// 노트 카드 — 등을 누르면 바로 이동하지 않고 요약을 보여 준다. DIVE IN만 이동.
+.hero-card {
+  width: min(520px, calc(100vw - 32px));
+  max-height: min(80dvh, 640px);
+  padding: 0;
+  color: var(--darkgray);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: 14px;
+
+  &::backdrop {
+    background: rgba(10, 16, 28, 0.42);
+  }
+
+  &[open] {
+    animation: hero-card-in var(--dur-fast) $ease;
+  }
+
+  &.is-sheet {
+    width: 100%;
+    max-width: 100%;
+    margin: auto 0 0;
+    max-height: 75dvh;
+    border-bottom: 0;
+    border-radius: 16px 16px 0 0;
+
+    .hero-card-in {
+      padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .hero-card-handle {
+      display: block;
+    }
+
+    .hero-card-actions {
+      flex-wrap: wrap;
+    }
+
+    .hero-card-dive {
+      order: -1;
+      flex: 1 0 100%;
+      justify-content: center;
+      min-height: 48px;
+    }
+  }
+}
+
+.hero-card-in {
+  display: grid;
+  gap: 10px;
+  padding: 22px 22px 18px;
+}
+
+.hero-card-handle {
+  display: none;
+  width: 44px;
+  height: 5px;
+  margin: 0 auto 2px;
+  border-radius: 3px;
+  background: var(--lightgray);
+  cursor: grab;
+  touch-action: none;
+}
+
+.hero-card-eyebrow,
+.hero-card-meta {
+  margin: 0;
+  font: 400 12px var(--codeFont);
+  letter-spacing: 0.04em;
+  color: var(--gray);
+}
+
+.hero-card-title {
+  margin: 0;
+  font-family: var(--headerFont);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--dark);
+  outline: none;
+}
+
+.hero-card-desc {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--darkgray);
+  word-break: keep-all;
+}
+
+.hero-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+
+  button {
+    min-height: 40px;
+    padding: 0 12px;
+    font: 500 13px var(--bodyFont);
+    color: var(--darkgray);
+    background: none;
+    border: 1px solid var(--lightgray);
+    border-radius: 9px;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+  }
+}
+
+.hero-card-gap {
+  flex: 1 1 auto;
+}
+
+// DIVE IN = 행위 축(--accent-action)의 첫 적용처
+.hero-card-dive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 18px;
+  font-family: var(--headerFont);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--light);
+  text-decoration: none;
+  background: var(--accent-action);
+  border-radius: 9px;
+}
+
+:root.hero-locked {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+@keyframes hero-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-spine,
+  .hero-card[open] {
+    transition: none;
+    animation: none;
+  }
 }
 
 // 첫 진입 연출 — 세션당 1회(data-hero-swept), 모션 감소 설정이면 생략.
