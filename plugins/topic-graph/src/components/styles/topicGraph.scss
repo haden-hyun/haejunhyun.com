@@ -1,0 +1,159 @@
+// 색은 theme.colors 토큰에서만 온다. 구조선·주변 노트는 장식이라 대비 요구가 없다.
+.topic-graph {
+  --tg-edge: color-mix(in srgb, var(--lightgray), var(--gray) 22%);
+  --tg-mute: color-mix(in srgb, var(--lightgray), var(--gray) 45%);
+  --tg-halo: var(--island-bg, var(--light));
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  .topic-graph-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  // 패널 라벨 조판은 custom.scss가 SPECS·CATALOG·TOC·Backlinks와 함께 정한다.
+  .topic-graph-title {
+    margin: 0;
+  }
+
+  .topic-graph-topic {
+    font-size: 0.72rem;
+    color: var(--gray);
+  }
+
+  .topic-graph-global {
+    margin-left: auto;
+    padding: 0 0.35rem;
+    border: 1px solid var(--lightgray);
+    border-radius: 4px;
+    background: none;
+    color: var(--gray);
+    font-family: var(--codeFont);
+    font-size: 0.68rem;
+    line-height: 1.6;
+    cursor: pointer;
+    transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+
+    &:hover {
+      color: var(--secondary);
+      border-color: var(--secondary);
+    }
+  }
+
+  .topic-graph-box {
+    position: relative;
+    margin-top: 0.5rem;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+.tg-e {
+  fill: none;
+}
+.tg-tree {
+  stroke: var(--tg-edge);
+  stroke-width: 0.8;
+}
+.tg-link,
+.tg-series {
+  stroke: var(--gray);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+.tg-series {
+  stroke-dasharray: 3 2.5;
+}
+.tg-link.hot,
+.tg-series.hot {
+  stroke: var(--secondary);
+  stroke-width: 1.5;
+  opacity: 1;
+}
+
+.tg-topic,
+.tg-folder {
+  fill: var(--tg-halo);
+  stroke: var(--gray);
+  stroke-width: 1.1;
+}
+.tg-folder.here {
+  stroke: var(--dark);
+  stroke-width: 1.5;
+}
+.tg-current-ring {
+  fill: none;
+  stroke: var(--secondary);
+  stroke-width: 1.5;
+}
+.tg-current {
+  fill: var(--secondary);
+}
+.tg-direct {
+  fill: var(--tg-halo);
+  stroke: var(--secondary);
+  stroke-width: 1.8;
+}
+.tg-sibling {
+  fill: var(--darkgray);
+}
+.tg-other {
+  fill: var(--tg-mute);
+}
+
+.tg-n {
+  cursor: pointer;
+  outline: none;
+
+  &.current {
+    cursor: default;
+  }
+}
+.tg-hit {
+  fill: transparent;
+}
+.tg-n:focus-visible .tg-hit,
+.tg-n.armed .tg-hit {
+  stroke: var(--secondary);
+  stroke-width: 1.2;
+}
+
+.tg-label {
+  font-family: var(--bodyFont);
+  fill: var(--gray);
+  paint-order: stroke;
+  stroke: var(--tg-halo);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  pointer-events: none;
+
+  &.here {
+    fill: var(--dark);
+    font-weight: 700;
+  }
+}
+
+// 툴팁은 잉크 반전 칩 — 바탕과 글자가 서로의 토큰이라 두 테마 모두 대비가 유지된다.
+.topic-graph-tip {
+  position: absolute;
+  z-index: 3;
+  max-width: 14rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: var(--dark);
+  color: var(--light);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  pointer-events: none;
+}
+.topic-graph-tip-tags {
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+}
