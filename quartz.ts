@@ -25,7 +25,12 @@ if (backlinks) {
       : (backlinks.component as QuartzComponent)
   const mobile = MobileOnly(instance)
   const content = layout.byPageType.content
-  if (content) content.afterBody = [...(content.afterBody ?? []), mobile]
+  if (content) {
+    // 시리즈 페이저 바로 뒤, 댓글(giscus) 앞.
+    const after = content.afterBody ?? []
+    const at = after.findIndex((c) => (c.displayName ?? c.name) === "SeriesPager")
+    content.afterBody = at >= 0 ? [...after.slice(0, at + 1), mobile, ...after.slice(at + 1)] : [...after, mobile]
+  }
 }
 const dispatcher = config.plugins.emitters.findIndex((e) => e.name === "PageTypeDispatcher")
 if (dispatcher >= 0)

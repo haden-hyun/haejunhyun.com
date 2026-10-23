@@ -647,6 +647,11 @@ a.tag-link {
   }
 }
 
+// 모바일 Backlinks(quartz.ts가 본문 뒤에 넣는다) — 시리즈 페이저·댓글과 같은 블록 간격.
+.page-footer .backlinks {
+  margin-top: 3rem;
+}
+
 // ── 8. 우측 사이드바 — TOC / GRAPH ────────────────────────────────────────
 // 순서는 quartz.config.yaml의 layout priority가 정하고, 여기선 높이 배분만 고정한다.
 //
