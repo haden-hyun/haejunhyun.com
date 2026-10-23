@@ -32,7 +32,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/noteCatalog.scss
-var noteCatalog_default = ".note-catalog {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-catalog .note-catalog-title {\n  margin: 0;\n}\n.note-catalog .note-catalog-path {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  letter-spacing: 0.06em;\n  color: var(--gray);\n  word-break: break-all;\n}\n.note-catalog .note-catalog-path:hover {\n  color: var(--secondary);\n}\n.note-catalog .note-catalog-list {\n  margin: 0.7rem 0 0;\n  padding: 0;\n  list-style: none;\n  min-height: 0;\n  overflow-y: auto;\n}\n.note-catalog .note-catalog-link {\n  display: block;\n  padding: 4px 0 4px 0.6rem;\n  border-left: 2px solid transparent;\n  line-height: 1.45;\n  word-break: keep-all;\n  transition: color var(--dur-fast) var(--ease);\n}\n.note-catalog .note-catalog-link.active {\n  color: var(--secondary);\n  font-weight: 600;\n  border-left-color: var(--secondary);\n}\n.note-catalog .note-catalog-more {\n  margin-top: 0.9rem;\n  padding-top: 0.7rem;\n  border-top: 1px solid var(--lightgray);\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-catalog .note-catalog-more:hover {\n  color: var(--secondary);\n}";
+var noteCatalog_default = ".note-catalog {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-catalog .note-catalog-title {\n  margin: 0;\n}\n.note-catalog .note-catalog-path {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  letter-spacing: 0.06em;\n  color: var(--gray);\n  word-break: break-all;\n}\n.note-catalog .note-catalog-path:hover {\n  color: var(--secondary);\n}\n.note-catalog .note-catalog-list {\n  margin: 0.7rem 0 0;\n  padding: 0;\n  list-style: none;\n  min-height: 0;\n  overflow-y: auto;\n}\n.note-catalog .note-catalog-link {\n  display: block;\n  padding: 4px 0 4px 0.6rem;\n  border-left: 2px solid transparent;\n  line-height: 1.45;\n  word-break: keep-all;\n  transition: color var(--dur-fast) var(--ease);\n}\n.note-catalog .note-catalog-link.active {\n  color: var(--secondary);\n  font-weight: 600;\n  border-left-color: var(--secondary);\n}\n.note-catalog .note-catalog-index {\n  margin-right: 0.4em;\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n.note-catalog .note-catalog-more {\n  margin-top: 0.9rem;\n  padding-top: 0.7rem;\n  border-top: 1px solid var(--lightgray);\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-catalog .note-catalog-more:hover {\n  color: var(--secondary);\n}";
 
 // src/components/scripts/graphFold.inline.ts
 var graphFold_inline_default = 'document.addEventListener("nav",()=>{let n=document.querySelector(".graph");if(!n)return;let e=n.querySelector("h3");if(!e||(n.classList.add("folded"),e.setAttribute("aria-expanded","false"),e.dataset.foldWired==="true"))return;e.dataset.foldWired="true",e.setAttribute("role","button"),e.setAttribute("tabindex","0");let r=()=>{let t=n.classList.toggle("folded");e.setAttribute("aria-expanded",String(!t))},d=t=>{t.key!=="Enter"&&t.key!==" "||(t.preventDefault(),r())};e.addEventListener("click",r),e.addEventListener("keydown",d),window.addCleanup(()=>{e.removeEventListener("click",r),e.removeEventListener("keydown",d)})});\n';
@@ -48,6 +48,48 @@ function isRealNote(slug) {
 }
 function isListedNote(file) {
   return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
+
+// ../_shared/series.ts
+function seriesOf(file) {
+  const raw = file.frontmatter?.series;
+  return raw == null ? "" : String(raw).trim();
+}
+function seriesIndexOf(file) {
+  const raw = file.frontmatter?.series_index;
+  if (typeof raw === "number") return Number.isFinite(raw) ? raw : void 0;
+  if (typeof raw === "string" && raw.trim() !== "") {
+    const index = Number(raw);
+    return Number.isFinite(index) ? index : void 0;
+  }
+  return void 0;
+}
+function seriesLabel(file) {
+  const index = seriesIndexOf(file);
+  return seriesOf(file) && index !== void 0 ? `${index}\uD3B8` : void 0;
+}
+function groupBySeries(sorted) {
+  const groups = [];
+  const bySeries = /* @__PURE__ */ new Map();
+  for (const file of sorted) {
+    const series = seriesOf(file);
+    if (!series) {
+      groups.push({ series: "", items: [file] });
+      continue;
+    }
+    let group = bySeries.get(series);
+    if (!group) {
+      group = { series, items: [] };
+      bySeries.set(series, group);
+      groups.push(group);
+    }
+    group.items.push(file);
+  }
+  const rank = (f3) => seriesIndexOf(f3) ?? Number.POSITIVE_INFINITY;
+  for (const group of bySeries.values()) {
+    group.items.sort((a2, b2) => rank(a2) === rank(b2) ? 0 : rank(a2) < rank(b2) ? -1 : 1);
+  }
+  return groups;
 }
 var l;
 function S(n2) {
@@ -85,7 +127,7 @@ var NoteCatalog_default = ((userOpts) => {
     const currentSlug = fileData.slug;
     if (!currentSlug || !isRealNote(currentSlug)) return /* @__PURE__ */ u2(S, {});
     const parentDir = currentSlug.split("/").slice(0, -1).join("/");
-    const siblings = allFiles.filter((f3) => {
+    const sorted = allFiles.filter((f3) => {
       if (!f3.slug || !isListedNote(f3)) return false;
       return f3.slug.split("/").slice(0, -1).join("/") === parentDir;
     }).sort(
@@ -94,19 +136,24 @@ var NoteCatalog_default = ((userOpts) => {
         sensitivity: "base"
       })
     );
+    const siblings = groupBySeries(sorted).flatMap((g2) => g2.items);
     if (siblings.length === 0) return /* @__PURE__ */ u2(S, {});
     return /* @__PURE__ */ u2("nav", { class: "note-catalog", "aria-label": opts.title, children: [
       /* @__PURE__ */ u2("h2", { class: "note-catalog-title", children: opts.title }),
       parentDir && /* @__PURE__ */ u2("a", { class: "note-catalog-path", href: resolveRelative(currentSlug, `${parentDir}/index`), children: parentDir.split("/").join(" / ") }),
       /* @__PURE__ */ u2("ul", { class: "note-catalog-list", children: siblings.map((f3) => {
         const isCurrent = f3.slug === currentSlug;
+        const label = seriesLabel(f3);
         return /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2(
           "a",
           {
             class: isCurrent ? "note-catalog-link active" : "note-catalog-link",
             href: resolveRelative(currentSlug, f3.slug),
             "aria-current": isCurrent ? "page" : void 0,
-            children: f3.frontmatter?.title ?? f3.slug.split("/").pop()
+            children: [
+              label && /* @__PURE__ */ u2("span", { class: "note-catalog-index", children: label }),
+              f3.frontmatter?.title ?? f3.slug.split("/").pop()
+            ]
           }
         ) }, f3.slug);
       }) }),

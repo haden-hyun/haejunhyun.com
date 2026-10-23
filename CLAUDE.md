@@ -41,13 +41,16 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 로컬 플러그인은 `dist/`가 커밋 대상
 
-`plugins/*` 23종(`_shared` 제외). 각각 독립 npm 패키지다.
+`plugins/*` 24종(`_shared` 제외). 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
 `plugins/_shared/`는 플러그인이 아니라 공유 소스다(노트 판별 `isRealNote`·토픽 표시명·Recent 묶음·`noteMeta`·
 시리즈 편 목록 `series.ts`·상대경로 `path.ts`).
 각 플러그인이 상대 경로로 가져와 dist에 번들한다. **여기를 고치면 가져다 쓰는 플러그인을 전부 재빌드할 것**
 (`grep -l _shared plugins/*/src -r` — `series-nav`·`series-roadmap` 포함). 주의: 가져다 쓰는 플러그인의 tsconfig는 `rootDir: ".."`이어야 dts 빌드가 통과한다.
+
+주의: 폴더 페이지는 `plugins/folder-listing`이 그린다(외부 `folder-page`는 꺼 두고 그 생성 로직만 의존성으로 재사용).
+둘을 함께 켜면 가상 폴더 페이지가 업스트림 본문으로 렌더돼 편 순서·배지가 사라진다.
 
 주의: 루트 `.gitignore`의 `.gitignore` 줄이 하위 `.gitignore`까지 무시해, 일부 플러그인의 `.gitignore`가
 추적되지 않는다(`series-roadmap`·`anim-widgets`의 `obsidian/dist` 무시 규칙 포함). 로컬에선 적용되지만 새 클론에선 없다.

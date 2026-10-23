@@ -50,3 +50,43 @@ export function getSeriesEntries(series: string, allFiles: SeriesFile[]): Series
         a.index - b.index || a.title.localeCompare(b.title, "ko", { numeric: true }),
     )
 }
+
+/** 목록 행 앞 편 번호 — SeriesBox의 위치 표기와 같은 `N편`. 시리즈가 아니거나 번호가 없으면 undefined. */
+export function seriesLabel(file: SeriesFile): string | undefined {
+  const index = seriesIndexOf(file)
+  return seriesOf(file) && index !== undefined ? `${index}편` : undefined
+}
+
+export interface SeriesGroup<T> {
+  /** 시리즈가 아닌 노트는 "" — 그 노트 1편짜리 묶음. */
+  series: string
+  items: T[]
+}
+
+/**
+ * 이미 정렬된 목록에서 같은 시리즈 편을 그 시리즈가 처음 나오는 자리로 모아 series_index 순으로 놓는다.
+ * 나머지 항목의 상대 순서는 그대로다(번호 없는 편은 묶음 끝, 정렬은 안정적).
+ */
+export function groupBySeries<T extends SeriesFile>(sorted: T[]): SeriesGroup<T>[] {
+  const groups: SeriesGroup<T>[] = []
+  const bySeries = new Map<string, SeriesGroup<T>>()
+  for (const file of sorted) {
+    const series = seriesOf(file)
+    if (!series) {
+      groups.push({ series: "", items: [file] })
+      continue
+    }
+    let group = bySeries.get(series)
+    if (!group) {
+      group = { series, items: [] }
+      bySeries.set(series, group)
+      groups.push(group)
+    }
+    group.items.push(file)
+  }
+  const rank = (f: SeriesFile) => seriesIndexOf(f) ?? Number.POSITIVE_INFINITY
+  for (const group of bySeries.values()) {
+    group.items.sort((a, b) => (rank(a) === rank(b) ? 0 : rank(a) < rank(b) ? -1 : 1))
+  }
+  return groups
+}

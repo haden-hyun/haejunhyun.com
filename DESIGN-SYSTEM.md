@@ -275,7 +275,7 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - 형식은 `YYYY-MM-DD`, KST 기준(`formatYmd`). 빌드 머신 시간대와 무관하다.
 - **목록 날짜 `getListDate` = `posted` → `created`** (Recent Notes · Featured · Notes 목적지). Archive는 작성일로 묶고 개정일(`posted`)을 보조 표기한다.
 - **Prev/Next는 `created` 순**이다. 읽는 순서가 목적인데, `posted`는 개정 때 오늘로 덮어써져 개정한 글이 시리즈 맨 뒤로 밀리기 때문이다.
-- 주의: `updated`(note-properties가 `modified`로 매핑)는 작업마다 바뀌므로 정렬에 쓰지 않는다. `modified`는 SPECS `Updated`·content-meta 날짜와 folder/tag 페이지(커뮤니티 플러그인, `defaultDateType`)에만 남아 있다.
+- 주의: `updated`(note-properties가 `modified`로 매핑)는 작업마다 바뀌므로 정렬에 쓰지 않는다. `modified`는 SPECS `Updated`·content-meta 날짜와 folder/tag 페이지 정렬(`defaultDateType`)에만 남아 있다. folder 페이지는 그 위에서 시리즈 편만 다시 모은다(§4.13).
 - 주의: content-meta(모바일 메타 줄)는 외부 플러그인이라 날짜 형식을 locale에 맡긴다. 읽는 시간은 같은 알고리즘이라 숫자가 같다.
 
 ### 4.12 모션
@@ -294,7 +294,12 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - 읽기 진행바·맨 위로 버튼은 노트 페이지에만(컴포넌트가 자동 생성 페이지에선 렌더하지 않는다). 진행바는 rAF 스로틀 + `scaleX`, 맨 위로는 1.5뷰포트 이후 등장.
 - `prefers-reduced-motion: reduce`: CSS 전환·애니메이션·부드러운 스크롤을 즉시 끝낸다(`custom.scss` §13). 스크립트 모션은 각 스크립트가 같은 미디어 쿼리를 읽어 끈다.
 
-### 4.13 시리즈 로드맵
+### 4.13 시리즈 로드맵 · 목록의 편 순서
+
+- 폴더 목록(`plugins/folder-listing`)과 CATALOG는 기존 정렬을 유지하되, 같은 시리즈 편을 **그 시리즈가 기존 정렬에서 처음 나오는 자리**에 `series_index` 오름차순으로 모은다(`_shared/series.ts`의 `groupBySeries`). 비시리즈 노트의 상대 순서는 그대로다.
+- 행 제목 앞에 `N편` — SeriesBox 위치 표기와 같은 문자열(`seriesLabel`, 0편도 `0편`). 번호는 실제 `series_index`(공백 2·4·6 그대로), 분수 `N/M`은 쓰지 않는다. 원고 title에는 번호를 넣지 않는다.
+- `N편`은 색이 아니라 무게로 구분한다: 폴더 목록은 600 `--darkgray` tabular 숫자, CATALOG는 링크 색을 따르고 숫자 폭만 고정. 모션 없음.
+- 시리즈 묶음의 렌더 지점은 `FolderListing.tsx`의 `SeriesRun` 하나다 — 그룹 헤더를 붙일 땐 여기만 바꾼다. tag 페이지와 Archive·Recent(시간축 목록)는 묶지 않는다.
 
 - AA 예외: 카드·칩 호버 강조 중 관련 없는 카드를 `opacity: .38`로 흐리는 것은 호버 동안만의 일시 상태라 AA 4.5에서 뺀다. 평상시 카드는 AA를 지킨다(`plugins/series-roadmap`).
 

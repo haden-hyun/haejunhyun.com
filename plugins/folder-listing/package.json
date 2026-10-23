@@ -1,0 +1,64 @@
+{
+  "name": "@haejunhyun/folder-listing",
+  "version": "0.1.0",
+  "description": "Folder page type that keeps folder-page's virtual pages but lists series notes together in series_index order with an 'N편' badge.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "preact": {
+      "optional": false
+    }
+  },
+  "dependencies": {
+    "@quartz-community/folder-page": "github:quartz-community/folder-page#93304d22e1d7f09f93a33658ec273f7cb8d17793",
+    "@quartz-community/types": "github:quartz-community/types",
+    "hast-util-to-jsx-runtime": "^2.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "preact": "^10.28.2",
+    "sass": "^1.97.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "quartz": {
+    "name": "folder-listing",
+    "displayName": "Folder Listing",
+    "category": [
+      "pageType"
+    ],
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 50,
+    "defaultEnabled": true,
+    "defaultOptions": {
+      "showFolderCount": true,
+      "showSubfolders": true
+    }
+  }
+}

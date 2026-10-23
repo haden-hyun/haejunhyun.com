@@ -9,6 +9,7 @@ import style from "./styles/noteCatalog.scss"
 // @ts-expect-error - Inline script loaded as text by esbuild plugin
 import graphFoldScript from "./scripts/graphFold.inline.ts"
 import { isListedNote, isRealNote } from "../../../_shared/notes"
+import { groupBySeries, seriesLabel } from "../../../_shared/series"
 
 type CatalogPluginData = QuartzPluginData & Record<string, unknown>
 
@@ -38,8 +39,8 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
 
     const parentDir = currentSlug.split("/").slice(0, -1).join("/")
 
-    // 번호 접두사(`1. `, `2. `)가 사용자 의도한 순서라 날짜가 아닌 자연 정렬을 쓴다.
-    const siblings = (allFiles as CatalogPluginData[])
+    // 번호 접두사(`1. `, `2. `)가 사용자 의도한 순서라 날짜가 아닌 자연 정렬을 쓰고, 시리즈 편만 편 순으로 모은다.
+    const sorted = (allFiles as CatalogPluginData[])
       .filter((f) => {
         if (!f.slug || !isListedNote(f)) return false
         return f.slug.split("/").slice(0, -1).join("/") === parentDir
@@ -50,6 +51,7 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
           sensitivity: "base",
         }),
       )
+    const siblings = groupBySeries(sorted).flatMap((g) => g.items)
 
     if (siblings.length === 0) return <></>
 
@@ -64,6 +66,7 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
         <ul class="note-catalog-list">
           {siblings.map((f) => {
             const isCurrent = f.slug === currentSlug
+            const label = seriesLabel(f)
             return (
               <li key={f.slug}>
                 <a
@@ -71,6 +74,7 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
                   href={resolveRelative(currentSlug, f.slug!)}
                   aria-current={isCurrent ? "page" : undefined}
                 >
+                  {label && <span class="note-catalog-index">{label}</span>}
                   {f.frontmatter?.title ?? f.slug!.split("/").pop()}
                 </a>
               </li>

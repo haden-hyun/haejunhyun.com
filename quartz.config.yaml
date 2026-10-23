@@ -223,8 +223,16 @@ plugins:
     enabled: true
   - source: github:quartz-community/content-page
     enabled: true
+  # ./plugins/folder-listing으로 대체됨.
+  # 주의: 둘을 함께 켜지 말 것 — 가상 폴더 페이지는 그것을 만든 pageType의 본문으로 렌더된다.
   - source: github:quartz-community/folder-page
+    enabled: false
+  - source: ./plugins/folder-listing
     enabled: true
+    # 폴더 목록 — 같은 시리즈 편을 series_index 순으로 모으고 `N편`을 단다.
+    options:
+      showFolderCount: true
+      showSubfolders: true
   - source: github:quartz-community/tag-page
     enabled: true
   - source: ./plugins/topics-page

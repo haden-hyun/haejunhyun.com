@@ -49,6 +49,13 @@
     }
   }
 
+  // 편 번호 — 링크 색을 따르고 숫자 폭만 고정한다.
+  .note-catalog-index {
+    margin-right: 0.4em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
   .note-catalog-more {
     margin-top: 0.9rem;
     padding-top: 0.7rem;

@@ -1,0 +1,47 @@
+// 업스트림 folder-page listPage.scss 사본 — 이 플러그인이 FolderContent를 대체하므로 같이 싣는다.
+ul.section-ul {
+  list-style: none;
+  margin-top: 2em;
+  padding-left: 0;
+}
+
+li.section-li {
+  margin-bottom: 1em;
+
+  & > .section {
+    display: grid;
+    grid-template-columns: fit-content(8em) 3fr 1fr;
+
+    @media all and (max-width: 600px) {
+      & > .tags {
+        display: none;
+      }
+    }
+
+    & > .desc > h3 > a {
+      background-color: transparent;
+    }
+
+    & .meta {
+      margin: 0 1em 0 0;
+      opacity: 0.6;
+    }
+  }
+}
+
+.popover .section {
+  grid-template-columns: fit-content(8em) 1fr !important;
+
+  & > .tags {
+    display: none;
+  }
+}
+
+// 편 번호 — 색이 아니라 무게로 구분하고, 숫자 폭을 고정해 편끼리 제목 시작점이 맞는다.
+.page-listing .section .desc h3 .series-index {
+  margin-right: 0.5em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--darkgray);
+  white-space: nowrap;
+}
