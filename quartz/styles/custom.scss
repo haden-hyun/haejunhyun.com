@@ -718,10 +718,15 @@ button.toc-header h3 {
   }
 }
 
-// TOC는 목록 안에서 스크롤하지 않는다 — 길면 island 전체가 스크롤하고 GRAPH가 아래로 밀린다.
+// TOC는 목록 안에서 스크롤하지 않는다 — TOC와 GRAPH가 island에 다 안 들어가면 topic-graph 스크립트가 GRAPH를 숨긴다.
 ul.toc-content.overflow {
   max-height: none;
   overflow: visible;
+}
+
+// 업스트림 TOC 접기는 flex 높이를 줄여 숨기는데, 위에서 TOC를 내용 높이로 고정해 접기가 먹지 않는다 — 목록을 직접 숨긴다.
+ul.toc-content.collapsed {
+  display: none;
 }
 
 .backlinks > ul.overflow {
@@ -817,17 +822,6 @@ ul.toc-content.overflow {
     .toc,
     .topic-graph {
       flex: 0 0 auto;
-    }
-
-    // 긴 TOC로 island가 넘치면 island가 스크롤하고 GRAPH는 바닥에 붙어 늘 보인다(TOC가 그 뒤로 지나간다).
-    // 주의: 음수 bottom·margin은 island 아래 padding(1.25rem)까지 면을 덮으려는 것이다.
-    .topic-graph {
-      position: sticky;
-      bottom: -1.25rem;
-      margin-bottom: -1.25rem;
-      padding-block: 0.6rem 1.25rem;
-      background: var(--island-bg);
-      z-index: 1;
     }
   }
 

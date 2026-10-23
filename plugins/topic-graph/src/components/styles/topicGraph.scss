@@ -7,6 +7,11 @@
   flex-direction: column;
   min-width: 0;
 
+  // 우측 island에 TOC와 함께 다 안 들어갈 때 스크립트가 붙인다.
+  &.tg-overflow {
+    display: none;
+  }
+
   .topic-graph-head {
     display: flex;
     align-items: baseline;

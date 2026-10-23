@@ -5,8 +5,34 @@ function removeUpstreamLocal() {
 }
 removeUpstreamLocal()
 
+// 데스크톱 우측 island에 TOC와 GRAPH가 다 안 들어가면 GRAPH를 숨긴다(⌘G는 남는다). 숨겨도 넘치면 긴 TOC 탓이라 그대로 둔다.
+const DESKTOP = "(min-width: 1201px)"
+function fitRight() {
+  for (const panel of document.querySelectorAll<HTMLElement>(".sidebar.right .topic-graph")) {
+    const island = panel.closest<HTMLElement>(".sidebar")
+    panel.classList.remove("tg-overflow")
+    if (!island || !window.matchMedia(DESKTOP).matches) continue
+    if (island.scrollHeight > island.clientHeight + 1) panel.classList.add("tg-overflow")
+  }
+}
+fitRight()
+let fitFrame = 0
+const queueFit = () => {
+  if (!fitFrame) fitFrame = requestAnimationFrame(() => ((fitFrame = 0), fitRight()))
+}
+window.addEventListener("resize", queueFit, { passive: true })
+document.fonts?.ready.then(queueFit)
+
 function setup() {
   removeUpstreamLocal()
+  fitRight()
+  // TOC 접기·펼치기처럼 TOC 높이가 바뀌면 다시 잰다.
+  const toc = document.querySelector(".sidebar.right .toc")
+  if (toc && "ResizeObserver" in window) {
+    const ro = new ResizeObserver(queueFit)
+    ro.observe(toc)
+    window.addCleanup(() => ro.disconnect())
+  }
   for (const box of document.querySelectorAll<HTMLElement>(".topic-graph-box"))
     for (const svg of box.querySelectorAll("svg")) bind(box, svg)
 }
