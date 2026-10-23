@@ -182,8 +182,9 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
   한 테마에서 쓸 수 있는 블루는 2개뿐. `--dark`(#141d28)는 검정이 아니라 H213의 가장 깊은 잉크다.
 - **bold는 색이 아니라 재질/무게(`--dark`)로 구분한다.** 인라인 코드는 무채 종이 칩, 하이라이트
   (라임, 형광펜 관습)만 예외로 색을 쓴다 — 세 축과는 색상 27° 이상 벌려 둔다(DESIGN-SYSTEM §4.2).
-- 서체: 로고 Anton / 헤딩 Hahmlet / 본문 Noto Sans KR / 코드 JetBrains Mono.
+- 서체: 로고 Anton / 헤딩 Hahmlet / 본문 Inter(라틴)+Noto Sans KR(한글) / 코드 JetBrains Mono.
   주의: `theme.typography`와 `fonts` 플러그인 옵션 **두 곳을 항상 같게** 유지(후자가 최종 결정).
+  예외: 본문 Inter는 `custom.scss`의 `@font-face`로 싣는다(DESIGN-SYSTEM §2.1).
 - **토픽 컬러는 폐지됐다.** 색은 그룹핑엔 강하나 명명엔 약한데 토픽은 명명 문제다.
   식별은 라벨 타이포가 하고, 색은 현재 위치에만 쓴다. 되살리지 말 것.
 - 콜아웃은 색을 쓴다 — 토픽(명명)과 달리 콜아웃은 *가치*라서 색이 맞는 부호다.

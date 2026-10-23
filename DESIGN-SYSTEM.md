@@ -19,7 +19,7 @@
 | ------ | ------------------- | -------------------------------------------- |
 | title  | Anton 400           | 로고만                                       |
 | header | Hahmlet 400/700/900 | 헤딩, 콜아웃 제목, 섹션·패널 라벨, 내비 탭   |
-| body   | Noto Sans KR        | 본문, 사이드바                               |
+| body   | Inter(라틴) + Noto Sans KR(한글) 400/600/700 | 본문, 사이드바, 표, 수식 `\text{}`, 토픽 그리드 설명, anim 라벨 |
 | code   | JetBrains Mono      | 코드, 메타 (한글은 Noto Sans KR 폴백 → §4.4) |
 
 - 로고(Anton)와 헤딩(Hahmlet)을 나눠 브랜드 목소리와 콘텐츠 목소리를 분리한다.
@@ -27,6 +27,21 @@
 - UI 문구는 영문 전용(`locale: en-US`). 원고·히어로 설명문만 한국어.
 - `h1~h6`·`p`·`li`는 `word-break: keep-all` — 한글을 어절 단위로 끊는다.
 - 주의: `theme.typography`와 `fonts` 플러그인 옵션 **두 곳을 항상 같게** (후자가 최종 결정).
+  예외는 body의 Inter 하나 — Google 슬롯이 하나뿐이라 `custom.scss`의 `@font-face`(jsDelivr 고정 버전)로 싣는다.
+
+### 2.1 본문 라틴 — Inter
+
+body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글은 글리프 단위 폴백으로 Noto Sans KR이 그린다.
+
+- 이유: Noto Sans KR의 라틴은 Source Sans를 ~112% 키운 것이라 글자 사이가 헐겁고 낱말 공백이 좁다
+  (낱말 공백 ÷ 글자 옆 여백 1.27, Inter 1.82·Pretendard 1.87). 영문 용어가 낱말 덩어리로 안 읽혔다.
+  콜론도 CJK식이라 `Engine:`에서 기준선 위로 떴다.
+- Inter는 `size-adjust` 없이 한글과 크기가 맞는다(x-height/한글 높이 0.617, Pretendard 0.620).
+  x-height·획이 JetBrains Mono와 거의 같아 인라인 코드 칩과도 높이가 맞는다.
+- Noto Sans KR 700을 함께 싣는다 — 없으면 굵게가 한글만 600으로 그려져 라틴 700과 어긋난다.
+- `·`(U+00B7)는 범위에서 뺐다 — 한글 문장 부호로 쓰인다.
+- 기각: Libre Franklin(Blue Note 계보지만 낱말 공백비 1.44, 104.3% 보정 필요 — 무드로 본문을 고르지 않는다 §7),
+  Pretendard 통째 교체(한글이 4~6% 작고 좁아진다), IBM Plex Sans(라틴이 한글보다 연하다).
 
 ---
 

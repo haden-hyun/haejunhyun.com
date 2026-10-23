@@ -10,6 +10,19 @@
 // 페이지 폭 상한 — §10.4 `.page`가 쓰는 단일 기준값.
 $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 
+// 본문 라틴 전용 Inter — body 스택 맨 앞에 두면 라틴만 가로채고 한글은 Noto Sans KR로 넘어간다.
+// 주의: U+00B7(·)은 한글 문장 부호로 쓰여 범위에서 뺀다. @import는 이 파일 위치에서 무시되므로 @font-face로 싣는다.
+@font-face {
+  font-family: "Inter";
+  src: url("https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.2.8/files/inter-latin-wght-normal.woff2")
+    format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+20AC, U+2122;
+}
+
 // ── 0. 브랜드 토큰 ──────────────────────────────────────────────────────────
 // 색은 새로 정의하지 않고 quartz.config.yaml theme.colors의 별칭만 둔다.
 
