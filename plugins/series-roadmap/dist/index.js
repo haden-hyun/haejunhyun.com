@@ -3646,7 +3646,7 @@ function SeriesRoadmap(userOpts) {
         warn,
         componentData.fileData
       );
-      node.properties = { className: ["series-roadmap"] };
+      node.properties = { className: ["series-roadmap"], id: "series-roadmap" };
       node.children = nav ? [nav] : [];
       return SKIP;
     });
@@ -3663,6 +3663,7 @@ function SeriesRoadmap(userOpts) {
               console.warn(`[series-roadmap] ${file.path}: ${result.error}`);
               return;
             }
+            file.data.seriesRoadmap = result.spec.series;
             parent.children[index] = {
               type: "paragraph",
               data: { hName: "div", hProperties: { dataSeriesRoadmap: JSON.stringify(result.spec) } },

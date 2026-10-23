@@ -299,7 +299,8 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - 폴더 목록(`plugins/folder-listing`)과 CATALOG는 기존 정렬을 유지하되, 같은 시리즈 편을 **그 시리즈가 기존 정렬에서 처음 나오는 자리**에 `series_index` 오름차순으로 모은다(`_shared/series.ts`의 `groupBySeries`). 비시리즈 노트의 상대 순서는 그대로다.
 - 행 제목 앞에 `N편` — SeriesBox 위치 표기와 같은 문자열(`seriesLabel`, 0편도 `0편`). 번호는 실제 `series_index`(공백 2·4·6 그대로), 분수 `N/M`은 쓰지 않는다. 원고 title에는 번호를 넣지 않는다.
 - `N편`은 색이 아니라 무게로 구분한다: 폴더 목록은 600 `--darkgray` tabular 숫자, CATALOG는 링크 색을 따르고 숫자 폭만 고정. 모션 없음.
-- 시리즈 묶음의 렌더 지점은 `FolderListing.tsx`의 `SeriesRun` 하나다 — 그룹 헤더를 붙일 땐 여기만 바꾼다. tag 페이지와 Archive·Recent(시간축 목록)는 묶지 않는다.
+- 시리즈 묶음의 렌더 지점은 `FolderListing.tsx`의 `SeriesRun` 하나다. 한 섹션(폴더 직속 노트)에 비시리즈 노트가 섞이면 **접힌 묶음 카드**(`<details>`, 노트 카드와 같은 보더·반경), 시리즈뿐이면 **펼친 그룹**(좌측 2px 괘선 + 헤더 + 편 행). 헤더는 `시리즈 · N편`(0.73rem `--gray`) + 시리즈명(Hahmlet 700 `--dark`). tag 페이지와 Archive·Recent(시간축 목록)는 묶지 않는다.
+- 카드 링크 `N편부터 읽기 →`(가장 작은 `series_index`)·`로드맵`(펜스가 있는 노트의 `#series-roadmap`)은 **summary 밖 형제**다 — summary 안 링크는 스크린리더에서 버튼 자식으로 묻힌다. 데스크톱은 summary 줄 오른쪽에 겹쳐 놓고, 600px 이하는 summary 아래 줄로 내린다. 모션은 화살표 회전(`--dur-base`)뿐.
 
 - AA 예외: 카드·칩 호버 강조 중 관련 없는 카드를 `opacity: .38`로 흐리는 것은 호버 동안만의 일시 상태라 AA 4.5에서 뺀다. 평상시 카드는 AA를 지킨다(`plugins/series-roadmap`).
 
@@ -324,6 +325,17 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - 본문 폭 손실 0 — column-gap은 그대로, island를 컬럼 안쪽으로 1rem 들인다. 높이는 내용 크기, 상한에서 TOC가 내부 스크롤.
 - 우측 island는 맨 위로 버튼 영역(4.75rem) 위에서 끝난다 — 1652px 미만에선 버튼과 가로로 겹치기 때문.
 - 본문·상단 바·푸터·beforeBody/afterBody는 평면. 기각: 전면 island(카드 3단 중첩·본문 폭 손실), 패널별 island, 다크 표면 상향, 그림자.
+
+### 4.16 폴더 페이지 — 하위 트리 색인
+
+**역할**: 모든 폴더 페이지가 자기 아래 전체를 한 화면에 펼친다(`plugins/folder-listing`). 토픽에서 어느 노트든 1클릭.
+
+- **폴더는 섹션 제목이지 카드가 아니다.** 직계 하위 폴더 = h2(본문 h2 규칙 그대로, 편수 `· N` `--gray`), 그 아래 = h3(0.95rem `--darkgray`, 점선 괘선). 깊이는 제목 2단 + 들여쓰기 1단(1rem, 600px 이하 0)까지 — 더 깊으면 `B / C`로 이어 붙인다.
+- **노트는 어느 깊이든 같은 카드 행**(§10 Card List, stretched link). 폴더 경로를 되풀이하는 태그는 뺀다.
+- 노트·폴더 노트 없이 자식 폴더 하나뿐인 사슬은 한 제목으로 접는다(`Quartz / Build`). 폴더 직속 노트가 하위 섹션보다 먼저 온다.
+- 표시명: 폴더 노트 title → `folderTitles` 옵션 → 토픽 표 → Title Case(`_shared/notes.ts`의 `folderTitle`). H1·`<title>`·섹션·breadcrumb가 같은 이름을 쓴다.
+- 폴더 노트(`datetime.md`처럼 index로 흡수된 노트)는 부모 페이지에서 그 섹션 맨 위 **소개 행**(점선 보더, `폴더 소개` + 요약 1줄)이다.
+- 섹션이 2개 이상이면 상단에 점프 칩(accent 8% 배경, Hahmlet 700 `--secondary`, 36px / 모바일 44px). 줄바꿈하며 가로 스크롤은 없다.
 
 ---
 

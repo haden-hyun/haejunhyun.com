@@ -51,6 +51,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 주의: 폴더 페이지는 `plugins/folder-listing`이 그린다(외부 `folder-page`는 꺼 두고 그 생성 로직만 의존성으로 재사용).
 둘을 함께 켜면 가상 폴더 페이지가 업스트림 본문으로 렌더돼 편 순서·배지가 사라진다.
+폴더 페이지는 하위 전체 색인이며, `generate`가 폴더 표시명을 공유 `ctx.trie`에 심어 **모든 페이지의 breadcrumb** 폴더명도 바뀐다.
 
 주의: 루트 `.gitignore`의 `.gitignore` 줄이 하위 `.gitignore`까지 무시해, 일부 플러그인의 `.gitignore`가
 추적되지 않는다(`series-roadmap`·`anim-widgets`의 `obsidian/dist` 무시 규칙 포함). 로컬에선 적용되지만 새 클론에선 없다.
@@ -65,8 +66,8 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
   (볼트 `.obsidian/plugins/series-roadmap-preview`에 설치, Obsidian에서 플러그인을 껐다 켜야 반영).
 - 빌드 경고 `[series-roadmap]`: requires가 같은 부 직전 편·자기 번호 이상·없는 번호·뒤 부를 가리킴,
   outline 번호 중복, 편 1개뿐인 부 이름이 다른 부와 비슷함(오타 의심), 같은 부 안 번호 공백. 경고만 내고 빌드는 통과한다.
-- 주의: `seriesTitles`는 네 곳에 중복이다 — `quartz.config.yaml`의 `series-box`·`series-pager`·`series-roadmap`
-  옵션과 Obsidian 미리보기 플러그인 설정. 새 시리즈를 추가하면 넷 다 고칠 것.
+- 주의: `seriesTitles`는 다섯 곳에 중복이다 — `quartz.config.yaml`의 `series-box`·`series-pager`·`series-roadmap`·`folder-listing`
+  옵션과 Obsidian 미리보기 플러그인 설정. 새 시리즈를 추가하면 다섯 곳 다 고칠 것.
 
 주의: **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
 9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의

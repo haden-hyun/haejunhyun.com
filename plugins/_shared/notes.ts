@@ -43,6 +43,12 @@ export function topicName(slug: string): string {
   return TOPIC_NAMES[key] ?? titleCase(key)
 }
 
+/** 폴더 표시명 — overrides(경로 → 마지막 세그먼트 키) → 토픽 표 → Title Case. 폴더 노트 title은 호출자가 먼저 본다. */
+export function folderTitle(path: string, overrides: Record<string, string> = {}): string {
+  const segment = path.split("/").pop() ?? path
+  return overrides[path] ?? overrides[segment] ?? TOPIC_NAMES[segment] ?? titleCase(segment)
+}
+
 /** 목록 날짜 최신순 비교자. */
 export const byListDateDesc = (a: SlugFile, b: SlugFile): number =>
   (getListDate(b)?.getTime() ?? 0) - (getListDate(a)?.getTime() ?? 0)

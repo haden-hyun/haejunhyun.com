@@ -229,10 +229,21 @@ plugins:
     enabled: false
   - source: ./plugins/folder-listing
     enabled: true
-    # 폴더 목록 — 같은 시리즈 편을 series_index 순으로 모으고 `N편`을 단다.
+    # 폴더 페이지 = 하위 전체 색인(폴더는 섹션 제목, 노트는 행). 섞인 섹션의 시리즈는 접힌 묶음 카드.
     options:
       showFolderCount: true
       showSubfolders: true
+      # 폴더 표시명(H1·섹션·breadcrumb). 폴더 노트 title이 우선, 없으면 Title Case.
+      folderTitles:
+        postgresql: "PostgreSQL"
+        python-gis: "Python GIS"
+        python-operator: "PythonOperator"
+      # 주의: series-box·series-pager·series-roadmap의 seriesTitles와 같게 둘 것.
+      seriesTitles:
+        deep-learning-basics: "딥러닝 기초 시리즈"
+        obsidian-quartz-blog: "Obsidian과 Quartz로 블로그 만들기"
+        statistics-basics: "통계학 기초"
+        docker-basics: "Airflow를 위한 Docker 기초"
   - source: github:quartz-community/tag-page
     enabled: true
   - source: ./plugins/topics-page

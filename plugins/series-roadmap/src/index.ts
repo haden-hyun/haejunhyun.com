@@ -46,7 +46,7 @@ export default function SeriesRoadmap(
         warn,
         componentData.fileData as SeriesFile,
       )
-      node.properties = { className: ["series-roadmap"] }
+      node.properties = { className: ["series-roadmap"], id: "series-roadmap" }
       node.children = nav ? [nav] : []
       return SKIP
     })
@@ -64,6 +64,8 @@ export default function SeriesRoadmap(
               console.warn(`[series-roadmap] ${file.path}: ${result.error}`) // 원본 코드블록을 그대로 둔다
               return
             }
+            // 폴더 목록(folder-listing)이 시리즈 카드의 로드맵 링크를 이 표시로 찾는다.
+            file.data.seriesRoadmap = result.spec.series
             parent.children[index] = {
               type: "paragraph",
               data: { hName: "div", hProperties: { dataSeriesRoadmap: JSON.stringify(result.spec) } },

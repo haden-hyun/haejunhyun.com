@@ -6520,6 +6520,35 @@ function resolveRelative3(current, target) {
   return joinSegments3(pathToRoot3(current), simplifySlug3(target));
 }
 
+// ../_shared/notes.ts
+function isRealNote(slug) {
+  if (!slug) return false;
+  if (slug.startsWith("tags/")) return false;
+  if (slug === "index" || slug.endsWith("/index")) return false;
+  if (slug === "404") return false;
+  if (slug === "topics" || slug === "archive") return false;
+  return true;
+}
+function isListedNote(file) {
+  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
+var TOPIC_NAMES = {
+  "computer-science": "Computer Science",
+  "data-engineering": "Data Engineering",
+  "data-science": "Data Science",
+  gis: "GIS",
+  programming: "Programming",
+  "finance-property": "Finance & Property",
+  tools: "Tools"
+};
+function titleCase(key) {
+  return key.replace(/-/g, " ").replace(/\b\w/g, (c2) => c2.toUpperCase());
+}
+function folderTitle(path2, overrides = {}) {
+  const segment = path2.split("/").pop() ?? path2;
+  return overrides[path2] ?? overrides[segment] ?? TOPIC_NAMES[segment] ?? titleCase(segment);
+}
+
 // ../_shared/series.ts
 function seriesOf(file) {
   const raw = file.frontmatter?.series;
@@ -6562,83 +6591,213 @@ function groupBySeries(sorted) {
   return groups;
 }
 
+// src/folderTree.ts
+var folderPathOf = (node) => node.slug.replace(/\/?index$/, "");
+function folderNote(node) {
+  const data = node.data;
+  return data && data.unlisted !== true && data.frontmatter?.unlisted !== true ? data : void 0;
+}
+function folderDisplayName(node, overrides) {
+  const title = folderNote(node)?.frontmatter?.title;
+  if (typeof title === "string" && title.trim() !== "" && title !== "index") return title;
+  return folderTitle(folderPathOf(node), overrides);
+}
+function walkFolders(node, fn) {
+  for (const child of node.children) {
+    if (!child.isFolder) continue;
+    fn(child);
+    walkFolders(child, fn);
+  }
+}
+function buildSection(node, overrides, collapse) {
+  const notes = node.children.filter((c2) => !c2.isFolder && c2.data && isListedNote(c2.data)).map((c2) => c2.data);
+  const children = node.children.filter((c2) => c2.isFolder).map((c2) => buildSection(c2, overrides, true)).filter((s2) => s2.count > 0 || s2.intro);
+  let section = {
+    path: folderPathOf(node),
+    title: folderDisplayName(node, overrides),
+    intro: folderNote(node),
+    notes,
+    children,
+    count: notes.length + children.reduce((n4, c2) => n4 + c2.count, 0)
+  };
+  while (collapse && section.notes.length === 0 && !section.intro && section.children.length === 1) {
+    const only = section.children[0];
+    section = { ...only, title: `${section.title} / ${only.title}` };
+  }
+  return section;
+}
+function flattenSections(sections, prefix = "") {
+  return sections.flatMap((s2) => {
+    const title = prefix ? `${prefix} / ${s2.title}` : s2.title;
+    return [{ ...s2, title }, ...flattenSections(s2.children, title)];
+  });
+}
+
 // src/components/styles/folderListing.scss
-var folderListing_default = "ul.section-ul {\n  list-style: none;\n  margin-top: 2em;\n  padding-left: 0;\n}\n\nli.section-li {\n  margin-bottom: 1em;\n}\nli.section-li > .section {\n  display: grid;\n  grid-template-columns: fit-content(8em) 3fr 1fr;\n}\n@media all and (max-width: 600px) {\n  li.section-li > .section > .tags {\n    display: none;\n  }\n}\nli.section-li > .section > .desc > h3 > a {\n  background-color: transparent;\n}\nli.section-li > .section .meta {\n  margin: 0 1em 0 0;\n  opacity: 0.6;\n}\n\n.popover .section {\n  grid-template-columns: fit-content(8em) 1fr !important;\n}\n.popover .section > .tags {\n  display: none;\n}\n\n.page-listing .section .desc h3 .series-index {\n  margin-right: 0.5em;\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--darkgray);\n  white-space: nowrap;\n}";
+var folderListing_default = '@charset "UTF-8";\nul.section-ul {\n  list-style: none;\n  margin-top: 2em;\n  padding-left: 0;\n}\n\nli.section-li {\n  margin-bottom: 1em;\n}\nli.section-li > .section {\n  display: grid;\n  grid-template-columns: fit-content(8em) 3fr 1fr;\n}\n@media all and (max-width: 600px) {\n  li.section-li > .section > .tags {\n    display: none;\n  }\n}\nli.section-li > .section > .desc > h3 > a {\n  background-color: transparent;\n}\nli.section-li > .section .meta {\n  margin: 0 1em 0 0;\n  opacity: 0.6;\n}\n\n.popover .section {\n  grid-template-columns: fit-content(8em) 1fr !important;\n}\n.popover .section > .tags {\n  display: none;\n}\n\n.page-listing .section .desc h3 .series-index {\n  margin-right: 0.5em;\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--darkgray);\n  white-space: nowrap;\n}\n\n.folder-index ul.section-ul {\n  margin: 0.75rem 0 0;\n}\n.folder-index .folder-meta {\n  margin: 1.5rem 0 0;\n  font-size: 0.85rem;\n  line-height: 1.5;\n  color: var(--gray);\n}\n.folder-index .folder-heading a,\n.folder-index .folder-subheading a {\n  color: inherit;\n  background-color: transparent;\n  text-decoration: none;\n}\n.folder-index .folder-heading a:hover,\n.folder-index .folder-subheading a:hover {\n  text-decoration: underline;\n  text-underline-offset: 0.2em;\n}\n.folder-index .folder-count {\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}\n.folder-index .folder-heading {\n  margin-top: 2.5rem;\n  scroll-margin-top: 1.5rem;\n}\n.folder-index .folder-sub {\n  margin-top: 1.75rem;\n  padding-left: 1rem;\n}\n@media all and (max-width: 600px) {\n  .folder-index .folder-sub {\n    padding-left: 0;\n  }\n}\n.folder-index .folder-subheading {\n  margin: 0;\n  padding-bottom: 0.3rem;\n  font-size: 0.95rem;\n  color: var(--darkgray);\n  border-bottom: 1px dashed var(--lightgray);\n  scroll-margin-top: 1.5rem;\n}\n.folder-index .folder-intro .section {\n  border-style: dashed;\n}\n.folder-index .intro-desc {\n  order: 2;\n  margin: 0;\n  font-size: 0.85rem;\n  line-height: 1.6;\n  color: var(--gray);\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.folder-jump ul {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem;\n  margin: 0.75rem 0 0;\n  padding: 0;\n  list-style: none;\n}\n.folder-jump ul a {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n  min-height: 2.25rem;\n  padding: 0 0.85rem;\n  border-radius: var(--radius-s);\n  background: rgba(var(--accent-rgb), 0.08);\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 700;\n  color: var(--secondary);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-jump ul a:hover {\n    background: rgba(var(--accent-rgb), 0.16);\n  }\n}\n.folder-jump ul a:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n@media all and (max-width: 600px) {\n  .folder-jump ul a {\n    min-height: 2.75rem;\n  }\n}\n.folder-jump ul .folder-jump-count {\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}\n\n.folder-index li.series-li {\n  margin-bottom: 0.5rem;\n}\n\n.folder-index .series-head {\n  display: flex;\n  flex-direction: column;\n  gap: 0.2rem;\n}\n\n.folder-index .series-eyebrow {\n  font-size: 0.73rem;\n  line-height: 1.4;\n  color: var(--gray);\n}\n\n.folder-index .series-name {\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 700;\n  line-height: 1.3;\n  color: var(--dark);\n}\n\n.folder-index .series-actions {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.25rem 1rem;\n  margin: 0.35rem 0 0;\n  font-family: var(--headerFont);\n  font-size: 0.85rem;\n  font-weight: 600;\n  line-height: 1.5;\n}\n.folder-index .series-actions a {\n  color: var(--secondary);\n  background-color: transparent;\n}\n.folder-index .series-actions a:first-child::after {\n  content: " \u2192";\n}\n\n.folder-index .series-group {\n  padding-left: 0.85rem;\n  border-left: 2px solid var(--lightgray);\n}\n.folder-index .series-group .series-rows {\n  margin-top: 0.6rem;\n}\n\n.folder-index .series-card {\n  position: relative;\n  border: 1px solid var(--lightgray);\n  border-radius: var(--radius-s);\n  transition: border-color var(--dur-fast) var(--ease);\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-index .series-card:has(> details > summary:hover) {\n    border-color: var(--secondary);\n  }\n}\n.folder-index .series-card summary {\n  position: relative;\n  min-height: 2.75rem;\n  padding: 0.85rem 13rem 0.85rem 2.6rem;\n  list-style: none;\n  cursor: pointer;\n  border-radius: inherit;\n}\n.folder-index .series-card summary::-webkit-details-marker {\n  display: none;\n}\n.folder-index .series-card summary:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n.folder-index .series-card .series-chevron {\n  position: absolute;\n  top: 50%;\n  left: 1.1rem;\n  width: 0.5rem;\n  height: 0.5rem;\n  margin-top: -0.3rem;\n  border-right: 2px solid var(--gray);\n  border-bottom: 2px solid var(--gray);\n  transform: rotate(-45deg);\n  transition: transform var(--dur-base) var(--ease);\n}\n.folder-index .series-card details[open] .series-chevron {\n  transform: rotate(45deg);\n}\n.folder-index .series-card .series-rows {\n  margin: 0;\n  padding: 0 0.6rem 0.1rem;\n}\n.folder-index .series-card .series-actions {\n  position: absolute;\n  top: 0;\n  right: 1.1rem;\n  height: 4.45rem;\n  margin: 0;\n  align-items: center;\n}\n@media all and (max-width: 600px) {\n  .folder-index .series-card summary {\n    padding-right: 1.1rem;\n  }\n  .folder-index .series-card .series-actions {\n    position: static;\n    height: auto;\n    padding: 0 1.1rem 0.85rem 2.6rem;\n  }\n  .folder-index .series-card details[open] + .series-actions {\n    padding-top: 0.25rem;\n  }\n}';
 
 // src/components/FolderListing.tsx
-function mostRecentDates(children) {
-  let dates;
-  for (const child of children) {
-    const d2 = child.data?.dates;
-    if (!d2) continue;
-    if (!dates) {
-      dates = { ...d2 };
-      continue;
-    }
-    if (d2.created > dates.created) dates.created = d2.created;
-    if (d2.modified > dates.modified) dates.modified = d2.modified;
-    if (d2.published > dates.published) dates.published = d2.published;
-  }
-  return dates ?? { created: /* @__PURE__ */ new Date(), modified: /* @__PURE__ */ new Date(), published: /* @__PURE__ */ new Date() };
-}
-function pagesFromTrie2(folder, showSubfolders) {
-  const pages = [];
-  for (const node of folder.children) {
-    const data = node.data;
-    if (data) {
-      if (data.unlisted !== true) pages.push(data);
-    } else if (node.isFolder && showSubfolders) {
-      pages.push({
-        slug: node.slug,
-        dates: mostRecentDates(node.children),
-        frontmatter: { title: node.displayName, tags: [] }
-      });
-    }
-  }
-  return pages;
-}
 function getDate3(page) {
   const type = page.defaultDateType;
   return type ? page.dates?.[type] : void 0;
 }
-function PageRow({ page, slug, locale }) {
+var sectionId = (path2) => `folder-${path2.replace(/\//g, "-")}`;
+function isPathTag(tag, page) {
+  const folder = (page.slug ?? "").split("/").slice(0, -1).join("/");
+  return `/${folder}/`.includes(`/${tag}/`);
+}
+function PageRow({ page, ctx }) {
   const date = getDate3(page);
-  const tags = page.frontmatter?.tags ?? [];
+  const tags = (page.frontmatter?.tags ?? []).filter((t2) => !isPathTag(t2, page));
   const label = seriesLabel(page);
   return /* @__PURE__ */ u5("li", { class: "section-li", children: /* @__PURE__ */ u5("div", { class: "section", children: [
-    /* @__PURE__ */ u5("p", { class: "meta", children: date && /* @__PURE__ */ u5("time", { dateTime: date.toISOString(), children: date.toLocaleDateString(locale, { year: "numeric", month: "short", day: "2-digit" }) }) }),
+    /* @__PURE__ */ u5("p", { class: "meta", children: date && /* @__PURE__ */ u5("time", { dateTime: date.toISOString(), children: date.toLocaleDateString(ctx.locale, { year: "numeric", month: "short", day: "2-digit" }) }) }),
     /* @__PURE__ */ u5("div", { class: "desc", children: /* @__PURE__ */ u5("h3", { children: [
       label && /* @__PURE__ */ u5("span", { class: "series-index", children: label }),
-      /* @__PURE__ */ u5("a", { href: resolveRelative3(slug, page.slug), class: "internal", children: page.frontmatter?.title })
+      /* @__PURE__ */ u5("a", { href: resolveRelative3(ctx.slug, page.slug), class: "internal", children: page.frontmatter?.title })
     ] }) }),
-    /* @__PURE__ */ u5("ul", { class: "tags", children: tags.map((tag) => /* @__PURE__ */ u5("li", { children: /* @__PURE__ */ u5("a", { class: "internal tag-link", href: resolveRelative3(slug, `tags/${tag}`), children: tag }) })) })
+    tags.length > 0 && /* @__PURE__ */ u5("ul", { class: "tags", children: tags.map((tag) => /* @__PURE__ */ u5("li", { children: /* @__PURE__ */ u5("a", { class: "internal tag-link", href: resolveRelative3(ctx.slug, `tags/${tag}`), children: tag }) })) })
   ] }) });
 }
-function SeriesRun(props) {
-  return /* @__PURE__ */ u5(S2, { children: props.group.items.map((page) => /* @__PURE__ */ u5(PageRow, { page, slug: props.slug, locale: props.locale })) });
+function IntroRow({ page, ctx }) {
+  const desc = page.description;
+  return /* @__PURE__ */ u5("ul", { class: "section-ul folder-intro", children: /* @__PURE__ */ u5("li", { class: "section-li", children: /* @__PURE__ */ u5("div", { class: "section", children: [
+    /* @__PURE__ */ u5("p", { class: "meta", children: "\uD3F4\uB354 \uC18C\uAC1C" }),
+    /* @__PURE__ */ u5("div", { class: "desc", children: /* @__PURE__ */ u5("h3", { children: /* @__PURE__ */ u5("a", { href: resolveRelative3(ctx.slug, page.slug), class: "internal", children: page.frontmatter?.title }) }) }),
+    typeof desc === "string" && desc !== "" && /* @__PURE__ */ u5("p", { class: "intro-desc", children: desc })
+  ] }) }) });
 }
+function SeriesActions({ group, ctx }) {
+  const first = group.items[0];
+  const roadmap = ctx.roadmaps.get(group.series);
+  return /* @__PURE__ */ u5("p", { class: "series-actions", children: [
+    /* @__PURE__ */ u5("a", { href: resolveRelative3(ctx.slug, first.slug), class: "internal", "data-no-popover": "true", children: [
+      seriesLabel(first) ?? "1\uD3B8",
+      "\uBD80\uD130 \uC77D\uAE30"
+    ] }),
+    roadmap && /* @__PURE__ */ u5(
+      "a",
+      {
+        href: `${resolveRelative3(ctx.slug, roadmap.slug)}#series-roadmap`,
+        class: "internal",
+        "data-no-popover": "true",
+        children: "\uB85C\uB4DC\uB9F5"
+      }
+    )
+  ] });
+}
+function SeriesHead({ group, ctx }) {
+  return /* @__PURE__ */ u5(S2, { children: [
+    /* @__PURE__ */ u5("span", { class: "series-eyebrow", children: [
+      "\uC2DC\uB9AC\uC988 \xB7 ",
+      group.items.length,
+      "\uD3B8"
+    ] }),
+    /* @__PURE__ */ u5("span", { class: "series-name", children: ctx.seriesTitles[group.series] ?? group.series })
+  ] });
+}
+function SeriesRows({ group, ctx }) {
+  return /* @__PURE__ */ u5("ul", { class: "section-ul series-rows", children: group.items.map((page) => /* @__PURE__ */ u5(PageRow, { page, ctx })) });
+}
+function SeriesRun(props) {
+  const { group, ctx } = props;
+  if (!props.folded) {
+    return /* @__PURE__ */ u5("li", { class: "series-li", children: /* @__PURE__ */ u5("div", { class: "series-group", children: [
+      /* @__PURE__ */ u5("div", { class: "series-head", children: /* @__PURE__ */ u5(SeriesHead, { group, ctx }) }),
+      /* @__PURE__ */ u5(SeriesActions, { group, ctx }),
+      /* @__PURE__ */ u5(SeriesRows, { group, ctx })
+    ] }) });
+  }
+  return /* @__PURE__ */ u5("li", { class: "series-li", children: /* @__PURE__ */ u5("div", { class: "series-card", children: [
+    /* @__PURE__ */ u5("details", { children: [
+      /* @__PURE__ */ u5("summary", { class: "series-head", children: [
+        /* @__PURE__ */ u5(SeriesHead, { group, ctx }),
+        /* @__PURE__ */ u5("span", { class: "series-chevron", "aria-hidden": "true" })
+      ] }),
+      /* @__PURE__ */ u5(SeriesRows, { group, ctx })
+    ] }),
+    /* @__PURE__ */ u5(SeriesActions, { group, ctx })
+  ] }) });
+}
+function NoteList({ notes, ctx }) {
+  if (notes.length === 0) return null;
+  const groups = groupBySeries([...notes].sort(ctx.sort));
+  const folded = groups.some((g2) => !g2.series) && groups.some((g2) => g2.series);
+  return /* @__PURE__ */ u5("ul", { class: "section-ul", children: groups.map(
+    (group) => group.series ? /* @__PURE__ */ u5(SeriesRun, { group, ctx, folded }) : /* @__PURE__ */ u5(PageRow, { page: group.items[0], ctx })
+  ) });
+}
+function SectionBody({ section, ctx }) {
+  return /* @__PURE__ */ u5(S2, { children: [
+    section.intro && /* @__PURE__ */ u5(IntroRow, { page: section.intro, ctx }),
+    /* @__PURE__ */ u5(NoteList, { notes: section.notes, ctx })
+  ] });
+}
+var Count = ({ n: n4 }) => /* @__PURE__ */ u5("span", { class: "folder-count", children: [
+  " \xB7 ",
+  n4
+] });
+var plural = (n4, word) => `${n4} ${word}${n4 === 1 ? "" : "s"}`;
 var FolderListing_default = (opts) => {
   const showFolderCount = opts?.showFolderCount ?? true;
-  const showSubfolders = opts?.showSubfolders ?? true;
+  const folderTitles = opts?.folderTitles ?? {};
+  const seriesTitles = opts?.seriesTitles ?? {};
   const FolderListing = (props) => {
-    const { tree, fileData, cfg } = props;
+    const { tree, fileData, cfg, allFiles } = props;
     const slug = fileData.slug;
     const folder = props.ctx?.trie?.findNode(slug?.split("/") ?? []);
     if (!slug || !folder) return null;
-    const pages = pagesFromTrie2(folder, showSubfolders);
-    const groups = groupBySeries(pages.sort(byDateAndAlphabeticalFolderFirst2()));
-    const locale = cfg?.locale ?? "en-US";
-    const root3 = tree;
-    const content = root3.children.length === 0 ? fileData.description : toJsxRuntime2(root3, { Fragment: S2, jsx: u5, jsxs: u5, elementAttributeNameCase: "html" });
+    const roadmaps = /* @__PURE__ */ new Map();
+    for (const file of allFiles) {
+      const series = file.seriesRoadmap;
+      if (typeof series === "string" && !roadmaps.has(series)) roadmaps.set(series, file);
+    }
+    const ctx = {
+      slug,
+      locale: cfg?.locale ?? "en-US",
+      sort: byDateAndAlphabeticalFolderFirst2(),
+      seriesTitles,
+      roadmaps
+    };
+    const root3 = buildSection(folder, folderTitles, false);
+    const sections = root3.children;
+    const ast = tree;
+    const content = ast.children.length === 0 ? fileData.description : toJsxRuntime2(ast, { Fragment: S2, jsx: u5, jsxs: u5, elementAttributeNameCase: "html" });
     const classes = (fileData.frontmatter?.cssclasses ?? []).join(" ");
-    const count = pages.length;
     return /* @__PURE__ */ u5("div", { class: "popover-hint", children: [
       /* @__PURE__ */ u5("article", { class: classes, children: /* @__PURE__ */ u5("div", { class: "markdown-preview-view markdown-rendered", children: content }) }),
-      /* @__PURE__ */ u5("div", { class: "page-listing", children: [
-        showFolderCount && /* @__PURE__ */ u5("p", { children: count === 1 ? "1 item under this folder." : `${count} items under this folder.` }),
-        /* @__PURE__ */ u5("div", { children: /* @__PURE__ */ u5("ul", { class: "section-ul", children: groups.map(
-          (group) => group.series ? /* @__PURE__ */ u5(SeriesRun, { group, slug, locale }) : /* @__PURE__ */ u5(PageRow, { page: group.items[0], slug, locale })
-        ) }) })
+      /* @__PURE__ */ u5("div", { class: "page-listing folder-index", children: [
+        showFolderCount && /* @__PURE__ */ u5("p", { class: "folder-meta", children: [
+          plural(root3.count, "note"),
+          sections.length > 0 && ` \xB7 ${plural(sections.length, "section")}`
+        ] }),
+        sections.length > 1 && /* @__PURE__ */ u5("nav", { class: "folder-jump", "aria-label": "\uC139\uC158 \uBC14\uB85C\uAC00\uAE30", children: /* @__PURE__ */ u5("ul", { children: sections.map((s2) => /* @__PURE__ */ u5("li", { children: /* @__PURE__ */ u5("a", { href: `#${sectionId(s2.path)}`, "data-no-popover": "true", children: [
+          s2.title,
+          /* @__PURE__ */ u5("span", { class: "folder-jump-count", children: s2.count })
+        ] }) })) }) }),
+        /* @__PURE__ */ u5(NoteList, { notes: root3.notes, ctx }),
+        sections.map((s2) => /* @__PURE__ */ u5("section", { class: "folder-section", "aria-labelledby": sectionId(s2.path), children: [
+          /* @__PURE__ */ u5("h2", { id: sectionId(s2.path), class: "folder-heading", children: [
+            /* @__PURE__ */ u5("a", { href: resolveRelative3(slug, `${s2.path}/index`), class: "internal", "data-no-popover": "true", children: s2.title }),
+            /* @__PURE__ */ u5(Count, { n: s2.count })
+          ] }),
+          /* @__PURE__ */ u5(SectionBody, { section: s2, ctx }),
+          flattenSections(s2.children).map((sub) => /* @__PURE__ */ u5("section", { class: "folder-sub", "aria-labelledby": sectionId(sub.path), children: [
+            /* @__PURE__ */ u5("h3", { id: sectionId(sub.path), class: "folder-subheading", children: [
+              /* @__PURE__ */ u5(
+                "a",
+                {
+                  href: resolveRelative3(slug, `${sub.path}/index`),
+                  class: "internal",
+                  "data-no-popover": "true",
+                  children: sub.title
+                }
+              ),
+              /* @__PURE__ */ u5(Count, { n: sub.count })
+            ] }),
+            /* @__PURE__ */ u5(SectionBody, { section: sub, ctx })
+          ] }))
+        ] }))
       ] })
     ] });
   };
@@ -6647,11 +6806,31 @@ var FolderListing_default = (opts) => {
 };
 
 // src/pageType.ts
-var FolderListingPage = (opts) => ({
-  ...FolderPage(opts),
-  name: "FolderListingPage",
-  body: () => FolderListing_default(opts)
-});
+var FolderListingPage = (opts) => {
+  const base = FolderPage(opts);
+  const folderTitles = opts?.folderTitles ?? {};
+  return {
+    ...base,
+    name: "FolderListingPage",
+    // 표시명을 가상 페이지 제목(H1·<title>)과 공유 trie(breadcrumb가 읽는다)에 함께 심는다.
+    generate(args) {
+      const trie = args.ctx.trie;
+      const names = /* @__PURE__ */ new Map();
+      if (trie) {
+        walkFolders(trie, (node) => {
+          const name3 = folderDisplayName(node, folderTitles);
+          names.set(folderPathOf(node), name3);
+          node.displayName = name3;
+        });
+      }
+      return (base.generate?.(args) ?? []).map((page) => {
+        const name3 = names.get(page.slug.replace(/\/index$/, ""));
+        return name3 ? { ...page, title: name3 } : page;
+      });
+    },
+    body: () => FolderListing_default(opts)
+  };
+};
 
 export { FolderListingPage };
 //# sourceMappingURL=index.js.map
