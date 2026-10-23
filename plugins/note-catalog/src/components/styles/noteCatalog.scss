@@ -49,6 +49,20 @@
     }
   }
 
+  // 창 밖 형제는 폴더 페이지(하위 전체 색인)로 보낸다 — 경로 좌표와 같은 목소리.
+  .note-catalog-all {
+    margin-top: 0.4rem;
+    padding-left: calc(0.6rem + 2px);
+    font-family: var(--codeFont);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+
+    &:hover {
+      color: var(--secondary);
+    }
+  }
+
   // 편 번호 — 링크 색을 따르고 숫자 폭만 고정한다.
   .note-catalog-index {
     margin-right: 0.4em;

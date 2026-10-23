@@ -32,10 +32,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/noteCatalog.scss
-var noteCatalog_default = ".note-catalog {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-catalog .note-catalog-title {\n  margin: 0;\n}\n.note-catalog .note-catalog-path {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  letter-spacing: 0.06em;\n  color: var(--gray);\n  word-break: break-all;\n}\n.note-catalog .note-catalog-path:hover {\n  color: var(--secondary);\n}\n.note-catalog .note-catalog-list {\n  margin: 0.7rem 0 0;\n  padding: 0;\n  list-style: none;\n  min-height: 0;\n  overflow-y: auto;\n}\n.note-catalog .note-catalog-link {\n  display: block;\n  padding: 4px 0 4px 0.6rem;\n  border-left: 2px solid transparent;\n  line-height: 1.45;\n  word-break: keep-all;\n  transition: color var(--dur-fast) var(--ease);\n}\n.note-catalog .note-catalog-link.active {\n  color: var(--secondary);\n  font-weight: 600;\n  border-left-color: var(--secondary);\n}\n.note-catalog .note-catalog-index {\n  margin-right: 0.4em;\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n.note-catalog .note-catalog-more {\n  margin-top: 0.9rem;\n  padding-top: 0.7rem;\n  border-top: 1px solid var(--lightgray);\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-catalog .note-catalog-more:hover {\n  color: var(--secondary);\n}";
-
-// src/components/scripts/noteCatalog.inline.ts
-var noteCatalog_inline_default = 'function n(){for(let t of document.querySelectorAll(".note-catalog-list")){let e=t.querySelector(".note-catalog-link.active");if(!e||t.scrollHeight<=t.clientHeight)continue;let o=e.getBoundingClientRect().top-t.getBoundingClientRect().top+t.scrollTop,c=t.scrollHeight-t.clientHeight;t.scrollTop=Math.max(0,Math.min(c,o-(t.clientHeight-e.offsetHeight)/2))}}n();document.addEventListener("nav",n);\n';
+var noteCatalog_default = ".note-catalog {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-catalog .note-catalog-title {\n  margin: 0;\n}\n.note-catalog .note-catalog-path {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  letter-spacing: 0.06em;\n  color: var(--gray);\n  word-break: break-all;\n}\n.note-catalog .note-catalog-path:hover {\n  color: var(--secondary);\n}\n.note-catalog .note-catalog-list {\n  margin: 0.7rem 0 0;\n  padding: 0;\n  list-style: none;\n  min-height: 0;\n  overflow-y: auto;\n}\n.note-catalog .note-catalog-link {\n  display: block;\n  padding: 4px 0 4px 0.6rem;\n  border-left: 2px solid transparent;\n  line-height: 1.45;\n  word-break: keep-all;\n  transition: color var(--dur-fast) var(--ease);\n}\n.note-catalog .note-catalog-link.active {\n  color: var(--secondary);\n  font-weight: 600;\n  border-left-color: var(--secondary);\n}\n.note-catalog .note-catalog-all {\n  margin-top: 0.4rem;\n  padding-left: calc(0.6rem + 2px);\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  letter-spacing: 0.06em;\n  color: var(--gray);\n}\n.note-catalog .note-catalog-all:hover {\n  color: var(--secondary);\n}\n.note-catalog .note-catalog-index {\n  margin-right: 0.4em;\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n.note-catalog .note-catalog-more {\n  margin-top: 0.9rem;\n  padding-top: 0.7rem;\n  border-top: 1px solid var(--lightgray);\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-catalog .note-catalog-more:hover {\n  color: var(--secondary);\n}";
 
 // ../_shared/notes.ts
 function isRealNote(slug) {
@@ -119,7 +116,8 @@ function u2(e2, t2, n2, o2, i2, u3) {
 var defaultOptions = {
   title: "CATALOG",
   moreHref: "topics",
-  moreLabel: "\u2190 All topics"
+  moreLabel: "\u2190 All topics",
+  radius: 2
 };
 var NoteCatalog_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
@@ -138,10 +136,15 @@ var NoteCatalog_default = ((userOpts) => {
     );
     const siblings = groupBySeries(sorted).flatMap((g2) => g2.items);
     if (siblings.length === 0) return /* @__PURE__ */ u2(S, {});
+    const at = siblings.findIndex((f3) => f3.slug === currentSlug);
+    const size = Math.min(siblings.length, 2 * opts.radius + 1);
+    const start = Math.max(0, Math.min(siblings.length - size, at - opts.radius));
+    const shown = siblings.slice(start, start + size);
+    const folderHref = parentDir ? resolveRelative(currentSlug, `${parentDir}/index`) : void 0;
     return /* @__PURE__ */ u2("nav", { class: "note-catalog", "aria-label": opts.title, children: [
       /* @__PURE__ */ u2("h2", { class: "note-catalog-title", children: opts.title }),
-      parentDir && /* @__PURE__ */ u2("a", { class: "note-catalog-path", href: resolveRelative(currentSlug, `${parentDir}/index`), children: parentDir.split("/").join(" / ") }),
-      /* @__PURE__ */ u2("ul", { class: "note-catalog-list", children: siblings.map((f3) => {
+      folderHref && /* @__PURE__ */ u2("a", { class: "note-catalog-path", href: folderHref, children: parentDir.split("/").join(" / ") }),
+      /* @__PURE__ */ u2("ul", { class: "note-catalog-list", children: shown.map((f3) => {
         const isCurrent = f3.slug === currentSlug;
         const label = seriesLabel(f3);
         return /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2(
@@ -157,11 +160,15 @@ var NoteCatalog_default = ((userOpts) => {
           }
         ) }, f3.slug);
       }) }),
+      folderHref && shown.length < siblings.length && /* @__PURE__ */ u2("a", { class: "note-catalog-all", href: folderHref, children: [
+        "All ",
+        siblings.length,
+        " notes \u2192"
+      ] }),
       /* @__PURE__ */ u2("a", { class: "note-catalog-more", href: resolveRelative(currentSlug, opts.moreHref), children: opts.moreLabel })
     ] });
   };
   NoteCatalog.css = noteCatalog_default;
-  NoteCatalog.afterDOMLoaded = noteCatalog_inline_default;
   return NoteCatalog;
 });
 

@@ -6,8 +6,6 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import style from "./styles/noteCatalog.scss"
-// @ts-expect-error - Inline script loaded as text by esbuild plugin
-import script from "./scripts/noteCatalog.inline.ts"
 import { isListedNote, isRealNote } from "../../../_shared/notes"
 import { groupBySeries, seriesLabel } from "../../../_shared/series"
 
@@ -17,12 +15,15 @@ export interface NoteCatalogOptions {
   title: string
   moreHref: string
   moreLabel: string
+  /** 현재 노트 앞뒤로 보일 편 수. 폴더 처음·끝에선 반대쪽을 더 보여 2·radius+1행을 채운다. */
+  radius: number
 }
 
 const defaultOptions: NoteCatalogOptions = {
   title: "CATALOG",
   moreHref: "topics",
   moreLabel: "← All topics",
+  radius: 2,
 }
 
 /**
@@ -55,16 +56,22 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
 
     if (siblings.length === 0) return <></>
 
+    const at = siblings.findIndex((f) => f.slug === currentSlug)
+    const size = Math.min(siblings.length, 2 * opts.radius + 1)
+    const start = Math.max(0, Math.min(siblings.length - size, at - opts.radius))
+    const shown = siblings.slice(start, start + size)
+    const folderHref = parentDir ? resolveRelative(currentSlug, `${parentDir}/index`) : undefined
+
     return (
       <nav class="note-catalog" aria-label={opts.title}>
         <h2 class="note-catalog-title">{opts.title}</h2>
-        {parentDir && (
-          <a class="note-catalog-path" href={resolveRelative(currentSlug, `${parentDir}/index`)}>
+        {folderHref && (
+          <a class="note-catalog-path" href={folderHref}>
             {parentDir.split("/").join(" / ")}
           </a>
         )}
         <ul class="note-catalog-list">
-          {siblings.map((f) => {
+          {shown.map((f) => {
             const isCurrent = f.slug === currentSlug
             const label = seriesLabel(f)
             return (
@@ -81,6 +88,11 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
             )
           })}
         </ul>
+        {folderHref && shown.length < siblings.length && (
+          <a class="note-catalog-all" href={folderHref}>
+            All {siblings.length} notes →
+          </a>
+        )}
         <a class="note-catalog-more" href={resolveRelative(currentSlug, opts.moreHref)}>
           {opts.moreLabel}
         </a>
@@ -89,6 +101,5 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
   }
 
   NoteCatalog.css = style
-  NoteCatalog.afterDOMLoaded = script
   return NoteCatalog
 }) satisfies QuartzComponentConstructor<Partial<NoteCatalogOptions>>

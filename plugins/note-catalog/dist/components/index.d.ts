@@ -4,6 +4,8 @@ interface NoteCatalogOptions {
     title: string;
     moreHref: string;
     moreLabel: string;
+    /** 현재 노트 앞뒤로 보일 편 수. 폴더 처음·끝에선 반대쪽을 더 보여 2·radius+1행을 채운다. */
+    radius: number;
 }
 /**
  * 좌측 패널 — 전체 파일 트리 대신 현재 노트의 형제 노트만 보여준다.
