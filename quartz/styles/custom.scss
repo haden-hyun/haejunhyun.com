@@ -702,8 +702,12 @@ button.toc-header h3 {
 }
 
 .graph.folded {
+  // 주의: display:none이면 그래프가 폭 0 캔버스로 그려져 펼쳐도 빈 상자다 — 높이만 접는다.
   > .graph-outer {
-    display: none;
+    height: 0;
+    margin: 0;
+    border-block-width: 0; // 주의: 좌우 보더는 남긴다 — 빼면 캔버스가 펼친 컨테이너보다 2px 넓게 그려진다.
+    visibility: hidden;
   }
   > h3::after {
     content: "▸";
