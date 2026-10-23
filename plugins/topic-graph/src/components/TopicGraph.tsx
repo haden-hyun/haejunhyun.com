@@ -9,7 +9,7 @@ import { resolveRelative } from "../../../_shared/path"
 import { seriesIndexOf, seriesOf } from "../../../_shared/series"
 import { buildTopicGraph, relations, type GraphNode, type NoteInput } from "../core/graph"
 import { FONT, placeLabels, type Box } from "../core/labels"
-import { layoutTopicGraph, VIEW } from "../core/layout"
+import { layoutTopicGraph, VIEW_SHORT, VIEW_TALL, type View } from "../core/layout"
 import style from "./styles/topicGraph.scss"
 // @ts-expect-error - inline script imported as string by esbuild loader
 import script from "./scripts/topicGraph.inline.ts"
@@ -57,43 +57,110 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
     const model = buildTopicGraph(slug, notes, (p) => folderTitle(p, opts.folderTitles), topicName)
     if (!model) return null
 
-    const pos = layoutTopicGraph(model)
     const rel = relations(model)
-    const at = (id: string) => pos.get(id)!
     const touches = (s: string, t: string) => s === rel.cur.id || t === rel.cur.id
-
     const rank = (n: GraphNode) =>
       n.current ? 4 : rel.direct.has(n.id) ? 3 : n.kind !== "note" ? 2 : rel.siblings.has(n.id) ? 1 : 0
     const radius = (n: GraphNode) =>
       n.kind !== "note" ? 5 : n.current ? R_RING : rel.direct.has(n.id) ? R_DIRECT : rel.siblings.has(n.id) ? R_SIBLING : R_OTHER
-    const obstacles: (Box & { id: string })[] = model.nodes
-      .filter((n) => n.kind !== "note" || n.current || rel.direct.has(n.id) || rel.siblings.has(n.id))
-      .map((n) => {
-        const r = radius(n) + 1
-        const p = at(n.id)
-        return { id: n.id, x: p.x - r, y: p.y - r, w: 2 * r, h: 2 * r }
-      })
     // 상시 라벨은 1단 폴더와 현재 노트의 상위 폴더뿐 — 현재 폴더부터 놓는다.
     const labelled = model.nodes
       .filter((n) => n.kind === "folder" && (n.depth === 1 || rel.ancestors.has(n.id)))
       .sort((a, b) => Number(b.id === rel.cur.parent) - Number(a.id === rel.cur.parent) || Number(rel.ancestors.has(b.id)) - Number(rel.ancestors.has(a.id)))
-    const labels = placeLabels(
-      labelled.map((n) => ({ id: n.id, text: n.label, bold: n.id === rel.cur.parent, at: at(n.id), gap: 7 })),
-      obstacles,
-    )
-
     const hrefOf = (n: GraphNode) => {
       const target = n.kind === "note" ? n.slug! : `${n.id.slice(2)}/index`
       return resolveRelative(slug, target)
     }
     const tipOf = (n: GraphNode) => (n.kind === "note" ? n.label : `${n.label} · ${n.count}편`)
     const tagLine = (n: GraphNode) => n.tags.map((t) => "#" + t).join(" ")
-
     const edges = [...model.edges].sort(
       (a, b) =>
         Number(a.kind !== "tree") - Number(b.kind !== "tree") || Number(touches(a.s, a.t)) - Number(touches(b.s, b.t)),
     )
     const nodes = [...model.nodes].sort((a, b) => rank(a) - rank(b))
+
+    const renderSvg = (view: View, cls: string) => {
+      const pos = layoutTopicGraph(model, view)
+      const at = (id: string) => pos.get(id)!
+      const obstacles: (Box & { id: string })[] = model.nodes
+        .filter((n) => n.kind !== "note" || n.current || rel.direct.has(n.id) || rel.siblings.has(n.id))
+        .map((n) => {
+          const r = radius(n) + 2
+          const p = at(n.id)
+          return { id: n.id, x: p.x - r, y: p.y - r, w: 2 * r, h: 2 * r }
+        })
+      const labels = placeLabels(
+        labelled.map((n) => ({ id: n.id, text: n.label, bold: n.id === rel.cur.parent, at: at(n.id), gap: 7 })),
+        obstacles,
+        view,
+      )
+      return (
+        <svg class={cls} viewBox={`0 0 ${view.w} ${view.h}`} role="group" aria-label={`${topicName(slug)} topic graph`}>
+          <g class="tg-edges">
+            {edges.map((e) => {
+              const a = at(e.s)
+              const b = at(e.t)
+              const hot = e.kind !== "tree" && touches(e.s, e.t)
+              return <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} class={`tg-e tg-${e.kind}${hot ? " hot" : ""}`} />
+            })}
+          </g>
+          <g class="tg-nodes">
+            {nodes.map((n) => {
+              const p = at(n.id)
+              const here = n.id === rel.cur.parent
+              let shape
+              if (n.kind === "topic") shape = <circle cx={p.x} cy={p.y} r={4.5} class="tg-topic" />
+              else if (n.kind === "folder") {
+                const s = here ? 7 : 6
+                shape = <rect x={p.x - s / 2} y={p.y - s / 2} width={s} height={s} class={here ? "tg-folder here" : "tg-folder"} />
+              } else if (n.current)
+                shape = (
+                  <>
+                    <circle cx={p.x} cy={p.y} r={R_RING} class="tg-current-ring" />
+                    <circle cx={p.x} cy={p.y} r={R_CURRENT} class="tg-current" />
+                  </>
+                )
+              else if (rel.direct.has(n.id)) shape = <circle cx={p.x} cy={p.y} r={R_DIRECT} class="tg-direct" />
+              else if (rel.siblings.has(n.id)) shape = <circle cx={p.x} cy={p.y} r={R_SIBLING} class="tg-sibling" />
+              else shape = <circle cx={p.x} cy={p.y} r={R_OTHER} class="tg-other" />
+              const tags = n.kind === "note" ? tagLine(n) : ""
+              return (
+                <g
+                  class={`tg-n${n.current ? " current" : ""}`}
+                  tabindex={0}
+                  role="link"
+                  aria-label={tipOf(n) + (tags ? ` · ${tags}` : "")}
+                  aria-current={n.current ? "page" : undefined}
+                  data-href={hrefOf(n)}
+                  data-id={n.kind !== "note" ? n.id : undefined}
+                  data-tip={tipOf(n)}
+                  data-tags={tags || undefined}
+                  data-x={p.x}
+                  data-y={p.y}
+                >
+                  <circle cx={p.x} cy={p.y} r={R_RING} class="tg-hit" />
+                  {shape}
+                </g>
+              )
+            })}
+          </g>
+          <g class="tg-labels" aria-hidden="true">
+            {labels.map((l) => (
+              <text
+                x={Math.round(l.x * 10) / 10}
+                y={Math.round(l.y * 10) / 10}
+                text-anchor={l.anchor}
+                font-size={FONT}
+                class={l.id === rel.cur.parent ? "tg-label here" : "tg-label"}
+                data-for={l.id}
+              >
+                {l.text}
+              </text>
+            ))}
+          </g>
+        </svg>
+      )
+    }
 
     return (
       <div class={["topic-graph", displayClass].filter(Boolean).join(" ")}>
@@ -105,70 +172,8 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
           </button>
         </div>
         <div class="topic-graph-box">
-          <svg viewBox={`0 0 ${VIEW.w} ${VIEW.h}`} role="group" aria-label={`${topicName(slug)} topic graph`}>
-            <g class="tg-edges">
-              {edges.map((e) => {
-                const a = at(e.s)
-                const b = at(e.t)
-                const hot = e.kind !== "tree" && touches(e.s, e.t)
-                return <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} class={`tg-e tg-${e.kind}${hot ? " hot" : ""}`} />
-              })}
-            </g>
-            <g class="tg-nodes">
-              {nodes.map((n) => {
-                const p = at(n.id)
-                const here = n.id === rel.cur.parent
-                let shape
-                if (n.kind === "topic") shape = <circle cx={p.x} cy={p.y} r={4.5} class="tg-topic" />
-                else if (n.kind === "folder") {
-                  const s = here ? 7 : 6
-                  shape = <rect x={p.x - s / 2} y={p.y - s / 2} width={s} height={s} class={here ? "tg-folder here" : "tg-folder"} />
-                } else if (n.current)
-                  shape = (
-                    <>
-                      <circle cx={p.x} cy={p.y} r={R_RING} class="tg-current-ring" />
-                      <circle cx={p.x} cy={p.y} r={R_CURRENT} class="tg-current" />
-                    </>
-                  )
-                else if (rel.direct.has(n.id)) shape = <circle cx={p.x} cy={p.y} r={R_DIRECT} class="tg-direct" />
-                else if (rel.siblings.has(n.id)) shape = <circle cx={p.x} cy={p.y} r={R_SIBLING} class="tg-sibling" />
-                else shape = <circle cx={p.x} cy={p.y} r={R_OTHER} class="tg-other" />
-                const tags = n.kind === "note" ? tagLine(n) : ""
-                return (
-                  <g
-                    class={`tg-n${n.current ? " current" : ""}`}
-                    tabindex={0}
-                    role="link"
-                    aria-label={tipOf(n) + (tags ? ` · ${tags}` : "")}
-                    aria-current={n.current ? "page" : undefined}
-                    data-href={hrefOf(n)}
-                    data-id={n.kind !== "note" ? n.id : undefined}
-                    data-tip={tipOf(n)}
-                    data-tags={tags || undefined}
-                    data-x={p.x}
-                    data-y={p.y}
-                  >
-                    <circle cx={p.x} cy={p.y} r={R_RING} class="tg-hit" />
-                    {shape}
-                  </g>
-                )
-              })}
-            </g>
-            <g class="tg-labels" aria-hidden="true">
-              {labels.map((l) => (
-                <text
-                  x={Math.round(l.x * 10) / 10}
-                  y={Math.round(l.y * 10) / 10}
-                  text-anchor={l.anchor}
-                  font-size={FONT}
-                  class={l.id === rel.cur.parent ? "tg-label here" : "tg-label"}
-                  data-for={l.id}
-                >
-                  {l.text}
-                </text>
-              ))}
-            </g>
-          </svg>
+          {renderSvg(VIEW_TALL, "tg-tall")}
+          {renderSvg(VIEW_SHORT, "tg-short")}
           <div class="topic-graph-tip" hidden></div>
         </div>
       </div>

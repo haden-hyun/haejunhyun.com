@@ -53,6 +53,19 @@
     height: auto;
     overflow: visible;
   }
+
+  // 낮은 화면에선 260×220 판으로 바꾼다 — 두 판 모두 빌드 타임에 따로 배치했다.
+  .tg-short {
+    display: none;
+  }
+  @media (max-height: 760px) {
+    .tg-tall {
+      display: none;
+    }
+    .tg-short {
+      display: block;
+    }
+  }
 }
 
 .tg-e {

@@ -169,6 +169,62 @@ function relations(model) {
   return { cur, link, series, direct: /* @__PURE__ */ new Set([...link, ...series]), siblings, ancestors };
 }
 
+// src/core/labels.ts
+var FONT = 10;
+function charEm(c3) {
+  if (/[가-힣㄰-㆏]/.test(c3)) return 1;
+  if (c3 === " ") return 0.27;
+  if ("il.,:;'|!".includes(c3)) return 0.28;
+  if ("fjrtI".includes(c3)) return 0.36;
+  if ("MW".includes(c3)) return 0.88;
+  if ("mw".includes(c3)) return 0.85;
+  if (/[A-Z]/.test(c3)) return 0.68;
+  if (/[0-9]/.test(c3)) return 0.6;
+  return 0.56;
+}
+function textWidth(text, size = FONT, bold = false) {
+  let em = 0;
+  for (const c3 of text) em += charEm(c3);
+  return em * size * (bold ? 1.08 : 1) * 1.12;
+}
+function candidates(rightFirst) {
+  const sides = rightFirst ? ["R", "L"] : ["L", "R"];
+  const out = [];
+  for (const far of [0, 8, 16, 24]) {
+    for (const side of sides) out.push({ side, far, dy: 0 });
+    out.push({ side: "D", far, dy: 0 }, { side: "U", far, dy: 0 });
+    for (const step of [1, 2, 3]) for (const side of sides) out.push({ side, far, dy: -step }, { side, far, dy: step });
+  }
+  return out;
+}
+function boxFor(req, c3, width) {
+  const { x: px, y: py } = req.at;
+  const x4 = c3.side === "R" ? px + req.gap + c3.far : c3.side === "L" ? px - req.gap - c3.far : px;
+  const y4 = c3.side === "D" ? py + req.gap + c3.far + FONT * 0.8 : c3.side === "U" ? py - req.gap - c3.far : py + FONT * 0.35 + c3.dy * FONT * 0.9;
+  const anchor = c3.side === "R" ? "start" : c3.side === "L" ? "end" : "middle";
+  const left = anchor === "start" ? x4 : anchor === "end" ? x4 - width : x4 - width / 2;
+  return { id: req.id, text: req.text, x: x4, y: y4, anchor, box: { x: left, y: y4 - FONT * 0.95, w: width, h: FONT * 1.25 } };
+}
+var area = (a3, b2) => Math.max(0, Math.min(a3.x + a3.w, b2.x + b2.w) - Math.max(a3.x, b2.x)) * Math.max(0, Math.min(a3.y + a3.h, b2.y + b2.h) - Math.max(a3.y, b2.y));
+function placeLabels(requests, obstacles, view) {
+  const placed = [];
+  for (const req of requests) {
+    const width = textWidth(req.text, FONT, req.bold);
+    const order = candidates(req.at.x < view.w * 0.62);
+    let best;
+    for (const cand of order) {
+      const label = boxFor(req, cand, width);
+      const b2 = label.box;
+      const out = b2.x < 0 || b2.y < 0 || b2.x + b2.w > view.w || b2.y + b2.h > view.h ? 1e4 : 0;
+      const cost = out + placed.reduce((s2, p2) => s2 + area(b2, p2.box), 0) + obstacles.filter((o2) => o2.id !== req.id).reduce((s2, o2) => s2 + area(b2, o2), 0);
+      if (!best || cost < best.cost) best = { label, cost };
+      if (cost === 0) break;
+    }
+    placed.push(best.label);
+  }
+  return placed;
+}
+
 // node_modules/d3-quadtree/src/add.js
 function add_default(d2) {
   const x4 = +this._x.call(null, d2), y4 = +this._y.call(null, d2);
@@ -1063,9 +1119,10 @@ function y_default2(y4) {
 }
 
 // src/core/layout.ts
-var VIEW = { w: 260, h: 280, pad: 8 };
+var VIEW_TALL = { w: 260, h: 280, pad: 8 };
+var VIEW_SHORT = { w: 260, h: 220, pad: 8 };
 var TICKS = 300;
-function layoutTopicGraph(model) {
+function layoutTopicGraph(model, view) {
   const rel = relations(model);
   const curParent = rel.cur.parent;
   const near = /* @__PURE__ */ new Set([...rel.siblings, ...rel.direct]);
@@ -1080,15 +1137,15 @@ function layoutTopicGraph(model) {
       const t2 = e2.target;
       return s2.kind === "note" ? t2.id === curParent ? 22 : 16 : 42;
     }).strength((e2) => e2.kind === "tree" ? 0.9 : 0.12)
-  ).force("charge", manyBody_default().strength((d2) => d2.kind === "note" ? -22 : -140)).force("collide", collide_default((d2) => d2.current ? 13 : d2.kind !== "note" ? 10 : near.has(d2.id) ? 8 : 5)).force("x", x_default2(0).strength((d2) => pull(d2) * (VIEW.h / VIEW.w))).force("y", y_default2(0).strength(pull)).stop();
+  ).force("charge", manyBody_default().strength((d2) => d2.kind === "note" ? -22 : -140)).force("collide", collide_default((d2) => d2.current ? 13 : d2.kind !== "note" ? 10 : near.has(d2.id) ? 8 : 5)).force("x", x_default2(0).strength((d2) => pull(d2) * (view.h / view.w))).force("y", y_default2(0).strength(pull)).stop();
   for (let i2 = 0; i2 < TICKS; i2++) sim.tick();
   const c0 = nodes.find((n2) => n2.current);
   const cx = c0.x ?? 0;
   const cy = c0.y ?? 0;
-  const padX = VIEW.pad + 18;
-  const padY = VIEW.pad + 12;
-  const ax = VIEW.w / 2;
-  const ay = VIEW.h / 2;
+  const padX = view.pad + 18;
+  const padY = view.pad + 12;
+  const ax = view.w / 2;
+  const ay = view.h / 2;
   const ext = { r: 1e-6, l: 1e-6, d: 1e-6, u: 1e-6 };
   for (const n2 of nodes) {
     const x4 = (n2.x ?? 0) - cx;
@@ -1098,7 +1155,7 @@ function layoutTopicGraph(model) {
     ext.d = Math.max(ext.d, y4);
     ext.u = Math.max(ext.u, -y4);
   }
-  const k = { r: (VIEW.w - padX - ax) / ext.r, l: (ax - padX) / ext.l, d: (VIEW.h - padY - ay) / ext.d, u: (ay - padY) / ext.u };
+  const k = { r: (view.w - padX - ax) / ext.r, l: (ax - padX) / ext.l, d: (view.h - padY - ay) / ext.d, u: (ay - padY) / ext.u };
   const kmin = Math.min(k.r, k.l, k.d, k.u);
   for (const s2 of ["r", "l", "d", "u"]) k[s2] = Math.min(k[s2], kmin * 1.8, 3);
   const round = (v2) => Math.round(v2 * 10) / 10;
@@ -1111,64 +1168,11 @@ function layoutTopicGraph(model) {
   );
 }
 
-// src/core/labels.ts
-var FONT = 10;
-function charEm(c3) {
-  if (/[가-힣㄰-㆏]/.test(c3)) return 1;
-  if (c3 === " ") return 0.27;
-  if ("il.,:;'|!".includes(c3)) return 0.28;
-  if ("fjrtI".includes(c3)) return 0.36;
-  if ("MW".includes(c3)) return 0.88;
-  if ("mw".includes(c3)) return 0.85;
-  if (/[A-Z]/.test(c3)) return 0.68;
-  if (/[0-9]/.test(c3)) return 0.6;
-  return 0.56;
-}
-function textWidth(text, size = FONT, bold = false) {
-  let em = 0;
-  for (const c3 of text) em += charEm(c3);
-  return em * size * (bold ? 1.06 : 1) * 1.06;
-}
-var NEAR = ["D", "U", "R-", "R+", "L-", "L+", "R--", "R++", "L--", "L++", "D2", "U2"];
-var RIGHT_FIRST = ["R", "L", ...NEAR];
-var LEFT_FIRST = ["L", "R", ...NEAR];
-function boxFor(req, cand, width) {
-  const side = cand[0];
-  const shift = cand.slice(1);
-  const dy = (shift.startsWith("+") ? 1 : shift.startsWith("-") ? -1 : 0) * shift.length * FONT * 0.9;
-  const far = shift === "2" ? 8 : 0;
-  const { x: px, y: py } = req.at;
-  const x4 = side === "R" ? px + req.gap : side === "L" ? px - req.gap : px;
-  const y4 = side === "D" ? py + req.gap + far + FONT * 0.8 : side === "U" ? py - req.gap - far : py + FONT * 0.35 + dy;
-  const anchor = side === "R" ? "start" : side === "L" ? "end" : "middle";
-  const left = anchor === "start" ? x4 : anchor === "end" ? x4 - width : x4 - width / 2;
-  return { id: req.id, text: req.text, x: x4, y: y4, anchor, box: { x: left, y: y4 - FONT * 0.95, w: width, h: FONT * 1.25 } };
-}
-var area = (a3, b2) => Math.max(0, Math.min(a3.x + a3.w, b2.x + b2.w) - Math.max(a3.x, b2.x)) * Math.max(0, Math.min(a3.y + a3.h, b2.y + b2.h) - Math.max(a3.y, b2.y));
-function placeLabels(requests, obstacles) {
-  const placed = [];
-  for (const req of requests) {
-    const width = textWidth(req.text, FONT, req.bold);
-    const order = req.at.x < VIEW.w * 0.62 ? RIGHT_FIRST : LEFT_FIRST;
-    let best;
-    for (const cand of order) {
-      const label = boxFor(req, cand, width);
-      const b2 = label.box;
-      const out = b2.x < 0 || b2.y < 0 || b2.x + b2.w > VIEW.w || b2.y + b2.h > VIEW.h ? 1e4 : 0;
-      const cost = out + placed.reduce((s2, p2) => s2 + area(b2, p2.box), 0) + obstacles.filter((o2) => o2.id !== req.id).reduce((s2, o2) => s2 + area(b2, o2), 0);
-      if (!best || cost < best.cost) best = { label, cost };
-      if (cost === 0) break;
-    }
-    placed.push(best.label);
-  }
-  return placed;
-}
-
 // src/components/styles/topicGraph.scss
-var topicGraph_default = ".topic-graph {\n  --tg-edge: color-mix(in srgb, var(--lightgray), var(--gray) 22%);\n  --tg-mute: color-mix(in srgb, var(--lightgray), var(--gray) 45%);\n  --tg-halo: var(--island-bg, var(--light));\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.topic-graph .topic-graph-head {\n  display: flex;\n  align-items: baseline;\n  gap: 0.4rem;\n}\n.topic-graph .topic-graph-title {\n  margin: 0;\n}\n.topic-graph .topic-graph-topic {\n  font-size: 0.72rem;\n  color: var(--gray);\n}\n.topic-graph .topic-graph-global {\n  margin-left: auto;\n  padding: 0 0.35rem;\n  border: 1px solid var(--lightgray);\n  border-radius: 4px;\n  background: none;\n  color: var(--gray);\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  line-height: 1.6;\n  cursor: pointer;\n  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);\n}\n.topic-graph .topic-graph-global:hover {\n  color: var(--secondary);\n  border-color: var(--secondary);\n}\n.topic-graph .topic-graph-box {\n  position: relative;\n  margin-top: 0.5rem;\n}\n.topic-graph svg {\n  display: block;\n  width: 100%;\n  height: auto;\n  overflow: visible;\n}\n\n.tg-e {\n  fill: none;\n}\n\n.tg-tree {\n  stroke: var(--tg-edge);\n  stroke-width: 0.8;\n}\n\n.tg-link,\n.tg-series {\n  stroke: var(--gray);\n  stroke-width: 1;\n  opacity: 0.7;\n}\n\n.tg-series {\n  stroke-dasharray: 3 2.5;\n}\n\n.tg-link.hot,\n.tg-series.hot {\n  stroke: var(--secondary);\n  stroke-width: 1.5;\n  opacity: 1;\n}\n\n.tg-topic,\n.tg-folder {\n  fill: var(--tg-halo);\n  stroke: var(--gray);\n  stroke-width: 1.1;\n}\n\n.tg-folder.here {\n  stroke: var(--dark);\n  stroke-width: 1.5;\n}\n\n.tg-current-ring {\n  fill: none;\n  stroke: var(--secondary);\n  stroke-width: 1.5;\n}\n\n.tg-current {\n  fill: var(--secondary);\n}\n\n.tg-direct {\n  fill: var(--tg-halo);\n  stroke: var(--secondary);\n  stroke-width: 1.8;\n}\n\n.tg-sibling {\n  fill: var(--darkgray);\n}\n\n.tg-other {\n  fill: var(--tg-mute);\n}\n\n.tg-n {\n  cursor: pointer;\n  outline: none;\n}\n.tg-n.current {\n  cursor: default;\n}\n\n.tg-hit {\n  fill: transparent;\n}\n\n.tg-n:focus-visible .tg-hit,\n.tg-n.armed .tg-hit {\n  stroke: var(--secondary);\n  stroke-width: 1.2;\n}\n\n.tg-label {\n  font-family: var(--bodyFont);\n  fill: var(--gray);\n  paint-order: stroke;\n  stroke: var(--tg-halo);\n  stroke-width: 3px;\n  stroke-linejoin: round;\n  pointer-events: none;\n}\n.tg-label.here {\n  fill: var(--dark);\n  font-weight: 700;\n}\n\n.topic-graph-tip {\n  position: absolute;\n  z-index: 3;\n  max-width: 14rem;\n  padding: 0.2rem 0.5rem;\n  border-radius: 4px;\n  background: var(--dark);\n  color: var(--light);\n  font-size: 0.72rem;\n  line-height: 1.4;\n  pointer-events: none;\n}\n\n.topic-graph-tip-tags {\n  font-family: var(--codeFont);\n  font-size: 0.66rem;\n}";
+var topicGraph_default = ".topic-graph {\n  --tg-edge: color-mix(in srgb, var(--lightgray), var(--gray) 22%);\n  --tg-mute: color-mix(in srgb, var(--lightgray), var(--gray) 45%);\n  --tg-halo: var(--island-bg, var(--light));\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.topic-graph .topic-graph-head {\n  display: flex;\n  align-items: baseline;\n  gap: 0.4rem;\n}\n.topic-graph .topic-graph-title {\n  margin: 0;\n}\n.topic-graph .topic-graph-topic {\n  font-size: 0.72rem;\n  color: var(--gray);\n}\n.topic-graph .topic-graph-global {\n  margin-left: auto;\n  padding: 0 0.35rem;\n  border: 1px solid var(--lightgray);\n  border-radius: 4px;\n  background: none;\n  color: var(--gray);\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  line-height: 1.6;\n  cursor: pointer;\n  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);\n}\n.topic-graph .topic-graph-global:hover {\n  color: var(--secondary);\n  border-color: var(--secondary);\n}\n.topic-graph .topic-graph-box {\n  position: relative;\n  margin-top: 0.5rem;\n}\n.topic-graph svg {\n  display: block;\n  width: 100%;\n  height: auto;\n  overflow: visible;\n}\n.topic-graph .tg-short {\n  display: none;\n}\n@media (max-height: 760px) {\n  .topic-graph .tg-tall {\n    display: none;\n  }\n  .topic-graph .tg-short {\n    display: block;\n  }\n}\n\n.tg-e {\n  fill: none;\n}\n\n.tg-tree {\n  stroke: var(--tg-edge);\n  stroke-width: 0.8;\n}\n\n.tg-link,\n.tg-series {\n  stroke: var(--gray);\n  stroke-width: 1;\n  opacity: 0.7;\n}\n\n.tg-series {\n  stroke-dasharray: 3 2.5;\n}\n\n.tg-link.hot,\n.tg-series.hot {\n  stroke: var(--secondary);\n  stroke-width: 1.5;\n  opacity: 1;\n}\n\n.tg-topic,\n.tg-folder {\n  fill: var(--tg-halo);\n  stroke: var(--gray);\n  stroke-width: 1.1;\n}\n\n.tg-folder.here {\n  stroke: var(--dark);\n  stroke-width: 1.5;\n}\n\n.tg-current-ring {\n  fill: none;\n  stroke: var(--secondary);\n  stroke-width: 1.5;\n}\n\n.tg-current {\n  fill: var(--secondary);\n}\n\n.tg-direct {\n  fill: var(--tg-halo);\n  stroke: var(--secondary);\n  stroke-width: 1.8;\n}\n\n.tg-sibling {\n  fill: var(--darkgray);\n}\n\n.tg-other {\n  fill: var(--tg-mute);\n}\n\n.tg-n {\n  cursor: pointer;\n  outline: none;\n}\n.tg-n.current {\n  cursor: default;\n}\n\n.tg-hit {\n  fill: transparent;\n}\n\n.tg-n:focus-visible .tg-hit,\n.tg-n.armed .tg-hit {\n  stroke: var(--secondary);\n  stroke-width: 1.2;\n}\n\n.tg-label {\n  font-family: var(--bodyFont);\n  fill: var(--gray);\n  paint-order: stroke;\n  stroke: var(--tg-halo);\n  stroke-width: 3px;\n  stroke-linejoin: round;\n  pointer-events: none;\n}\n.tg-label.here {\n  fill: var(--dark);\n  font-weight: 700;\n}\n\n.topic-graph-tip {\n  position: absolute;\n  z-index: 3;\n  max-width: 14rem;\n  padding: 0.2rem 0.5rem;\n  border-radius: 4px;\n  background: var(--dark);\n  color: var(--light);\n  font-size: 0.72rem;\n  line-height: 1.4;\n  pointer-events: none;\n}\n\n.topic-graph-tip-tags {\n  font-family: var(--codeFont);\n  font-size: 0.66rem;\n}";
 
 // src/components/scripts/topicGraph.inline.ts
-var topicGraph_inline_default = 'function v(){for(let s of document.querySelectorAll(".graph > .graph-outer"))s.remove()}v();function k(){v();for(let s of document.querySelectorAll(".topic-graph-box"))V(s)}function V(s){let n=s.querySelector("svg"),o=s.querySelector(".topic-graph-tip");if(!n||!o)return;let r=null,E="mouse",c=e=>{if(o.textContent=e.dataset.tip??"",e.dataset.tags){let m=document.createElement("span");m.className="topic-graph-tip-tags",m.textContent=" \\xB7 "+e.dataset.tags,o.appendChild(m)}o.hidden=!1;let t=n.getBoundingClientRect().width/n.viewBox.baseVal.width,a=Number(e.dataset.x)*t,i=Number(e.dataset.y)*t,S=o.offsetWidth;o.style.left=`${Math.max(0,Math.min(s.clientWidth-S,a-S/2))}px`,o.style.top=`${i>60*t?i-o.offsetHeight-12:i+14}px`},l=()=>{o.hidden=!0},d=()=>{r?.classList.remove("armed"),r=null,l()},u=(e,t)=>{let a=e.dataset.href;if(!a||e.classList.contains("current"))return;let i=new URL(a,window.location.toString());t?window.open(i,"_blank"):window.spaNavigate?window.spaNavigate(i):window.location.assign(i)},p=e=>{E=e.pointerType},f=e=>{let t=e.target.closest(".tg-n");if(t){if(e.stopPropagation(),E!=="touch")return u(t,e.ctrlKey||e.metaKey);if(r===t)return d(),u(t,!1);d(),r=t,t.classList.add("armed"),c(t)}},g=e=>{if(e.pointerType==="touch")return;let t=e.target.closest(".tg-n");t&&c(t)},L=e=>{e.pointerType!=="touch"&&!r&&l()},w=e=>{let t=e.target.closest(".tg-n");t&&(e.key==="Enter"||e.key===" ")&&(e.preventDefault(),u(t,e.ctrlKey||e.metaKey))},h=e=>{let t=e.target.closest(".tg-n");t&&c(t)},y=()=>{r||l()},G=e=>{r&&!s.contains(e.target)&&d()};n.addEventListener("pointerdown",p),n.addEventListener("click",f),n.addEventListener("pointerover",g),n.addEventListener("pointerout",L),n.addEventListener("keydown",w),n.addEventListener("focusin",h),n.addEventListener("focusout",y),document.addEventListener("click",G),window.addCleanup(()=>{n.removeEventListener("pointerdown",p),n.removeEventListener("click",f),n.removeEventListener("pointerover",g),n.removeEventListener("pointerout",L),n.removeEventListener("keydown",w),n.removeEventListener("focusin",h),n.removeEventListener("focusout",y),document.removeEventListener("click",G)})}document.addEventListener("nav",k);document.addEventListener("render",v);\n';
+var topicGraph_inline_default = 'function E(){for(let r of document.querySelectorAll(".graph > .graph-outer"))r.remove()}E();function k(){E();for(let r of document.querySelectorAll(".topic-graph-box"))for(let n of r.querySelectorAll("svg"))V(r,n)}function V(r,n){let o=r.querySelector(".topic-graph-tip");if(!o)return;let i=null,p="mouse",c=e=>{if(o.textContent=e.dataset.tip??"",e.dataset.tags){let m=document.createElement("span");m.className="topic-graph-tip-tags",m.textContent=" \\xB7 "+e.dataset.tags,o.appendChild(m)}o.hidden=!1;let t=n.getBoundingClientRect().width/n.viewBox.baseVal.width,a=Number(e.dataset.x)*t,s=Number(e.dataset.y)*t,S=o.offsetWidth;o.style.left=`${Math.max(0,Math.min(r.clientWidth-S,a-S/2))}px`,o.style.top=`${s>60*t?s-o.offsetHeight-12:s+14}px`},l=()=>{o.hidden=!0},d=()=>{i?.classList.remove("armed"),i=null,l()},u=(e,t)=>{let a=e.dataset.href;if(!a||e.classList.contains("current"))return;let s=new URL(a,window.location.toString());t?window.open(s,"_blank"):window.spaNavigate?window.spaNavigate(s):window.location.assign(s)},f=e=>{p=e.pointerType},v=e=>{let t=e.target.closest(".tg-n");if(t){if(e.stopPropagation(),p!=="touch")return u(t,e.ctrlKey||e.metaKey);if(i===t)return d(),u(t,!1);d(),i=t,t.classList.add("armed"),c(t)}},L=e=>{if(e.pointerType==="touch")return;let t=e.target.closest(".tg-n");t&&c(t)},w=e=>{e.pointerType!=="touch"&&!i&&l()},h=e=>{let t=e.target.closest(".tg-n");t&&(e.key==="Enter"||e.key===" ")&&(e.preventDefault(),u(t,e.ctrlKey||e.metaKey))},y=e=>{let t=e.target.closest(".tg-n");t&&c(t)},G=()=>{i||l()},g=e=>{i&&!r.contains(e.target)&&d()};n.addEventListener("pointerdown",f),n.addEventListener("click",v),n.addEventListener("pointerover",L),n.addEventListener("pointerout",w),n.addEventListener("keydown",h),n.addEventListener("focusin",y),n.addEventListener("focusout",G),document.addEventListener("click",g),window.addCleanup(()=>{n.removeEventListener("pointerdown",f),n.removeEventListener("click",v),n.removeEventListener("pointerover",L),n.removeEventListener("pointerout",w),n.removeEventListener("keydown",h),n.removeEventListener("focusin",y),n.removeEventListener("focusout",G),document.removeEventListener("click",g)})}document.addEventListener("nav",k);document.addEventListener("render",E);\n';
 var l;
 function S(n2) {
   return n2.children;
@@ -1221,22 +1225,11 @@ var TopicGraph_default = ((userOpts) => {
     }));
     const model = buildTopicGraph(slug, notes, (p2) => folderTitle(p2, opts.folderTitles), topicName);
     if (!model) return null;
-    const pos = layoutTopicGraph(model);
     const rel = relations(model);
-    const at = (id) => pos.get(id);
     const touches = (s2, t2) => s2 === rel.cur.id || t2 === rel.cur.id;
     const rank = (n2) => n2.current ? 4 : rel.direct.has(n2.id) ? 3 : n2.kind !== "note" ? 2 : rel.siblings.has(n2.id) ? 1 : 0;
     const radius = (n2) => n2.kind !== "note" ? 5 : n2.current ? R_RING : rel.direct.has(n2.id) ? R_DIRECT : rel.siblings.has(n2.id) ? R_SIBLING : R_OTHER;
-    const obstacles = model.nodes.filter((n2) => n2.kind !== "note" || n2.current || rel.direct.has(n2.id) || rel.siblings.has(n2.id)).map((n2) => {
-      const r2 = radius(n2) + 1;
-      const p2 = at(n2.id);
-      return { id: n2.id, x: p2.x - r2, y: p2.y - r2, w: 2 * r2, h: 2 * r2 };
-    });
     const labelled = model.nodes.filter((n2) => n2.kind === "folder" && (n2.depth === 1 || rel.ancestors.has(n2.id))).sort((a3, b2) => Number(b2.id === rel.cur.parent) - Number(a3.id === rel.cur.parent) || Number(rel.ancestors.has(b2.id)) - Number(rel.ancestors.has(a3.id)));
-    const labels = placeLabels(
-      labelled.map((n2) => ({ id: n2.id, text: n2.label, bold: n2.id === rel.cur.parent, at: at(n2.id), gap: 7 })),
-      obstacles
-    );
     const hrefOf = (n2) => {
       const target = n2.kind === "note" ? n2.slug : `${n2.id.slice(2)}/index`;
       return resolveRelative(slug, target);
@@ -1247,6 +1240,78 @@ var TopicGraph_default = ((userOpts) => {
       (a3, b2) => Number(a3.kind !== "tree") - Number(b2.kind !== "tree") || Number(touches(a3.s, a3.t)) - Number(touches(b2.s, b2.t))
     );
     const nodes = [...model.nodes].sort((a3, b2) => rank(a3) - rank(b2));
+    const renderSvg = (view, cls) => {
+      const pos = layoutTopicGraph(model, view);
+      const at = (id) => pos.get(id);
+      const obstacles = model.nodes.filter((n2) => n2.kind !== "note" || n2.current || rel.direct.has(n2.id) || rel.siblings.has(n2.id)).map((n2) => {
+        const r2 = radius(n2) + 2;
+        const p2 = at(n2.id);
+        return { id: n2.id, x: p2.x - r2, y: p2.y - r2, w: 2 * r2, h: 2 * r2 };
+      });
+      const labels = placeLabels(
+        labelled.map((n2) => ({ id: n2.id, text: n2.label, bold: n2.id === rel.cur.parent, at: at(n2.id), gap: 7 })),
+        obstacles,
+        view
+      );
+      return /* @__PURE__ */ u2("svg", { class: cls, viewBox: `0 0 ${view.w} ${view.h}`, role: "group", "aria-label": `${topicName(slug)} topic graph`, children: [
+        /* @__PURE__ */ u2("g", { class: "tg-edges", children: edges.map((e2) => {
+          const a3 = at(e2.s);
+          const b2 = at(e2.t);
+          const hot = e2.kind !== "tree" && touches(e2.s, e2.t);
+          return /* @__PURE__ */ u2("line", { x1: a3.x, y1: a3.y, x2: b2.x, y2: b2.y, class: `tg-e tg-${e2.kind}${hot ? " hot" : ""}` });
+        }) }),
+        /* @__PURE__ */ u2("g", { class: "tg-nodes", children: nodes.map((n2) => {
+          const p2 = at(n2.id);
+          const here = n2.id === rel.cur.parent;
+          let shape;
+          if (n2.kind === "topic") shape = /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: 4.5, class: "tg-topic" });
+          else if (n2.kind === "folder") {
+            const s2 = here ? 7 : 6;
+            shape = /* @__PURE__ */ u2("rect", { x: p2.x - s2 / 2, y: p2.y - s2 / 2, width: s2, height: s2, class: here ? "tg-folder here" : "tg-folder" });
+          } else if (n2.current)
+            shape = /* @__PURE__ */ u2(S, { children: [
+              /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_RING, class: "tg-current-ring" }),
+              /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_CURRENT, class: "tg-current" })
+            ] });
+          else if (rel.direct.has(n2.id)) shape = /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_DIRECT, class: "tg-direct" });
+          else if (rel.siblings.has(n2.id)) shape = /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_SIBLING, class: "tg-sibling" });
+          else shape = /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_OTHER, class: "tg-other" });
+          const tags = n2.kind === "note" ? tagLine(n2) : "";
+          return /* @__PURE__ */ u2(
+            "g",
+            {
+              class: `tg-n${n2.current ? " current" : ""}`,
+              tabindex: 0,
+              role: "link",
+              "aria-label": tipOf(n2) + (tags ? ` \xB7 ${tags}` : ""),
+              "aria-current": n2.current ? "page" : void 0,
+              "data-href": hrefOf(n2),
+              "data-id": n2.kind !== "note" ? n2.id : void 0,
+              "data-tip": tipOf(n2),
+              "data-tags": tags || void 0,
+              "data-x": p2.x,
+              "data-y": p2.y,
+              children: [
+                /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_RING, class: "tg-hit" }),
+                shape
+              ]
+            }
+          );
+        }) }),
+        /* @__PURE__ */ u2("g", { class: "tg-labels", "aria-hidden": "true", children: labels.map((l2) => /* @__PURE__ */ u2(
+          "text",
+          {
+            x: Math.round(l2.x * 10) / 10,
+            y: Math.round(l2.y * 10) / 10,
+            "text-anchor": l2.anchor,
+            "font-size": FONT,
+            class: l2.id === rel.cur.parent ? "tg-label here" : "tg-label",
+            "data-for": l2.id,
+            children: l2.text
+          }
+        )) })
+      ] });
+    };
     return /* @__PURE__ */ u2("div", { class: ["topic-graph", displayClass].filter(Boolean).join(" "), children: [
       /* @__PURE__ */ u2("div", { class: "topic-graph-head", children: [
         /* @__PURE__ */ u2("h3", { class: "topic-graph-title", children: opts.title }),
@@ -1254,64 +1319,8 @@ var TopicGraph_default = ((userOpts) => {
         /* @__PURE__ */ u2("button", { type: "button", class: "global-graph-icon topic-graph-global", "aria-label": "Global Graph", title: "Global graph (\u2318G)", children: "\u2318G" })
       ] }),
       /* @__PURE__ */ u2("div", { class: "topic-graph-box", children: [
-        /* @__PURE__ */ u2("svg", { viewBox: `0 0 ${VIEW.w} ${VIEW.h}`, role: "group", "aria-label": `${topicName(slug)} topic graph`, children: [
-          /* @__PURE__ */ u2("g", { class: "tg-edges", children: edges.map((e2) => {
-            const a3 = at(e2.s);
-            const b2 = at(e2.t);
-            const hot = e2.kind !== "tree" && touches(e2.s, e2.t);
-            return /* @__PURE__ */ u2("line", { x1: a3.x, y1: a3.y, x2: b2.x, y2: b2.y, class: `tg-e tg-${e2.kind}${hot ? " hot" : ""}` });
-          }) }),
-          /* @__PURE__ */ u2("g", { class: "tg-nodes", children: nodes.map((n2) => {
-            const p2 = at(n2.id);
-            const here = n2.id === rel.cur.parent;
-            let shape;
-            if (n2.kind === "topic") shape = /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: 4.5, class: "tg-topic" });
-            else if (n2.kind === "folder") {
-              const s2 = here ? 7 : 6;
-              shape = /* @__PURE__ */ u2("rect", { x: p2.x - s2 / 2, y: p2.y - s2 / 2, width: s2, height: s2, class: here ? "tg-folder here" : "tg-folder" });
-            } else if (n2.current)
-              shape = /* @__PURE__ */ u2(S, { children: [
-                /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_RING, class: "tg-current-ring" }),
-                /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_CURRENT, class: "tg-current" })
-              ] });
-            else if (rel.direct.has(n2.id)) shape = /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_DIRECT, class: "tg-direct" });
-            else if (rel.siblings.has(n2.id)) shape = /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_SIBLING, class: "tg-sibling" });
-            else shape = /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_OTHER, class: "tg-other" });
-            const tags = n2.kind === "note" ? tagLine(n2) : "";
-            return /* @__PURE__ */ u2(
-              "g",
-              {
-                class: `tg-n${n2.current ? " current" : ""}`,
-                tabindex: 0,
-                role: "link",
-                "aria-label": tipOf(n2) + (tags ? ` \xB7 ${tags}` : ""),
-                "aria-current": n2.current ? "page" : void 0,
-                "data-href": hrefOf(n2),
-                "data-id": n2.kind !== "note" ? n2.id : void 0,
-                "data-tip": tipOf(n2),
-                "data-tags": tags || void 0,
-                "data-x": p2.x,
-                "data-y": p2.y,
-                children: [
-                  /* @__PURE__ */ u2("circle", { cx: p2.x, cy: p2.y, r: R_RING, class: "tg-hit" }),
-                  shape
-                ]
-              }
-            );
-          }) }),
-          /* @__PURE__ */ u2("g", { class: "tg-labels", "aria-hidden": "true", children: labels.map((l2) => /* @__PURE__ */ u2(
-            "text",
-            {
-              x: Math.round(l2.x * 10) / 10,
-              y: Math.round(l2.y * 10) / 10,
-              "text-anchor": l2.anchor,
-              "font-size": FONT,
-              class: l2.id === rel.cur.parent ? "tg-label here" : "tg-label",
-              "data-for": l2.id,
-              children: l2.text
-            }
-          )) })
-        ] }),
+        renderSvg(VIEW_TALL, "tg-tall"),
+        renderSvg(VIEW_SHORT, "tg-short"),
         /* @__PURE__ */ u2("div", { class: "topic-graph-tip", hidden: true })
       ] })
     ] });

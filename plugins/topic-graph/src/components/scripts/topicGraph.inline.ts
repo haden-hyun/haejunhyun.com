@@ -7,14 +7,14 @@ removeUpstreamLocal()
 
 function setup() {
   removeUpstreamLocal()
-  for (const box of document.querySelectorAll<HTMLElement>(".topic-graph-box")) bind(box)
+  for (const box of document.querySelectorAll<HTMLElement>(".topic-graph-box"))
+    for (const svg of box.querySelectorAll("svg")) bind(box, svg)
 }
 
 // 마우스: hover·포커스 = 툴팁, 클릭 = 이동. 터치: 첫 탭 = 툴팁, 같은 점 두 번째 탭 = 이동, 바깥 탭 = 해제.
-function bind(box: HTMLElement) {
-  const svg = box.querySelector("svg")
+function bind(box: HTMLElement, svg: SVGSVGElement) {
   const tip = box.querySelector<HTMLElement>(".topic-graph-tip")
-  if (!svg || !tip) return
+  if (!tip) return
   let armed: SVGGElement | null = null
   let lastPointer = "mouse"
 
