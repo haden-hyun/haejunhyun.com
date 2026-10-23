@@ -71,7 +71,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 주제 그래프 `plugins/topic-graph`
 
-좌측 SPECS 아래 GRAPH 패널. 현재 노트의 최상위 주제를 폴더 클러스터로 그린 빌드 타임 SVG다(DESIGN-SYSTEM §4.17).
+우측 TOC 아래 GRAPH 패널(긴 TOC면 island가 스크롤하고 GRAPH는 바닥 고정). 현재 노트의 최상위 주제를 폴더 클러스터로 그린 빌드 타임 SVG다(DESIGN-SYSTEM §4.17).
 배치·라벨은 `src/core/`의 순수 함수(d3-force, 고정 틱)라 같은 원고면 같은 SVG가 나온다.
 
 - ⌘G 전역 그래프는 업스트림 `graph` 플러그인 몫이다. 사이드바 로컬 그래프만 topic-graph 스크립트가 지우고 `custom.scss`가 숨긴다.
