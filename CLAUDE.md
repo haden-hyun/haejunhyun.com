@@ -71,12 +71,14 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 주제 그래프 `plugins/topic-graph`
 
-우측 TOC 아래 GRAPH 패널(긴 TOC면 island가 스크롤하고 GRAPH는 바닥 고정). 현재 노트의 최상위 주제를 폴더 클러스터로 그린 빌드 타임 SVG다(DESIGN-SYSTEM §4.17).
+우측 TOC 아래 GRAPH 패널(TOC와 함께 island에 다 안 들어가면 스크립트가 GRAPH를 숨긴다). 현재 노트의 최상위 주제를 폴더 클러스터로 그린 빌드 타임 SVG다(DESIGN-SYSTEM §4.17).
 배치·라벨은 `src/core/`의 순수 함수(d3-force, 고정 틱)라 같은 원고면 같은 SVG가 나온다.
 
 - ⌘G 전역 그래프는 업스트림 `graph` 플러그인 몫이다. 사이드바 로컬 그래프만 topic-graph 스크립트가 지우고 `custom.scss`가 숨긴다.
   주의: 업스트림 graph를 끄면 ⌘G가 사라진다. `.graph`에 `display: none`을 걸면 안의 전역 모달까지 죽는다.
 - 주의: `folderTitles`는 `folder-listing`과 `topic-graph` 옵션 두 곳에 중복이다.
+- 모바일 Backlinks는 YAML이 아니라 `quartz.ts`가 content 페이지 afterBody에 `MobileOnly`로 하나 더 넣는다.
+  주의: 그 layout을 반영하려고 `PageTypeDispatcher`를 갈아 끼운다 — `loadQuartzConfig`가 만든 디스패처는 layout 사본을 쥐고 있다.
 
 주의: **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
 9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의
