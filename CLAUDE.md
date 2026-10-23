@@ -41,7 +41,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 로컬 플러그인은 `dist/`가 커밋 대상
 
-`plugins/*` 24종(`_shared` 제외). 각각 독립 npm 패키지다.
+`plugins/*` 25종(`_shared` 제외). 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
 `plugins/_shared/`는 플러그인이 아니라 공유 소스다(노트 판별 `isRealNote`·토픽 표시명·Recent 묶음·`noteMeta`·
@@ -68,6 +68,15 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
   outline 번호 중복, 편 1개뿐인 부 이름이 다른 부와 비슷함(오타 의심), 같은 부 안 번호 공백. 경고만 내고 빌드는 통과한다.
 - 주의: `seriesTitles`는 다섯 곳에 중복이다 — `quartz.config.yaml`의 `series-box`·`series-pager`·`series-roadmap`·`folder-listing`
   옵션과 Obsidian 미리보기 플러그인 설정. 새 시리즈를 추가하면 다섯 곳 다 고칠 것.
+
+### 주제 그래프 `plugins/topic-graph`
+
+좌측 SPECS 아래 GRAPH 패널. 현재 노트의 최상위 주제를 폴더 클러스터로 그린 빌드 타임 SVG다(DESIGN-SYSTEM §4.17).
+배치·라벨은 `src/core/`의 순수 함수(d3-force, 고정 틱)라 같은 원고면 같은 SVG가 나온다.
+
+- ⌘G 전역 그래프는 업스트림 `graph` 플러그인 몫이다. 사이드바 로컬 그래프만 topic-graph 스크립트가 지우고 `custom.scss`가 숨긴다.
+  주의: 업스트림 graph를 끄면 ⌘G가 사라진다. `.graph`에 `display: none`을 걸면 안의 전역 모달까지 죽는다.
+- 주의: `folderTitles`는 `folder-listing`과 `topic-graph` 옵션 두 곳에 중복이다.
 
 주의: **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
 9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의
@@ -181,7 +190,7 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
 - 컨셉: **Blue Note / 빈티지 음반 레이블.** 기술 포트폴리오가 아니라 아날로그 지식 아카이브.
 - 팔레트 "True Midnight" — 라이트 = 크림 인쇄지 `#f7f5ef` / 다크 = 잉크 네이비 `#0e1420`, accent H207.
 - **색의 세 축**: 공간(블루 `#1c5f95`, 링크·백링크·breadcrumb·CATALOG·h2) / 행위(브릭 `#b8442a`, CTA) /
-  시간(Chitlins `#b03a7d`, 읽기 진행바·TOC 활성). 각 색이 답하는 질문이 달라 역할 침범이 없다.
+  시간(Chitlins `#b03a7d`, 읽기 진행바만). TOC 활성 절·그래프 현재 노트는 "지금 여기"라 공간(블루)이다. 각 색이 답하는 질문이 달라 역할 침범이 없다.
 - 주의: 팔레트의 블루는 **2색 × 2모드**다(True Midnight/Deeper Cut = 라이트, Stage Light/Rim Light = 다크).
   한 테마에서 쓸 수 있는 블루는 2개뿐. `--dark`(#141d28)는 검정이 아니라 H213의 가장 깊은 잉크다.
 - **bold는 색이 아니라 재질/무게(`--dark`)로 구분한다.** 인라인 코드는 무채 종이 칩, 하이라이트
