@@ -318,6 +318,12 @@
       "commit": "eabf3eec55c0bab7f49e69957341f34d2ae3c5a1",
       "installedAt": "2026-07-18T13:09:11.093Z"
     },
+    "topic-graph": {
+      "source": "./plugins/topic-graph",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/topic-graph",
+      "commit": "local",
+      "installedAt": "2026-10-23T11:49:17.689Z"
+    },
     "unlisted-pages": {
       "source": "github:quartz-community/unlisted-pages",
       "resolved": "https://github.com/quartz-community/unlisted-pages.git",

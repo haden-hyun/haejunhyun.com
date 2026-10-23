@@ -273,13 +273,29 @@ plugins:
       display: desktop-only
       # 홈에서 숨김 — GlobalNav+TopicGrid가 1차 탐색을 대신한다.
       condition: not-index
+  - source: ./plugins/topic-graph
+    enabled: true
+    # 좌측 SPECS 아래 주제 그래프(폴더 클러스터, 빌드 타임 SVG).
+    options:
+      title: "GRAPH"
+      # 주의: folder-listing의 folderTitles와 같게 둘 것.
+      folderTitles:
+        postgresql: "PostgreSQL"
+        python-gis: "Python GIS"
+        python-operator: "PythonOperator"
+    order: 15
+    layout:
+      position: left
+      priority: 30
+      display: desktop-only
+      condition: not-index
+  # ⌘G 전역 그래프 모달만 쓴다. 사이드바 로컬 그래프는 topic-graph 스크립트가 걷어 내고 custom.scss가 숨긴다.
+  # 주의: 끄면 ⌘G가 사라진다.
   - source: github:quartz-community/graph
     enabled: true
     layout:
       position: right
-      # 우측 최하단. 노드가 1~2개뿐인 노트가 많아 TOC/백링크에 자리를 먼저 준다.
       priority: 50
-      # 홈에서 제거 — wikilink가 적어 노드 1개짜리 빈 박스로 렌더된다.
       condition: not-index
   - source: github:quartz-community/search
     enabled: true

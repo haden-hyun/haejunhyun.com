@@ -627,11 +627,19 @@ a.tag-link {
 
 // ── 7. 좌측 CATALOG 패널 ──────────────────────────────────
 // 패널 자체 스타일은 plugins/note-catalog의 noteCatalog.scss가 갖는다.
-// 여긴 사이드바 컨테이너 맥락만 — SPECS는 자연 높이로 고정하고 목록인
+// 여긴 사이드바 컨테이너 맥락만 — SPECS·Graph는 자연 높이로 고정하고 목록인
 // CATALOG만 남는 높이를 받아 스크롤한다.
 .sidebar.left > .note-catalog,
 .sidebar.left > .desktop-only > .note-catalog {
   min-height: 0;
+}
+
+// 목록은 3줄(제목·경로·더보기 포함 12.4rem) 아래로 줄지 않는다 — 모자라면 island 전체가 스크롤한다.
+.sidebar.left .note-catalog:has(.note-catalog-list > li:nth-child(3)) {
+  min-height: 12.4rem;
+}
+.sidebar.left .note-catalog:not(:has(.note-catalog-list > li:nth-child(3))) {
+  flex-shrink: 0;
 }
 
 .sidebar.left {
@@ -639,19 +647,21 @@ a.tag-link {
   gap: 1.6rem;
 
   > .note-specs,
-  > .desktop-only > .note-specs {
+  > .desktop-only > .note-specs,
+  > .topic-graph,
+  > .desktop-only > .topic-graph {
     flex: 0 0 auto;
     min-height: 0;
   }
 }
 
-// ── 8. 우측 사이드바 — TOC / Backlinks / Graph ────────────────────────────
+// ── 8. 우측 사이드바 — TOC / Backlinks ────────────────────────────────────
 // 순서는 quartz.config.yaml의 layout priority가 정하고, 여기선 높이 배분만 고정한다.
 //
 // 주의: `min-height: 0`을 빼지 말 것 — flex 자식 기본값이 `min-height: auto`라
 //       내용보다 작아지지 않고, 이게 없으면 flex 값을 뭘 주든 줄지 않는다.
 // 주의: TOC를 감싼 `.desktop-only`는 `display: contents`라 flex에 투명하다 —
-//       래퍼가 아니라 .toc/.backlinks/.graph를 직접 타겟할 것.
+//       래퍼가 아니라 .toc/.backlinks를 직접 타겟할 것.
 
 // 패널 라벨 5종은 한 규칙으로 통일한다 — 기준은 SPECS(Hahmlet 700 / 1rem).
 // 주의: 패널별 색·조판으로 나누지 말 것. 라벨이 콘텐츠보다 시끄러워진다.
@@ -659,7 +669,7 @@ a.tag-link {
 .note-catalog-title,
 button.toc-header h3,
 .backlinks > h3,
-.graph > h3 {
+.topic-graph-title {
   font-family: var(--headerFont);
   font-size: 1rem;
   font-weight: 700;
@@ -691,16 +701,10 @@ button.toc-header h3 {
     max-height: 9rem;
   }
 
-  .graph {
-    flex: 0 0 auto;
-    min-height: 0;
-  }
-
   // 본문 아래로 내려오는 폭에선 base가 가로 배치다 — 위 `0 0 auto`가 제목 폭으로 늘어 화면 밖으로 밀리므로 등분하고, 모바일은 쌓는다.
   // 주의: base의 not($desktop)은 1200 미만이다 — 1200에서 켜면 세로 배치에 basis 0이 걸려 패널이 접힌다.
   @media all and (max-width: #{map.get($breakpoints, desktop) - 0.02px}) {
-    > .backlinks,
-    > .graph {
+    > .backlinks {
       flex: 1 1 0;
       min-width: 0;
     }
@@ -709,10 +713,20 @@ button.toc-header h3 {
   @media all and ($mobile) {
     flex-direction: column;
 
-    > .backlinks,
-    > .graph {
+    > .backlinks {
       flex: 0 0 auto;
     }
+  }
+}
+
+// 업스트림 graph는 ⌘G 전역 모달만 남긴다 — 로컬 그래프 자리는 좌측 topic-graph가 맡는다.
+// 주의: .graph에 display: none을 걸지 말 것 — 고정 모달(.global-graph-outer)이 그 안에 있다.
+.sidebar .graph {
+  display: contents;
+
+  > h3,
+  > .graph-outer {
+    display: none;
   }
 }
 
@@ -789,7 +803,7 @@ button.toc-header h3 {
 // 주의: $desktop·$tablet이 1200px에서 겹친다(1200은 우측 사이드바가 본문 아래인 tablet 그리드) — 1px 올린다.
 // 주의: 폴더·태그·archive·topics는 사이드바가 비어 있다 — 패널이 있을 때만 그린다.
 @media all and (min-width: #{map.get($breakpoints, desktop) + 1px}) {
-  .page > #quartz-body .sidebar:has(.note-specs, .note-catalog, .toc, .backlinks, .graph) {
+  .page > #quartz-body .sidebar:has(.note-specs, .note-catalog, .topic-graph, .toc, .backlinks) {
     top: calc(var(--topbar-h) + var(--island-inset));
     height: auto;
     max-height: calc(100vh - var(--topbar-h) - var(--island-inset) * 2);
