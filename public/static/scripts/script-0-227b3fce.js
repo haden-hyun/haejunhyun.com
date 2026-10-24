@@ -742,7 +742,7 @@ const heroClient = (function heroClient(L2) {
   const fillCard = () => {
     const n2 = spines[card.k].n;
     const q2 = (s2) => dlg.querySelector(s2);
-    q2(".hero-card-eyebrow").textContent = n2.n + " \xB7 " + (D2.tabs[n2.tp] || n2.tp) + (n2.st ? " \xB7 SERIES " + n2.si + "/" + n2.st : "") + (n2.recent ? " \xB7 NEW" : "");
+    q2(".hero-card-eyebrow").textContent = n2.n + " \xB7 " + (D2.tabs[n2.tp] || n2.tp) + (n2.sl ? " \xB7 \uC2DC\uB9AC\uC988 " + n2.sl : "") + (n2.recent ? " \xB7 NEW" : "");
     q2(".hero-card-title").textContent = n2.t;
     q2(".hero-card-meta").textContent = "posted " + n2.p + (n2.c && n2.c !== n2.p ? " \xB7 \uC791\uC131 " + n2.c : "") + (n2.m ? " \xB7 " + n2.m + " min read" : "");
     q2(".hero-card-desc").textContent = n2.d || "\uC694\uC57D\uC774 \uC5C6\uB294 \uB178\uD2B8\uC785\uB2C8\uB2E4.";
