@@ -253,7 +253,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 - Recent Notes: 5행, `날짜(Mono YYYY-MM-DD) | 제목 + 요약 1줄 | 토픽 표시명`. 정렬 키는 `getListDate`(§4.11), 개정이 더 최근이면 제목 뒤 `Revised` 라벨. 같은 날짜·같은 2단계 폴더 3편 이상은 한 줄로 묶는다(`Docker · 5 notes`, 링크는 그 폴더).
   - Featured의 Recent 제외 집합과 Recent 표는 **같은 함수**(`plugins/_shared/notes.ts`의 `buildRecentRows`)로 만든다.
 - Topics: 토픽명 + 1단 폴더 표시명 부제(런타임, §4.6) + 노트 수, 행 얼룩.
-- Archive: 연도 라벨(Mono 0.95rem 700 `--gray`) 아래 같은 레코드 행. 맨 위 `인기 글 · 최근 30일` 섹션은 `/api/stats`(Pages Function, GoatCounter 프록시)의 `top`을 클라이언트가 채운다 — 빌드 데이터의 노트 슬러그 맵(제목·링크, `isListedNote`)으로 걸러 홈·태그·폴더·옛 URL을 버리고 상위 5편만, 행은 `순위 01(Mono) │ 제목 │ N readers`(GoatCounter는 방문자 수라 "views" 아님, 1이면 `1 reader`). 색은 연도 라벨·메타와 같은 `--gray`뿐. 섹션은 `hidden`으로 구워 JS 없음·API 실패·매칭 0편이면 제목째 안 보이고 자리도 없다. 600px 이하에선 순위 열이 좁아지고 수는 유지. SPA `nav`마다 다시 채우고 `addCleanup`으로 fetch를 중단한다.
+- Archive: 연도 라벨(Mono 0.95rem 700 `--gray`) 아래 같은 레코드 행. 맨 위 `Popular · last 30 days` 섹션은 `/api/stats`(Pages Function, GoatCounter 프록시)의 `top`을 클라이언트가 채운다 — 빌드 데이터의 노트 슬러그 맵(제목·링크, `isListedNote`)으로 걸러 홈·태그·폴더·옛 URL을 버리고 상위 5편만, 행은 `순위 01(Mono) │ 제목 │ N readers`(GoatCounter는 방문자 수라 "views" 아님, 1이면 `1 reader`). 색은 연도 라벨·메타와 같은 `--gray`뿐. 섹션은 `hidden`으로 구워 JS 없음·API 실패·매칭 0편이면 제목째 안 보이고 자리도 없다. 600px 이하에선 순위 열이 좁아지고 수는 유지. SPA `nav`마다 다시 채우고 `addCleanup`으로 fetch를 중단한다.
 - 기각: `Notes` 탭(최신 노트 1편 바로가기 — 목적지가 아니고, 노트 위에선 링크 없는 span이 모든 노트에서 켜졌다. 전체 목록은 Archive가 맡는다). Archive → Notes 개명도 기각(히어로 `+N ARCHIVE`·홈 `Archive →`와 라벨이 갈라진다).
 - 댓글(giscus)은 노트에만. topics·archive·폴더·태그 가상 페이지는 `byPageType`의 `exclude: comments`.
 - 푸터: `© 2026 Haejun Hyun` + Mono `BUILT WITH OBSIDIAN + QUARTZ`.

@@ -143,8 +143,8 @@ var ArchiveContent_default = (() => {
         ] }),
         /* @__PURE__ */ u2("section", { class: "archive-page-year archive-page-popular", "data-notes": JSON.stringify(notes), hidden: true, children: [
           /* @__PURE__ */ u2("h2", { children: [
-            "\uC778\uAE30 \uAE00 ",
-            /* @__PURE__ */ u2("span", { class: "archive-page-h2-sub", children: "\uCD5C\uADFC 30\uC77C" })
+            "Popular ",
+            /* @__PURE__ */ u2("span", { class: "archive-page-h2-sub", children: "last 30 days" })
           ] }),
           /* @__PURE__ */ u2("div", { class: "archive-page-rows" })
         ] }),

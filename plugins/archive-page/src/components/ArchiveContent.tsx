@@ -58,7 +58,7 @@ export default (() => {
         </p>
         <section class="archive-page-year archive-page-popular" data-notes={JSON.stringify(notes)} hidden>
           <h2>
-            인기 글 <span class="archive-page-h2-sub">최근 30일</span>
+            Popular <span class="archive-page-h2-sub">last 30 days</span>
           </h2>
           <div class="archive-page-rows" />
         </section>
