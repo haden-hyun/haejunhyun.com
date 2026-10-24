@@ -883,16 +883,20 @@ function fillHeroVisits() {
   const total = document.getElementById("hero-visits-total")
   const today = document.getElementById("hero-visits-today")
   if (!total && !today) return
-  const base = "https://haejunhyun.goatcounter.com/counter/TOTAL.json"
-  const day = new Date().toISOString().slice(0, 10)
-  const next = new Date(Date.now() + 864e5).toISOString().slice(0, 10)
-  const get = (url, el) =>
-    fetch(url)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (d && el) el.textContent = d.count })
-      .catch(() => {})
-  get(base, total)
-  get(base + "?start=" + day + "&end=" + next, today)
+  const set = (el, n) => { if (el && Number.isFinite(n)) el.textContent = n }
+  fetch("/api/stats")
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((d) => {
+      if (!d || !Number.isFinite(d.total) || !Number.isFinite(d.today)) return Promise.reject()
+      set(total, d.total)
+      set(today, d.today)
+    })
+    .catch(() =>
+      fetch("https://haejunhyun.goatcounter.com/counter/TOTAL.json")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (d && total) total.textContent = d.count })
+        .catch(() => {}),
+    )
 }
 
 function markHeroSwept() {
