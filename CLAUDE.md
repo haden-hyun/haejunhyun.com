@@ -78,7 +78,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
   주의: 업스트림 graph를 끄면 ⌘G가 사라진다. `.graph`에 `display: none`을 걸면 안의 전역 모달까지 죽는다.
 - 주의: `folderTitles`는 `folder-listing`과 `topic-graph` 옵션 두 곳에 중복이다.
 - 빌드 경고 `[topic-graph]`: 별칭 리다이렉트 슬러그가 노트 파일명과 겹친다. `markdownLinkResolution: shortest`가 노트 대신
-  루트의 별칭 페이지를 골라 `[[파일명]]` 링크가 Backlinks에서 빠진다(2026-10-23 기준 30편, 실제 누락은 별칭 정리로 0). 경고만 내고 빌드는 통과한다.
+  루트의 별칭 페이지를 골라 `[[파일명]]` 링크가 Backlinks에서 빠진다(2026-10-24 볼트 별칭 정리로 0건). 경고만 내고 빌드는 통과한다.
 - 모바일 Backlinks는 YAML이 아니라 `quartz.ts`가 content 페이지 afterBody(시리즈 페이저 뒤)에 `MobileOnly`로 하나 더 넣는다.
   주의: 그 layout을 반영하려고 `PageTypeDispatcher`를 갈아 끼운다 — `loadQuartzConfig`가 만든 디스패처는 layout 사본을 쥐고 있다.
 
