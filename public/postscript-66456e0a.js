@@ -6,7 +6,7 @@ await Promise.all([
   import("./static/scripts/script-4-5ef560a8.js"),
   import("./static/scripts/script-5-cc8afa9d.js"),
   import("./static/scripts/script-6-7e107d7e.js"),
-  import("./static/scripts/script-7-ea4462d2.js"),
+  import("./static/scripts/script-7-cf289c4d.js"),
   import("./static/scripts/script-8-2a102aaa.js"),
   import("./static/scripts/script-9-ec880d15.js"),
   import("./static/scripts/script-10-632b2822.js"),
