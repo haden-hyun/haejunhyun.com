@@ -1,21 +1,20 @@
-// 홈 히어로 — 헤드라인·이름·설명·링크·메타 줄, 2단 노트 선반(24권), 노트 카드.
+// 홈 히어로 — 헤드라인·이름·설명·링크·메타 줄과 음표로 그린 색소폰.
 // - 홈(slug "index")에서만 렌더한다. `condition: is-index`는 내장에 없어 내부 slug 가드로 거른다
-// - 통계·선반은 전부 allFiles 집계(하드코딩 금지). 선반은 SSR로 전부 그려 JS 없이도 보인다
-// - 방문 수는 /api/stats(KST 기준). 실패하면 GoatCounter 공개 카운터로 total만 채우고 today는 "-"로 남긴다
-// - 클라이언트(client.ts)는 hover 칩·노트 카드·방향키 이동만 얹는다
+// - 통계는 allFiles 런타임 집계(하드코딩 금지). 방문 수는 /api/stats(KST 기준), 실패하면 GoatCounter 공개 카운터로 total만 채우고 today는 "-"
+// - 운지 키 7개 = 토픽 7개(편수 순, 최근 글이 있으면 눌린 키). 토픽 집계도 allFiles 런타임
+// - 색소폰 정지 자세를 빌드 시 SVG로 미리 굽고, 클라이언트(client.ts)가 캔버스로 이어받는다
 import type {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
   QuartzPluginData,
 } from "@quartz-community/types"
-import { pickShelf } from "./shelf"
+import { buildSax, rasterSax, fitSax, composeSax, SAX_REST, SAX_CFG } from "./sax"
+import type { SaxFit, SaxModel } from "./sax"
 import { heroClient } from "./client"
 import style from "./styles/hero.scss"
 import { isListedNote, topicName } from "../../../_shared/notes"
-import { formatYmd, getListDate, getNoteDates, readingMinutes } from "../../../_shared/noteMeta"
-import { resolveRelative } from "../../../_shared/path"
-import { seriesLabel } from "../../../_shared/series"
+import { formatYmd, getListDate } from "../../../_shared/noteMeta"
 
 // 주의: `@quartz-community/utils`를 쓰지 않고 인라인한 것은 의도적이다.
 // github: 참조 의존성이라 fresh npm install에서 dist 없이 설치돼 빌드가 깨진다.
@@ -24,9 +23,32 @@ function classNames(...classes: (string | undefined | false)[]): string {
 }
 
 const GOATCOUNTER_SITE = "haejunhyun"
+// 글꼴 하위 집합(OFL 1.1, Google Fonts): Noto Music 음표·임시표 7자, Noto Sans Symbols 2 ✦✧◦ 3자.
+const NOTO_MUSIC_CSS =
+  "https://fonts.googleapis.com/css2?family=Noto+Music&text=%E2%99%A9%E2%99%AA%E2%99%AB%E2%99%AC%E2%99%AD%E2%99%AE%E2%99%AF&display=swap"
+const NOTO_SYMBOLS_CSS =
+  "https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&text=%E2%9C%A6%E2%9C%A7%E2%97%A6&display=swap"
+const SAX_FONT = '"Noto Music", "Noto Sans Symbols 2", sans-serif'
+const SAX_FONT_LOADS = [
+  ['10px "Noto Music"', SAX_CFG.notes + SAX_CFG.accidentals],
+  ['10px "Noto Sans Symbols 2"', SAX_CFG.sparks + SAX_CFG.rim],
+]
+
+// 헤드라인 sweep은 세션당 1회 — 첫 페인트 전에 판정해야 깜빡이지 않는다.
+const sweptScript = `try { if (sessionStorage.getItem("hero-swept")) document.documentElement.setAttribute("data-hero-swept", "") } catch {}`
 
 // 주의: 공개 카운터 폴백은 UTC 일 단위라 KST today를 낼 수 없다 — 폴백에선 today를 채우지 않는다
 const heroScript = `
+const heroLib = {
+  buildSax: (${buildSax.toString()}),
+  rasterSax: (${rasterSax.toString()}),
+  fitSax: (${fitSax.toString()}),
+  composeSax: (${composeSax.toString()}),
+  SAX_CFG: ${JSON.stringify(SAX_CFG)},
+  REST: ${JSON.stringify(SAX_REST)},
+  FONT: ${JSON.stringify(SAX_FONT)},
+  FONT_LOADS: ${JSON.stringify(SAX_FONT_LOADS)},
+}
 const heroClient = (${heroClient.toString()})
 
 function fillHeroVisits() {
@@ -49,12 +71,23 @@ function fillHeroVisits() {
     )
 }
 
+function markHeroSwept() {
+  const root = document.documentElement
+  if (!document.querySelector(".home-hero") || root.hasAttribute("data-hero-swept")) return
+  try { sessionStorage.setItem("hero-swept", "1") } catch {}
+  window.addCleanup(() => root.setAttribute("data-hero-swept", ""))
+}
+
 function initHero() {
-  if (document.querySelector(".home-hero")) heroClient()
+  if (!document.querySelector(".home-hero")) return
+  heroLib.model = heroLib.model || heroLib.buildSax()
+  heroLib.fit = heroLib.fit || heroLib.fitSax(heroLib.model, heroLib.rasterSax, heroLib.REST, heroLib.SAX_CFG.rows)
+  heroClient(heroLib)
 }
 
 document.addEventListener("nav", () => {
   fillHeroVisits()
+  markHeroSwept()
   initHero()
 })
 `
@@ -77,6 +110,18 @@ const defaultOptions: HomeHeroOptions = {
 
 type FileData = QuartzPluginData & Record<string, unknown>
 
+let saxModel: SaxModel | undefined
+let saxFit: SaxFit | undefined
+let prerender: ReturnType<typeof composeSax> | undefined
+
+/** 정지 자세 한 장을 빌드 시 미리 굽는다 — JS 없이도 보이고, 캔버스가 뜨기 전 빈칸·레이아웃 이동이 없다. */
+function getPrerender() {
+  saxModel ??= buildSax()
+  saxFit ??= fitSax(saxModel, rasterSax, SAX_REST, SAX_CFG.rows)
+  prerender ??= composeSax(saxModel, rasterSax, {}, saxFit, SAX_CFG, SAX_REST.ay, SAX_REST.ax, () => 0)
+  return { fit: saxFit, ...prerender }
+}
+
 export default ((userOpts?: Partial<HomeHeroOptions>) => {
   const opts: HomeHeroOptions = { ...defaultOptions, ...userOpts }
 
@@ -90,46 +135,46 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
     )
     const noteCount = files.length
     const topicKey = (f: FileData) => (f.slug ?? "").split("/")[0] ?? ""
-    const topicKeys = [...new Set(files.map(topicKey).filter(Boolean))]
-    const topicCount = topicKeys.length
+    // 키 = 토픽: 편수 순. p = 토픽의 가장 최근 posted(클라이언트가 오늘 기준으로 "최근 글" 재판정)
+    const byTopic = new Map<string, { n: number; p: string }>()
+    for (const f of files) {
+      const k = topicKey(f)
+      const p = getListDate(f) ? formatYmd(getListDate(f)!) : ""
+      const cur = byTopic.get(k) ?? { n: 0, p: "" }
+      byTopic.set(k, { n: cur.n + 1, p: p > cur.p ? p : cur.p })
+    }
+    const topics = [...byTopic.entries()]
+      .map(([k, v]) => ({ k, label: topicName(k), n: v.n, p: v.p }))
+      .sort((a, b) => b.n - a.n || a.k.localeCompare(b.k))
+    const topicCount = topics.length
+    const buildNow = Date.now()
+    const isRecent = (p: string) => !!p && (buildNow - Date.parse(p)) / 864e5 <= 45
+    // 주의: </script> 조각이 데이터에 섞여도 태그가 닫히지 않게 꺾쇠를 이스케이프한다.
+    const json = JSON.stringify({ topics }).replace(/</g, "\\u003c")
     const description =
       opts.description || ((fileData.frontmatter as { description?: string } | undefined)?.description ?? "")
 
-    // 선반 후보: 날짜는 posted → created. 선정·배치는 shelf.ts(순수 함수).
-    const ymd = (d: Date | undefined) => (d ? formatYmd(d) : "")
-    const cands = files.map((f) => {
-      const fm = (f.frontmatter ?? {}) as Record<string, unknown>
-      const text = (f.text as string | undefined) ?? ""
-      const p = ymd(getListDate(f))
-      const c = ymd(getNoteDates(f).created)
-      return {
-        slug: f.slug ?? "",
-        topic: topicKey(f),
-        date: p || c,
-        t: (fm.title as string | undefined) ?? f.slug ?? "",
-        tl: topicName(topicKey(f)),
-        h: resolveRelative(fileData.slug!, f.slug!),
-        p,
-        c,
-        m: readingMinutes(text),
-        d: (fm.description as string | undefined) ?? "",
-        sl: seriesLabel(f as Parameters<typeof seriesLabel>[0]) ?? "",
-      }
-    })
-    const shelfRows = pickShelf(cands)
-    const shelfCount = shelfRows.reduce((s, r) => s + r.length, 0)
-    // 주의: </script> 조각이 데이터에 섞여도 태그가 닫히지 않게 꺾쇠를 이스케이프한다.
-    const json = JSON.stringify({
-      notes: shelfRows.flat().map((n) => ({ t: n.t, tl: n.tl, h: n.h, p: n.p, c: n.c, m: n.m, d: n.d, sl: n.sl, isNew: n.isNew })),
-    }).replace(/</g, "\\u003c")
+    const pre = getPrerender()
+    const W = pre.fit.cols * SAX_CFG.cw
+    const H = SAX_CFG.rows * SAX_CFG.ch
+    const byRow = new Map<string, { y: number; tier: number; xs: string[]; chs: string }>()
+    for (const [x, y, ch, tier] of pre.glyphs) {
+      const k = y + "|" + tier
+      const g = byRow.get(k) ?? { y, tier, xs: [], chs: "" }
+      g.xs.push(x.toFixed(1))
+      g.chs += ch
+      byRow.set(k, g)
+    }
 
     return (
       <section class={classNames(displayClass, "home-hero")}>
+        <link rel="stylesheet" href={NOTO_MUSIC_CSS} />
+        <link rel="stylesheet" href={NOTO_SYMBOLS_CSS} />
         <div class="hero-text">
           <h1 class="hero-headline">{opts.headline}</h1>
-          {opts.author && <p class="hero-author">{opts.author}</p>}
-          {description && <p class="hero-description">{description}</p>}
-          <div>
+          {opts.author && <p class="hero-author hero-rise hero-rise-1">{opts.author}</p>}
+          {description && <p class="hero-description hero-rise hero-rise-2">{description}</p>}
+          <div class="hero-rise hero-rise-3">
             {opts.links.length > 0 && (
               <p class="hero-links">
                 {opts.links.map((link) => (
@@ -150,54 +195,44 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
             </p>
           </div>
         </div>
-        <div class="hero-shelf" role="group" aria-label={`노트 ${shelfCount}편`}>
-          {shelfRows.map((row) => (
-            <div class="hero-row">
-              {row.map((n) => (
-                <a
-                  class={classNames("hero-spine", n.isNew && "is-new", n.gap && "has-gap")}
-                  href={n.h}
-                  data-k={n.k}
-                  aria-label={`${n.t} — ${n.tl}`}
-                  style={`height:${n.hp}%`}
-                >
-                  <span class="hero-spine-t">{n.t}</span>
-                </a>
-              ))}
-            </div>
-          ))}
-          <div class="hero-tip" aria-hidden="true" />
+        <div
+          class="hero-sax hero-rise hero-rise-1"
+          style={`--sax-w:${W.toFixed(1)}px;--sax-ar:${(W / H).toFixed(4)};--box-h:${H.toFixed(1)}px`}
+        >
+          <svg class="hero-sax-pre" viewBox={`0 0 ${W.toFixed(1)} ${H.toFixed(1)}`} aria-hidden="true">
+            {[...byRow.values()].map((g) => (
+              <text class={`t${g.tier}`} x={g.xs.join(" ")} y={g.y.toFixed(1)}>
+                {g.chs}
+              </text>
+            ))}
+            {pre.keys.map(([x, y], i) => {
+              const pressed = !!topics[i] && isRecent(topics[i]!.p)
+              const music = i === 0
+              return (
+                <>
+                  {SAX_CFG.keyRing && <circle class={classNames("kr", pressed && "is-pressed")} cx={x.toFixed(1)} cy={y.toFixed(1)} r={pressed ? 9 : 8} />}
+                  <text class={classNames("k", pressed && "is-pressed", music && "is-music")} x={x.toFixed(1)} y={(y + (music ? 0 : 0.5)).toFixed(1)}>
+                    {SAX_CFG.keyChars[i]}
+                  </text>
+                </>
+              )
+            })}
+          </svg>
+          <canvas class="hero-sax-cv" aria-hidden="true" />
+          <div class="hero-keys" role="group" aria-label="색소폰 키 = 토픽" />
+          <div class="hero-keytip" role="tooltip" hidden />
+          <i class="hero-tone t0" />
+          <i class="hero-tone t1" />
+          <i class="hero-tone t2" />
+          <i class="hero-tone tb" />
         </div>
         <script type="application/json" class="hero-data" dangerouslySetInnerHTML={{ __html: json }} />
-        <dialog class="hero-card" aria-labelledby="hero-card-title" aria-describedby="hero-card-desc">
-          <div class="hero-card-in">
-            <div class="hero-card-handle" aria-hidden="true" />
-            <p class="hero-card-eyebrow" />
-            <h2 class="hero-card-title" id="hero-card-title" tabindex={-1} />
-            <p class="hero-card-meta" />
-            <p class="hero-card-desc" id="hero-card-desc" />
-            <div class="hero-card-actions">
-              <button class="hero-card-prev" type="button" aria-label="이전 노트">
-                ‹
-              </button>
-              <button class="hero-card-next" type="button" aria-label="다음 노트">
-                ›
-              </button>
-              <span class="hero-card-gap" />
-              <button class="hero-card-close" type="button">
-                닫기
-              </button>
-              <a class="hero-card-dive" href="#" data-router-ignore>
-                DIVE IN <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </div>
-        </dialog>
       </section>
     )
   }
 
   HomeHero.css = style
+  HomeHero.beforeDOMLoaded = sweptScript
   HomeHero.afterDOMLoaded = heroScript
   return HomeHero
 }) satisfies QuartzComponentConstructor<Partial<HomeHeroOptions>>

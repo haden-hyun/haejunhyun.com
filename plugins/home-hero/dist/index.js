@@ -1,258 +1,540 @@
-// src/components/shelf.ts
-var SHELF_SIZE = 24;
-var PER_ROW = 12;
-var NEW_COUNT = 3;
-var newer = (a2, b2) => b2.date.localeCompare(a2.date) || a2.slug.localeCompare(b2.slug);
-var older = (a2, b2) => a2.date.localeCompare(b2.date) || a2.slug.localeCompare(b2.slug);
-function spineHeight(slug) {
-  let h2 = 0;
-  for (const c2 of slug) h2 = h2 * 31 + c2.charCodeAt(0) >>> 0;
-  return 82 + h2 % 19;
-}
-function pickShelf(notes, size = SHELF_SIZE, perRow = PER_ROW) {
-  const byTopic = /* @__PURE__ */ new Map();
-  for (const n2 of notes) byTopic.set(n2.topic, [...byTopic.get(n2.topic) ?? [], n2]);
-  const topics = [...byTopic.keys()].sort((a2, b2) => byTopic.get(b2).length - byTopic.get(a2).length || a2.localeCompare(b2));
-  const lists = topics.map((t2) => byTopic.get(t2).sort(newer));
-  const picked = [];
-  for (let i2 = 0; picked.length < size; i2++) {
-    let any = false;
-    for (const list of lists) {
-      if (list[i2] && picked.length < size) {
-        picked.push(list[i2]);
-        any = true;
+// src/components/sax.ts
+var SAX_REST = { ay: -0.35, ax: -0.25 };
+function buildSax() {
+  const P2 = [];
+  const nrm = (a2) => {
+    const l2 = Math.hypot(a2[0], a2[1], a2[2]) || 1;
+    return [a2[0] / l2, a2[1] / l2, a2[2] / l2];
+  };
+  const push = (x2, y2, z2, nx, ny, nz, m2) => {
+    P2.push(x2, y2, z2, nx, ny, nz, m2);
+  };
+  const tube = (path, rad, around, mat) => {
+    for (let i2 = 0; i2 < path.length; i2++) {
+      const p2 = path[i2];
+      const q2 = path[Math.min(path.length - 1, i2 + 1)];
+      const o2 = path[Math.max(0, i2 - 1)];
+      const t2 = nrm([q2[0] - o2[0], q2[1] - o2[1], q2[2] - o2[2]]);
+      let u3 = [t2[1], -t2[0], 0];
+      if (Math.hypot(u3[0], u3[1]) < 1e-6) u3 = [1, 0, 0];
+      u3 = nrm(u3);
+      const v2 = nrm([
+        t2[1] * u3[2] - t2[2] * u3[1],
+        t2[2] * u3[0] - t2[0] * u3[2],
+        t2[0] * u3[1] - t2[1] * u3[0]
+      ]);
+      const r2 = rad(i2 / (path.length - 1));
+      for (let k = 0; k < around; k++) {
+        const a2 = k / around * Math.PI * 2;
+        const c2 = Math.cos(a2);
+        const s2 = Math.sin(a2);
+        const n2 = [u3[0] * c2 + v2[0] * s2, u3[1] * c2 + v2[1] * s2, u3[2] * c2 + v2[2] * s2];
+        push(p2[0] + n2[0] * r2, p2[1] + n2[1] * r2, p2[2] + n2[2] * r2, n2[0], n2[1], n2[2], mat);
       }
     }
-    if (!any) break;
+  };
+  const seg = (a2, b2, n2) => Array.from({ length: n2 + 1 }, (_2, i2) => [
+    a2[0] + (b2[0] - a2[0]) * i2 / n2,
+    a2[1] + (b2[1] - a2[1]) * i2 / n2,
+    a2[2] + (b2[2] - a2[2]) * i2 / n2
+  ]);
+  tube(seg([0, 0.95, 0], [0, -0.55, 0], 70), (t2) => 0.07 + 0.075 * t2, 56, 0);
+  const bow = [];
+  for (let i2 = 0; i2 <= 36; i2++) {
+    const th = Math.PI * i2 / 36;
+    bow.push([0.2 - 0.2 * Math.cos(th), -0.55 - 0.2 * Math.sin(th), 0]);
   }
-  const fresh = new Set([...picked].sort(newer).slice(0, NEW_COUNT).map((n2) => n2.slug));
-  const ordered = topics.flatMap((t2) => picked.filter((n2) => n2.topic === t2).sort(older));
-  const rows = [];
-  ordered.forEach((n2, k) => {
-    const r2 = Math.floor(k / perRow);
-    const row = rows[r2] ??= [];
-    const prev = row[row.length - 1];
-    row.push({ ...n2, k, gap: !!prev && prev.topic !== n2.topic, isNew: fresh.has(n2.slug), hp: spineHeight(n2.slug) });
+  tube(bow, (t2) => 0.135 + 0.03 * t2, 48, 0);
+  tube(seg([0.4, -0.55, 0], [0.44, 0, 0], 26), (t2) => 0.165 + 0.03 * t2 * t2, 56, 0);
+  const fl = [];
+  for (let i2 = 0; i2 <= 26; i2++) {
+    const t2 = i2 / 26;
+    fl.push([0.44 + 0.16 * t2 * t2, 0.26 * t2, -0.1 * t2 * t2]);
+  }
+  tube(fl, (t2) => 0.195 + 0.25 * Math.pow(t2, 2.4), 110, 0);
+  const e2 = fl[fl.length - 1];
+  for (let k = 0; k < 160; k++) {
+    const a2 = k / 160 * Math.PI * 2;
+    for (let m2 = 0; m2 < 10; m2++) {
+      const b2 = m2 / 10 * Math.PI * 2;
+      const rr = 0.445 + 0.025 * Math.cos(b2);
+      push(
+        e2[0] + rr * Math.cos(a2),
+        e2[1] + 0.025 * Math.sin(b2),
+        e2[2] + rr * Math.sin(a2),
+        Math.cos(b2) * Math.cos(a2),
+        Math.sin(b2),
+        Math.cos(b2) * Math.sin(a2),
+        1
+      );
+    }
+  }
+  for (let rr = 0; rr <= 0.43; rr += 0.012) {
+    const n2 = Math.max(8, Math.round(rr * 200));
+    for (let k = 0; k < n2; k++) {
+      const a2 = k / n2 * Math.PI * 2;
+      push(e2[0] + rr * Math.cos(a2), e2[1] - 0.03, e2[2] + rr * Math.sin(a2), 0, 1, 0, 2);
+    }
+  }
+  const nk = [];
+  for (let i2 = 0; i2 <= 40; i2++) {
+    const t2 = i2 / 40;
+    const th = t2 * Math.PI * 0.75;
+    nk.push([-0.2 + 0.2 * Math.cos(th), 0.95 + 0.2 * Math.sin(th) + 0.02 * t2, 0]);
+  }
+  tube(nk, (t2) => 0.075 - 0.03 * t2, 30, 0);
+  const last = nk[nk.length - 1];
+  tube(seg(last, [last[0] - 0.12, last[1] - 0.11, 0], 14), (t2) => 0.045 - 0.01 * t2, 24, 3);
+  [0.78, 0.62, 0.46, 0.3, 0.14, -0.02, -0.18].forEach((y2) => {
+    const r2 = 0.07 + 0.075 * ((0.95 - y2) / 1.5);
+    for (let a2 = 0; a2 < 1; a2 += 0.02) {
+      for (let b2 = 0; b2 < Math.PI * 2; b2 += 0.12) {
+        const rr = 0.06 * a2;
+        push(rr * Math.cos(b2), y2 + rr * Math.sin(b2), -(r2 + 0.015) - 0.01 * (1 - a2), 0, 0, -1, 4);
+      }
+    }
   });
-  return rows;
+  return { pts: Float32Array.from(P2), bell: [e2[0], e2[1] + 0.04, e2[2]] };
+}
+var SAX_CFG = {
+  cw: 4.6,
+  ch: 8.2,
+  rows: 41,
+  notes: "\u2669\u266A\u266B\u266C",
+  accidentals: "\u266D\u266F\u266E",
+  sparks: "\u2726\u2727",
+  rim: "\u25E6",
+  // 운지 키: 위 → 아래 7개, 키 i = 편수 순 i번째 토픽(맨 위는 ♭ 옥타브 키)
+  keyY: [0.78, 0.62, 0.46, 0.3, 0.14, -0.02, -0.18],
+  keyChars: ["\u266D", "H", "A", "E", "J", "U", "N"],
+  keyRing: true
+  // 키 둘레 1px 원 테두리
+};
+function rasterSax(model, buf, C2, R, cxp, cyp, ay, ax, scl) {
+  const SX = 2;
+  const SY = 3;
+  const W = C2 * SX;
+  const H2 = R * SY;
+  if (!buf.zb || buf.zb.length !== W * H2) {
+    buf.zb = new Float32Array(W * H2);
+    buf.br = new Float32Array(W * H2);
+    buf.sp = new Float32Array(W * H2);
+    buf.mt = new Uint8Array(W * H2);
+    buf.v = new Float32Array(C2 * R);
+    buf.s = new Float32Array(C2 * R);
+    buf.m = new Uint8Array(C2 * R);
+  }
+  const zb = buf.zb;
+  const br = buf.br;
+  const sp = buf.sp;
+  const mt = buf.mt;
+  zb.fill(0);
+  const P2 = model.pts;
+  const cy = Math.cos(ay);
+  const sy = Math.sin(ay);
+  const cx = Math.cos(ax);
+  const sx = Math.sin(ax);
+  const L2 = [-0.43, 0.57, -0.71];
+  const hl = Math.hypot(L2[0], L2[1], L2[2] - 1);
+  const Hx = L2[0] / hl;
+  const Hy = L2[1] / hl;
+  const Hz = (L2[2] - 1) / hl;
+  const proj = (x2, y2, z2) => {
+    x2 -= 0.12;
+    y2 -= 0.24;
+    const x1 = x2 * cy + z2 * sy;
+    const z1 = -x2 * sy + z2 * cy;
+    const y22 = y2 * cx - z1 * sx;
+    const z22 = y2 * sx + z1 * cx;
+    const d2 = 1 / (z22 + 4.2);
+    return [cxp + scl * 1.6667 * x1 * d2, cyp - scl * y22 * d2, d2];
+  };
+  for (let i2 = 0; i2 < P2.length; i2 += 7) {
+    const pr = proj(P2[i2], P2[i2 + 1], P2[i2 + 2]);
+    let nx = P2[i2 + 3] * cy + P2[i2 + 5] * sy;
+    let nz = -P2[i2 + 3] * sy + P2[i2 + 5] * cy;
+    const ny = P2[i2 + 4] * cx - nz * sx;
+    nz = P2[i2 + 4] * sx + nz * cx;
+    const lam = Math.max(0, nx * L2[0] + ny * L2[1] + nz * L2[2]);
+    const spec = Math.pow(Math.max(0, nx * Hx + ny * Hy + nz * Hz), 20);
+    const m2 = P2[i2 + 6];
+    let b2 = 0.06 + 0.8 * lam + 0.5 * spec;
+    if (nz > 0.05 && m2 !== 2) b2 *= 0.35;
+    if (m2 === 2) b2 = 0.32;
+    else if (m2 === 3) b2 = 0.2 + 0.3 * lam;
+    else if (m2 === 1 || m2 === 4) b2 = Math.min(1, b2 + 0.25);
+    const sc = Math.round(pr[0] * SX);
+    const sr = Math.round(pr[1] * SY);
+    for (let dy = 0; dy < 2; dy++) {
+      for (let dx = 0; dx < 2; dx++) {
+        const c2 = sc + dx;
+        const r2 = sr + dy;
+        if (c2 < 0 || c2 >= W || r2 < 0 || r2 >= H2) continue;
+        const k = r2 * W + c2;
+        if (pr[2] > zb[k]) {
+          zb[k] = pr[2];
+          br[k] = b2 > 1 ? 1 : b2;
+          sp[k] = nz > 0.05 ? 0 : spec;
+          mt[k] = m2;
+        }
+      }
+    }
+  }
+  const v2 = buf.v;
+  const s2 = buf.s;
+  const mm = buf.m;
+  for (let r2 = 0; r2 < R; r2++) {
+    for (let c2 = 0; c2 < C2; c2++) {
+      let n2 = 0;
+      let tot = 0;
+      let fd = 0;
+      let fm = 0;
+      let fs = 0;
+      for (let a2 = 0; a2 < SY; a2++) {
+        for (let b2 = 0; b2 < SX; b2++) {
+          const k = (r2 * SY + a2) * W + c2 * SX + b2;
+          if (zb[k] > 0) {
+            n2++;
+            tot += br[k];
+            if (zb[k] > fd) {
+              fd = zb[k];
+              fm = mt[k];
+              fs = sp[k];
+            }
+          }
+        }
+      }
+      const on = n2 / (SX * SY) >= 0.34;
+      v2[r2 * C2 + c2] = on ? tot / n2 : -1;
+      mm[r2 * C2 + c2] = fm;
+      s2[r2 * C2 + c2] = fs;
+    }
+  }
+  buf.proj = proj;
+  return buf;
+}
+function fitSax(model, raster, rest, rows) {
+  const bb = (scl2) => {
+    const b3 = raster(model, {}, 140, 90, 70, 45, rest.ay, rest.ax, scl2);
+    let c0 = 1e9;
+    let c1 = -1;
+    let r0 = 1e9;
+    let r1 = -1;
+    for (let r2 = 0; r2 < 90; r2++) {
+      for (let c2 = 0; c2 < 140; c2++) {
+        if (b3.v[r2 * 140 + c2] >= 0) {
+          c0 = Math.min(c0, c2);
+          c1 = Math.max(c1, c2);
+          r0 = Math.min(r0, r2);
+          r1 = Math.max(r1, r2);
+        }
+      }
+    }
+    return { c0, c1, r0, r1 };
+  };
+  let b2 = bb(74);
+  let scl = 74 * rows / (b2.r1 - b2.r0 + 1);
+  b2 = bb(scl);
+  for (let i2 = 0; i2 < 6 && b2.r1 - b2.r0 + 1 !== rows; i2++) {
+    const h2 = b2.r1 - b2.r0 + 1;
+    scl *= rows / h2 * (h2 < rows ? 1.004 : 0.998);
+    b2 = bb(scl);
+  }
+  return { scl, cols: b2.c1 - b2.c0 + 3, cx: 70 - b2.c0 + 1, cy: 45 - b2.r0 };
+}
+function composeSax(model, raster, buf, fit, cfg, ay, ax, sweepAt) {
+  const C2 = fit.cols;
+  const R = cfg.rows;
+  const ras = raster(model, buf, C2, R, fit.cx, fit.cy, ay, ax, fit.scl);
+  const bell = ras.proj(model.bell[0], model.bell[1], model.bell[2]);
+  const on = (c2, r2) => c2 >= 0 && r2 >= 0 && c2 < C2 && r2 < R && ras.v[r2 * C2 + c2] >= 0;
+  const glyphs = [];
+  for (let r2 = 0; r2 < R; r2++) {
+    for (let c2 = 0; c2 < C2; c2++) {
+      const i2 = r2 * C2 + c2;
+      const v2 = ras.v[i2];
+      if (v2 < 0) continue;
+      const x2 = (c2 + 0.5) * cfg.cw;
+      const y2 = (r2 + 0.5) * cfg.ch;
+      const m2 = ras.m[i2];
+      const lit = sweepAt(x2) > 0.45;
+      if (m2 === 2 || m2 === 1 && r2 < bell[1] - 0.5) {
+        glyphs.push([x2, y2, cfg.notes[2], 3, lit]);
+        continue;
+      }
+      if (ras.s[i2] > 0.6) {
+        glyphs.push([x2, y2, cfg.sparks[(c2 + r2) % 2], 2, lit]);
+        continue;
+      }
+      const edge = !on(c2 - 1, r2) || !on(c2 + 1, r2) || !on(c2, r2 - 1) || !on(c2, r2 + 1);
+      const ch = (c2 * 5 + r2 * 3) % 7 === 0 ? cfg.accidentals[(c2 + r2) % 3] : cfg.notes[(c2 + r2 * 2) % 4];
+      if (edge) {
+        glyphs.push([x2, y2, m2 === 1 ? cfg.rim : ch, 1, lit]);
+        continue;
+      }
+      let tier = v2 < 0.33 ? 0 : v2 < 0.66 ? 1 : 2;
+      if (lit) tier = Math.min(2, tier + 1);
+      glyphs.push([x2, y2, ch, tier, lit]);
+    }
+  }
+  const keys = cfg.keyY.map((y2) => {
+    const r0 = 0.07 + 0.075 * ((0.95 - y2) / 1.5);
+    const p2 = ras.proj(0, y2, -(r0 + 0.02));
+    return [p2[0] * cfg.cw, p2[1] * cfg.ch];
+  });
+  return { glyphs, keys };
 }
 
 // src/components/client.ts
-function heroClient() {
+function heroClient(L2) {
   const root = document.querySelector(".home-hero");
-  const dataEl = root?.querySelector(".hero-data");
-  const shelf = root?.querySelector(".hero-shelf");
-  const dlg = root?.querySelector(".hero-card");
-  const tip = root?.querySelector(".hero-tip");
-  if (!dataEl || !shelf || !dlg || !tip) return;
-  const notes = JSON.parse(dataEl.textContent).notes;
-  const spines = [...shelf.querySelectorAll(".hero-spine")];
-  if (spines.length !== notes.length) return;
-  const mobileQ = window.matchMedia("(max-width: 800px)");
-  const perRow = shelf.querySelector(".hero-row").children.length;
+  const saxBox = root?.querySelector(".hero-sax");
+  const cv = saxBox?.querySelector(".hero-sax-cv");
+  if (!cv) return;
+  const D2 = JSON.parse(root.querySelector(".hero-data").textContent);
+  const now = Date.now();
+  const topics = D2.topics.map((t2) => ({ ...t2, recent: !!t2.p && (now - Date.parse(t2.p)) / 864e5 <= 45 }));
+  const keyLayer = saxBox.querySelector(".hero-keys");
+  const tip = saxBox.querySelector(".hero-keytip");
+  const el = (tag, cls, txt) => {
+    const e2 = document.createElement(tag);
+    if (cls) e2.className = cls;
+    if (txt != null) e2.textContent = txt;
+    return e2;
+  };
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const cleanups = [];
   const on = (t2, ev, fn, opt) => {
     t2.addEventListener(ev, fn, opt);
     cleanups.push(() => t2.removeEventListener(ev, fn, opt));
   };
-  const el = (tag, txt) => {
-    const e2 = document.createElement(tag);
-    e2.textContent = txt;
-    return e2;
+  const C2 = L2.SAX_CFG;
+  let colors = null;
+  const readColors = () => {
+    const pick = (cls) => getComputedStyle(saxBox.querySelector(".hero-tone." + cls)).color;
+    colors = [pick("t0"), pick("t1"), pick("t2"), pick("tb")];
   };
-  let active = 0;
-  spines.forEach((a2, i2) => {
-    a2.tabIndex = i2 === active ? 0 : -1;
-    a2.dataset.routerIgnore = "";
-    a2.setAttribute("aria-haspopup", "dialog");
-    a2.setAttribute("aria-label", notes[i2].t + " \u2014 " + notes[i2].tl + " \xB7 \uB178\uD2B8 \uCE74\uB4DC \uC5F4\uAE30");
-  });
-  const setActive = (k, focus) => {
-    active = Math.max(0, Math.min(spines.length - 1, k));
-    spines.forEach((a2, i2) => a2.tabIndex = i2 === active ? 0 : -1);
-    if (focus) spines[active].focus();
+  let raf = 0, prev = 0, acc = 0, visible = false, drawn = false;
+  const S2 = { off: { ay: 0, ax: 0 }, vel: { ay: 0, ax: 0 }, drag: false, lx: 0, ly: 0, keys: [], tipK: -1, t0: performance.now() };
+  const W = L2.fit.cols * C2.cw, H2 = C2.rows * C2.ch;
+  const buf = {};
+  const keyBtns = [];
+  const placeTip = () => {
+    const k = S2.tipK;
+    if (k < 0 || !S2.keys[k]) return;
+    const s2 = cv.clientWidth / W;
+    tip.style.left = S2.keys[k][0] * s2 + "px";
+    tip.style.top = S2.keys[k][1] * s2 + "px";
   };
   const showTip = (k) => {
-    const a2 = spines[k], n2 = notes[k], lift = 9;
-    tip.replaceChildren(el("b", n2.t), el("small", n2.tl));
-    tip.classList.add("is-on");
-    const x2 = a2.offsetLeft + a2.offsetWidth / 2 - tip.offsetWidth / 2;
-    tip.style.left = Math.max(0, Math.min(shelf.clientWidth - tip.offsetWidth, x2)) + "px";
-    tip.style.top = a2.offsetTop - lift - tip.offsetHeight - 8 + "px";
-  };
-  const hideTip = () => tip.classList.remove("is-on");
-  spines.forEach((a2, i2) => {
-    on(a2, "pointerenter", (e2) => {
-      if (e2.pointerType !== "touch") showTip(i2);
-    });
-    on(a2, "pointerleave", hideTip);
-    on(a2, "focus", () => {
-      active = i2;
-      showTip(i2);
-    });
-    on(a2, "blur", hideTip);
-  });
-  on(shelf, "keydown", (e2) => {
-    const d2 = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: perRow, ArrowUp: -perRow }[e2.key];
-    if (d2) {
-      e2.preventDefault();
-      const k = active + d2;
-      if (k >= 0 && k < spines.length) setActive(k, true);
-    } else if (e2.key === "Home") {
-      e2.preventDefault();
-      setActive(0, true);
-    } else if (e2.key === "End") {
-      e2.preventDefault();
-      setActive(spines.length - 1, true);
+    S2.tipK = k;
+    if (k < 0 || !topics[k]) {
+      tip.hidden = true;
+      return;
     }
-  });
-  let card = { k: 0, opener: null };
-  const fillCard = () => {
-    const n2 = notes[card.k];
-    const q2 = (s2) => dlg.querySelector(s2);
-    q2(".hero-card-eyebrow").textContent = n2.tl + (n2.sl ? " \xB7 \uC2DC\uB9AC\uC988 " + n2.sl : "") + (n2.isNew ? " \xB7 NEW" : "");
-    q2(".hero-card-title").textContent = n2.t;
-    q2(".hero-card-meta").textContent = "posted " + n2.p + (n2.c && n2.c !== n2.p ? " \xB7 \uC791\uC131 " + n2.c : "") + (n2.m ? " \xB7 " + n2.m + " min read" : "");
-    q2(".hero-card-desc").textContent = n2.d || "\uC694\uC57D\uC774 \uC5C6\uB294 \uB178\uD2B8\uC785\uB2C8\uB2E4.";
-    q2(".hero-card-dive").href = n2.h;
-    q2(".hero-card-prev").disabled = card.k === 0;
-    q2(".hero-card-next").disabled = card.k === spines.length - 1;
+    const t2 = topics[k];
+    tip.textContent = "";
+    tip.append(el("b", null, t2.label), " \xB7 " + t2.n + "\uD3B8" + (t2.recent ? " \xB7 \uCD5C\uADFC \uAE00" : ""));
+    tip.hidden = false;
+    placeTip();
   };
-  const openCard = (k) => {
-    card = { k, opener: spines[k] };
-    hideTip();
-    dlg.classList.toggle("is-sheet", mobileQ.matches);
-    fillCard();
-    dlg.showModal();
-    document.documentElement.classList.add("hero-locked");
-    dlg.querySelector(".hero-card-title").focus();
+  const sweepAt = (t2) => {
+    if (reduce) return () => 0;
+    const p2 = t2 % 6 / 6;
+    if (p2 > 0.8) return () => 0;
+    const w2 = Math.max(50, 0.3 * W), X = -w2 + (W + 2 * w2) * (p2 / 0.8);
+    return (x2) => Math.exp(-2.2 * ((x2 - X) / w2) ** 2);
   };
-  const moveCard = (d2) => {
-    const k = card.k + d2;
-    if (k < 0 || k >= spines.length) return;
-    card.k = k;
-    card.opener = spines[k];
-    fillCard();
-  };
-  on(shelf, "click", (e2) => {
-    if (e2.metaKey || e2.ctrlKey || e2.shiftKey || e2.button === 1) return;
-    const a2 = e2.target.closest?.(".hero-spine");
-    if (!a2) return;
-    e2.preventDefault();
-    const k = spines.indexOf(a2);
-    setActive(k, false);
-    openCard(k);
-  });
-  on(dlg, "close", () => {
-    document.documentElement.classList.remove("hero-locked");
-    if (card.opener) requestAnimationFrame(() => setActive(card.k, true));
-  });
-  on(dlg, "click", (e2) => {
-    if (e2.target === dlg) dlg.close();
-  });
-  on(dlg.querySelector(".hero-card-close"), "click", () => dlg.close());
-  on(dlg.querySelector(".hero-card-prev"), "click", () => moveCard(-1));
-  on(dlg.querySelector(".hero-card-next"), "click", () => moveCard(1));
-  on(dlg, "keydown", (e2) => {
-    if (e2.key === "ArrowLeft") {
-      e2.preventDefault();
-      moveCard(-1);
-    } else if (e2.key === "ArrowRight") {
-      e2.preventDefault();
-      moveCard(1);
-    } else if (e2.key === "Tab") {
-      const f3 = [...dlg.querySelectorAll("button:not(:disabled), a[href]")];
-      const i2 = f3.indexOf(document.activeElement);
-      if (e2.shiftKey && i2 <= 0) {
-        e2.preventDefault();
-        f3[f3.length - 1].focus();
-      } else if (!e2.shiftKey && i2 === f3.length - 1) {
-        e2.preventDefault();
-        f3[0].focus();
+  const draw = (nowT) => {
+    if (!colors) return false;
+    const t2 = (nowT - S2.t0) / 1e3;
+    const sway = reduce ? 0 : 0.15 * Math.sin(t2 / 9 * Math.PI * 2);
+    const { glyphs, keys } = L2.composeSax(L2.model, L2.rasterSax, buf, L2.fit, C2, L2.REST.ay + sway + S2.off.ay, L2.REST.ax + S2.off.ax, sweepAt(t2));
+    const cssW = cv.clientWidth || W, dpr = Math.min(2, window.devicePixelRatio || 1);
+    const bw = Math.round(cssW * dpr), bh = Math.round(cssW * (H2 / W) * dpr);
+    if (cv.width !== bw || cv.height !== bh) {
+      cv.width = bw;
+      cv.height = bh;
+    }
+    const ctx = cv.getContext("2d");
+    const k = cssW / W * dpr;
+    ctx.setTransform(k, 0, 0, k, 0, 0);
+    ctx.clearRect(0, 0, W, H2);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const groups = /* @__PURE__ */ new Map();
+    for (const g2 of glyphs) {
+      const key = g2[3] + (g2[4] ? "b" : "s");
+      let a2 = groups.get(key);
+      if (!a2) groups.set(key, a2 = []);
+      a2.push(g2);
+    }
+    for (const [key, arr] of groups) {
+      ctx.font = (key[1] === "b" ? "8.5px" : "7.5px") + " " + L2.FONT;
+      ctx.fillStyle = colors[+key[0]];
+      for (const g2 of arr) ctx.fillText(g2[2], g2[0], g2[1]);
+    }
+    S2.keys = keys;
+    const sc = cssW / W;
+    keys.forEach((p2, i2) => {
+      const tpc = topics[i2];
+      if (!tpc) return;
+      const hot = tpc.recent || S2.tipK === i2, ch = C2.keyChars[i2], music = i2 === 0, ring = C2.keyRing;
+      const r2 = (ring ? 8 : 7) + (hot ? 1 : 0);
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.beginPath();
+      ctx.arc(p2[0], p2[1], r2 + 0.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = hot ? colors[3] : colors[1];
+      if (ring) {
+        ctx.strokeStyle = ctx.fillStyle;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(p2[0], p2[1], r2, 0, Math.PI * 2);
+        ctx.stroke();
       }
+      ctx.font = music ? (hot ? "14px" : "12px") + " " + L2.FONT : (hot ? "500 12.5px" : "500 11px") + " Inter, sans-serif";
+      ctx.fillText(ch, p2[0], p2[1] + (music ? 0 : 0.5));
+      const b2 = keyBtns[i2];
+      if (b2) {
+        b2.style.left = p2[0] * sc + "px";
+        b2.style.top = p2[1] * sc + "px";
+      }
+    });
+    placeTip();
+    if (!drawn) {
+      drawn = true;
+      saxBox.classList.add("is-live");
     }
-  });
-  on(dlg.querySelector(".hero-card-dive"), "click", (e2) => {
-    if (e2.metaKey || e2.ctrlKey || e2.shiftKey || e2.button === 1) return;
-    e2.preventDefault();
-    const url = new URL(e2.currentTarget.href, window.location.href);
-    card.opener = null;
-    dlg.close();
-    window.spaNavigate ? window.spaNavigate(url) : window.location.href = url.href;
-  });
-  const hd = dlg.querySelector(".hero-card-handle");
-  let y0 = null;
-  on(hd, "pointerdown", (e2) => {
-    y0 = e2.clientY;
-    hd.setPointerCapture?.(e2.pointerId);
-  });
-  on(hd, "pointermove", (e2) => {
-    if (y0 == null) return;
-    const d2 = Math.max(0, e2.clientY - y0);
-    dlg.style.transform = d2 ? "translateY(" + d2 + "px)" : "";
-  });
-  const end = (e2) => {
-    if (y0 == null) return;
-    const d2 = e2.clientY - y0;
-    y0 = null;
-    dlg.style.transform = "";
-    if (d2 > 70) dlg.close();
+    return S2.drag || Math.abs(S2.off.ay) + Math.abs(S2.off.ax) + Math.abs(S2.vel.ay) + Math.abs(S2.vel.ax) > 5e-4;
   };
-  on(hd, "pointerup", end);
-  on(hd, "pointercancel", end);
-  cleanups.push(() => {
-    if (dlg.open) {
-      card.opener = null;
-      dlg.close();
+  const step = (dt) => {
+    if (S2.drag) return;
+    for (const k of ["ay", "ax"]) {
+      S2.vel[k] += (-22 * S2.off[k] - 8 * S2.vel[k]) * dt;
+      S2.off[k] += S2.vel[k] * dt;
     }
-    document.documentElement.classList.remove("hero-locked");
+  };
+  const stop = () => {
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+    prev = 0;
+  };
+  const tick = (t2) => {
+    raf = 0;
+    const dt = prev ? Math.min(0.05, (t2 - prev) / 1e3) : 1 / 60;
+    prev = t2;
+    acc += dt;
+    step(dt);
+    let more = !reduce;
+    if (acc >= 1 / 30) {
+      acc = 0;
+      more = draw(t2) || more;
+    } else more = true;
+    if (more && visible && !document.hidden) raf = requestAnimationFrame(tick);
+    else prev = 0;
+  };
+  const kick = () => {
+    if (!raf && visible && !document.hidden) raf = requestAnimationFrame(tick);
+  };
+  topics.forEach((t2, i2) => {
+    const b2 = el("button", "hero-key");
+    b2.type = "button";
+    b2.tabIndex = i2 === 0 ? 0 : -1;
+    b2.setAttribute("aria-label", t2.label + " \xB7 " + t2.n + "\uD3B8" + (t2.recent ? " \xB7 \uCD5C\uADFC 45\uC77C \uAE00 \uC788\uC74C" : ""));
+    on(b2, "focus", () => {
+      showTip(i2);
+      kick();
+    });
+    on(b2, "blur", () => {
+      showTip(-1);
+      kick();
+    });
+    on(b2, "pointerenter", () => {
+      showTip(i2);
+      kick();
+    });
+    on(b2, "pointerleave", () => {
+      showTip(-1);
+      kick();
+    });
+    on(b2, "click", (e2) => {
+      e2.stopPropagation();
+      showTip(S2.tipK === i2 && e2.pointerType ? -1 : i2);
+      kick();
+    });
+    keyLayer.append(b2);
+    keyBtns.push(b2);
+  });
+  on(keyLayer, "keydown", (e2) => {
+    const d2 = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e2.key];
+    const cur = keyBtns.indexOf(document.activeElement);
+    if (!d2 || cur < 0) return;
+    e2.preventDefault();
+    const nx = Math.max(0, Math.min(keyBtns.length - 1, cur + d2));
+    keyBtns.forEach((x2, i2) => x2.tabIndex = i2 === nx ? 0 : -1);
+    keyBtns[nx].focus();
+  });
+  on(document, "pointerdown", (e2) => {
+    if (!e2.target.closest?.(".hero-key")) {
+      showTip(-1);
+      kick();
+    }
+  });
+  on(cv, "pointerdown", (e2) => {
+    S2.drag = true;
+    S2.lx = e2.clientX;
+    S2.ly = e2.clientY;
+    S2.vel.ay = S2.vel.ax = 0;
+    cv.setPointerCapture?.(e2.pointerId);
+    saxBox.classList.add("is-dragging");
+    kick();
+  });
+  on(cv, "pointermove", (e2) => {
+    if (!S2.drag) return;
+    S2.off.ay += (e2.clientX - S2.lx) * 0.012;
+    S2.off.ax += (e2.clientY - S2.ly) * 0.012;
+    S2.lx = e2.clientX;
+    S2.ly = e2.clientY;
+    kick();
+  });
+  const up = () => {
+    if (!S2.drag) return;
+    S2.drag = false;
+    saxBox.classList.remove("is-dragging");
+    kick();
+  };
+  on(cv, "pointerup", up);
+  on(cv, "pointercancel", up);
+  on(document, "visibilitychange", () => document.hidden ? stop() : kick());
+  on(document, "themechange", () => {
+    readColors();
+    draw(performance.now());
+  });
+  const io = new IntersectionObserver((es) => {
+    visible = es.some((x2) => x2.isIntersecting);
+    visible ? kick() : stop();
+  });
+  io.observe(saxBox);
+  cleanups.push(() => {
+    stop();
+    io.disconnect();
+  });
+  const fontsReady = Promise.race([Promise.all(L2.FONT_LOADS.map(([f3, t2]) => document.fonts.load(f3, t2))), new Promise((r2) => setTimeout(r2, 2500))]);
+  fontsReady.then(() => {
+    if (!root.isConnected) return;
+    readColors();
+    draw(performance.now());
+    kick();
   });
   window.addCleanup?.(() => cleanups.forEach((fn) => fn()));
 }
 
 // src/components/styles/hero.scss
-var hero_default = '.home-hero {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) clamp(400px, 50%, 600px);\n  grid-template-areas: "text shelf";\n  align-items: end;\n  gap: 28px 56px;\n  padding: 40px 0 56px;\n}\n@media all and (max-width: 899px) {\n  .home-hero {\n    grid-template-columns: minmax(0, 1fr);\n    grid-template-areas: "text" "shelf";\n    padding: 12px 0 40px;\n  }\n}\n\n.hero-text {\n  grid-area: text;\n  min-width: 0;\n}\n\n.hero-headline {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-weight: 900;\n  font-size: clamp(2.5rem, 6vw, 3.75rem);\n  line-height: 1.1;\n  letter-spacing: -0.02em;\n  color: var(--dark);\n}\n\n.hero-author {\n  margin: 14px 0 0;\n  font-family: var(--headerFont);\n  font-size: 1.05rem;\n  font-weight: 700;\n  color: var(--darkgray);\n}\n@media all and (max-width: 800px) {\n  .hero-author {\n    margin-top: 10px;\n    font-size: 1rem;\n  }\n}\n\n.hero-description {\n  margin: 26px 0 0;\n  max-width: 29em;\n  font-family: var(--headerFont);\n  font-size: 17px;\n  line-height: 1.85;\n  color: var(--darkgray);\n  word-break: keep-all;\n}\n@media all and (max-width: 800px) {\n  .hero-description {\n    margin-top: 20px;\n    font-size: 16px;\n    line-height: 1.8;\n  }\n}\n\n.hero-links {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 8px;\n  margin: 26px 0 0;\n}\n.hero-links a {\n  display: inline-flex;\n  align-items: center;\n  min-height: 40px;\n  padding: 0 16px;\n  box-sizing: border-box;\n  border-radius: 10px;\n  background: rgba(var(--accent-rgb), 0.08);\n  color: var(--secondary);\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 700;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.hero-links a:hover {\n  background: rgba(var(--accent-rgb), 0.16);\n}\n@media all and (max-width: 800px) {\n  .hero-links a {\n    min-height: 44px;\n  }\n}\n@media all and (max-width: 800px) {\n  .hero-links {\n    margin-top: 16px;\n  }\n}\n\n.hero-meta {\n  margin: 12px 0 0;\n  font-family: var(--codeFont);\n  font-size: 12px;\n  letter-spacing: 0.02em;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n}\n@media all and (max-width: 800px) {\n  .hero-meta {\n    margin-top: 4px;\n    font-size: 11.5px;\n  }\n}\n\n.hero-num {\n  display: inline-block;\n  min-width: 1ch;\n}\n\n.hero-num-total {\n  min-width: 3ch;\n  text-align: right;\n}\n\n.hero-shelf {\n  --paper: var(--light);\n  --ink: var(--dark);\n  --row-h: 120px;\n  --lift: 9px;\n  grid-area: shelf;\n  position: relative;\n  display: grid;\n  gap: 24px;\n  min-width: 0;\n  padding-top: var(--lift);\n}\n@media all and (max-width: 700px) {\n  .hero-shelf {\n    --row-h: 108px;\n    gap: 22px;\n  }\n}\n\n:root[saved-theme=dark] .hero-shelf {\n  --paper: var(--dark);\n  --ink: var(--light);\n}\n\n.hero-row {\n  display: flex;\n  align-items: flex-end;\n  gap: 3px;\n  height: var(--row-h);\n  border-bottom: 2px solid var(--dark);\n  box-shadow: 0 6px 6px -5px color-mix(in srgb, var(--dark) 22%, transparent);\n}\n@media all and (max-width: 700px) {\n  .hero-row {\n    gap: 2px;\n  }\n}\n\n.hero-spine {\n  position: relative;\n  display: flex;\n  flex: 1 1 0;\n  align-items: center;\n  justify-content: center;\n  box-sizing: border-box;\n  min-width: 0;\n  max-width: 44px;\n  background: var(--paper);\n  color: var(--ink);\n  border: 1px solid color-mix(in srgb, var(--ink) 18%, var(--paper));\n  border-bottom: 0;\n  border-radius: 2px 2px 0 0;\n  box-shadow: inset -3px 0 3px -2px color-mix(in srgb, var(--ink) 16%, transparent);\n  text-decoration: none;\n  transition: transform var(--dur-fast) var(--ease, cubic-bezier(0.22, 1, 0.36, 1));\n}\n.hero-spine.has-gap {\n  margin-left: 9px;\n}\n@media all and (max-width: 700px) {\n  .hero-spine.has-gap {\n    margin-left: 5px;\n  }\n}\n.hero-spine::after {\n  content: "";\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 100%;\n  height: var(--lift);\n}\n.hero-spine.is-new {\n  background: var(--secondary);\n  color: var(--light);\n  border-color: var(--tertiary);\n  box-shadow: inset -3px 0 3px -2px color-mix(in srgb, var(--light) 28%, transparent);\n}\n.hero-spine:hover, .hero-spine:focus-visible {\n  color: var(--ink);\n}\n.hero-spine.is-new:hover, .hero-spine.is-new:focus-visible {\n  color: var(--light);\n}\n.hero-spine:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 3px;\n}\n@media (hover: hover) {\n  .hero-spine:hover {\n    transform: translateY(calc(-1 * var(--lift)));\n  }\n}\n.hero-spine:focus-visible {\n  transform: translateY(calc(-1 * var(--lift)));\n}\n@media all and (max-width: 700px) {\n  .hero-spine {\n    min-width: 24px;\n  }\n}\n\n.hero-spine-t {\n  max-height: calc(100% - 20px);\n  overflow: hidden;\n  writing-mode: vertical-rl;\n  font: 700 12px/1.2 var(--headerFont);\n  white-space: nowrap;\n  text-overflow: ellipsis;\n  pointer-events: none;\n}\n@media all and (max-width: 700px) {\n  .hero-spine-t {\n    font-size: 11px;\n  }\n}\n\n.hero-tip {\n  position: absolute;\n  z-index: 3;\n  left: 0;\n  top: 0;\n  width: max-content;\n  max-width: 100%;\n  box-sizing: border-box;\n  padding: 5px 10px;\n  font: 600 12px/1.4 var(--bodyFont);\n  color: var(--light);\n  background: var(--dark);\n  border-radius: 4px;\n  opacity: 0;\n  visibility: hidden;\n  pointer-events: none;\n  transition: opacity var(--dur-fast) var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), visibility var(--dur-fast) var(--ease, cubic-bezier(0.22, 1, 0.36, 1));\n}\n.hero-tip.is-on {\n  opacity: 1;\n  visibility: visible;\n}\n.hero-tip small {\n  display: block;\n  font: 400 10px var(--codeFont);\n  letter-spacing: 0.05em;\n  text-transform: uppercase;\n  color: color-mix(in srgb, var(--light) 82%, var(--dark));\n}\n\n.hero-card {\n  width: min(520px, 100vw - 32px);\n  max-height: min(80dvh, 640px);\n  padding: 0;\n  color: var(--darkgray);\n  background: var(--light);\n  border: 1px solid var(--lightgray);\n  border-radius: 14px;\n}\n.hero-card::backdrop {\n  background: rgba(10, 16, 28, 0.42);\n}\n.hero-card[open] {\n  animation: hero-card-in var(--dur-fast) var(--ease, cubic-bezier(0.22, 1, 0.36, 1));\n}\n.hero-card.is-sheet {\n  width: 100%;\n  max-width: 100%;\n  margin: auto 0 0;\n  max-height: 75dvh;\n  border-bottom: 0;\n  border-radius: 16px 16px 0 0;\n}\n.hero-card.is-sheet .hero-card-in {\n  padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));\n}\n.hero-card.is-sheet .hero-card-handle {\n  display: block;\n}\n.hero-card.is-sheet .hero-card-actions {\n  flex-wrap: wrap;\n}\n.hero-card.is-sheet .hero-card-dive {\n  order: -1;\n  flex: 1 0 100%;\n  justify-content: center;\n  min-height: 48px;\n}\n\n.hero-card-in {\n  display: grid;\n  gap: 10px;\n  padding: 22px 22px 18px;\n}\n\n.hero-card-handle {\n  display: none;\n  width: 44px;\n  height: 5px;\n  margin: 0 auto 2px;\n  border-radius: 3px;\n  background: var(--lightgray);\n  cursor: grab;\n  touch-action: none;\n}\n\n.hero-card-eyebrow,\n.hero-card-meta {\n  margin: 0;\n  font: 400 12px var(--codeFont);\n  letter-spacing: 0.04em;\n  color: var(--gray);\n}\n\n.hero-card-title {\n  margin: 0;\n  font-family: var(--headerFont);\n  font-size: 1.35rem;\n  font-weight: 700;\n  color: var(--dark);\n  outline: none;\n}\n\n.hero-card-desc {\n  margin: 0;\n  font-size: 15px;\n  line-height: 1.75;\n  color: var(--darkgray);\n  word-break: keep-all;\n}\n\n.hero-card-actions {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-top: 6px;\n}\n.hero-card-actions button {\n  min-height: 40px;\n  padding: 0 12px;\n  font: 500 13px var(--bodyFont);\n  color: var(--darkgray);\n  background: none;\n  border: 1px solid var(--lightgray);\n  border-radius: 9px;\n  cursor: pointer;\n}\n.hero-card-actions button:disabled {\n  opacity: 0.4;\n  cursor: default;\n}\n\n.hero-card-gap {\n  flex: 1 1 auto;\n}\n\n.hero-card-dive {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  min-height: 40px;\n  padding: 0 18px;\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 700;\n  letter-spacing: 0.04em;\n  color: var(--light);\n  text-decoration: none;\n  background: var(--accent-action);\n  border-radius: 9px;\n}\n\n:root.hero-locked {\n  overflow: hidden;\n  scrollbar-gutter: stable;\n}\n\n@keyframes hero-card-in {\n  from {\n    opacity: 0;\n    transform: translateY(6px);\n  }\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .hero-spine,\n  .hero-tip,\n  .hero-card[open] {\n    transition: none;\n    animation: none;\n  }\n}';
+var hero_default = '.home-hero {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;\n  grid-template-areas: "text sax";\n  align-items: center;\n  gap: 24px 56px;\n  padding: 48px 0 64px;\n}\n@media all and (max-width: 899px) {\n  .home-hero {\n    grid-template-columns: minmax(0, 1fr);\n    grid-template-areas: "sax" "text";\n    gap: 18px;\n    padding: 12px 0 40px;\n  }\n}\n\n.hero-text {\n  grid-area: text;\n  align-self: center;\n  min-width: 0;\n}\n\n.hero-headline {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-weight: 900;\n  font-size: clamp(2.5rem, 6vw, 3.75rem);\n  line-height: 1.1;\n  letter-spacing: -0.02em;\n  color: var(--dark);\n}\n\n.hero-author {\n  margin: 14px 0 0;\n  font-family: var(--headerFont);\n  font-size: 1.05rem;\n  font-weight: 700;\n  color: var(--darkgray);\n}\n@media all and (max-width: 800px) {\n  .hero-author {\n    margin-top: 10px;\n    font-size: 1rem;\n  }\n}\n\n.hero-description {\n  margin: 26px 0 0;\n  max-width: 29em;\n  font-family: var(--headerFont);\n  font-size: 17px;\n  line-height: 1.85;\n  color: var(--darkgray);\n  word-break: keep-all;\n}\n@media all and (max-width: 800px) {\n  .hero-description {\n    margin-top: 20px;\n    font-size: 16px;\n    line-height: 1.8;\n  }\n}\n\n.hero-links {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 8px;\n  margin: 26px 0 0;\n}\n.hero-links a {\n  display: inline-flex;\n  align-items: center;\n  min-height: 40px;\n  padding: 0 16px;\n  box-sizing: border-box;\n  border-radius: 10px;\n  background: rgba(var(--accent-rgb), 0.08);\n  color: var(--secondary);\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 700;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.hero-links a:hover {\n  background: rgba(var(--accent-rgb), 0.16);\n}\n@media all and (max-width: 800px) {\n  .hero-links a {\n    min-height: 44px;\n  }\n}\n@media all and (max-width: 800px) {\n  .hero-links {\n    margin-top: 16px;\n  }\n}\n\n.hero-meta {\n  margin: 12px 0 0;\n  font-family: var(--codeFont);\n  font-size: 12px;\n  letter-spacing: 0.02em;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n}\n@media all and (max-width: 800px) {\n  .hero-meta {\n    margin-top: 4px;\n    font-size: 11.5px;\n  }\n}\n\n.hero-num {\n  display: inline-block;\n  min-width: 1ch;\n}\n\n.hero-num-total {\n  min-width: 3ch;\n  text-align: right;\n}\n\n.hero-sax {\n  --t0: var(--dark);\n  --t1: var(--secondary);\n  --t2: color-mix(in srgb, var(--secondary) 90%, var(--light));\n  --tb: var(--dark);\n  grid-area: sax;\n  position: relative;\n  justify-self: end;\n  width: var(--sax-w);\n  height: var(--box-h);\n  touch-action: pan-y;\n}\n@media all and (max-width: 899px) {\n  .hero-sax {\n    justify-self: center;\n    width: calc(260px * var(--sax-ar));\n    height: 260px;\n  }\n}\n\n:root[saved-theme=dark] .hero-sax {\n  --t0: color-mix(in srgb, var(--secondary) 70%, var(--light));\n  --t2: var(--dark);\n}\n\n.hero-sax-pre,\n.hero-sax-cv,\n.hero-keys {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: auto;\n  aspect-ratio: var(--sax-ar);\n}\n\n.hero-sax-pre {\n  overflow: visible;\n  font-family: "Noto Music", "Noto Sans Symbols 2", sans-serif;\n  font-size: 7.5px;\n  text-anchor: middle;\n  dominant-baseline: central;\n}\n.hero-sax-pre .t0 {\n  fill: var(--t0);\n}\n.hero-sax-pre .t1 {\n  fill: var(--t1);\n}\n.hero-sax-pre .t2 {\n  fill: var(--t2);\n}\n.hero-sax-pre .t3 {\n  fill: var(--tb);\n}\n.hero-sax-pre .k {\n  font: 500 11px Inter, var(--bodyFont);\n  fill: var(--t1);\n}\n.hero-sax-pre .k.is-music {\n  font-family: "Noto Music", sans-serif;\n  font-size: 12px;\n}\n.hero-sax-pre .kr {\n  fill: none;\n  stroke: var(--t1);\n  stroke-width: 1px;\n}\n.hero-sax-pre .k.is-pressed {\n  fill: var(--tb);\n}\n.hero-sax-pre .kr.is-pressed {\n  stroke: var(--tb);\n}\n.is-live .hero-sax-pre {\n  visibility: hidden;\n}\n\n.hero-sax-cv {\n  cursor: grab;\n  visibility: hidden;\n}\n.is-live .hero-sax-cv {\n  visibility: visible;\n}\n.is-dragging .hero-sax-cv {\n  cursor: grabbing;\n}\n\n.hero-keys {\n  pointer-events: none;\n}\n\n.hero-key {\n  position: absolute;\n  width: 22px;\n  height: 22px;\n  margin: -11px 0 0 -11px;\n  padding: 0;\n  border: 0;\n  border-radius: 50%;\n  background: transparent;\n  cursor: help;\n  pointer-events: auto;\n}\n.hero-key:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 1px;\n}\n\n.hero-keytip {\n  position: absolute;\n  z-index: 3;\n  transform: translate(18px, -50%);\n  padding: 3px 8px;\n  font: 500 12px var(--bodyFont);\n  white-space: nowrap;\n  color: var(--darkgray);\n  background: var(--light);\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  pointer-events: none;\n}\n.hero-keytip b {\n  color: var(--dark);\n}\n\n.hero-tone {\n  display: none;\n}\n.hero-tone.t0 {\n  color: var(--t0);\n}\n.hero-tone.t1 {\n  color: var(--t1);\n}\n.hero-tone.t2 {\n  color: var(--t2);\n}\n.hero-tone.tb {\n  color: var(--tb);\n}\n\n@media (prefers-reduced-motion: no-preference) {\n  :root:not([data-hero-swept]) .hero-headline {\n    background-image: linear-gradient(90deg, currentColor 0 50%, transparent 50% 100%);\n    background-size: 200% 100%;\n    background-position: 100% 0;\n    -webkit-background-clip: text;\n    background-clip: text;\n    -webkit-text-fill-color: transparent;\n    animation: hero-sweep 1.4s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) 0.15s forwards;\n  }\n  :root:not([data-hero-swept]) .hero-rise {\n    animation: hero-rise var(--dur-slow, 900ms) var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) both;\n  }\n  :root:not([data-hero-swept]) .hero-rise-1 {\n    animation-delay: 0.12s;\n  }\n  :root:not([data-hero-swept]) .hero-rise-2 {\n    animation-delay: 0.24s;\n  }\n  :root:not([data-hero-swept]) .hero-rise-3 {\n    animation-delay: 0.36s;\n  }\n}\n@keyframes hero-sweep {\n  to {\n    background-position: 0 0;\n  }\n}\n@keyframes hero-rise {\n  from {\n    opacity: 0;\n    transform: translateY(12px);\n  }\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}';
 
 // ../_shared/noteMeta.ts
-function inRanges(code, ranges) {
-  return ranges.some(([lo, hi]) => lo <= code && code <= hi);
-}
-var isCJK = (c2) => typeof c2 === "string" && inRanges(c2.charCodeAt(0), [
-  [12352, 12447],
-  [19968, 40959],
-  [44032, 55203],
-  [131072, 191456]
-]);
-var isWordBound = (c2) => typeof c2 === "string" && " \n\r	".includes(c2);
-var isPunctuation = (c2) => typeof c2 === "string" && inRanges(c2.charCodeAt(0), [
-  [33, 47],
-  [58, 64],
-  [91, 96],
-  [123, 126],
-  [12288, 12351],
-  [65280, 65519]
-]);
-function countWords(text) {
-  let words = 0;
-  let start = 0;
-  let end = text.length - 1;
-  while (isWordBound(text[start])) start++;
-  while (end >= 0 && isWordBound(text[end])) end--;
-  const t2 = `${text}
-`;
-  for (let i2 = start; i2 <= end; i2++) {
-    if (isCJK(t2[i2]) || !isWordBound(t2[i2]) && (isWordBound(t2[i2 + 1]) || isCJK(t2[i2 + 1]))) {
-      words++;
-    }
-    if (isCJK(t2[i2])) {
-      while (i2 <= end && (isPunctuation(t2[i2 + 1]) || isWordBound(t2[i2 + 1]))) i2++;
-    }
-  }
-  return words;
-}
-function readingMinutes(text) {
-  return text ? Math.ceil(countWords(text) / 200) : 0;
-}
 function toDate(value) {
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? void 0 : value;
   if (typeof value !== "string" && typeof value !== "number") return void 0;
@@ -305,61 +587,6 @@ function topicName(slug) {
   const key = slug.split("/")[0] ?? "";
   return TOPIC_NAMES[key] ?? titleCase(key);
 }
-
-// ../_shared/path.ts
-function endsWith(s2, suffix) {
-  return s2 === suffix || s2.endsWith("/" + suffix);
-}
-function trimSuffix(s2, suffix) {
-  return endsWith(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
-}
-function stripSlashes(s2, onlyStripPrefix) {
-  if (s2.startsWith("/")) s2 = s2.substring(1);
-  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
-  return s2;
-}
-function simplifySlug(fp) {
-  const res = stripSlashes(trimSuffix(fp, "index"), true);
-  return res.length === 0 ? "/" : res;
-}
-function joinSegments(...args) {
-  if (args.length === 0) return "";
-  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes(segment)).join("/");
-  const first = args[0];
-  const last = args[args.length - 1];
-  if (first?.startsWith("/")) joined = "/" + joined;
-  if (last?.endsWith("/")) joined = joined + "/";
-  return joined;
-}
-function pathToRoot(slug) {
-  const rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
-  return rootPath.length === 0 ? "." : rootPath;
-}
-function resolveRelative(current, target) {
-  return joinSegments(pathToRoot(current), simplifySlug(target));
-}
-
-// ../_shared/series.ts
-function seriesOf(file) {
-  const raw = file.frontmatter?.series;
-  return raw == null ? "" : String(raw).trim();
-}
-function seriesIndexOf(file) {
-  const raw = file.frontmatter?.series_index;
-  if (typeof raw === "number") return Number.isFinite(raw) ? raw : void 0;
-  if (typeof raw === "string" && raw.trim() !== "") {
-    const index = Number(raw);
-    return Number.isFinite(index) ? index : void 0;
-  }
-  return void 0;
-}
-function episodeLabel(index) {
-  return index === 0 ? "\uC11C\uBB38" : `${index}\uD3B8`;
-}
-function seriesLabel(file) {
-  const index = seriesIndexOf(file);
-  return seriesOf(file) && index !== void 0 ? episodeLabel(index) : void 0;
-}
 var l;
 function S(n2) {
   return n2.children;
@@ -389,7 +616,25 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 var GOATCOUNTER_SITE = "haejunhyun";
+var NOTO_MUSIC_CSS = "https://fonts.googleapis.com/css2?family=Noto+Music&text=%E2%99%A9%E2%99%AA%E2%99%AB%E2%99%AC%E2%99%AD%E2%99%AE%E2%99%AF&display=swap";
+var NOTO_SYMBOLS_CSS = "https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&text=%E2%9C%A6%E2%9C%A7%E2%97%A6&display=swap";
+var SAX_FONT = '"Noto Music", "Noto Sans Symbols 2", sans-serif';
+var SAX_FONT_LOADS = [
+  ['10px "Noto Music"', SAX_CFG.notes + SAX_CFG.accidentals],
+  ['10px "Noto Sans Symbols 2"', SAX_CFG.sparks + SAX_CFG.rim]
+];
+var sweptScript = `try { if (sessionStorage.getItem("hero-swept")) document.documentElement.setAttribute("data-hero-swept", "") } catch {}`;
 var heroScript = `
+const heroLib = {
+  buildSax: (${buildSax.toString()}),
+  rasterSax: (${rasterSax.toString()}),
+  fitSax: (${fitSax.toString()}),
+  composeSax: (${composeSax.toString()}),
+  SAX_CFG: ${JSON.stringify(SAX_CFG)},
+  REST: ${JSON.stringify(SAX_REST)},
+  FONT: ${JSON.stringify(SAX_FONT)},
+  FONT_LOADS: ${JSON.stringify(SAX_FONT_LOADS)},
+}
 const heroClient = (${heroClient.toString()})
 
 function fillHeroVisits() {
@@ -412,12 +657,23 @@ function fillHeroVisits() {
     )
 }
 
+function markHeroSwept() {
+  const root = document.documentElement
+  if (!document.querySelector(".home-hero") || root.hasAttribute("data-hero-swept")) return
+  try { sessionStorage.setItem("hero-swept", "1") } catch {}
+  window.addCleanup(() => root.setAttribute("data-hero-swept", ""))
+}
+
 function initHero() {
-  if (document.querySelector(".home-hero")) heroClient()
+  if (!document.querySelector(".home-hero")) return
+  heroLib.model = heroLib.model || heroLib.buildSax()
+  heroLib.fit = heroLib.fit || heroLib.fitSax(heroLib.model, heroLib.rasterSax, heroLib.REST, heroLib.SAX_CFG.rows)
+  heroClient(heroLib)
 }
 
 document.addEventListener("nav", () => {
   fillHeroVisits()
+  markHeroSwept()
   initHero()
 })
 `;
@@ -427,6 +683,15 @@ var defaultOptions = {
   description: "",
   links: []
 };
+var saxModel;
+var saxFit;
+var prerender;
+function getPrerender() {
+  saxModel ??= buildSax();
+  saxFit ??= fitSax(saxModel, rasterSax, SAX_REST, SAX_CFG.rows);
+  prerender ??= composeSax(saxModel, rasterSax, {}, saxFit, SAX_CFG, SAX_REST.ay, SAX_REST.ax, () => 0);
+  return { fit: saxFit, ...prerender };
+}
 var HomeHero_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
   const HomeHero = (props) => {
@@ -437,40 +702,38 @@ var HomeHero_default = ((userOpts) => {
     );
     const noteCount = files.length;
     const topicKey = (f3) => (f3.slug ?? "").split("/")[0] ?? "";
-    const topicKeys = [...new Set(files.map(topicKey).filter(Boolean))];
-    const topicCount = topicKeys.length;
+    const byTopic = /* @__PURE__ */ new Map();
+    for (const f3 of files) {
+      const k = topicKey(f3);
+      const p2 = getListDate(f3) ? formatYmd(getListDate(f3)) : "";
+      const cur = byTopic.get(k) ?? { n: 0, p: "" };
+      byTopic.set(k, { n: cur.n + 1, p: p2 > cur.p ? p2 : cur.p });
+    }
+    const topics = [...byTopic.entries()].map(([k, v2]) => ({ k, label: topicName(k), n: v2.n, p: v2.p })).sort((a2, b2) => b2.n - a2.n || a2.k.localeCompare(b2.k));
+    const topicCount = topics.length;
+    const buildNow = Date.now();
+    const isRecent = (p2) => !!p2 && (buildNow - Date.parse(p2)) / 864e5 <= 45;
+    const json = JSON.stringify({ topics }).replace(/</g, "\\u003c");
     const description = opts.description || (fileData.frontmatter?.description ?? "");
-    const ymd = (d2) => d2 ? formatYmd(d2) : "";
-    const cands = files.map((f3) => {
-      const fm = f3.frontmatter ?? {};
-      const text = f3.text ?? "";
-      const p2 = ymd(getListDate(f3));
-      const c2 = ymd(getNoteDates(f3).created);
-      return {
-        slug: f3.slug ?? "",
-        topic: topicKey(f3),
-        date: p2 || c2,
-        t: fm.title ?? f3.slug ?? "",
-        tl: topicName(topicKey(f3)),
-        h: resolveRelative(fileData.slug, f3.slug),
-        p: p2,
-        c: c2,
-        m: readingMinutes(text),
-        d: fm.description ?? "",
-        sl: seriesLabel(f3) ?? ""
-      };
-    });
-    const shelfRows = pickShelf(cands);
-    const shelfCount = shelfRows.reduce((s2, r2) => s2 + r2.length, 0);
-    const json = JSON.stringify({
-      notes: shelfRows.flat().map((n2) => ({ t: n2.t, tl: n2.tl, h: n2.h, p: n2.p, c: n2.c, m: n2.m, d: n2.d, sl: n2.sl, isNew: n2.isNew }))
-    }).replace(/</g, "\\u003c");
+    const pre = getPrerender();
+    const W = pre.fit.cols * SAX_CFG.cw;
+    const H2 = SAX_CFG.rows * SAX_CFG.ch;
+    const byRow = /* @__PURE__ */ new Map();
+    for (const [x2, y2, ch, tier] of pre.glyphs) {
+      const k = y2 + "|" + tier;
+      const g2 = byRow.get(k) ?? { y: y2, tier, xs: [], chs: "" };
+      g2.xs.push(x2.toFixed(1));
+      g2.chs += ch;
+      byRow.set(k, g2);
+    }
     return /* @__PURE__ */ u2("section", { class: classNames(displayClass, "home-hero"), children: [
+      /* @__PURE__ */ u2("link", { rel: "stylesheet", href: NOTO_MUSIC_CSS }),
+      /* @__PURE__ */ u2("link", { rel: "stylesheet", href: NOTO_SYMBOLS_CSS }),
       /* @__PURE__ */ u2("div", { class: "hero-text", children: [
         /* @__PURE__ */ u2("h1", { class: "hero-headline", children: opts.headline }),
-        opts.author && /* @__PURE__ */ u2("p", { class: "hero-author", children: opts.author }),
-        description && /* @__PURE__ */ u2("p", { class: "hero-description", children: description }),
-        /* @__PURE__ */ u2("div", { children: [
+        opts.author && /* @__PURE__ */ u2("p", { class: "hero-author hero-rise hero-rise-1", children: opts.author }),
+        description && /* @__PURE__ */ u2("p", { class: "hero-description hero-rise hero-rise-2", children: description }),
+        /* @__PURE__ */ u2("div", { class: "hero-rise hero-rise-3", children: [
           opts.links.length > 0 && /* @__PURE__ */ u2("p", { class: "hero-links", children: opts.links.map((link) => /* @__PURE__ */ u2("a", { href: link.href, children: link.label })) }),
           /* @__PURE__ */ u2("p", { class: "hero-meta", children: [
             noteCount,
@@ -488,41 +751,38 @@ var HomeHero_default = ((userOpts) => {
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ u2("div", { class: "hero-shelf", role: "group", "aria-label": `\uB178\uD2B8 ${shelfCount}\uD3B8`, children: [
-        shelfRows.map((row) => /* @__PURE__ */ u2("div", { class: "hero-row", children: row.map((n2) => /* @__PURE__ */ u2(
-          "a",
-          {
-            class: classNames("hero-spine", n2.isNew && "is-new", n2.gap && "has-gap"),
-            href: n2.h,
-            "data-k": n2.k,
-            "aria-label": `${n2.t} \u2014 ${n2.tl}`,
-            style: `height:${n2.hp}%`,
-            children: /* @__PURE__ */ u2("span", { class: "hero-spine-t", children: n2.t })
-          }
-        )) })),
-        /* @__PURE__ */ u2("div", { class: "hero-tip", "aria-hidden": "true" })
-      ] }),
-      /* @__PURE__ */ u2("script", { type: "application/json", class: "hero-data", dangerouslySetInnerHTML: { __html: json } }),
-      /* @__PURE__ */ u2("dialog", { class: "hero-card", "aria-labelledby": "hero-card-title", "aria-describedby": "hero-card-desc", children: /* @__PURE__ */ u2("div", { class: "hero-card-in", children: [
-        /* @__PURE__ */ u2("div", { class: "hero-card-handle", "aria-hidden": "true" }),
-        /* @__PURE__ */ u2("p", { class: "hero-card-eyebrow" }),
-        /* @__PURE__ */ u2("h2", { class: "hero-card-title", id: "hero-card-title", tabindex: -1 }),
-        /* @__PURE__ */ u2("p", { class: "hero-card-meta" }),
-        /* @__PURE__ */ u2("p", { class: "hero-card-desc", id: "hero-card-desc" }),
-        /* @__PURE__ */ u2("div", { class: "hero-card-actions", children: [
-          /* @__PURE__ */ u2("button", { class: "hero-card-prev", type: "button", "aria-label": "\uC774\uC804 \uB178\uD2B8", children: "\u2039" }),
-          /* @__PURE__ */ u2("button", { class: "hero-card-next", type: "button", "aria-label": "\uB2E4\uC74C \uB178\uD2B8", children: "\u203A" }),
-          /* @__PURE__ */ u2("span", { class: "hero-card-gap" }),
-          /* @__PURE__ */ u2("button", { class: "hero-card-close", type: "button", children: "\uB2EB\uAE30" }),
-          /* @__PURE__ */ u2("a", { class: "hero-card-dive", href: "#", "data-router-ignore": true, children: [
-            "DIVE IN ",
-            /* @__PURE__ */ u2("span", { "aria-hidden": "true", children: "\u2192" })
-          ] })
-        ] })
-      ] }) })
+      /* @__PURE__ */ u2(
+        "div",
+        {
+          class: "hero-sax hero-rise hero-rise-1",
+          style: `--sax-w:${W.toFixed(1)}px;--sax-ar:${(W / H2).toFixed(4)};--box-h:${H2.toFixed(1)}px`,
+          children: [
+            /* @__PURE__ */ u2("svg", { class: "hero-sax-pre", viewBox: `0 0 ${W.toFixed(1)} ${H2.toFixed(1)}`, "aria-hidden": "true", children: [
+              [...byRow.values()].map((g2) => /* @__PURE__ */ u2("text", { class: `t${g2.tier}`, x: g2.xs.join(" "), y: g2.y.toFixed(1), children: g2.chs })),
+              pre.keys.map(([x2, y2], i2) => {
+                const pressed = !!topics[i2] && isRecent(topics[i2].p);
+                const music = i2 === 0;
+                return /* @__PURE__ */ u2(S, { children: [
+                  SAX_CFG.keyRing && /* @__PURE__ */ u2("circle", { class: classNames("kr", pressed && "is-pressed"), cx: x2.toFixed(1), cy: y2.toFixed(1), r: pressed ? 9 : 8 }),
+                  /* @__PURE__ */ u2("text", { class: classNames("k", pressed && "is-pressed", music && "is-music"), x: x2.toFixed(1), y: (y2 + (music ? 0 : 0.5)).toFixed(1), children: SAX_CFG.keyChars[i2] })
+                ] });
+              })
+            ] }),
+            /* @__PURE__ */ u2("canvas", { class: "hero-sax-cv", "aria-hidden": "true" }),
+            /* @__PURE__ */ u2("div", { class: "hero-keys", role: "group", "aria-label": "\uC0C9\uC18C\uD3F0 \uD0A4 = \uD1A0\uD53D" }),
+            /* @__PURE__ */ u2("div", { class: "hero-keytip", role: "tooltip", hidden: true }),
+            /* @__PURE__ */ u2("i", { class: "hero-tone t0" }),
+            /* @__PURE__ */ u2("i", { class: "hero-tone t1" }),
+            /* @__PURE__ */ u2("i", { class: "hero-tone t2" }),
+            /* @__PURE__ */ u2("i", { class: "hero-tone tb" })
+          ]
+        }
+      ),
+      /* @__PURE__ */ u2("script", { type: "application/json", class: "hero-data", dangerouslySetInnerHTML: { __html: json } })
     ] });
   };
   HomeHero.css = hero_default;
+  HomeHero.beforeDOMLoaded = sweptScript;
   HomeHero.afterDOMLoaded = heroScript;
   return HomeHero;
 });
