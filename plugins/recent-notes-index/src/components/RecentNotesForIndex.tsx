@@ -1,3 +1,6 @@
+// 홈 Recent Notes — 날짜 · 제목(개정 배지) · 요약 · 토픽 행, 목록 날짜 최신순.
+// - 같은 날짜·같은 폴더 3편 이상은 폴더 링크 한 행으로 묶는다(_shared/notes buildRecentRows)
+// 주의: Featured의 recentExcludeCount가 이 limit과 같아야 두 섹션이 겹치지 않는다.
 import type {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -7,7 +10,7 @@ import type {
 import { classNames } from "@quartz-community/utils/lang"
 import { formatYmd, getListDate, getNoteDates } from "../../../_shared/noteMeta"
 import { buildRecentRows, byListDateDesc, isListedNote, titleCase, topicName } from "../../../_shared/notes"
-import { resolveRelative } from "../util/path"
+import { resolveRelative } from "../../../_shared/path"
 import style from "./styles/recentNotes.scss"
 
 type RecentNotesPluginData = QuartzPluginData & Record<string, unknown>
@@ -18,8 +21,6 @@ export interface RecentNotesForIndexOptions {
   linkToMore: string | false
   linkToMoreLabel: string
   showTags: boolean
-  filter: (f: RecentNotesPluginData) => boolean
-  sort: (f1: RecentNotesPluginData, f2: RecentNotesPluginData) => number
 }
 
 const defaultOptions: RecentNotesForIndexOptions = {
@@ -27,8 +28,6 @@ const defaultOptions: RecentNotesForIndexOptions = {
   linkToMore: false,
   linkToMoreLabel: "ALL NOTES →",
   showTags: true,
-  filter: () => true,
-  sort: byListDateDesc,
 }
 
 export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
@@ -42,14 +41,9 @@ export default ((userOpts?: Partial<RecentNotesForIndexOptions>) => {
     // 홈 전용 가드. `is-index` layout condition은 내장에 없다(역인 not-index만 존재).
     if (fileData.slug !== "index") return <></>
 
-    const files = allFiles as RecentNotesPluginData[]
-    const pages = files
-      .filter(opts.filter)
-      .filter(
-        (f) =>
-          f.slug !== fileData.slug && f.frontmatter?.title && isListedNote(f),
-      )
-      .sort(opts.sort)
+    const pages = (allFiles as RecentNotesPluginData[])
+      .filter((f) => f.slug !== fileData.slug && f.frontmatter?.title && isListedNote(f))
+      .sort(byListDateDesc)
     const rows = buildRecentRows(pages, opts.limit)
     const here = fileData.slug!
     const titleOf = (f: RecentNotesPluginData) => f.frontmatter?.title ?? "Untitled"

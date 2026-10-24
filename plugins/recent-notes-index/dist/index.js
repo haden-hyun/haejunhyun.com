@@ -38,12 +38,12 @@ var TOPICS = [
 var TOPIC_NAMES = Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
 
 // ../_shared/notes.ts
-function isRealNote(slug2) {
-  if (!slug2) return false;
-  if (slug2.startsWith("tags/")) return false;
-  if (slug2 === "index" || slug2.endsWith("/index")) return false;
-  if (slug2 === "404") return false;
-  if (slug2 === "topics" || slug2 === "archive") return false;
+function isRealNote(slug) {
+  if (!slug) return false;
+  if (slug.startsWith("tags/")) return false;
+  if (slug === "index" || slug.endsWith("/index")) return false;
+  if (slug === "404") return false;
+  if (slug === "topics" || slug === "archive") return false;
   return true;
 }
 function isListedNote(file) {
@@ -52,8 +52,8 @@ function isListedNote(file) {
 function titleCase(key) {
   return key.replace(/-/g, " ").replace(/\b\w/g, (c2) => c2.toUpperCase());
 }
-function topicName(slug2) {
-  const key = slug2.split("/")[0] ?? "";
+function topicName(slug) {
+  const key = slug.split("/")[0] ?? "";
   return TOPIC_NAMES[key] ?? titleCase(key);
 }
 var byListDateDesc = (a2, b2) => (getListDate(b2)?.getTime() ?? 0) - (getListDate(a2)?.getTime() ?? 0);
@@ -86,6 +86,42 @@ function buildRecentRows(sorted, limit) {
   }
   return rows;
 }
+
+// ../_shared/path.ts
+function endsWith(s2, suffix) {
+  return s2 === suffix || s2.endsWith("/" + suffix);
+}
+function trimSuffix(s2, suffix) {
+  return endsWith(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
+}
+function stripSlashes(s2, onlyStripPrefix) {
+  if (s2.startsWith("/")) s2 = s2.substring(1);
+  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
+  return s2;
+}
+function simplifySlug(fp) {
+  const res = stripSlashes(trimSuffix(fp, "index"), true);
+  return res.length === 0 ? "/" : res;
+}
+function joinSegments(...args) {
+  if (args.length === 0) return "";
+  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes(segment)).join("/");
+  const first = args[0];
+  const last = args[args.length - 1];
+  if (first?.startsWith("/")) joined = "/" + joined;
+  if (last?.endsWith("/")) joined = joined + "/";
+  return joined;
+}
+function pathToRoot(slug) {
+  const rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
+  return rootPath.length === 0 ? "." : rootPath;
+}
+function resolveRelative(current, target) {
+  return joinSegments(pathToRoot(current), simplifySlug(target));
+}
+
+// src/components/styles/recentNotes.scss
+var recentNotes_default = '@charset "UTF-8";\n.recent-notes {\n  padding: 0 0 72px;\n}\n@media all and (max-width: 800px) {\n  .recent-notes {\n    padding-bottom: 48px;\n  }\n}\n\n.recent-notes-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding-bottom: 14px;\n  border-bottom: 1px solid var(--lightgray);\n}\n.recent-notes-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: 0;\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .recent-notes-header {\n    padding-bottom: 10px;\n  }\n}\n\n.recent-notes-more {\n  padding: 8px 0;\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  color: var(--secondary);\n  text-decoration: none;\n}\n.recent-notes-more:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n@media all and (max-width: 800px) {\n  .recent-notes-more {\n    padding: 10px 0;\n  }\n}\n\n.recent-row {\n  display: grid;\n  grid-template-columns: 120px minmax(0, 1fr) auto;\n  gap: 24px;\n  align-items: baseline;\n  padding: 22px 10px;\n  border-bottom: 1px solid var(--lightgray);\n  color: inherit;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.recent-row:nth-child(even) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n.recent-row:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n@media all and (max-width: 800px) {\n  .recent-row {\n    grid-template-columns: auto minmax(0, 1fr);\n    gap: 4px 0;\n    padding: 18px 10px;\n  }\n}\n\n.recent-date {\n  font-family: var(--codeFont);\n  font-size: 12.5px;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n@media all and (max-width: 800px) {\n  .recent-date {\n    font-size: 11.5px;\n  }\n}\n\n.recent-main {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n@media all and (max-width: 800px) {\n  .recent-main {\n    grid-column: 1/-1;\n    grid-row: 2;\n  }\n}\n\n.recent-title {\n  font-family: var(--headerFont);\n  font-size: 17px;\n  font-weight: 700;\n  letter-spacing: -0.01em;\n  color: var(--dark);\n  word-break: keep-all;\n}\n@media all and (max-width: 800px) {\n  .recent-title {\n    font-size: 16px;\n  }\n}\n\n.recent-revised {\n  display: inline-block;\n  margin-left: 8px;\n  padding: 0 5px;\n  border: 1px solid var(--lightgray);\n  border-radius: 4px;\n  font-size: 11px;\n  font-weight: 400;\n  letter-spacing: 0;\n  line-height: 1.6;\n  color: var(--gray);\n  vertical-align: 2px;\n}\n\n.recent-sub {\n  font-size: 14.5px;\n  line-height: 1.65;\n  color: var(--gray);\n  word-break: keep-all;\n  overflow: hidden;\n  display: -webkit-box;\n  -webkit-line-clamp: 1;\n  -webkit-box-orient: vertical;\n}\n@media all and (max-width: 800px) {\n  .recent-sub {\n    font-size: 14px;\n    line-height: 1.6;\n  }\n}\n\n.recent-topic {\n  font-size: 12.5px;\n  color: var(--gray);\n  white-space: nowrap;\n}\n@media all and (max-width: 800px) {\n  .recent-topic {\n    grid-row: 1;\n    grid-column: 2;\n    font-family: var(--codeFont);\n    font-size: 11.5px;\n  }\n  .recent-topic::before {\n    content: " \xB7 ";\n    white-space: pre;\n  }\n}';
 var l;
 function S(n2) {
   return n2.children;
@@ -110,73 +146,12 @@ function u2(e2, t2, n2, o2, i2, u3) {
   return l.vnode && l.vnode(l2), l2;
 }
 
-// node_modules/@quartz-community/utils/dist/index.js
-function simplifySlug(fp) {
-  const res = stripSlashes(trimSuffix(fp, "index"), true);
-  return res.length === 0 ? "/" : res;
-}
-function joinSegments(...args) {
-  if (args.length === 0) {
-    return "";
-  }
-  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes(segment)).join("/");
-  const first = args[0];
-  const last = args[args.length - 1];
-  if (first?.startsWith("/")) {
-    joined = "/" + joined;
-  }
-  if (last?.endsWith("/")) {
-    joined = joined + "/";
-  }
-  return joined;
-}
-function endsWith(s2, suffix) {
-  return s2 === suffix || s2.endsWith("/" + suffix);
-}
-function trimSuffix(s2, suffix) {
-  if (endsWith(s2, suffix)) {
-    s2 = s2.slice(0, -suffix.length);
-  }
-  return s2;
-}
-function stripSlashes(s2, onlyStripPrefix) {
-  if (s2.startsWith("/")) {
-    s2 = s2.substring(1);
-  }
-  if (!onlyStripPrefix && s2.endsWith("/")) {
-    s2 = s2.slice(0, -1);
-  }
-  return s2;
-}
-
-// src/util/path.ts
-function simplifySlug2(fp) {
-  return simplifySlug(fp);
-}
-function pathToRoot(slug2) {
-  let rootPath = slug2.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
-  if (rootPath.length === 0) {
-    rootPath = ".";
-  }
-  return rootPath;
-}
-function resolveRelative(current, target) {
-  const simplified = simplifySlug2(target);
-  const rootPath = pathToRoot(current);
-  return joinSegments(rootPath, simplified);
-}
-
-// src/components/styles/recentNotes.scss
-var recentNotes_default = '@charset "UTF-8";\n.recent-notes {\n  padding: 0 0 72px;\n}\n@media all and (max-width: 800px) {\n  .recent-notes {\n    padding-bottom: 48px;\n  }\n}\n\n.recent-notes-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding-bottom: 14px;\n  border-bottom: 1px solid var(--lightgray);\n}\n.recent-notes-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: 0;\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .recent-notes-header {\n    padding-bottom: 10px;\n  }\n}\n\n.recent-notes-more {\n  padding: 8px 0;\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  color: var(--secondary);\n  text-decoration: none;\n}\n.recent-notes-more:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n@media all and (max-width: 800px) {\n  .recent-notes-more {\n    padding: 10px 0;\n  }\n}\n\n.recent-row {\n  display: grid;\n  grid-template-columns: 120px minmax(0, 1fr) auto;\n  gap: 24px;\n  align-items: baseline;\n  padding: 22px 10px;\n  border-bottom: 1px solid var(--lightgray);\n  color: inherit;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.recent-row:nth-child(even) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n.recent-row:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n@media all and (max-width: 800px) {\n  .recent-row {\n    grid-template-columns: auto minmax(0, 1fr);\n    gap: 4px 0;\n    padding: 18px 10px;\n  }\n}\n\n.recent-date {\n  font-family: var(--codeFont);\n  font-size: 12.5px;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n@media all and (max-width: 800px) {\n  .recent-date {\n    font-size: 11.5px;\n  }\n}\n\n.recent-main {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n@media all and (max-width: 800px) {\n  .recent-main {\n    grid-column: 1/-1;\n    grid-row: 2;\n  }\n}\n\n.recent-title {\n  font-family: var(--headerFont);\n  font-size: 17px;\n  font-weight: 700;\n  letter-spacing: -0.01em;\n  color: var(--dark);\n  word-break: keep-all;\n}\n@media all and (max-width: 800px) {\n  .recent-title {\n    font-size: 16px;\n  }\n}\n\n.recent-revised {\n  display: inline-block;\n  margin-left: 8px;\n  padding: 0 5px;\n  border: 1px solid var(--lightgray);\n  border-radius: 4px;\n  font-size: 11px;\n  font-weight: 400;\n  letter-spacing: 0;\n  line-height: 1.6;\n  color: var(--gray);\n  vertical-align: 2px;\n}\n\n.recent-sub {\n  font-size: 14.5px;\n  line-height: 1.65;\n  color: var(--gray);\n  word-break: keep-all;\n  overflow: hidden;\n  display: -webkit-box;\n  -webkit-line-clamp: 1;\n  -webkit-box-orient: vertical;\n}\n@media all and (max-width: 800px) {\n  .recent-sub {\n    font-size: 14px;\n    line-height: 1.6;\n  }\n}\n\n.recent-topic {\n  font-size: 12.5px;\n  color: var(--gray);\n  white-space: nowrap;\n}\n@media all and (max-width: 800px) {\n  .recent-topic {\n    grid-row: 1;\n    grid-column: 2;\n    font-family: var(--codeFont);\n    font-size: 11.5px;\n  }\n  .recent-topic::before {\n    content: " \xB7 ";\n    white-space: pre;\n  }\n}';
-
 // src/components/RecentNotesForIndex.tsx
 var defaultOptions = {
   limit: 5,
   linkToMore: false,
   linkToMoreLabel: "ALL NOTES \u2192",
-  showTags: true,
-  filter: () => true,
-  sort: byListDateDesc
+  showTags: true
 };
 var RecentNotesForIndex_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
@@ -186,10 +161,7 @@ var RecentNotesForIndex_default = ((userOpts) => {
     displayClass
   }) => {
     if (fileData.slug !== "index") return /* @__PURE__ */ u2(S, {});
-    const files = allFiles;
-    const pages = files.filter(opts.filter).filter(
-      (f3) => f3.slug !== fileData.slug && f3.frontmatter?.title && isListedNote(f3)
-    ).sort(opts.sort);
+    const pages = allFiles.filter((f3) => f3.slug !== fileData.slug && f3.frontmatter?.title && isListedNote(f3)).sort(byListDateDesc);
     const rows = buildRecentRows(pages, opts.limit);
     const here = fileData.slug;
     const titleOf = (f3) => f3.frontmatter?.title ?? "Untitled";
@@ -201,7 +173,7 @@ var RecentNotesForIndex_default = ((userOpts) => {
       /* @__PURE__ */ u2("div", { class: "recent-rows", children: rows.map((row) => {
         const lead = row.kind === "note" ? row.file : row.files[0];
         const date = getListDate(lead);
-        const slug2 = lead.slug ?? "";
+        const slug = lead.slug ?? "";
         let href;
         let title;
         let sub;
@@ -213,7 +185,7 @@ var RecentNotesForIndex_default = ((userOpts) => {
           title = `${titleCase(row.folder.split("/").pop() ?? "")} \xB7 ${row.files.length} notes`;
           sub = shown.join(", ") + (rest > 0 ? ` +${rest} more` : "");
         } else {
-          href = resolveRelative(here, slug2);
+          href = resolveRelative(here, slug);
           title = titleOf(row.file);
           sub = row.file.description ?? "";
           revised = Boolean(getNoteDates(row.file).revised);
@@ -227,7 +199,7 @@ var RecentNotesForIndex_default = ((userOpts) => {
             ] }),
             sub && /* @__PURE__ */ u2("span", { class: "recent-sub", children: sub })
           ] }),
-          opts.showTags && /* @__PURE__ */ u2("span", { class: "recent-topic", children: topicName(slug2) })
+          opts.showTags && /* @__PURE__ */ u2("span", { class: "recent-topic", children: topicName(slug) })
         ] });
       }) })
     ] });

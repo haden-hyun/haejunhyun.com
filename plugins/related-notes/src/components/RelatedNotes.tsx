@@ -4,12 +4,11 @@ import type {
   QuartzComponentProps,
   QuartzPluginData,
 } from "@quartz-community/types"
-import { resolveRelative } from "../util/path"
+import { resolveRelative } from "../../../_shared/path"
 import style from "./styles/relatedNotes.scss"
 import { isListedNote } from "../../../_shared/notes"
 import { seriesIndexOf, seriesOf } from "../../../_shared/series"
 import { scoreRelated } from "./score"
-import graphPanelScript from "./graphPanel"
 
 type FileData = QuartzPluginData & Record<string, unknown>
 
@@ -29,7 +28,7 @@ const tagsOf = (f: FileData): string[] => {
   return Array.isArray(raw) ? raw.map(String) : []
 }
 
-/** 우측 사이드바 Related — 링크 > 같은 시리즈 > 개념 태그 순위로 최대 limit편. 기준 점수를 넘는 노트가 없으면 그리지 않는다. */
+/** 노트 하단 Related — 링크 > 같은 시리즈 > 개념 태그 순위로 최대 limit편. 기준 점수를 넘는 노트가 없으면 그리지 않는다. */
 export default ((userOpts?: Partial<RelatedNotesOptions>) => {
   const opts = { ...defaultOptions, ...userOpts }
 
@@ -85,6 +84,5 @@ export default ((userOpts?: Partial<RelatedNotesOptions>) => {
   }
 
   RelatedNotes.css = style
-  RelatedNotes.afterDOMLoaded = graphPanelScript
   return RelatedNotes
 }) satisfies QuartzComponentConstructor<Partial<RelatedNotesOptions>>

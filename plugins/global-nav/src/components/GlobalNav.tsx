@@ -3,18 +3,14 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "@quartz-community/types"
-import { resolveRelative } from "../util/path"
+import { resolveRelative } from "../../../_shared/path"
 import style from "./styles/globalNav.scss"
 
 /**
- * 글로벌 내비 — `Home | Topics | Archive`. 현재는 topbar 배치.
- *
- * - `condition`을 걸지 않는다 — 홈 포함 전 페이지에 항상 보여야 한다
- * - 주의: `position: "header"`는 쓸 수 없다. YAML 스키마 enum에 없고,
- *   config-loader의 positions 레코드도 left/right/beforeBody/afterBody 4개뿐이라
- *   등록해도 에러 없이 조용히 버려진다(사실상 죽은 슬롯)
- * - 탭은 목적지 페이지만. 노트·폴더·태그 페이지는 소속 갈래인 Topics를 조상으로 켠다
- * - About은 자기소개 콘텐츠가 있어야 추가 가능. NAV_ITEMS에 항목만 넣으면 된다
+ * 글로벌 내비 — topbar의 `Home | Topics | Archive` 탭(전 페이지, `condition` 없음).
+ * - 현재 페이지는 `aria-current="page"`, 노트·폴더·태그 페이지는 소속 갈래 Topics를 조상(`aria-current="true"`)으로 켠다
+ * - 탭은 NAV_ITEMS에 항목만 넣으면 는다
+ * 주의: `position: "header"`는 YAML 스키마·config-loader에 없는 슬롯이라 에러 없이 버려진다.
  */
 
 interface NavItem {

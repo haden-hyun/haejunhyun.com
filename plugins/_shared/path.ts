@@ -1,4 +1,4 @@
-// `@quartz-community/utils` 경로 헬퍼 사본. series-nav·series-roadmap이 함께 쓴다.
+// `@quartz-community/utils` 경로 헬퍼(simplifySlug·resolveRelative) 사본. 로컬 플러그인이 함께 쓴다.
 // 주의: 그 패키지는 `github:` 참조라 dist 없이 설치돼 esbuild가 해결하지 못한다 — 의존성으로 끌어오지 말 것.
 
 function endsWith(s: string, suffix: string): boolean {

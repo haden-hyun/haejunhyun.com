@@ -1,3 +1,5 @@
+// ```series-roadmap 펜스 YAML(series·outline)을 검증해 RoadmapSpec으로 읽는다.
+// 주의: Obsidian 미리보기는 번들 시 js-yaml을 obsidian/src/yaml-shim.ts로 바꿔 끼운다.
 import { load as parseYaml } from "js-yaml"
 
 export interface OutlineItem {
@@ -17,7 +19,7 @@ export type ParseResult = { ok: true; spec: RoadmapSpec } | { ok: false; error: 
 
 const isInt = (v: unknown): v is number => typeof v === "number" && Number.isInteger(v)
 
-const text = (v: unknown): string => (v == null ? "" : String(v).trim())
+export const text = (v: unknown): string => (v == null ? "" : String(v).trim())
 
 /** 프론트매터 series_requires와 펜스 requires를 같은 규칙으로 읽는다. 정수가 아닌 값은 버린다. */
 export function toIndexList(raw: unknown): number[] {

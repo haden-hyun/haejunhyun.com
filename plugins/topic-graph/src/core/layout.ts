@@ -1,4 +1,6 @@
-// 폴더 클러스터 force 배치. 노드 순서·틱 수 고정이고 d3-force 내부 난수는 고정 시드 LCG라 같은 입력이면 같은 좌표가 나온다.
+// 폴더 클러스터 force 배치 — 판(View)별로 따로 배치한다.
+// - 현재 클러스터를 중심으로 당기고, 현재 노트를 정중앙에 둔 뒤 네 방향 배율을 따로 잡는다
+// 주의: 노드 순서·틱 수 고정, d3-force 내부 난수는 고정 시드 LCG라 같은 입력이면 같은 좌표다 — 연산 순서를 바꾸지 말 것.
 import { forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY } from "d3-force"
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3-force"
 import { relations, type TopicGraphModel } from "./graph"
@@ -7,7 +9,7 @@ export type View = { w: number; h: number; pad: number }
 export const VIEW_TALL: View = { w: 260, h: 280, pad: 8 }
 // 화면 높이 760px 이하에서 쓰는 낮은 판 — 같은 모델을 이 비율로 따로 배치한다.
 export const VIEW_SHORT: View = { w: 260, h: 220, pad: 8 }
-// 확대 보기(dialog) 판 — 라벨을 더 많이 단다.
+// 확대 보기(dialog) 판.
 export const VIEW_WIDE: View = { w: 640, h: 440, pad: 12 }
 // 확대 보기의 좁은 화면(전체 화면) 판 — 가로 판을 390px에 맞추면 글자가 6px 아래로 줄어든다.
 export const VIEW_PORTRAIT: View = { w: 260, h: 400, pad: 8 }

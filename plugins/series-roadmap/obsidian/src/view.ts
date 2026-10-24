@@ -2,7 +2,7 @@
 import { isListedNote } from "../../../_shared/notes"
 import { getSeriesEntries, seriesIndexOf, seriesOf, type SeriesFile } from "../../../_shared/series"
 import { initRoadmap } from "../../src/core/client"
-import { buildRoadmap, type RNode, type RText } from "../../src/core/render"
+import { buildRoadmap, currentNoteOf, toPublished, type RNode, type RText } from "../../src/core/render"
 import { parseSpec } from "../../src/parse"
 
 export const CONTENT = "00-Blog/content/"
@@ -74,19 +74,10 @@ export function renderRoadmap(el: HTMLElement, source: string, deps: ViewDeps) {
   }
   const { spec } = result
   const files = publishedFiles(deps.notes)
-  const published = getSeriesEntries(spec.series, files).map((e) => ({
-    index: e.index,
-    title: e.title,
-    question: e.question,
-    part: e.file.frontmatter?.series_part,
-    requires: e.file.frontmatter?.series_requires,
-    id: String(e.file.filePath),
-  }))
+  const published = toPublished(getSeriesEntries(spec.series, files), (f) => String(f.filePath))
   const title = deps.seriesTitles[spec.series]?.trim() || spec.series
   const page = { frontmatter: deps.current ?? {} } as unknown as SeriesFile
-  const index = seriesIndexOf(page)
-  const current = index === undefined ? undefined : { series: seriesOf(page), index }
-  const nav = buildRoadmap(spec, title, published, (id) => id, (m) => warnings.push(m), current)
+  const nav = buildRoadmap(spec, title, published, (id) => id, (m) => warnings.push(m), currentNoteOf(page))
 
   const shown = new Set([...published.map((p) => p.index), ...spec.outline.map((o) => o.index)])
   for (const n of deps.notes) {

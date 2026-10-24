@@ -4,15 +4,13 @@ import type {
   QuartzComponentProps,
   QuartzPluginData,
 } from "@quartz-community/types"
-import { resolveRelative } from "../util/path"
+import { resolveRelative } from "../../../_shared/path"
 import style from "./styles/prevNext.scss"
 
+// 같은 폴더 노트의 이전·다음 편 링크(비활성 — series-nav가 대체).
 type PrevNextPluginData = QuartzPluginData & Record<string, unknown>
 
-/**
- * 읽는 순서 = created(원 작성일). 목록 날짜 posted는 개정 때 오늘로 덮어써져
- * 시리즈 순서를 흔들고, modified(=updated)는 작업마다 바뀌므로 둘 다 쓰지 않는다.
- */
+/** 읽는 순서 = created. 주의: posted(개정 때 덮어씀)·modified(작업마다 바뀜)로 정렬하지 말 것. */
 function getSortTime(f: PrevNextPluginData): number {
   return f.dates?.created?.getTime() ?? 0
 }

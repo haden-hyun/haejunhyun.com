@@ -56,11 +56,11 @@ npx quartz build            # → public/
 | 갈래         | 플러그인                                                                         |
 | ------------ | -------------------------------------------------------------------------------- |
 | 홈           | `home-hero` · `featured-notes` · `topic-grid` · `recent-notes-index`              |
-| 페이지 골격  | `global-nav` · `footer` · `topics-page` · `archive-page` · `folder-listing`       |
-| 노트 부속    | `note-specs` · `topic-graph` · `note-catalog` · `related-notes` · `prev-next` · `summary-description` |
+| 페이지 골격  | `global-nav` · `footer` · `topics-page` · `archive-page` · `folder-listing` · `tag-listing` |
+| 노트 부속    | `note-specs` · `topic-graph` · `note-catalog` · `related-notes`(꺼짐) · `prev-next`(꺼짐) · `summary-description` |
 | 시리즈       | `series-nav`(series-box·series-pager) · `series-roadmap`                          |
 | 읽기 보조    | `reading-progress` · `back-to-top` · `image-lightbox` · `image-layouts` · `anim-widgets` |
-| 기타         | `social-links` · `visitor-counter` · `goatcounter-tracking`                       |
+| 기타         | `social-links` · `visitor-counter`(꺼짐) · `goatcounter-tracking`                       |
 
 - **`dist/`가 커밋 대상** — 빌드는 저장소 상태를 그대로 읽으므로 **소스만 고치면 반영되지 않는다**
 - 수정 후 해당 플러그인에서 `npm install && npm run build`(tsup)

@@ -1,11 +1,11 @@
-// src/util/path.ts
+// ../_shared/path.ts
 function endsWith(s2, suffix) {
   return s2 === suffix || s2.endsWith("/" + suffix);
 }
 function trimSuffix(s2, suffix) {
   return endsWith(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
 }
-function stripSlashes(s2, onlyStripPrefix = false) {
+function stripSlashes(s2, onlyStripPrefix) {
   if (s2.startsWith("/")) s2 = s2.substring(1);
   if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
   return s2;
@@ -24,14 +24,11 @@ function joinSegments(...args) {
   return joined;
 }
 function pathToRoot(slug) {
-  let rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
-  if (rootPath.length === 0) rootPath = ".";
-  return rootPath;
+  const rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
+  return rootPath.length === 0 ? "." : rootPath;
 }
 function resolveRelative(current, target) {
-  const simplified = simplifySlug(target);
-  const rootPath = pathToRoot(current);
-  return joinSegments(rootPath, simplified);
+  return joinSegments(pathToRoot(current), simplifySlug(target));
 }
 
 // src/components/styles/topicGrid.scss

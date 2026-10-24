@@ -1,4 +1,5 @@
 // 음표로 그린 색소폰 — 빌드 시 정지 자세 프리렌더(SVG)와 브라우저 캔버스가 같은 함수를 쓴다.
+// - buildSax: 3D 점군 모델 / rasterSax: 회전·투영·조명 래스터 / fitSax: 높이 맞춤 / composeSax: 프레임 글자 목록
 // 주의: 함수들은 toString()으로 인라인 스크립트에 직렬화된다. 바깥 식별자·import를 참조하지 말 것(상수는 인자로).
 
 export interface SaxModel {
@@ -133,13 +134,13 @@ export type SaxGlyph = [number, number, string, number, boolean]
 
 /** 그리기 상수. 주의: 아래 함수들은 이 객체를 인자로만 받는다(인라인 직렬화). */
 export const SAX_CFG = {
-  cw: 4.6, // 셀 가로 피치 — 기호 사이 숨 쉴 틈
+  cw: 4.6,
   ch: 8.2,
   rows: 41,
-  glyphTop: 1.5, // 글자 위 여백 — 캔버스를 이만큼 올려 칠해진 윗끝 = 탭 윗끝
+  glyphTop: 1.5, // 글자 위 여백 — 캔버스를 이만큼 올려 칠해진 윗끝을 선반 탭 윗끝에 맞춘다
   glyphBottom: 3.0,
   keyY: [0.78, 0.62, 0.46, 0.3, 0.14, -0.02, -0.18],
-  // 키 7개는 모두 몸통 앞면 원판. 맨 위(넥 쪽)를 옥타브 키 자리로 보고 ♭, 아래 6개 = 왼손 H·A·E / 오른손 J·U·N
+  // keyY와 같은 순서(위 → 아래). 키 i = 편수 순 i번째 토픽
   keyChars: ["♭", "H", "A", "E", "J", "U", "N"],
 }
 

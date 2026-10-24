@@ -1,16 +1,13 @@
 // 노트 날짜·읽는 시간의 단일 구현. 홈(Featured·Recent)·Archive·SPECS가 함께 쓴다.
+// - readingMinutes: `reading-time` 패키지 알고리즘 이식(content-meta와 같은 숫자를 내야 한다)
+// - getNoteDates·getListDate: created·posted(개정)·updated 해석과 목록 날짜
+// 주의: reading-time 패키지를 의존성으로 넣지 말 것. CJS라 ESM 번들에서 컴포넌트 로드가 죽는다.
 
 type DatedFile = {
   dates?: { created?: Date; modified?: Date; published?: Date }
   frontmatter?: Record<string, unknown>
 }
 
-/**
- * `reading-time` 패키지 알고리즘의 이식. content-meta(모바일)와 SPECS(데스크톱)가
- * 같은 숫자를 내야 해서 근사가 아니라 이식이다.
- *
- * 주의: 패키지를 의존성으로 넣지 말 것. CJS라 ESM 번들에서 컴포넌트 로드가 죽는다.
- */
 function inRanges(code: number, ranges: [number, number][]): boolean {
   return ranges.some(([lo, hi]) => lo <= code && code <= hi)
 }

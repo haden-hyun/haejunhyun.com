@@ -1,3 +1,8 @@
+// 홈 히어로 — 헤드라인·이름·설명·링크·메타 줄, 노트 선반(CATALOG), 음표로 그린 색소폰, 노트 카드.
+// - 홈(slug "index")에서만 렌더한다. `condition: is-index`는 내장에 없어 내부 slug 가드로 거른다
+// - 통계·선반·키 토픽은 전부 allFiles 런타임 집계(하드코딩 금지)
+// - 방문 수는 GoatCounter 공개 카운터(토큰 불필요). 사이트 설정의 visitor counter 허용이 꺼지면 "-"로 남는다
+// - 색소폰 정지 자세를 빌드 시 SVG로 미리 굽고, 클라이언트(client.ts)가 캔버스로 이어받는다
 import type {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -20,19 +25,11 @@ function classNames(...classes: (string | undefined | false)[]): string {
   return classes.filter(Boolean).join(" ")
 }
 
-/**
- * 홈 히어로 — 헤드라인 + 이름 + 설명 + 링크 줄 + 메타 줄, 노트 선반(CATALOG), 음표로 그린 색소폰.
- *
- * - 홈 전용 렌더는 내부 slug 가드. `condition: is-index`는 내장에 없다
- * - 통계·선반·키 토픽은 전부 allFiles 런타임 집계. 하드코딩 금지
- * - 방문 수는 GoatCounter 공개 카운터(토큰 불필요). 사이트 설정의 visitor counter 허용이 꺼지면 "-"로 남는다
- */
-
 const GOATCOUNTER_SITE = "haejunhyun"
 // 음표 기호 5자만 받는 Noto Music 하위 집합(OFL 1.1, Google Fonts).
 const NOTO_MUSIC_CSS =
   "https://fonts.googleapis.com/css2?family=Noto+Music&text=%E2%99%A9%E2%99%AA%E2%99%AB%E2%99%AC%E2%99%AD&display=swap"
-// 선반 칸막이 탭 이름(토픽 폴더 → 짧은 대문자). 없으면 폴더 이름을 대문자로.
+// 선반 칸막이 탭 이름(토픽 폴더 → 짧은 대문자). 없으면 폴더 이름을 대문자로. 키 순서 = 선반 토픽 순서
 const TAB_NAMES: Record<string, string> = {
   programming: "PROG",
   "data-engineering": "DATA-ENG",
@@ -42,11 +39,13 @@ const TAB_NAMES: Record<string, string> = {
   "finance-property": "FINANCE",
   tools: "TOOLS",
 }
+// 선반 높이 = 색소폰 칠해진 높이(위끝 탭·아래끝 괘선을 맞춘다)
+const SHELF_H = SAX_CFG.rows * SAX_CFG.ch - SAX_CFG.glyphTop - SAX_CFG.glyphBottom + 1
 
 // 헤드라인 sweep은 세션당 1회 — 첫 페인트 전에 판정해야 깜빡이지 않는다.
 const sweptScript = `try { if (sessionStorage.getItem("hero-swept")) document.documentElement.setAttribute("data-hero-swept", "") } catch {}`
 
-// 주의: start/end는 UTC 자정이고 end는 배타적이다 — start=end면 항상 0. 날짜 단위만 받아 KST 하루는 표현 불가.
+// 주의: fillHeroVisits의 GoatCounter start/end는 UTC 자정이고 end는 배타적이다 — start=end면 항상 0. KST 하루는 표현 불가
 const heroScript = `
 const heroLib = {
   buildSax: (${buildSax.toString()}),
@@ -57,6 +56,7 @@ const heroLib = {
   SAX_CFG: ${JSON.stringify(SAX_CFG)},
   SHELF_CFG: ${JSON.stringify(SHELF_CFG)},
   REST: ${JSON.stringify(SAX_REST)},
+  shelfH: ${JSON.stringify(SHELF_H)},
 }
 const heroClient = (${heroClient.toString()})
 
@@ -87,7 +87,6 @@ function initHero() {
   if (!document.querySelector(".home-hero")) return
   heroLib.model = heroLib.model || heroLib.buildSax()
   heroLib.fit = heroLib.fit || heroLib.fitSax(heroLib.model, heroLib.rasterSax, heroLib.REST, heroLib.SAX_CFG.rows)
-  heroLib.shelfH = heroLib.SAX_CFG.rows * heroLib.SAX_CFG.ch - heroLib.SAX_CFG.glyphTop - heroLib.SAX_CFG.glyphBottom + 1
   heroClient(heroLib)
 }
 
@@ -118,7 +117,7 @@ type FileData = QuartzPluginData & Record<string, unknown>
 
 let saxModel: SaxModel | undefined
 let saxFit: SaxFit | undefined
-let prerender: { glyphs: ReturnType<typeof composeSax>["glyphs"]; keys: [number, number][] } | undefined
+let prerender: ReturnType<typeof composeSax> | undefined
 
 /** 정지 자세 한 장을 빌드 시 미리 굽는다 — JS 없이도 보이고, 캔버스가 뜨기 전 빈칸·레이아웃 이동이 없다. */
 function getPrerender() {
@@ -215,7 +214,6 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
     const keyTopics = topicKeys
       .map((k) => ({ k, n: files.filter((f) => topicKey(f) === k).length, recent: notes.some((n) => n.tp === k && (buildNow - Date.parse(n.p)) / 864e5 <= 45) }))
       .sort((a, b) => b.n - a.n)
-    const shelfH = SAX_CFG.rows * SAX_CFG.ch - SAX_CFG.glyphTop - SAX_CFG.glyphBottom + 1
 
     return (
       <section class={classNames(displayClass, "home-hero")}>
@@ -246,7 +244,7 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
           </div>
         </div>
         <div class="hero-shelf-wrap hero-rise hero-rise-2">
-          <nav class="hero-shelf" role="group" aria-label={`노트 카탈로그 ${noteCount}편`} style={`--shelf-h:${shelfH.toFixed(2)}px`}>
+          <nav class="hero-shelf" role="group" aria-label={`노트 카탈로그 ${noteCount}편`} style={`--shelf-h:${SHELF_H.toFixed(2)}px`}>
             {notes.map((n) => (
               <a class="hero-spine" href={n.h} title={n.t}>
                 <span class="hero-spine-band" />
@@ -256,7 +254,7 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
         </div>
         <div
           class="hero-sax hero-rise hero-rise-1"
-          style={`--sax-w:${W.toFixed(1)}px;--sax-ar:${(W / H).toFixed(4)};--box-h:${shelfH.toFixed(2)}px;--g-top:${SAX_CFG.glyphTop}px`}
+          style={`--sax-w:${W.toFixed(1)}px;--sax-ar:${(W / H).toFixed(4)};--box-h:${SHELF_H.toFixed(2)}px;--g-top:${SAX_CFG.glyphTop}px`}
         >
           <svg class="hero-sax-pre" viewBox={`0 0 ${W.toFixed(1)} ${H.toFixed(1)}`} aria-hidden="true">
             {[...byRow.values()].map((g) => (

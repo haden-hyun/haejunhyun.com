@@ -7,6 +7,9 @@ import { classNames } from "@quartz-community/utils/lang"
 // @ts-expect-error - Inline script loaded as text by esbuild plugin
 import script from "./scripts/visitorCounter.inline.ts"
 
+// 방문 수(Today · Total) 표시 — 비활성, 방문 수는 home-hero 메타 줄이 대신한다.
+// 주의: 스크립트가 GoatCounter API 토큰을 클라이언트에 노출한다.
+
 const VisitorCounter: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
   return (
     <div class={classNames(displayClass, "visitor-counter")}>

@@ -1,39 +1,3 @@
-// src/util/path.ts
-function endsWith(s2, suffix) {
-  return s2 === suffix || s2.endsWith("/" + suffix);
-}
-function trimSuffix(s2, suffix) {
-  return endsWith(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
-}
-function stripSlashes(s2, onlyStripPrefix = false) {
-  if (s2.startsWith("/")) s2 = s2.substring(1);
-  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
-  return s2;
-}
-function simplifySlug(fp) {
-  const res = stripSlashes(trimSuffix(fp, "index"), true);
-  return res.length === 0 ? "/" : res;
-}
-function joinSegments(...args) {
-  if (args.length === 0) return "";
-  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes(segment)).join("/");
-  const first = args[0];
-  const last = args[args.length - 1];
-  if (first?.startsWith("/")) joined = "/" + joined;
-  if (last?.endsWith("/")) joined = joined + "/";
-  return joined;
-}
-function pathToRoot(slug) {
-  let rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
-  if (rootPath.length === 0) rootPath = ".";
-  return rootPath;
-}
-function resolveRelative(current, target) {
-  const simplified = simplifySlug(target);
-  const rootPath = pathToRoot(current);
-  return joinSegments(rootPath, simplified);
-}
-
 // src/components/styles/topicsContent.scss
 var topicsContent_default = ".topics-index {\n  container-type: inline-size;\n}\n.topics-index ul.tp-rows {\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n.topics-index ul.tp-rows > li {\n  margin: 0;\n}\n\n.topics-index .tp-meta {\n  margin: 1.5rem 0 0;\n  font-size: 0.85rem;\n  line-height: 1.5;\n  color: var(--gray);\n}\n\n.topics-index .tp-jump ul {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem;\n  margin: 0.75rem 0 0;\n  padding: 0;\n  list-style: none;\n}\n.topics-index .tp-jump ul a {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n  min-height: 2.25rem;\n  padding: 0 0.85rem;\n  border-radius: var(--radius-s);\n  background: rgba(var(--accent-rgb), 0.08);\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 700;\n  color: var(--secondary);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n@media (hover: hover) and (pointer: fine) {\n  .topics-index .tp-jump ul a:hover {\n    background: rgba(var(--accent-rgb), 0.16);\n  }\n  .topics-index .tp-jump ul a:hover .tp-jump-count {\n    color: var(--darkgray);\n  }\n}\n.topics-index .tp-jump ul a:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n@media all and (max-width: 600px) {\n  .topics-index .tp-jump ul a {\n    min-height: 2.75rem;\n  }\n}\n.topics-index .tp-jump ul .tp-jump-count {\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}\n\n.topics-index .tp-section {\n  margin-top: 2.5rem;\n}\n\n.topics-index .tp-label {\n  display: flex;\n  align-items: baseline;\n  gap: 0.75rem;\n  padding-bottom: 10px;\n  border-bottom: 1px solid var(--lightgray);\n}\n.topics-index .tp-label h2 {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  line-height: 1.3;\n  color: var(--secondary);\n  scroll-margin-top: 1.5rem;\n}\n\n.topics-index .tp-count {\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}\n\n.topics-index .tp-open {\n  display: inline-flex;\n  align-items: center;\n  min-height: 2.75rem;\n  margin: -0.75rem 0 -0.75rem auto;\n  font-family: var(--headerFont);\n  font-size: 0.85rem;\n  font-weight: 600;\n  color: var(--secondary);\n  text-decoration: none;\n  white-space: nowrap;\n}\n@media (hover: hover) and (pointer: fine) {\n  .topics-index .tp-open:hover {\n    text-decoration: underline;\n    text-underline-offset: 3px;\n  }\n}\n.topics-index .tp-open:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n\n.topics-index .tp-row {\n  display: grid;\n  grid-template-columns: 6.25rem minmax(0, 1fr) auto;\n  column-gap: 14px;\n  align-items: baseline;\n  box-sizing: border-box;\n  min-height: 44px;\n  padding: 0.6rem 0.4rem;\n  border-bottom: 1px solid var(--lightgray);\n  font-weight: 400;\n  color: var(--darkgray);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.topics-index .tp-row:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: -2px;\n}\n\n.topics-index li:nth-child(even) > .tp-row {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n\n@media (hover: hover) and (pointer: fine) {\n  .topics-index li > .tp-row:hover {\n    background: rgba(var(--accent-rgb), 0.1);\n  }\n  .topics-index li > .tp-row:hover .tp-title {\n    text-decoration: underline;\n    text-underline-offset: 3px;\n  }\n}\n.topics-index li > .tp-row:active {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n\n.topics-index .tp-kind,\n.topics-index .tp-date {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  font-weight: 400;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n  white-space: nowrap;\n}\n\n.topics-index .tp-end {\n  justify-self: end;\n}\n\n.topics-index .tp-go {\n  font-family: var(--headerFont);\n  font-size: 0.82rem;\n  font-weight: 600;\n  line-height: 1.3;\n  color: var(--secondary);\n  white-space: nowrap;\n}\n\n.topics-index .tp-title {\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 620;\n  line-height: 1.45;\n  color: var(--dark);\n  word-break: keep-all;\n}\n\n.topics-index .tp-row.is-series .tp-title {\n  font-weight: 700;\n}\n\n.topics-index .tp-desc {\n  grid-column: 2/-1;\n  margin-top: 0.15rem;\n  overflow: hidden;\n  font-size: 0.82rem;\n  line-height: 1.55;\n  color: var(--darkgray);\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n@container (max-width: 600px) {\n  .topics-index .tp-open-word {\n    display: none;\n  }\n  .topics-index .tp-row {\n    grid-template-columns: minmax(0, 1fr) auto;\n    row-gap: 2px;\n    padding: 0.7rem 0.25rem;\n  }\n  .topics-index .tp-row .tp-kind {\n    grid-column: 1/-1;\n  }\n  .topics-index .tp-row .tp-desc {\n    grid-column: 1/-1;\n  }\n}";
 
@@ -91,7 +55,41 @@ function folderTitle(path, overrides = {}) {
   const segment = path.split("/").pop() ?? path;
   return overrides[path] ?? overrides[segment] ?? TOPIC_NAMES[segment] ?? titleCase(segment);
 }
+var plural = (n2, word) => `${n2} ${word}${n2 === 1 ? "" : "s"}`;
 var byListDateDesc = (a2, b2) => (getListDate(b2)?.getTime() ?? 0) - (getListDate(a2)?.getTime() ?? 0);
+
+// ../_shared/path.ts
+function endsWith(s2, suffix) {
+  return s2 === suffix || s2.endsWith("/" + suffix);
+}
+function trimSuffix(s2, suffix) {
+  return endsWith(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
+}
+function stripSlashes(s2, onlyStripPrefix) {
+  if (s2.startsWith("/")) s2 = s2.substring(1);
+  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
+  return s2;
+}
+function simplifySlug(fp) {
+  const res = stripSlashes(trimSuffix(fp, "index"), true);
+  return res.length === 0 ? "/" : res;
+}
+function joinSegments(...args) {
+  if (args.length === 0) return "";
+  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes(segment)).join("/");
+  const first = args[0];
+  const last = args[args.length - 1];
+  if (first?.startsWith("/")) joined = "/" + joined;
+  if (last?.endsWith("/")) joined = joined + "/";
+  return joined;
+}
+function pathToRoot(slug) {
+  const rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
+  return rootPath.length === 0 ? "." : rootPath;
+}
+function resolveRelative(current, target) {
+  return joinSegments(pathToRoot(current), simplifySlug(target));
+}
 
 // ../_shared/series.ts
 function seriesOf(file) {
@@ -209,7 +207,6 @@ function u2(e2, t2, n2, o2, i2, u3) {
 }
 
 // src/components/TopicsContent.tsx
-var plural = (n2, word) => `${n2} ${word}${n2 === 1 ? "" : "s"}`;
 function Ymd({ date }) {
   return date ? /* @__PURE__ */ u2("time", { class: "tp-end tp-date", dateTime: formatYmd(date), children: formatYmd(date) }) : /* @__PURE__ */ u2("span", { class: "tp-end" });
 }

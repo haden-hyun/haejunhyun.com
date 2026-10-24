@@ -1,11 +1,11 @@
-// src/util/path.ts
+// ../_shared/path.ts
 function endsWith(s2, suffix) {
   return s2 === suffix || s2.endsWith("/" + suffix);
 }
 function trimSuffix(s2, suffix) {
   return endsWith(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
 }
-function stripSlashes(s2, onlyStripPrefix = false) {
+function stripSlashes(s2, onlyStripPrefix) {
   if (s2.startsWith("/")) s2 = s2.substring(1);
   if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
   return s2;
@@ -24,14 +24,11 @@ function joinSegments(...args) {
   return joined;
 }
 function pathToRoot(slug) {
-  let rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
-  if (rootPath.length === 0) rootPath = ".";
-  return rootPath;
+  const rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
+  return rootPath.length === 0 ? "." : rootPath;
 }
 function resolveRelative(current, target) {
-  const simplified = simplifySlug(target);
-  const rootPath = pathToRoot(current);
-  return joinSegments(rootPath, simplified);
+  return joinSegments(pathToRoot(current), simplifySlug(target));
 }
 
 // src/components/styles/relatedNotes.scss
@@ -126,16 +123,6 @@ function scoreRelated(self, notes, backlinkSlugs) {
     (a2, b2) => b2.score - a2.score || sibling(a2.note) - sibling(b2.note) || commonDepth(b2.note.slug, self.slug) - commonDepth(a2.note.slug, self.slug) || a2.note.title.localeCompare(b2.note.title, "ko", { numeric: true })
   );
 }
-
-// src/components/graphPanel.ts
-var graphPanel_default = `
-const dropLocalGraph = () => {
-  for (const outer of document.querySelectorAll(".sidebar .graph > .graph-outer")) outer.remove()
-  for (const label of document.querySelectorAll(".sidebar .graph > h3")) label.remove()
-}
-dropLocalGraph()
-document.addEventListener("nav", dropLocalGraph)
-`;
 var l;
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
@@ -198,7 +185,6 @@ var RelatedNotes_default = ((userOpts) => {
     ] });
   };
   RelatedNotes.css = relatedNotes_default;
-  RelatedNotes.afterDOMLoaded = graphPanel_default;
   return RelatedNotes;
 });
 

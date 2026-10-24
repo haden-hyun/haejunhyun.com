@@ -1,6 +1,14 @@
 // 로드맵 데이터 병합·검증·마크업의 단일 구현. 블로그(hast)와 Obsidian 미리보기(DOM)가 이 노드 트리를 함께 쓴다.
-import { toIndexList, type OutlineItem, type RoadmapSpec } from "../parse"
-import { episodeLabel } from "../../../_shared/series"
+// - 발행본 프론트매터와 펜스 outline을 번호로 병합하고 requires·부 이름·번호 공백을 검증해 warn으로 알린다.
+// - 선은 그리지 않는다: 그릴 선수 번호만 data-req로 확정하고 연결선은 client.ts가 그린다.
+import {
+  episodeLabel,
+  seriesIndexOf,
+  seriesOf,
+  type SeriesEntry,
+  type SeriesFile,
+} from "../../../_shared/series"
+import { text, toIndexList, type OutlineItem, type RoadmapSpec } from "../parse"
 
 /** 발행본 한 편. id는 블로그 slug 또는 볼트 경로이고 href는 hrefFor(id)로 만든다. */
 export interface PublishedEntry {
@@ -10,6 +18,29 @@ export interface PublishedEntry {
   part?: unknown
   requires?: unknown
   id: string
+}
+
+/** 시리즈 편 목록을 렌더 입력으로 바꾼다. id는 링크 대상(블로그 slug, 볼트 경로)이다. */
+export function toPublished(entries: SeriesEntry[], idOf: (file: SeriesFile) => string): PublishedEntry[] {
+  return entries.map((e) => ({
+    index: e.index,
+    title: e.title,
+    question: e.question,
+    part: e.file.frontmatter?.series_part,
+    requires: e.file.frontmatter?.series_requires,
+    id: idOf(e.file),
+  }))
+}
+
+/** 로드맵이 놓인 노트. 같은 시리즈의 편이면 그 카드를 "이 글"로 표시하고 링크를 넣지 않는다. */
+export interface CurrentNote {
+  series: string
+  index: number
+}
+
+export function currentNoteOf(page: SeriesFile): CurrentNote | undefined {
+  const index = seriesIndexOf(page)
+  return index === undefined ? undefined : { series: seriesOf(page), index }
 }
 
 type Properties = Record<string, string | number | string[] | undefined>
@@ -52,8 +83,6 @@ function h(tagName: string, properties: Properties, ...children: Child[]): RNode
       .map((c) => (typeof c === "string" ? { type: "text", value: c } : c)),
   }
 }
-
-const text = (v: unknown): string => (v == null ? "" : String(v).trim())
 
 /** 발행본(프론트매터)과 펜스 outline을 번호로 합친다. 같은 번호면 발행본이 이긴다. */
 function mergeEpisodes(spec: RoadmapSpec, published: PublishedEntry[], warn: (msg: string) => void): Episode[] {
@@ -136,12 +165,6 @@ function chip(r: number, target: Episode | undefined, linked: boolean, hrefFor: 
   return h("span", { ...props, tabIndex: linked ? 0 : undefined }, label)
 }
 
-/** 로드맵이 놓인 노트. 같은 시리즈의 편이면 그 카드를 "이 글"로 표시하고 링크를 넣지 않는다. */
-export interface CurrentNote {
-  series: string
-  index: number
-}
-
 function card(
   ep: Episode,
   valid: number[],
@@ -194,7 +217,7 @@ function editDistance(a: string[], b: string[]): number {
 }
 
 /** 편 1개뿐인 부가 다른 부 이름과 비슷하면(공백 뺀 편집 거리 ≤ 2, 짧은 쪽 3자 이상) 오타 의심 경고. */
-export function partTypoWarnings(parts: { name: string; episodes: { index: number }[] }[]): string[] {
+function partTypoWarnings(parts: Part[]): string[] {
   const chars = (s: string) => Array.from(s.replace(/\s+/g, ""))
   const out: string[] = []
   const named = new Set<string>()
@@ -214,7 +237,7 @@ export function partTypoWarnings(parts: { name: string; episodes: { index: numbe
 }
 
 /** 같은 부의 이웃한 두 편 사이에 발행본·outline 어디에도 없는 번호가 있으면 경고. 0편과 부 사이 공백은 보지 않는다. */
-export function gapWarnings(parts: { name: string; episodes: { index: number }[] }[], known: Set<number>): string[] {
+function gapWarnings(parts: Part[], known: Set<number>): string[] {
   const out: string[] = []
   for (const p of parts) {
     for (let i = 1; i < p.episodes.length; i++) {
@@ -226,7 +249,7 @@ export function gapWarnings(parts: { name: string; episodes: { index: number }[]
   return out
 }
 
-const legendItem =(marker: RNode, label: string, className?: string[]): RNode =>
+const legendItem = (marker: RNode, label: string, className?: string[]): RNode =>
   h("li", className ? { className } : {}, marker, label)
 
 /** 로드맵 nav. 시리즈에 편이 없으면 undefined. */

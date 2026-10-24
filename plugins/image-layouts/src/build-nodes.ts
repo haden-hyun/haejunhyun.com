@@ -1,3 +1,5 @@
+// ParsedBlock → 그리드·메이슨리·캐러셀 mdast(hName 노드).
+// 주의: 안의 이미지는 진짜 mdast image 노드여야 한다 — CrawlLinks(order 60)가 위키링크 이미지처럼 경로를 고쳐 준다.
 import type { Blockquote, Paragraph, RootContent } from "mdast"
 import type { ImageLayoutsOptions } from "./index"
 import type { LayoutSpec } from "./layouts"
@@ -17,6 +19,13 @@ const textBlock = (hName: string, hProperties: Props, value: string): Paragraph 
     children: [{ type: "text", value }],
   }) as unknown as Paragraph
 
+const imageBox = (className: string, url: string, alt: string): Paragraph =>
+  ({
+    type: "paragraph",
+    data: { hName: "div", hProperties: { className: [className] } },
+    children: [{ type: "image", url, alt }],
+  }) as unknown as Paragraph
+
 const cssSize = (value: unknown, fallback: string): string => {
   if (typeof value === "number") return `${value}px`
   const text = String(value ?? "").trim()
@@ -34,20 +43,12 @@ function pick(value: unknown, allowed: string[], fallback: string): string {
   return allowed.includes(text) ? text : fallback
 }
 
-// ★ 여기서 만드는 image 노드가 이 설계의 전부다.
-//   진짜 mdast image라서 CrawlLinks(order 60)가 위키링크 이미지와 똑같이 경로를 고쳐준다.
 function buildFigure(image: ParsedImage, index: number, withArea: boolean): Blockquote {
   const style: string[] = []
   if (withArea) style.push(`grid-area:image-${index}`)
   if (image.width) style.push(`max-width:${image.width}px`)
 
-  const frame = {
-    type: "paragraph",
-    data: { hName: "div", hProperties: { className: ["il-frame"] } },
-    children: [{ type: "image", url: image.url, alt: image.caption ?? "" }],
-  } as unknown as Paragraph
-
-  const children: RootContent[] = [frame]
+  const children: RootContent[] = [imageBox("il-frame", image.url, image.caption ?? "")]
   if (image.caption) {
     children.push(textBlock("figcaption", { className: ["il-caption"] }, image.caption))
   }
@@ -139,14 +140,7 @@ export function buildCarouselNode(block: ParsedBlock, opts: ImageLayoutsOptions)
       container(
         "div",
         { className: ["il-thumbs"] },
-        block.images.map(
-          (image) =>
-            ({
-              type: "paragraph",
-              data: { hName: "div", hProperties: { className: ["il-thumb"] } },
-              children: [{ type: "image", url: image.url, alt: "" }],
-            }) as unknown as Paragraph,
-        ),
+        block.images.map((image) => imageBox("il-thumb", image.url, "")),
       ),
     )
   }

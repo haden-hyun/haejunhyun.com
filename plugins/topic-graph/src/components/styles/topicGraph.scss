@@ -1,5 +1,6 @@
-// 색은 theme.colors 토큰에서만 온다. 구조선·주변 노트는 장식이라 대비 요구가 없다.
-// 확대 보기 dialog는 여는 동안 body로 옮겨지므로 패널과 같은 규칙을 따로 받는다.
+// 주제 그래프 패널·확대 보기 스타일.
+// - 색은 theme.colors 토큰에서만 온다. 구조선·주변 노트는 장식이라 대비 요구가 없다
+// - 주의: 확대 보기 dialog는 여는 동안 body로 옮겨지므로 패널과 같은 규칙을 따로 받는다
 .topic-graph {
   display: flex;
   flex-direction: column;
@@ -95,7 +96,7 @@
       cursor: grabbing;
     }
 
-    // 낮은 화면에선 260×220 판으로 바꾼다 — 두 판 모두 빌드 타임에 따로 배치했다.
+    // 낮은 화면에선 short 판으로 바꾼다.
     &.tg-short {
       display: none;
     }
@@ -237,7 +238,7 @@
   }
 }
 
-// 확대 보기 — 데스크톱은 가운데 큰 판, 모바일은 전체 화면. 베일은 페이지 바탕색이라 두 테마에서 같은 문법이다.
+// 확대 보기 — 데스크톱은 가운데 큰 판, 800px 이하는 전체 화면.
 .topic-graph-dialog {
   --tg-halo: var(--light);
   box-sizing: border-box;

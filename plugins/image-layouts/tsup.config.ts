@@ -2,40 +2,25 @@ import { defineConfig } from "tsup";
 import type { Plugin } from "esbuild";
 import path from "path";
 
-/**
- * Esbuild plugin that bundles `.inline.ts` files into browser-ready JavaScript strings.
- *
- * Problem: Inline scripts are embedded as raw text into `<script>` tags in the browser.
- * The previous text-loader read `.inline.ts` files verbatim, meaning TypeScript syntax
- * (type annotations, `as` casts, non-null assertions, interfaces) survived into the
- * browser and caused parse errors.
- *
- * Solution: Use `esbuild.build()` to transpile TypeScript and bundle local/npm imports
- * into a single self-contained script. The result is returned as a text string that can
- * be safely injected into a `<script>` tag.
- *
- * This mirrors Quartz v5's own `inline-script-loader` in `quartz/cli/handlers.js`.
- */
+// `.inline.ts`를 브라우저용 JS 문자열로 번들한다(Quartz v5 `quartz/cli/handlers.js`의 inline-script-loader와 같은 방식).
 const inlineScriptPlugin: Plugin = {
   name: "inline-script-loader",
   setup(parentBuild) {
     const absWorkingDir = parentBuild.initialOptions.absWorkingDir ?? process.cwd();
 
-    // SCSS files are loaded as raw text (CSS injected via style tags)
+    // SCSS는 sass로 컴파일한 CSS 문자열로 싣는다
     parentBuild.onLoad({ filter: /\.scss$/ }, async (args) => {
       const sass = await import("sass");
       const result = sass.compile(args.path);
       return { contents: result.css, loader: "text" };
     });
 
-    // Inline TypeScript files are transpiled + bundled for the browser
     parentBuild.onLoad({ filter: /\.inline\.ts$/ }, async (args) => {
       const esbuild = await import("esbuild");
       const fs = await import("fs");
       let text = await fs.promises.readFile(args.path, "utf8");
 
-      // Strip export statements that were added for the module system —
-      // inline scripts run in a <script> tag, not as ES modules
+      // <script> 태그로 실리므로 모듈 export 문을 걷어 낸다
       text = text.replace(/^export default /gm, "");
       text = text.replace(/^export /gm, "");
 
@@ -56,7 +41,7 @@ const inlineScriptPlugin: Plugin = {
         format: "esm",
         target: "es2020",
         sourcemap: false,
-        // Preserve dynamic CDN imports (e.g. graph plugin loading d3/pixi from CDN)
+        // CDN 동적 import는 번들하지 않는다
         external: ["http://*", "https://*"],
       });
 
@@ -102,9 +87,7 @@ export default defineConfig({
   esbuildOptions(options) {
     options.jsx = "automatic";
     options.jsxImportSource = "preact";
-    // ⚠️ `node` 조건에서 yaml이 CJS(dist/)로 해석돼 `__require("process")` 셰임이 남고,
-    //    런타임에 "Dynamic require of process is not supported"로 플러그인이 통째로 죽는다.
-    //    ESM 빌드를 고르게 조건을 바꾼다.
+    // 주의: `node` 조건이면 CJS 빌드가 골라져 `__require` 셰임이 남고 런타임에 플러그인이 통째로 죽는다 — ESM 빌드를 고른다.
     options.conditions = ["import", "browser", "default"];
   },
   esbuildPlugins: [inlineScriptPlugin],

@@ -6,10 +6,8 @@ import type {
 import style from "./styles/footer.scss"
 
 /**
- * 커스텀 footer — 기본 "Created with Quartz vX © year"를 통째로 대체한다.
- * 커뮤니티 footer 플러그인엔 문구 옵션이 없어 로컬 플러그인으로 교체.
- *
- * 텍스트 콜로폰: 열(링크 목록 또는 문단) + 하단 한 줄. 이미지 없음.
+ * 콜로폰 푸터 — 업스트림 footer(문구 옵션 없음)를 대체한다.
+ * - 열(링크 목록 또는 문단) + 하단 한 줄(brand · meta). 이미지 없음
  */
 
 export interface FooterColumn {

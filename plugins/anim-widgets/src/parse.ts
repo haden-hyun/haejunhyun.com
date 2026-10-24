@@ -1,3 +1,6 @@
+// ```anim 펜스 YAML → AnimSpec(steps | canvas | video). 실패는 이유를 담은 { ok: false }로 돌려 빌드를 멈추지 않는다.
+// - steps의 scene은 scene.ts 허용 목록 검증을 통과해야 한다
+// - 자산은 폴더 없는 ASCII kebab-case 파일명 + 종류별 확장자만 받는다
 import { load as parseYaml } from "js-yaml"
 import { checkScene } from "./scene"
 

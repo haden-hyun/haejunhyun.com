@@ -3397,6 +3397,20 @@ function episodeLabel(index) {
 }
 
 // src/core/render.ts
+function toPublished(entries, idOf) {
+  return entries.map((e) => ({
+    index: e.index,
+    title: e.title,
+    question: e.question,
+    part: e.file.frontmatter?.series_part,
+    requires: e.file.frontmatter?.series_requires,
+    id: idOf(e.file)
+  }));
+}
+function currentNoteOf(page) {
+  const index = seriesIndexOf(page);
+  return index === void 0 ? void 0 : { series: seriesOf(page), index };
+}
 function h(tagName, properties, ...children) {
   return {
     type: "element",
@@ -3405,7 +3419,6 @@ function h(tagName, properties, ...children) {
     children: children.filter((c) => c !== false && c != null && c !== "").map((c) => typeof c === "string" ? { type: "text", value: c } : c)
   };
 }
-var text2 = (v) => v == null ? "" : String(v).trim();
 function mergeEpisodes(spec, published, warn) {
   const outlineByIndex = /* @__PURE__ */ new Map();
   for (const o of spec.outline) {
@@ -3419,7 +3432,7 @@ function mergeEpisodes(spec, published, warn) {
       warn(`${entry.index}\uD3B8 \uBC1C\uD589\uBCF8\uC774 \uC5EC\uB7FF\uC774\uB2E4 \u2014 ${entry.id}\uB294 \uBE80\uB2E4`);
       continue;
     }
-    const part = text2(entry.part) || outlineByIndex.get(entry.index)?.part || "";
+    const part = text(entry.part) || outlineByIndex.get(entry.index)?.part || "";
     if (!part) warn(`${entry.index}\uD3B8(${entry.id})\uC5D0 series_part\uAC00 \uC5C6\uB2E4`);
     byIndex.set(entry.index, {
       index: entry.index,
@@ -3618,17 +3631,9 @@ function buildRoadmap(spec, title, published, hrefFor, warn, current) {
 
 // src/roadmap.ts
 function buildRoadmap2(spec, title, allFiles, slug, warn, page) {
-  const published = getSeriesEntries(spec.series, allFiles).map((e) => ({
-    index: e.index,
-    title: e.title,
-    question: e.question,
-    part: e.file.frontmatter?.series_part,
-    requires: e.file.frontmatter?.series_requires,
-    id: e.file.slug
-  }));
-  const index = seriesIndexOf(page);
-  const current = index === void 0 ? void 0 : { series: seriesOf(page), index };
-  return buildRoadmap(spec, title, published, (id) => resolveRelative(slug, id), warn, current);
+  const published = toPublished(getSeriesEntries(spec.series, allFiles), (f) => f.slug);
+  const hrefFor = (id) => resolveRelative(slug, id);
+  return buildRoadmap(spec, title, published, hrefFor, warn, currentNoteOf(page));
 }
 
 // src/scripts/roadmap.inline.ts

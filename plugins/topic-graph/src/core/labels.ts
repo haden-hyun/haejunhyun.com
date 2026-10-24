@@ -1,9 +1,14 @@
-// 상시 라벨(폴더명) 배치. 빌드 타임엔 글자 폭을 잴 수 없어 Inter·Noto Sans KR 근사 폭표로 추정하고, 여유 12%를 둔다.
+// 빌드 타임 상시 라벨 배치.
+// - 글자 폭은 잴 수 없어 Inter·Noto Sans KR 근사 폭표로 추정하고 여유 12%를 둔다
+// - 가까운 후보 자리부터 보며 다른 라벨·장애물과 안 겹치는 첫 자리를 쓴다
 import type { Point, View } from "./layout"
 
 export const FONT = 10
 
 export type Box = { x: number; y: number; w: number; h: number }
+
+/** 글자(코드포인트) 수가 max를 넘으면 말줄임표로 자른다. */
+export const clip = (t: string, max: number) => ([...t].length > max ? [...t].slice(0, max - 1).join("") + "…" : t)
 
 function charEm(c: string): number {
   if (/[가-힣㄰-㆏]/.test(c)) return 1
@@ -17,7 +22,7 @@ function charEm(c: string): number {
   return 0.56
 }
 
-export function textWidth(text: string, size = FONT, bold = false): number {
+function textWidth(text: string, size = FONT, bold = false): number {
   let em = 0
   for (const c of text) em += charEm(c)
   return em * size * (bold ? 1.08 : 1) * 1.12

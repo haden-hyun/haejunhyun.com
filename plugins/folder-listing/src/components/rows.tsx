@@ -1,4 +1,5 @@
 // 노트 레코드 행(DESIGN-SYSTEM §4.16) — 폴더 페이지와 태그 페이지(tag-listing)가 함께 쓴다.
+// 주의: tag-listing이 상대 경로로 번들하므로 여기에 npm 런타임 의존성을 들이지 말 것(folder-listing의 node_modules로 해석된다).
 import type { FullSlug } from "@quartz-community/types"
 import { formatYmd, getListDate } from "../../../_shared/noteMeta"
 import { byListDateDesc } from "../../../_shared/notes"

@@ -6,8 +6,6 @@
 }
 
 .global-nav-link {
-  // Anton(titleFont)은 로고 전용 디스플레이 서체라 UI 텍스트엔 과하다.
-  // headerFont는 700/900이 로드돼 있어 합성 볼드 없이 강조를 줄 수 있다.
   font-family: var(--headerFont);
   font-size: 0.9rem;
   font-weight: 600;

@@ -1,3 +1,4 @@
+// AnimSpec → figure mdast(hName 노드). 런타임(anim.inline.ts)이 읽는 data-* 속성을 여기서 심는다.
 import type { Blockquote, Paragraph, RootContent } from "mdast"
 import type { AnimSpec } from "./parse"
 

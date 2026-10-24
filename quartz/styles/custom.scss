@@ -1,17 +1,17 @@
-// custom.scss — 사이트 커스텀 스타일.
-//
-// 주의: 이 파일 출력은 @layer quartz-base 밖이라, 명시도와 무관하게 base·플러그인
-//       스타일을 항상 이긴다. 전역 요소 선택자는 레이어 안에 둘 것.
+// custom.scss — 사이트 커스텀 스타일. 색 값은 quartz.config.yaml theme.colors 별칭만 쓴다.
+// - 토큰(§0) · 타이포(§1) · 코드 창(§2) · KaTeX(§3) · 콜아웃(§4) · 태그·breadcrumb·로고(§5~6)
+// - 사이드바 패널·island(§7~8.5) · 표(§9) · 페이지 폭·상단 바·홈(§10.4~10.6) · 미디어·유틸·감속 모션(§11~13)
+// 주의: 출력이 @layer quartz-base 밖이라 명시도와 무관하게 base·플러그인을 이긴다 — 전역 요소 선택자는 레이어 안에 둘 것.
 // 주의: base.scss를 여기서 @use하면 전체가 중복 컴파일된다.
 
 @use "sass:map";
 @use "./variables.scss" as *;
 
-// 페이지 폭 상한 — §10.4 `.page`가 쓰는 단일 기준값.
+// 페이지 폭 상한(§10.4).
 $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 
-// 본문 라틴 전용 Inter — body 스택 맨 앞에 두면 라틴만 가로채고 한글은 Noto Sans KR로 넘어간다.
-// 주의: U+00B7(·)은 한글 문장 부호로 쓰여 범위에서 뺀다. @import는 이 파일 위치에서 무시되므로 @font-face로 싣는다.
+// 본문 라틴 전용 Inter — body 스택 맨 앞에서 라틴만 그리고 한글은 Noto Sans KR로 넘긴다.
+// 주의: @import는 이 파일 위치에서 무시돼 @font-face로 싣는다. U+00B7(·)은 한글 문장 부호라 범위에서 뺀다.
 @font-face {
   font-family: "Inter";
   src: url("https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.2.8/files/inter-latin-wght-normal.woff2")
@@ -29,41 +29,39 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 :root {
   --accent: var(--secondary);
 
-  // rgba()에 투명도를 섞어야 하는 자리(태그·테이블 헤더·콜아웃·카드 hover)용 삼원색.
+  // rgba() 투명도용 secondary 삼원색.
   // 주의: secondary를 바꾸면 이 값도 같이 바꿀 것 — 두 값이 같은 색이라는 보장이 문법에 없다.
   --accent-rgb: 28, 95, 149;
 
-  // 웜 액센트 2종 — 역할 고정. action = 행위(누르는 것), state = 시간(읽는 중).
-  // 주의: 두 색은 H11 / H326으로 45° 벌려 둔다. 좁히면 역할 구분이 무너진다.
-  --accent-action: #b8442a; // 4.94:1  AA — CTA
-  --accent-state: #b03a7d; // 5.14:1  AA — 읽기 진행바
+  // 웜 액센트 — action = 행위(CTA), state = 시간(읽기 진행바).
+  // 주의: 두 색의 색상차를 45° 아래로 좁히면 역할 구분이 무너진다.
+  --accent-action: #b8442a;
+  --accent-state: #b03a7d;
 
-  // 인라인 코드 칩 — 코드블럭과 같은 종이 계열 중립 칩 + 잉크 글자.
+  // 인라인 코드 칩 · 하이라이트 글자 · 코드 창.
   --code-chip-bg: #ebe6da;
   --code-chip-border: #ddd6c7;
   --code-ink: var(--dark);
-  --highlight-ink: var(--dark); // 라임 위 13.86:1
-  --code-bg: #efebe0; // 코드블럭 배경 — syntax.scss 대비 계산의 기준
-  --code-bar-bg: #e6e1d4; // 맥 창 제목 줄 — 언어 라벨(secondary) 5.16:1
+  --highlight-ink: var(--dark);
+  --code-bg: #efebe0; // 주의: syntax.scss 토큰 대비의 기준 — 바꾸면 전부 재검증할 것
+  --code-bar-bg: #e6e1d4; // 맥 창 제목 줄
   --code-shadow: 0 5px 20px rgba(20, 29, 40, 0.08);
 
-  // 콜아웃 시맨틱 5그룹 — 12종 타입을 가치 단위로 묶는다.
-  // 주의: 대비는 페이지 배경이 아니라 콜아웃 틴트(7%) 배경 기준으로 잰다.
-  --cal-info: var(--secondary); // 5.57  AA
-  --cal-good: #187755; // 4.60  AA
-  --cal-warn: #8a600f; // 4.69  AA
-  --cal-bad: #b8324a; // 4.83  AA
-  --cal-quote: #6b6560; // 4.82  AA · article em과 공유
-  // reference — Obsidian 비표준 커스텀 타입. ofm은 미지의 타입도 data-callout에
-  // 그대로 실어 보내므로 CSS만으로 추가된다. 보라(H267)는 5그룹과 최소 60° 이격.
-  --cal-ref: #6b3fa0; // 6.77  AA
+  // 콜아웃 그룹 색(§4 매핑).
+  // 주의: 대비는 페이지 배경이 아니라 콜아웃 틴트 배경 기준으로 잰다.
+  --cal-info: var(--secondary);
+  --cal-good: #187755;
+  --cal-warn: #8a600f;
+  --cal-bad: #b8324a;
+  --cal-quote: #6b6560;
+  // reference(커스텀 타입) — 보라는 다른 그룹과 색상 60° 이상 벌린다.
+  --cal-ref: #6b3fa0;
 
   --bg: var(--light);
   --surface: var(--light);
   --surface-2: var(--lightgray);
   --border: var(--lightgray);
-  // --border보다 한 단계만 진한 테두리(카드 hover 등).
-  // 주의: --darkgray는 본문 텍스트색이라 테두리로 쓰면 과해진다.
+  // --border보다 한 단계 진한 테두리. 주의: --darkgray는 본문 텍스트색이라 테두리로 과하다.
   --border-strong: var(--gray);
   --text: var(--dark);
   --text-2: var(--darkgray);
@@ -73,40 +71,38 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --radius-s: 6px;
   --radius-m: 10px;
 
-  // 사이드바 island — 경계는 보더가 맡고, 면은 페이지보다 한 톤 낮춰 본문 뒤로 물린다.
-  --island-bg: color-mix(in srgb, var(--light), var(--lightgray) 30%); // --gray 4.95
+  // 사이드바 island(§8.5).
+  --island-bg: color-mix(in srgb, var(--light), var(--lightgray) 30%);
   --island-border: var(--lightgray);
   --island-inset: 0.75rem;
 
-  // 모션 — 이징 1개, 시간 3단계(호버·색 / 등장·이동 / 히어로 리빌). 감속 설정은 §13.
+  // 모션 — 이징 1개, 시간 3단계(호버·색 / 등장·이동 / 큰 리빌). 감속 설정은 §13.
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-fast: 150ms;
   --dur-base: 250ms;
   --dur-slow: 900ms;
 }
 
-// 다크모드 — documentElement의 `saved-theme` 속성으로 제어된다.
-// hue·채도는 라이트와 동일, 명도만 다크 배경 기준 AA로 재조정한 값.
+// 다크모드(documentElement `saved-theme`) — 색상은 라이트와 같고 명도만 다크 배경 기준 AA로 재조정한다.
 :root[saved-theme="dark"] {
-  --accent-rgb: 111, 178, 224; // = secondary #6fb2e0
-  --accent-action: #e87256; // 6.12:1  AA
-  --accent-state: #dd7ab0; // 6.57:1  AA
+  --accent-rgb: 111, 178, 224; // = secondary
+  --accent-action: #e87256;
+  --accent-state: #dd7ab0;
 
   --code-chip-bg: #1c2535;
   --code-chip-border: #2a3446;
-  --code-ink: var(--dark);
-  --highlight-ink: #f6f8e6; // 라임 위 5.96:1
+  --highlight-ink: #f6f8e6;
   --code-bg: #141b28;
-  --code-bar-bg: #1a2231; // 언어 라벨 6.92:1
+  --code-bar-bg: #1a2231;
   --code-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
 
   --cal-good: #4cbf87;
   --cal-warn: #d9a441;
   --cal-bad: #e8695c;
   --cal-quote: #9a938c;
-  --cal-ref: #b39ae0; // 7.56  AAA
+  --cal-ref: #b39ae0;
 
-  // 주의: 다크 면은 위(white)로 띄우지 말 것 — --gray가 4.87까지 떨어진다(현재 black 25% = 5.55).
+  // 주의: 다크 면을 white 쪽으로 띄우지 말 것 — island 위 --gray가 AA 경계로 떨어진다.
   --island-bg: color-mix(in srgb, var(--light), black 25%);
 }
 
@@ -118,11 +114,9 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 }
 
 // ── 1. Typography ──────────────────────────────────────────────────────────
-// 주의: 전역 요소 선택자(h1~h6, p, strong)는 반드시 레이어 안에 둔다. 밖에 두면
-//       Explorer·breadcrumb 등 플러그인 스타일을 깨뜨린다.
 
 @layer quartz-base {
-  // 주의: 자간은 h1만 음수. Hahmlet은 자소 간격이 넉넉해 작은 헤딩을 조이면 한글이 붙는다.
+  // 주의: 자간은 h1만 음수 — 작은 헤딩을 조이면 Hahmlet 한글 자소가 붙는다.
   h1,
   h2,
   h3,
@@ -153,8 +147,7 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
     margin-bottom: 0.8rem;
   }
 
-  // 주의: --darkgray는 본문 p와 같은 색이라 h3가 구분되지 않는다. 블루도 안 된다 —
-  //       남은 블루(Deeper Cut 7.55)가 h2(6.17)보다 강해 위계가 뒤집힌다.
+  // 주의: --darkgray는 본문 p와 같아 h3가 구분되지 않고, 남은 블루(tertiary)는 h2보다 진해 위계가 뒤집힌다.
   h3 {
     font-weight: 700;
     font-size: 1rem;
@@ -184,24 +177,22 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 }
 
 // 본문 강조 2종 — 레이어 밖 + `article` 스코프.
-// 주의: 레이어 안에 두면 base.scss의 `p > strong`이 명시도로 이긴다. 그렇다고
-//       전역 선택자를 레이어 밖에 두면 플러그인 UI가 깨지므로 article로 가둔다.
+// 주의: 레이어 안이면 base.scss의 `p > strong`이 명시도로 이기고, 전역으로 빼면 플러그인 UI가 깨진다.
 article strong {
   color: var(--dark);
   font-weight: 700;
 }
 
-// Noto Sans KR엔 진짜 이탤릭이 없어 합성 오블리크가 된다 — 기울임 대신 자간으로 구분한다.
-// 주의: --cal-quote(6.08)는 본문 p(10.96)보다 연해서 강조가 물러나 보인다.
+// 기울임 대신 자간 — Noto Sans KR엔 이탤릭이 없어 합성 오블리크가 된다.
+// 주의: --cal-quote처럼 본문 p보다 연한 색을 주면 강조가 물러나 보인다.
 article em {
   font-style: normal;
   color: var(--darkgray);
   letter-spacing: 0.02em;
 }
 
-// `==강조==` — 형광펜 전체 채움(라임). 색은 --textHighlight 하나(quartz.config.yaml).
-// 주의: `<mark>`를 같이 잡을 것 — ofm은 `==...==`에만 .text-highlight를 붙여서,
-//       원고가 직접 쓴 <mark>는 브라우저 기본 형광 노랑으로 샌다.
+// `==강조==` — 형광펜 전체 채움. 색은 --textHighlight 하나(quartz.config.yaml).
+// 주의: `<mark>`를 같이 잡을 것 — ofm은 `==...==`에만 클래스를 붙여 원고의 <mark>가 브라우저 기본 노랑으로 샌다.
 .text-highlight,
 article mark {
   background: var(--textHighlight);
@@ -225,10 +216,11 @@ article a {
 
 // ── 2. Code Blocks ─────────────────────────────────────────────────────────
 
-// 줄 번호 — 모든 코드블럭. 가로 스크롤에도 고정되는 거터, 선택·복사에서 제외.
-// 색은 주석 토큰(--syn-muted, 코드 배경 기준 AA)을 쓴다.
+// 줄 번호 — 가로 스크롤에도 고정되는 거터, 선택·복사에서 제외, 색은 주석 토큰.
 pre > code {
   counter-reset: line;
+  // 왼쪽 여백은 줄 번호 거터가 맡는다.
+  padding: 0.75rem 0.75rem 0.85rem 0;
 
   > [data-line]::before {
     counter-increment: line;
@@ -247,7 +239,7 @@ pre > code {
   }
 }
 
-// 맥 창 신호등 — 순수 장식(대비 규칙 밖). 제목 줄 배경 위에 그린다.
+// 맥 창 신호등(장식) — 제목 줄 배경 위에 그린다.
 $mac-lights:
   radial-gradient(6px at 20px 50%, #ff5f57 5.5px, transparent 6.5px),
   radial-gradient(6px at 39px 50%, #febc2e 5.5px, transparent 6.5px),
@@ -279,9 +271,8 @@ code:not(pre code) {
   border: 1px solid var(--code-chip-border);
 }
 
-// config의 `keepBackground: false`가 걷어낸 Shiki 배경 자리에 사이트 톤을 넣는다.
-// 주의: syntax.scss의 토큰 대비가 이 값 기준으로 계산돼 있다 — 바꾸면 전부 재검증할 것.
 // 맥 창 프레임 — 제목 줄(pre::before)·복사 버튼은 고정, 가로 스크롤은 안쪽 code가 맡는다.
+// 배경은 `keepBackground: false`가 걷어낸 Shiki 배경 자리다.
 pre {
   background: var(--code-bg);
   border-radius: var(--radius-m);
@@ -294,11 +285,6 @@ pre {
   &::before {
     content: attr(data-language);
     @include mac-bar;
-  }
-
-  // 왼쪽 여백은 줄 번호 거터가 맡는다.
-  > code {
-    padding: 0.75rem 0.75rem 0.85rem 0;
   }
 
   // 복사 버튼을 제목 줄 오른쪽에 상시 노출(터치 기기에서도 보이게).
@@ -370,9 +356,8 @@ pre code {
   text-align: center;
 }
 
-// 인라인 수식을 본문 x-height에 맞춘다(KaTeX 기본 1.21은 세리프 본문 기준 보정값).
-// 주의: `body`는 스코프가 아니라 명시도용이다. KaTeX CDN CSS가 index.css 뒤에
-//       링크되므로, 빼면 명시도가 같아져 소스 순서로 밀리고 이 블록이 죽는다.
+// 인라인 수식을 본문 크기에 맞춘다(KaTeX 기본 1.21em).
+// 주의: `body`는 명시도용이다 — KaTeX CDN CSS가 index.css 뒤에 링크돼 빼면 소스 순서로 밀린다.
 body .katex {
   font-size: 1em;
   line-height: inherit;
@@ -384,14 +369,12 @@ body .katex-display .katex {
   line-height: normal;
 }
 
-// KaTeX 폰트엔 한글 글리프가 없어 `\text{한글}`이 시스템 폰트로 폴백된다.
-// KaTeX가 자동으로 붙이는 hangul_fallback만 본문 서체로 넘긴다.
+// `\text{한글}`에 KaTeX가 붙이는 hangul_fallback만 본문 서체로 넘긴다(KaTeX 폰트엔 한글이 없다).
 .katex .hangul_fallback {
   font-family: var(--bodyFont);
 }
 
-// `\text{}`는 "수식 안의 산문"이라 본문 서체를 따르게 한다.
-// 주의: 수학 기호·변수(.mathnormal 등)는 건드리지 않는다 — 그건 KaTeX 폰트가 맞다.
+// `\text{}`(수식 안의 산문)는 본문 서체. 주의: 기호·변수(.mathnormal 등)는 KaTeX 폰트로 둔다.
 .katex .mord.text,
 .katex .textrm {
   font-family: var(--bodyFont);
@@ -399,8 +382,7 @@ body .katex-display .katex {
 
 // ── 4. Callouts ────────────────────────────────────────────────────────────
 
-// Obsidian 형태(아이콘 + 둥근 박스 + 좌측 바)를 유지하고 색만 우리 것을 쓴다.
-// 주의: 우리가 정의하는 건 색이지 형태가 아니다 — 아이콘·둥근 모서리를 걷어내지 말 것.
+// 주의: 형태(아이콘·둥근 박스·좌측 바)는 Obsidian 규격 그대로 — 여기서 정의하는 건 색뿐이다.
 .callout {
   // 헤더 격자: 아이콘 열 + 글자 열. 제목 글자와 목록 글자가 --cal-indent에서 만난다.
   --cal-icon: 16px;
@@ -408,14 +390,13 @@ body .katex-display .katex {
   --cal-indent: calc(var(--cal-icon) + var(--cal-gap));
   --cal-lh: 1.45;
   --cal-ink: color-mix(in srgb, var(--color) 82%, var(--dark));
-  border-radius: 6px;
+  border-radius: var(--radius-s);
   margin: 1.2rem 0;
   padding: 0;
   overflow: hidden;
   line-height: 1.75;
-  // 보더·배경을 전부 타입 색(--color)에서 파생시킨다 — 신규 타입도 --color만 주면 따라온다.
-  // 주의: 네 변을 모두 파생시킬 것. 일부만 지정하면 나머지 변에 callouts.scss의
-  //       Obsidian 하드코딩 색이 남아 좌측 바와 테두리가 다른 계열이 된다.
+  // 보더·배경은 전부 타입 색(--color)에서 파생 — 신규 타입도 --color만 주면 된다.
+  // 주의: 네 변을 모두 파생시킬 것 — 일부만 주면 callouts.scss의 하드코딩 색이 남는다.
   border-color: color-mix(in srgb, var(--color) 22%, transparent);
   border-left: 3px solid var(--color);
   background: color-mix(in srgb, var(--color) 5%, transparent);
@@ -507,7 +488,7 @@ body .katex-display .katex {
   }
 }
 
-// 12종 타입 → 5색 매핑. 12색은 지각 한계를 넘으므로 가치 단위로 묶는다.
+// 타입 → 그룹 색 매핑(DESIGN-SYSTEM §4.1).
 .callout[data-callout="note"],
 .callout[data-callout="abstract"],
 .callout[data-callout="info"],
@@ -532,16 +513,14 @@ body .katex-display .katex {
   --color: var(--cal-quote);
 }
 
-// 커스텀 타입 `[!reference]` — 출처·더 읽을 곳. 아이콘을 안 주면 note 연필로
-// 폴백하므로 책 SVG를 직접 넣는다(mask-image라 색은 --color를 따라간다).
+// 커스텀 타입 `[!reference]` — 아이콘을 안 주면 note 연필로 폴백해 책 SVG를 직접 넣는다(mask라 --color를 따른다).
 .callout[data-callout="reference"] {
   --color: var(--cal-ref);
   --callout-icon: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path><path d="M8 7h6"></path><path d="M8 11h8"></path></svg>');
 }
 
 // Obsidian `>` 인용문.
-// 주의: `:not(.callout)`을 빼지 말 것 — 콜아웃 루트 태그도 <blockquote>라,
-//       빼면 모든 콜아웃의 보더·배경이 파랑으로 납작해진다.
+// 주의: `:not(.callout)`을 빼지 말 것 — 콜아웃 루트도 <blockquote>라 모든 콜아웃이 파랑으로 납작해진다.
 blockquote:not(.callout) {
   border-left: 3px solid var(--secondary);
   background: rgba(var(--accent-rgb), 0.04);
@@ -578,8 +557,7 @@ a.tag-link {
 }
 
 // ── 5.5 Breadcrumb — 카탈로그 번호 스트립 ──────────────────────────────────
-// 음반 카탈로그 번호처럼 모노로 조판한다. 마지막 크럼은 자기 자신을 가리키는
-// 링크라 `:last-child`로 링크 표시를 걷어낸다.
+// 마지막 크럼은 자기 자신을 가리키는 링크라 `:last-child`로 링크 표시를 걷어낸다.
 
 .breadcrumb-container {
   font-family: var(--codeFont);
@@ -610,8 +588,8 @@ a.tag-link {
 }
 
 // ── 6. PageTitle ───────────────────────────────────────────────────────────
-// 로고는 헤딩이 아니라 title 슬롯(--titleFont)을 써서 브랜드 존을 본문과 분리한다.
-// 주의: Anton은 400 weight만 존재한다 — 더 굵게 걸면 합성 볼드로 획이 뭉갠다.
+// 로고 — 헤딩이 아니라 title 슬롯(--titleFont).
+// 주의: Anton은 400만 있다 — 더 굵게 걸면 합성 볼드로 획이 뭉갠다.
 .page-title {
   font-family: var(--titleFont);
   font-size: 1.3125rem;
@@ -622,13 +600,11 @@ a.tag-link {
   // 레이어 안 h2 규칙(§1)의 밑줄·여백 상쇄.
   border-bottom: none;
   padding: 0;
-
 }
 
 // ── 7. 좌측 사이드바 — SPECS / Backlinks / CATALOG ─────────────────────────
-// 패널 자체 스타일은 각 플러그인이 갖고, 여긴 컨테이너 맥락만. 셋 다 자연 높이다(CATALOG는 현재 ±2편 창).
+// 패널 자체 스타일은 각 플러그인 몫, 여긴 컨테이너 맥락만. 셋 다 자연 높이다.
 .sidebar.left {
-  // 성격이 다른 블록이라 간격을 확실히 벌린다.
   gap: 1.6rem;
 
   > .note-specs,
@@ -654,14 +630,10 @@ a.tag-link {
 
 // ── 8. 우측 사이드바 — TOC / GRAPH ────────────────────────────────────────
 // 순서는 quartz.config.yaml의 layout priority가 정하고, 여기선 높이 배분만 고정한다.
-//
-// 주의: `min-height: 0`을 빼지 말 것 — flex 자식 기본값이 `min-height: auto`라
-//       내용보다 작아지지 않고, 이게 없으면 flex 값을 뭘 주든 줄지 않는다.
-// 주의: TOC를 감싼 `.desktop-only`는 `display: contents`라 flex에 투명하다 —
-//       래퍼가 아니라 .toc/.topic-graph를 직접 타겟할 것.
+// 주의: `min-height: 0`을 빼지 말 것 — flex 자식 기본값 `auto`라 flex 값을 뭘 주든 줄지 않는다.
+// 주의: `.desktop-only` 래퍼는 `display: contents`라 flex에 투명하다 — .toc/.topic-graph를 직접 타겟할 것.
 
-// 패널 라벨 5종은 한 규칙으로 통일한다 — 기준은 SPECS(Hahmlet 700 / 1rem).
-// 주의: 패널별 색·조판으로 나누지 말 것. 라벨이 콘텐츠보다 시끄러워진다.
+// 패널 라벨 5종은 한 규칙. 주의: 패널별 색·조판으로 나누지 말 것 — 라벨이 콘텐츠보다 시끄러워진다.
 .note-specs-title,
 .note-catalog-title,
 button.toc-header h3,
@@ -755,10 +727,8 @@ ul.toc-content.collapsed {
   overflow-y: auto;
 }
 
-// 패널 항목 3종(CATALOG 노트 · TOC 절 · Backlinks 노트) — 모두 "다른 곳으로 가는
-// 링크"라 한 규칙에 둔다. 기본은 --gray, 현재 위치만 블루로 칠한다.
-// 주의: 항목 전체를 --secondary로 채우지 말 것 — 사이드바가 통째로 파래져 "지금
-//       여기"가 묻힌다. 웜 액센트도 안 된다(읽기 진행바·CTA와 신호가 겹친다).
+// 패널 항목 3종(CATALOG·TOC·Backlinks)은 한 규칙 — 기본 --gray, 현재 위치만 블루.
+// 주의: 항목 전체를 --secondary나 웜 액센트로 칠하지 말 것 — "지금 여기"가 묻히거나 다른 축과 겹친다.
 // 주의: CATALOG 항목 규칙은 플러그인의 noteCatalog.scss에도 있다 — 둘을 같이 고칠 것.
 .note-catalog .note-catalog-link,
 .toc-content li > a,
@@ -772,37 +742,31 @@ ul.toc-content.collapsed {
   }
 }
 
-// CATALOG 현재 노트 — "지금 여기"를 칠하는 유일한 한 줄.
-// 주의: 지우지 말 것. 플러그인의 `.active`는 레이어 안이고 위 규칙은 레이어 밖이라,
-//       명시도와 무관하게 --gray가 이겨 현재 노트까지 회색이 된다.
+// CATALOG 현재 노트.
+// 주의: 지우지 말 것 — 플러그인 `.active`는 레이어 안이라 위 --gray 규칙에 져 현재 노트까지 회색이 된다.
 .note-catalog .note-catalog-link.active {
   color: var(--secondary);
 }
 
-// 주의: `opacity: 1`을 되돌리지 말 것. 플러그인이 비활성 항목에 거는 `opacity: .35`가
-//       --gray(4.65:1)에 곱해지면 실효 대비 약 1.6:1로 AA 위반이 된다. 활성/비활성
-//       구분은 투명도가 아니라 색과 굵기가 맡는다.
+// 주의: `opacity: 1`을 되돌리지 말 것 — 업스트림 비활성 `opacity: .35`가 --gray에 곱해져 AA 위반이 된다.
 .toc li a {
   opacity: 1;
 }
 
-// depth-0(h2)엔 보더를 주지 않는다 — 하위 섹션 없는 노트에서 모든 줄에 보더가
-// 달리면 위계 없이 줄만 늘어선 것처럼 보인다. 보더는 depth-1+에만.
 .toc-content li > a {
   display: block;
   padding: 3px 0;
   line-height: 1.5;
 }
 
-// 활성 표시는 CATALOG 현재 노트와 같은 --secondary — "지금 여기"가 사이드바
-// 전체에서 한 부호로 읽혀야 한다.
-// 주의: --accent-state로 바꾸지 말 것 — 같은 질문에 두 부호로 답하게 된다.
+// TOC 활성 절 = CATALOG 현재 노트와 같은 --secondary.
+// 주의: --accent-state로 바꾸지 말 것 — "지금 여기"에 두 부호로 답하게 된다.
 .toc-content li > a.in-view {
   color: var(--secondary);
   font-weight: 600;
 }
 
-// 하위 섹션만 좌측 보더로 위계 표시.
+// 하위 섹션만 좌측 보더로 위계 표시 — depth-0(h2)까지 주면 하위 섹션 없는 노트에서 모든 줄에 보더가 달린다.
 .toc-content li:not(.depth-0) > a {
   border-left: 2px solid var(--border);
   padding-left: 0.7rem;
@@ -813,7 +777,6 @@ ul.toc-content.collapsed {
 }
 
 // ── 8.5 사이드바 island — 데스크톱만, 컬럼당 하나 ─────────────────────────
-// 그림자 없이 보더 + 옅은 면. 본문·상단 바·푸터는 평면 유지.
 // 주의: column-gap을 넓히지 말 것 — 본문 폭이 줄어든다. island는 컬럼 안쪽으로 들인다.
 // 주의: $desktop·$tablet이 1200px에서 겹친다(1200은 우측 사이드바가 본문 아래인 tablet 그리드) — 1px 올린다.
 // 주의: 폴더·태그·archive·topics는 사이드바가 비어 있다 — 패널이 있을 때만 그린다.
@@ -881,7 +844,7 @@ tbody tr {
   border-bottom: 1px solid var(--lightgray);
 }
 
-// 얼룩말 무늬 — 행 구분선을 이미 쓰고 있어 아주 옅게만.
+// 얼룩말 무늬.
 tbody tr:nth-child(even) {
   background: rgba(var(--accent-rgb), 0.035);
 }
@@ -894,99 +857,6 @@ tbody tr:hover {
 tbody td {
   padding: 0.5rem 0.8rem;
   color: var(--darkgray);
-}
-
-// ── 10. Card List (tag 목록 페이지 — 폴더 페이지는 folder-listing의 행) ─────────
-// tag-page 플러그인의 listPage.scss 기본 그리드를 flex 세로 카드형으로 덮는다.
-
-.page-listing ul.section-ul {
-  padding-left: 0;
-}
-
-.page-listing li.section-li {
-  margin-bottom: 0.5rem;
-
-  & > .section {
-    position: relative; // 제목 링크 ::after(stretched link)의 기준
-    display: flex;
-    flex-direction: column;
-    padding: 0.85rem 1.1rem;
-    border: 1px solid var(--lightgray);
-    border-radius: 6px;
-    gap: 0.2rem;
-    transition:
-      border-color var(--dur-fast) var(--ease),
-      background-color var(--dur-fast) var(--ease);
-
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        border-color: var(--secondary);
-        background: rgba(var(--accent-rgb), 0.04);
-      }
-    }
-
-    &:active {
-      background: rgba(var(--accent-rgb), 0.08);
-    }
-
-    // 카드 전체 클릭: 제목 링크의 ::after를 카드 크기로 펼친다.
-    .desc h3 a {
-      &::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
-      }
-
-      &:focus-visible {
-        outline: none;
-
-        &::after {
-          outline: 2px solid var(--secondary);
-          outline-offset: 2px;
-          border-radius: 6px;
-        }
-      }
-    }
-
-    .meta {
-      order: 1;
-      font-size: 0.73rem;
-      color: var(--gray);
-      opacity: 1;
-      margin: 0;
-    }
-
-    .desc {
-      order: 2;
-      h3 {
-        margin: 0.1rem 0 0;
-        font-size: 0.95rem;
-      }
-    }
-
-    .tags {
-      order: 3;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin-top: 0.35rem;
-      padding-left: 0;
-      list-style: none;
-
-      // 주의: ul이 아니라 li만 올린다 — ul을 올리면 태그 옆 빈칸이 카드 클릭을 막는다.
-      li {
-        position: relative;
-        z-index: 1;
-      }
-    }
-  }
-}
-
-// 카드 전체가 링크라 훑어 내리는 동안 미리보기 팝오버가 깜박인다 — 목록 제목 링크에선 숨긴다.
-// 주의: visibility로는 못 숨긴다 — dropin 애니메이션(forwards)이 visible을 덮어쓴다.
-body:has(#quartz-body .page-listing .section .desc h3 a:hover) .popover {
-  animation: none;
 }
 
 // ── 10.4 페이지 폭·좌우 여백 ──────────────────────────────────────────────
@@ -1019,9 +889,8 @@ body {
 }
 
 // ── 10.5 전역 상단 바 (topbar) ────────────────────────────────────────────
-// 로고 → 내비(global-nav) → 검색·다크모드. 데스크톱은 한 줄, 모바일은 1행 로고+검색+테마 /
-// 2행 탭. 행 높이를 고정해 폰트·스크립트가 늦게 와도 아래 콘텐츠가 밀리지 않는다(CLS).
-// 폭은 `.page`를 그대로 따르고(§10.4), 배경·구분선만 ::before로 화면 끝까지 번진다.
+// 데스크톱 한 줄, 모바일 1행 로고+검색+테마 / 2행 탭. 행 높이 고정(CLS).
+// 폭은 `.page`를 따르고(§10.4), 배경·구분선만 ::before로 화면 끝까지 번진다.
 .topbar {
   display: flex;
   align-items: center;
@@ -1181,9 +1050,7 @@ body {
 }
 
 // ── 10.6 홈 레이아웃 — 좌우 사이드바 컬럼 제거, 센터 컬럼만 ──────────────
-// 홈도 일반 노트와 같은 "content" pageType이라 layout.byPageType으로 분기할 수
-// 없어 `data-slug="index"`로 타겟팅한다. 컴포넌트를 빼도 빈 그리드 컬럼이
-// 남으므로 컬럼 자체를 접는다.
+// 홈도 "content" pageType이라 `data-slug="index"`로 타겟한다 — 컴포넌트를 빼도 빈 그리드 컬럼이 남아 컬럼 자체를 접는다.
 body[data-slug="index"] {
   .left.sidebar,
   .right.sidebar {
@@ -1224,9 +1091,7 @@ article img {
   margin-inline: auto;
 }
 
-// 본문 미디어 프레임 — anim 카드와 같은 문법(헤어라인 + 라운드, 그림자 없음).
-// 대상: 원고 이미지(<p>/<a>/정렬용 <div>/<figure> 직속)·영상·image-layouts 프레임.
-// 제외: 캐러셀 썸네일(.il-thumb)·라이트박스 확대본(article 밖)·그 밖의 깊은 위치 img.
+// 본문 미디어 헤어라인 프레임 — 원고 이미지(직속)·영상·image-layouts 프레임.
 // 주의: image-layouts는 img가 아니라 .il-frame에 준다 — overflow:hidden + cover라 img 보더가 잘린다.
 article :is(p, a, div:not([class]), figure) > img,
 article :not(.anim) > video,
@@ -1247,8 +1112,8 @@ article .il-carousel,
   border-radius: 0;
 }
 
-// 다크에서만 흰 이미지의 밝기 점프를 줄인다(18.3 → 14.6:1). 라이트박스는 원래 밝기.
-// 주의: 0.9가 상한 — 0.85면 이미지 안 회색 라벨이 4.35:1로 AA 미달.
+// 다크에서만 흰 이미지의 밝기 점프를 줄인다. 라이트박스는 원래 밝기.
+// 주의: 0.9가 상한 — 더 낮추면 이미지 안 회색 라벨이 AA 미달.
 :root[saved-theme="dark"] {
   article :is(p, a, div:not([class]), figure) > img:not(.media-dark),
   article video,

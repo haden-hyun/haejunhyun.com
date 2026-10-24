@@ -4,7 +4,7 @@ import type {
   QuartzComponentProps,
   QuartzPluginData,
 } from "@quartz-community/types"
-import { resolveRelative } from "../util/path"
+import { resolveRelative } from "../../../_shared/path"
 import { formatYmd, getNoteDates } from "../../../_shared/noteMeta"
 import { isListedNote, topicName } from "../../../_shared/notes"
 import style from "./styles/archiveContent.scss"
@@ -14,10 +14,7 @@ import style from "./styles/archiveContent.scss"
  */
 
 type FileData = QuartzPluginData & Record<string, unknown>
-
-function getCreated(f: FileData): Date | undefined {
-  return getNoteDates(f).created
-}
+type Entry = { f: FileData; created: Date; revised?: Date }
 
 export default (() => {
   const ArchiveContent: QuartzComponent = ({
@@ -26,16 +23,17 @@ export default (() => {
     displayClass,
   }: QuartzComponentProps) => {
     const currentSlug = (fileData.slug as string) ?? "archive"
-    const files = (allFiles as FileData[])
+    const entries = (allFiles as FileData[])
       .filter((f) => isListedNote(f))
-      .filter((f) => getCreated(f))
-      .sort((a, b) => getCreated(b)!.getTime() - getCreated(a)!.getTime())
+      .map((f) => ({ f, ...getNoteDates(f) }))
+      .filter((e): e is Entry => e.created !== undefined)
+      .sort((a, b) => b.created.getTime() - a.created.getTime())
 
-    const byYear = new Map<number, FileData[]>()
-    for (const f of files) {
-      const year = Number(formatYmd(getCreated(f)!).slice(0, 4))
+    const byYear = new Map<number, Entry[]>()
+    for (const e of entries) {
+      const year = Number(formatYmd(e.created).slice(0, 4))
       const list = byYear.get(year) ?? []
-      list.push(f)
+      list.push(e)
       byYear.set(year, list)
     }
     const years = [...byYear.keys()].sort((a, b) => b - a)
@@ -44,18 +42,17 @@ export default (() => {
       // 주의: <h1>은 article-title이 렌더한다 — 여기서 중복 렌더 금지.
       <article class={`${displayClass ?? ""} archive-page-content popover-hint`}>
         <p class="archive-page-sub">
-          {files.length} notes · {years.length} years
+          {entries.length} notes · {years.length} years
         </p>
         {years.map((year) => (
           <section class="archive-page-year">
             <h2>{year}</h2>
             <div class="archive-page-rows">
-              {byYear.get(year)!.map((f) => {
-                const { created, revised } = getNoteDates(f)
+              {byYear.get(year)!.map(({ f, created, revised }) => {
                 return (
                   <a class="archive-page-row" href={resolveRelative(currentSlug, f.slug as string)}>
-                    <time class="archive-page-date" datetime={created!.toISOString()}>
-                      {formatYmd(created!)}
+                    <time class="archive-page-date" datetime={created.toISOString()}>
+                      {formatYmd(created)}
                     </time>
                     <span class="archive-page-title">
                       {(f.frontmatter as { title?: string } | undefined)?.title ?? "Untitled"}

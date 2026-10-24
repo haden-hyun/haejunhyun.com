@@ -8,14 +8,12 @@ const inlineScriptPlugin: Plugin = {
   setup(parentBuild) {
     const absWorkingDir = parentBuild.initialOptions.absWorkingDir ?? process.cwd();
 
-    // SCSS files are loaded as raw text (CSS injected via style tags)
     parentBuild.onLoad({ filter: /\.scss$/ }, async (args) => {
       const sass = await import("sass");
       const result = sass.compile(args.path);
       return { contents: result.css, loader: "text" };
     });
 
-    // Inline TypeScript files are transpiled + bundled for the browser
     parentBuild.onLoad({ filter: /\.inline\.ts$/ }, async (args) => {
       const esbuild = await import("esbuild");
       const fs = await import("fs");
@@ -42,7 +40,6 @@ const inlineScriptPlugin: Plugin = {
         format: "esm",
         target: "es2020",
         sourcemap: false,
-        // Preserve dynamic CDN imports (e.g. graph plugin loading d3/pixi from CDN)
         external: ["http://*", "https://*"],
       });
 

@@ -5,6 +5,8 @@ import type {
 } from "@quartz-community/types"
 import style from "./styles/socialLinks.scss"
 
+// 상단 바 소셜 아이콘 링크 — 옵션의 SVG 문자열을 그대로 넣는다(새 탭, aria-label = name).
+
 export interface SocialLink {
   name: string
   url: string

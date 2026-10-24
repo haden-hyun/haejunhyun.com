@@ -1,8 +1,11 @@
+// 태그 페이지 본문 — folder-listing의 레코드 행·스타일을 그대로 쓴다.
+// - /tags: 태그 행 색인(태그명 + 노트 수 + 최근 2편)
+// - /tags/<tag>: 노트 행(시리즈 편은 `N편` 열, 묶지 않음)
 import type { FullSlug, QuartzComponent, QuartzComponentProps } from "@quartz-community/types"
 import { toJsxRuntime } from "hast-util-to-jsx-runtime"
 import type { Root } from "hast"
 import { Fragment, jsx, jsxs } from "preact/jsx-runtime"
-import { byListDateDesc, isListedNote } from "../../../_shared/notes"
+import { byListDateDesc, isListedNote, plural } from "../../../_shared/notes"
 import { resolveRelative } from "../../../_shared/path"
 import { seriesIndexOf, seriesLabel, seriesOf } from "../../../_shared/series"
 import type { PageEntry } from "../../../folder-listing/src/folderTree"
@@ -25,8 +28,6 @@ const byListDateThenEpisode = (a: PageEntry, b: PageEntry): number => {
   const sameSeries = seriesOf(a) !== "" && seriesOf(a) === seriesOf(b) && ia !== undefined && ib !== undefined
   return byListDateDesc(a, b) || (sameSeries ? ia - ib : 0) || byListDate(a, b)
 }
-
-const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`
 
 /** 태그 색인 행 = 메타 열 `N notes` │ 태그명 + 최근 노트 2편. */
 function TagRow({ tag, notes, slug }: { tag: string; notes: PageEntry[]; slug: FullSlug }) {

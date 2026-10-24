@@ -1,4 +1,4 @@
-// src/util/path.ts
+// ../_shared/path.ts
 function endsWith(s2, suffix) {
   return s2 === suffix || s2.endsWith("/" + suffix);
 }

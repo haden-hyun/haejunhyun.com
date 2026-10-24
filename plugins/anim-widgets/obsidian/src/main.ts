@@ -60,7 +60,7 @@ class AnimChild extends MarkdownRenderChild {
 
 /**
  * 주의: import(vault.getResourcePath(file))는 쓰지 않는다. Obsidian의 app:// 핸들러가 Content-Type을 붙이지 않아
- * 크로미움이 모듈 스크립트를 거부한다(probe/result.txt). 텍스트를 읽어 MIME을 지정한 Blob URL로 import한다.
+ * 크로미움이 모듈 스크립트를 거부한다. 텍스트를 읽어 MIME을 지정한 Blob URL로 import한다.
  */
 async function importDraw(code: string): Promise<Draw> {
   const url = URL.createObjectURL(new Blob([code], { type: "text/javascript" }))

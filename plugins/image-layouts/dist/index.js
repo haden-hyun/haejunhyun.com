@@ -204,6 +204,11 @@ var textBlock = (hName, hProperties, value) => ({
   data: { hName, hProperties },
   children: [{ type: "text", value }]
 });
+var imageBox = (className, url, alt) => ({
+  type: "paragraph",
+  data: { hName: "div", hProperties: { className: [className] } },
+  children: [{ type: "image", url, alt }]
+});
 var cssSize = (value, fallback) => {
   if (typeof value === "number") return `${value}px`;
   const text = String(value ?? "").trim();
@@ -220,12 +225,7 @@ function buildFigure(image, index, withArea) {
   const style = [];
   if (withArea) style.push(`grid-area:image-${index}`);
   if (image.width) style.push(`max-width:${image.width}px`);
-  const frame = {
-    type: "paragraph",
-    data: { hName: "div", hProperties: { className: ["il-frame"] } },
-    children: [{ type: "image", url: image.url, alt: image.caption ?? "" }]
-  };
-  const children = [frame];
+  const children = [imageBox("il-frame", image.url, image.caption ?? "")];
   if (image.caption) {
     children.push(textBlock("figcaption", { className: ["il-caption"] }, image.caption));
   }
@@ -296,13 +296,7 @@ function buildCarouselNode(block, opts) {
       container(
         "div",
         { className: ["il-thumbs"] },
-        block.images.map(
-          (image) => ({
-            type: "paragraph",
-            data: { hName: "div", hProperties: { className: ["il-thumb"] } },
-            children: [{ type: "image", url: image.url, alt: "" }]
-          })
-        )
+        block.images.map((image) => imageBox("il-thumb", image.url, ""))
       )
     );
   }

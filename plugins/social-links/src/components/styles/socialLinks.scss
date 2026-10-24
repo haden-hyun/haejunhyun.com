@@ -3,10 +3,6 @@
   margin-bottom: 1rem;
   padding: 0.5rem 0;
 
-  h3 {
-    display: none; // 제목 숨김
-  }
-
   ul {
     list-style: none;
     padding: 0;
@@ -28,7 +24,6 @@
           transform var(--dur-fast) var(--ease),
           background-color var(--dur-fast) var(--ease);
         text-decoration: none;
-        // 배경 제거
 
         &:hover {
           transform: translateY(-2px);
@@ -48,16 +43,11 @@
           fill: var(--tertiary);
           transform: scale(1.1);
         }
-
-        .link-text {
-          display: none;
-        }
       }
     }
   }
 }
 
-// 다크모드 지원
 @media (prefers-color-scheme: dark) {
   .social-links {
     ul li a {

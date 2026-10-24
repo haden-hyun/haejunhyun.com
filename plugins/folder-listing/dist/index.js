@@ -4888,39 +4888,6 @@ function u4(e2, t2, n3, o2, i2, u5) {
   return l2.vnode && l2.vnode(l3), l3;
 }
 
-// ../_shared/path.ts
-function endsWith2(s2, suffix) {
-  return s2 === suffix || s2.endsWith("/" + suffix);
-}
-function trimSuffix2(s2, suffix) {
-  return endsWith2(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
-}
-function stripSlashes2(s2, onlyStripPrefix) {
-  if (s2.startsWith("/")) s2 = s2.substring(1);
-  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
-  return s2;
-}
-function simplifySlug2(fp) {
-  const res = stripSlashes2(trimSuffix2(fp, "index"), true);
-  return res.length === 0 ? "/" : res;
-}
-function joinSegments2(...args) {
-  if (args.length === 0) return "";
-  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes2(segment)).join("/");
-  const first = args[0];
-  const last = args[args.length - 1];
-  if (first?.startsWith("/")) joined = "/" + joined;
-  if (last?.endsWith("/")) joined = joined + "/";
-  return joined;
-}
-function pathToRoot2(slug) {
-  const rootPath = slug.split("/").filter((x3) => x3 !== "").slice(0, -1).map(() => "..").join("/");
-  return rootPath.length === 0 ? "." : rootPath;
-}
-function resolveRelative2(current, target) {
-  return joinSegments2(pathToRoot2(current), simplifySlug2(target));
-}
-
 // ../_shared/noteMeta.ts
 function toDate(value) {
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? void 0 : value;
@@ -4974,7 +4941,41 @@ function folderTitle(path2, overrides = {}) {
   const segment = path2.split("/").pop() ?? path2;
   return overrides[path2] ?? overrides[segment] ?? TOPIC_NAMES[segment] ?? titleCase(segment);
 }
+var plural = (n3, word) => `${n3} ${word}${n3 === 1 ? "" : "s"}`;
 var byListDateDesc = (a2, b2) => (getListDate(b2)?.getTime() ?? 0) - (getListDate(a2)?.getTime() ?? 0);
+
+// ../_shared/path.ts
+function endsWith2(s2, suffix) {
+  return s2 === suffix || s2.endsWith("/" + suffix);
+}
+function trimSuffix2(s2, suffix) {
+  return endsWith2(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
+}
+function stripSlashes2(s2, onlyStripPrefix) {
+  if (s2.startsWith("/")) s2 = s2.substring(1);
+  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
+  return s2;
+}
+function simplifySlug2(fp) {
+  const res = stripSlashes2(trimSuffix2(fp, "index"), true);
+  return res.length === 0 ? "/" : res;
+}
+function joinSegments2(...args) {
+  if (args.length === 0) return "";
+  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes2(segment)).join("/");
+  const first = args[0];
+  const last = args[args.length - 1];
+  if (first?.startsWith("/")) joined = "/" + joined;
+  if (last?.endsWith("/")) joined = joined + "/";
+  return joined;
+}
+function pathToRoot2(slug) {
+  const rootPath = slug.split("/").filter((x3) => x3 !== "").slice(0, -1).map(() => "..").join("/");
+  return rootPath.length === 0 ? "." : rootPath;
+}
+function resolveRelative2(current, target) {
+  return joinSegments2(pathToRoot2(current), simplifySlug2(target));
+}
 
 // ../_shared/series.ts
 function seriesOf(file) {
@@ -5179,7 +5180,6 @@ function SectionLabel({ section, slug, sub }) {
     )
   ] });
 }
-var plural = (n3, word) => `${n3} ${word}${n3 === 1 ? "" : "s"}`;
 var FolderListing_default = (opts) => {
   const showFolderCount = opts?.showFolderCount ?? true;
   const folderTitles = opts?.folderTitles ?? {};

@@ -121,14 +121,14 @@ function buildRecentRows(sorted, limit) {
   return rows;
 }
 
-// src/util/path.ts
+// ../_shared/path.ts
 function endsWith(s2, suffix) {
   return s2 === suffix || s2.endsWith("/" + suffix);
 }
 function trimSuffix(s2, suffix) {
   return endsWith(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
 }
-function stripSlashes(s2, onlyStripPrefix = false) {
+function stripSlashes(s2, onlyStripPrefix) {
   if (s2.startsWith("/")) s2 = s2.substring(1);
   if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
   return s2;
@@ -147,14 +147,11 @@ function joinSegments(...args) {
   return joined;
 }
 function pathToRoot(slug) {
-  let rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
-  if (rootPath.length === 0) rootPath = ".";
-  return rootPath;
+  const rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
+  return rootPath.length === 0 ? "." : rootPath;
 }
 function resolveRelative(current, target) {
-  const simplified = simplifySlug(target);
-  const rootPath = pathToRoot(current);
-  return joinSegments(rootPath, simplified);
+  return joinSegments(pathToRoot(current), simplifySlug(target));
 }
 
 // src/components/styles/featured.scss
@@ -185,9 +182,6 @@ function u2(e2, t2, n2, o2, i2, u3) {
 
 // src/components/FeaturedNotes.tsx
 var MAX_SLOTS = 4;
-function getTime(f3) {
-  return getListDate(f3)?.getTime() ?? 0;
-}
 function getRecentSlugs(files, limit) {
   const sorted = files.filter((f3) => f3.frontmatter?.title).sort(byListDateDesc);
   const rows = buildRecentRows(sorted, limit);
@@ -204,10 +198,8 @@ function pickRoundRobin(files, count, exclude) {
     list.push(f3);
     byTopic.set(topic, list);
   }
-  for (const list of byTopic.values()) list.sort((a2, b2) => getTime(b2) - getTime(a2));
-  const topicOrder = [...byTopic.keys()].sort(
-    (a2, b2) => getTime(byTopic.get(b2)[0]) - getTime(byTopic.get(a2)[0])
-  );
+  for (const list of byTopic.values()) list.sort(byListDateDesc);
+  const topicOrder = [...byTopic.keys()].sort((a2, b2) => byListDateDesc(byTopic.get(a2)[0], byTopic.get(b2)[0]));
   const picked = [];
   let round = 0;
   while (picked.length < count) {
@@ -270,7 +262,7 @@ var FeaturedNotes_default = ((userOpts) => {
     const curated = resolveSlugs(opts.slugs, files, recent);
     const exclude = /* @__PURE__ */ new Set([...curated.map((f3) => f3.slug), ...recent]);
     const needed = MAX_SLOTS - curated.length;
-    const autoFilled = needed > 0 ? pickRoundRobin(files, needed, exclude).sort((a2, b2) => getTime(b2) - getTime(a2)) : [];
+    const autoFilled = needed > 0 ? pickRoundRobin(files, needed, exclude).sort(byListDateDesc) : [];
     const selected = [...curated, ...autoFilled];
     if (selected.length === 0) return /* @__PURE__ */ u2(S, {});
     const pad = (n2) => String(n2).padStart(2, "0");

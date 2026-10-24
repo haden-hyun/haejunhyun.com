@@ -1,5 +1,8 @@
 // @ts-nocheck
-// 히어로 브라우저 로직 — 색소폰 캔버스·키 툴팁·선반 배치·노트 카드.
+// 히어로 브라우저 로직(nav마다 HomeHero의 인라인 스크립트가 호출).
+// - 색소폰: 캔버스 렌더(흔들림·물결·드래그 회전), 운지 키 = 토픽 버튼·툴팁
+// - 선반: planShelf로 배치, 폭이 바뀔 때만 다시 짓기, 로빙 tabindex
+// - 노트 카드: <dialog>(모바일 바텀시트), DIVE IN만 spaNavigate. 리스너는 window.addCleanup으로 해제
 // 주의: toString()으로 인라인 스크립트에 직렬화된다. 바깥 식별자·import를 참조하지 말 것(전부 L로 받는다).
 export function heroClient(L) {
   const root = document.querySelector(".home-hero")

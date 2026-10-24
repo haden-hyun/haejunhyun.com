@@ -40,6 +40,9 @@ export function folderTitle(path: string, overrides: Record<string, string> = {}
   return overrides[path] ?? overrides[segment] ?? TOPIC_NAMES[segment] ?? titleCase(segment)
 }
 
+/** 영문 개수 표기 — `1 note`, `3 notes`. */
+export const plural = (n: number, word: string): string => `${n} ${word}${n === 1 ? "" : "s"}`
+
 /** 목록 날짜 최신순 비교자. */
 export const byListDateDesc = (a: SlugFile, b: SlugFile): number =>
   (getListDate(b)?.getTime() ?? 0) - (getListDate(a)?.getTime() ?? 0)

@@ -1,6 +1,10 @@
+// 주제 그래프 클라이언트.
+// - 업스트림 graph의 사이드바 로컬 그래프 제거, 우측 island에 넘치면 GRAPH 숨김
+// - 보이는 판에 d3-force를 붙여 진입·드래그·팬·줌·호버 이웃 강조를 처리한다
+// - 확대 보기 <dialog> 열기·닫기·포커스 순환
 import { forceLink, forceSimulation } from "d3-force"
 import type { SimulationLinkDatum, SimulationNodeDatum } from "d3-force"
-import { FONT, type Box } from "../../core/labels"
+import { clip, FONT, type Box } from "../../core/labels"
 
 // 업스트림 graph의 사이드바 로컬 그래프만 걷어 낸다. ⌘G 전역 모달(.global-graph-outer)과 키 처리는 그대로 둔다.
 // 주의: 업스트림 리스너는 CDN 로드 뒤에 붙어 이 스크립트가 항상 먼저 돈다. .graph 자체는 지우지 말 것 — 모달이 그 안에 있다.
@@ -342,8 +346,7 @@ function bind(box: HTMLElement, svg: SVGSVGElement) {
       const el = document.createElementNS("http://www.w3.org/2000/svg", "text")
       el.setAttribute("class", "tg-label tg-hover")
       el.setAttribute("font-size", String(FONT))
-      const name = m.el.dataset.name ?? ""
-      el.textContent = [...name].length > MAX ? [...name].slice(0, MAX - 1).join("") + "…" : name
+      el.textContent = clip(m.el.dataset.name ?? "", MAX)
       layer.appendChild(el)
       const w = el.getComputedTextLength()
       const gap = radius(m) + 3
@@ -569,28 +572,28 @@ function bind(box: HTMLElement, svg: SVGSVGElement) {
     if (armed && !box.contains(e.target as Node)) disarm()
   }
 
-  const on: [SVGSVGElement, string, EventListener, AddEventListenerOptions?][] = [
-    [svg, "pointerdown", onPointerDown as EventListener],
-    [svg, "pointermove", onPointerMove as EventListener],
-    [svg, "pointerup", onPointerUp as EventListener],
-    [svg, "pointercancel", onPointerUp as EventListener],
-    [svg, "wheel", onWheel as EventListener, { passive: false }],
-    [svg, "dblclick", onDblClick as EventListener],
-    [svg, "click", onClick as EventListener],
-    [svg, "pointerover", onOver as EventListener],
-    [svg, "pointerout", onOut as EventListener],
-    [svg, "keydown", onKey as EventListener],
-    [svg, "focusin", onFocus as EventListener],
-    [svg, "focusout", onBlur],
+  const on: [string, EventListener, AddEventListenerOptions?][] = [
+    ["pointerdown", onPointerDown as EventListener],
+    ["pointermove", onPointerMove as EventListener],
+    ["pointerup", onPointerUp as EventListener],
+    ["pointercancel", onPointerUp as EventListener],
+    ["wheel", onWheel as EventListener, { passive: false }],
+    ["dblclick", onDblClick as EventListener],
+    ["click", onClick as EventListener],
+    ["pointerover", onOver as EventListener],
+    ["pointerout", onOut as EventListener],
+    ["keydown", onKey as EventListener],
+    ["focusin", onFocus as EventListener],
+    ["focusout", onBlur],
   ]
-  for (const [t, type, fn, o] of on) t.addEventListener(type, fn, o)
+  for (const [type, fn, o] of on) svg.addEventListener(type, fn, o)
   document.addEventListener("click", onDocClick)
   // 확대 보기를 닫으면 호버 상태를 비운다 — 다시 열 때 흐림이 남지 않게.
   const dialog = svg.closest("dialog")
   dialog?.addEventListener("close", disarm)
   window.addCleanup(() => {
     g.sim.stop()
-    for (const [t, type, fn, o] of on) t.removeEventListener(type, fn, o)
+    for (const [type, fn, o] of on) svg.removeEventListener(type, fn, o)
     document.removeEventListener("click", onDocClick)
     dialog?.removeEventListener("close", disarm)
   })

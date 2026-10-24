@@ -4955,6 +4955,7 @@ function isRealNote(slug) {
 function isListedNote(file) {
   return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
 }
+var plural = (n4, word) => `${n4} ${word}${n4 === 1 ? "" : "s"}`;
 var byListDateDesc = (a3, b3) => (getListDate(b3)?.getTime() ?? 0) - (getListDate(a3)?.getTime() ?? 0);
 
 // ../_shared/path.ts
@@ -5072,7 +5073,6 @@ var byListDateThenEpisode = (a3, b3) => {
   const sameSeries = seriesOf(a3) !== "" && seriesOf(a3) === seriesOf(b3) && ia !== void 0 && ib !== void 0;
   return byListDateDesc(a3, b3) || (sameSeries ? ia - ib : 0) || byListDate(a3, b3);
 };
-var plural = (n4, word) => `${n4} ${word}${n4 === 1 ? "" : "s"}`;
 function TagRow({ tag, notes, slug }) {
   const recent = notes.slice(0, 2).map((page) => page.frontmatter?.title).join(" \xB7 ");
   return /* @__PURE__ */ u4("li", { children: /* @__PURE__ */ u4("a", { class: "fi-row", href: resolveRelative2(slug, `tags/${tag}`), "data-no-popover": "true", children: [

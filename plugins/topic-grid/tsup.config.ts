@@ -4,7 +4,7 @@ import type { Plugin } from "esbuild"
 const inlineScriptPlugin: Plugin = {
   name: "inline-script-loader",
   setup(parentBuild) {
-    // SCSS files are compiled to CSS via sass, matching Quartz v5 core behavior
+    // SCSS는 sass로 컴파일한 CSS 문자열로 싣는다(Quartz v5 코어와 같은 방식)
     parentBuild.onLoad({ filter: /\.scss$/ }, async (args) => {
       const sass = await import("sass")
       const result = sass.compile(args.path)

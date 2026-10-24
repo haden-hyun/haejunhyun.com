@@ -1,3 +1,4 @@
+// 시리즈 상자·페이저 공용: 현재 노트의 시리즈 편 목록과 이전/다음 편을 구한다.
 import {
   getSeriesEntries,
   seriesOf,
@@ -5,7 +6,7 @@ import {
   type SeriesFile,
 } from "../../../_shared/series"
 
-export type { SeriesEntry, SeriesFile }
+export type { SeriesFile }
 
 export interface SeriesNavOptions {
   seriesTitles: Record<string, string>

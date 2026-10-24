@@ -1,3 +1,4 @@
+// 레이아웃 이름 → LayoutSpec(grid 프리셋 a~i·single · custom ASCII 그리드 · masonry-N · carousel). 모르면 자동배치 grid.
 import { parseCustomGrid } from "./parse-grid"
 
 export interface LayoutSpec {

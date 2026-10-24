@@ -1,48 +1,40 @@
-// syntax.scss — 코드 하이라이팅 토큰 색. 코드 색의 단일 소스.
-//
-// 플러그인 `theme`는 내장 테마 ID만 받아 커스텀 팔레트를 못 넘긴다. 대신
-// tokenClassification이 붙여주는 `data-token-type`을 속성 선택자로 잡는다.
-// 명도가 1차 신호, 색상이 2차 신호 — 유채색 4종은 전부 사이트 색상에 결합.
-//
-// 주의: 기성 라이트 테마의 색 값을 그대로 가져오지 말 것 — 우리 배경이 더
-//       어두워 대비가 무너진다(실측 AA 미달: Solarized 9/9, Gruvbox 4/9).
-// 주의: 대비는 페이지 배경이 아니라 코드블럭 배경 기준으로 잰다. 예외 없이 AA 4.5 이상.
+// syntax.scss — 코드 하이라이팅 토큰 색의 단일 소스.
+// - 플러그인 `theme`는 내장 테마 ID만 받아, tokenClassification이 붙인 `data-token-type`을 속성 선택자로 잡는다
+// - 토큰 8종 × 라이트·다크 팔레트 + 기본색(ink)
+// 주의: 기성 라이트 테마의 색 값을 가져오지 말 것 — 우리 배경이 더 어두워 대비가 무너진다.
+// 주의: 대비는 페이지 배경이 아니라 코드블럭 배경(--code-bg) 기준으로 잰다. 예외 없이 AA 4.5 이상.
 
 :root {
-  // 배경 #efebe0 기준. 스프레드 8.65, 최저 4.63, 전부 AA.
-  --syn-muted: #6e685e; //  4.63  comment                (가장 옅음)
-  --syn-key: #9e3a16; //  5.74  keyword · important    H 16 = 브릭
-  --syn-punct: #5f5850; //  5.88  punctuation · operator
-  --syn-value: #1a6152; //  6.13  value · number         H167 = 딥 틸
-  --syn-alert: #9c1327; //  6.95  regexp · error
-  --syn-name: #7c2f5e; //  7.27  function · property    H323 = Chitlins
-  --syn-lit: #14456b; //  8.42  string                 H206 = accent
-  --syn-ink: #26221c; // 13.28  기본값 · 식별자
+  --syn-muted: #6e685e; // comment
+  --syn-key: #9e3a16; // keyword · important
+  --syn-punct: #5f5850; // punctuation · operator
+  --syn-value: #1a6152; // value · number
+  --syn-alert: #9c1327; // regexp · error
+  --syn-name: #7c2f5e; // function · property · tag
+  --syn-lit: #14456b; // string
+  --syn-ink: #26221c; // 기본값 · 식별자
 }
 
 :root[saved-theme="dark"] {
-  // 배경 #141b28 기준. 스프레드 10.02, 최저 4.90, 전부 AA.
   // 어두운 배경에선 채도를 낮춘다(라이트 평균 78% → 48%).
-  --syn-muted: #7e8794; //  4.90
-  --syn-punct: #98a2b0; //  6.68
-  --syn-alert: #f08498; //  6.95
-  --syn-key: #e8946a; //  7.29
-  --syn-name: #dda2c8; //  8.28
-  --syn-value: #6fc4aa; //  8.34
-  --syn-lit: #9ecbee; // 10.05
-  --syn-ink: #e9eff7; // 14.92
+  --syn-muted: #7e8794;
+  --syn-punct: #98a2b0;
+  --syn-alert: #f08498;
+  --syn-key: #e8946a;
+  --syn-name: #dda2c8;
+  --syn-value: #6fc4aa;
+  --syn-lit: #9ecbee;
+  --syn-ink: #e9eff7;
 }
 
-// 기본색 = ink. --syn-ink가 테마별로 재정의되므로 이 규칙 하나로 라이트·다크를 덮는다.
-// 주의: `--shiki-light/dark`로 폴백하지 말 것 — Shiki가 식별자에 data-token-type을
-//       붙이지 않아, 가장 많이 읽는 변수명이 통제 밖으로 나간다.
+// 기본색 = ink(테마별로 재정의되는 --syn-ink 하나로 라이트·다크를 덮는다).
+// 주의: `--shiki-light/dark`로 폴백하지 말 것 — Shiki가 식별자에 data-token-type을 안 붙여 변수명이 통제 밖으로 나간다.
 code[data-theme*=" "],
 code[data-theme*=" "] span {
   color: var(--syn-ink);
 }
 
-// 주의: 오버라이드는 반드시 `code[data-theme*=" "] span[...]` 형태로 —
-//       (0,2,2)라야 위 기본 규칙 (0,1,2)를 이긴다.
+// 주의: 오버라이드는 반드시 `code[data-theme*=" "] span[...]` 형태로 — (0,2,2)라야 위 기본 규칙 (0,1,2)를 이긴다.
 code[data-theme*=" "] span {
   // 구두점·연산자는 문법의 접착제라 물러난다.
   // 주의: 식별자(=기본 ink)와 같은 그룹에 두지 말 것 — 그쪽은 읽어야 할 내용이다.

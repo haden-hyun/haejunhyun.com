@@ -1,4 +1,38 @@
-// ../../node_modules/github-slugger/index.js
+// ../_shared/path.ts
+function endsWith(s2, suffix) {
+  return s2 === suffix || s2.endsWith("/" + suffix);
+}
+function trimSuffix(s2, suffix) {
+  return endsWith(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
+}
+function stripSlashes(s2, onlyStripPrefix) {
+  if (s2.startsWith("/")) s2 = s2.substring(1);
+  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
+  return s2;
+}
+function simplifySlug(fp) {
+  const res = stripSlashes(trimSuffix(fp, "index"), true);
+  return res.length === 0 ? "/" : res;
+}
+function joinSegments(...args) {
+  if (args.length === 0) return "";
+  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes(segment)).join("/");
+  const first = args[0];
+  const last = args[args.length - 1];
+  if (first?.startsWith("/")) joined = "/" + joined;
+  if (last?.endsWith("/")) joined = joined + "/";
+  return joined;
+}
+function pathToRoot(slug) {
+  const rootPath = slug.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
+  return rootPath.length === 0 ? "." : rootPath;
+}
+function resolveRelative(current, target) {
+  return joinSegments(pathToRoot(current), simplifySlug(target));
+}
+
+// src/components/styles/prevNext.scss
+var prevNext_default = ".prev-next-nav {\n  margin-top: 3rem;\n  padding-top: 2rem;\n  border-top: 1px solid var(--lightgray);\n}\n.prev-next-nav .prev-next-inner {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0.8rem;\n}\n.prev-next-nav .prev-next-link {\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n  padding: 0.8rem 1rem;\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);\n}\n.prev-next-nav .prev-next-link:hover {\n  border-color: var(--secondary);\n  background: rgba(var(--accent-rgb), 0.04);\n}\n.prev-next-nav .prev-next-link.next {\n  text-align: right;\n}\n.prev-next-nav .prev-next-link .direction {\n  font-size: 0.7rem;\n  font-weight: 600;\n  color: var(--secondary);\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n}\n.prev-next-nav .prev-next-link .ptitle {\n  font-size: 0.85rem;\n  color: var(--darkgray);\n  font-weight: 500;\n  line-height: 1.4;\n  word-break: keep-all;\n}";
 var l;
 function S(n2) {
   return n2.children;
@@ -22,65 +56,6 @@ function u2(e2, t2, n2, o2, i2, u3) {
   if ("function" == typeof e2 && (a2 = e2.defaultProps)) for (c2 in a2) void 0 === p2[c2] && (p2[c2] = a2[c2]);
   return l.vnode && l.vnode(l2), l2;
 }
-
-// node_modules/@quartz-community/utils/dist/index.js
-function simplifySlug(fp) {
-  const res = stripSlashes(trimSuffix(fp, "index"), true);
-  return res.length === 0 ? "/" : res;
-}
-function joinSegments(...args) {
-  if (args.length === 0) {
-    return "";
-  }
-  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes(segment)).join("/");
-  const first = args[0];
-  const last = args[args.length - 1];
-  if (first?.startsWith("/")) {
-    joined = "/" + joined;
-  }
-  if (last?.endsWith("/")) {
-    joined = joined + "/";
-  }
-  return joined;
-}
-function endsWith(s2, suffix) {
-  return s2 === suffix || s2.endsWith("/" + suffix);
-}
-function trimSuffix(s2, suffix) {
-  if (endsWith(s2, suffix)) {
-    s2 = s2.slice(0, -suffix.length);
-  }
-  return s2;
-}
-function stripSlashes(s2, onlyStripPrefix) {
-  if (s2.startsWith("/")) {
-    s2 = s2.substring(1);
-  }
-  if (!onlyStripPrefix && s2.endsWith("/")) {
-    s2 = s2.slice(0, -1);
-  }
-  return s2;
-}
-
-// src/util/path.ts
-function simplifySlug2(fp) {
-  return simplifySlug(fp);
-}
-function pathToRoot(slug2) {
-  let rootPath = slug2.split("/").filter((x2) => x2 !== "").slice(0, -1).map(() => "..").join("/");
-  if (rootPath.length === 0) {
-    rootPath = ".";
-  }
-  return rootPath;
-}
-function resolveRelative(current, target) {
-  const simplified = simplifySlug2(target);
-  const rootPath = pathToRoot(current);
-  return joinSegments(rootPath, simplified);
-}
-
-// src/components/styles/prevNext.scss
-var prevNext_default = ".prev-next-nav {\n  margin-top: 3rem;\n  padding-top: 2rem;\n  border-top: 1px solid var(--lightgray);\n}\n.prev-next-nav .prev-next-inner {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0.8rem;\n}\n.prev-next-nav .prev-next-link {\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n  padding: 0.8rem 1rem;\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);\n}\n.prev-next-nav .prev-next-link:hover {\n  border-color: var(--secondary);\n  background: rgba(var(--accent-rgb), 0.04);\n}\n.prev-next-nav .prev-next-link.next {\n  text-align: right;\n}\n.prev-next-nav .prev-next-link .direction {\n  font-size: 0.7rem;\n  font-weight: 600;\n  color: var(--secondary);\n  text-transform: uppercase;\n  letter-spacing: 0.06em;\n}\n.prev-next-nav .prev-next-link .ptitle {\n  font-size: 0.85rem;\n  color: var(--darkgray);\n  font-weight: 500;\n  line-height: 1.4;\n  word-break: keep-all;\n}";
 
 // src/components/PrevNext.tsx
 function getSortTime(f3) {

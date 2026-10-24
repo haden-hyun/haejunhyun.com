@@ -1,20 +1,19 @@
+// /topics 본문 — 토픽마다 섹션 라벨 + 시리즈 행 + 직속 노트 행 + 1단 폴더 행(폴더 페이지 §4.16 문법).
+// - 수치는 전부 allFiles 런타임 집계(_shared/topicIndex), 토픽 표는 `_shared/topics.ts` 하나
+// - 폴더명은 folder-listing이 심은 ctx.trie에서 읽는다
 import type {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
   QuartzPluginData,
 } from "@quartz-community/types"
-import { resolveRelative } from "../util/path"
 import style from "./styles/topicsContent.scss"
 import { formatYmd, getListDate } from "../../../_shared/noteMeta"
+import { plural } from "../../../_shared/notes"
+import { resolveRelative } from "../../../_shared/path"
 import { buildTopicIndex, folderNameResolver, type TopicFolder, type TopicSeries } from "../../../_shared/topicIndex"
 import { topicAnchor } from "../../../_shared/topics"
 import { episodeLabel } from "../../../_shared/series"
-
-/**
- * 내비의 "Topics" 라우트 — 토픽마다 섹션 라벨 + 시리즈 행 + 1단 폴더 행(폴더 페이지 §4.16 문법).
- * 수치·부제는 전부 allFiles 런타임 집계, 토픽 표는 `_shared/topics.ts` 하나.
- */
 
 export interface TopicsContentOptions {
   /** 시리즈 키 → 표시명. 주의: folder-listing·series-box·series-pager·series-roadmap 옵션과 같게 둘 것. */
@@ -22,8 +21,6 @@ export interface TopicsContentOptions {
 }
 
 type FileData = QuartzPluginData & Record<string, unknown>
-
-const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`
 
 function Ymd({ date }: { date?: Date }) {
   return date ? (

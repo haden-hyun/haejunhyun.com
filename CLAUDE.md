@@ -45,7 +45,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
 `plugins/_shared/`는 플러그인이 아니라 공유 소스다(노트 판별 `isRealNote`·토픽 표시명·Recent 묶음·`noteMeta`·
-시리즈 편 목록 `series.ts`·상대경로 `path.ts`).
+시리즈 편 목록 `series.ts`·상대경로 `path.ts`·토픽 표 `topics.ts`·주제 색인 집계 `topicIndex.ts`).
 각 플러그인이 상대 경로로 가져와 dist에 번들한다. **여기를 고치면 가져다 쓰는 플러그인을 전부 재빌드할 것**
 (`grep -l _shared plugins/*/src -r` — `series-nav`·`series-roadmap` 포함). 주의: 가져다 쓰는 플러그인의 tsconfig는 `rootDir: ".."`이어야 dts 빌드가 통과한다.
 
@@ -109,7 +109,7 @@ npx quartz plugin install   # .quartz/ 생성 (gitignore된 생성 디렉터리)
 npx quartz build
 ```
 
-`.quartz/`가 없으면 `quartz.ts:2`, `quartz/components/Head.tsx:7`의
+`.quartz/`가 없으면 `quartz.ts`, `quartz/components/Head.tsx:7`의
 `./.quartz/plugins` import가 해결되지 않는다 — 그때 첫 명령이 해결책이다.
 
 - 주의: `npm run install-plugins`는 **YAML 설정 이전의 레거시 경로** — 쓰지 말 것.

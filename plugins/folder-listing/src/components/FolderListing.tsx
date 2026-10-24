@@ -1,7 +1,11 @@
+// 폴더 페이지 본문 = 하위 전체 색인(DESIGN-SYSTEM §4.16).
+// - 1단 하위 폴더 = 섹션(h2), 더 깊은 폴더 = 한 단으로 편 하위 섹션(h3)
+// - 섹션 안 시리즈 편은 한 묶음으로, 비시리즈 노트와 섞이면 접힌 행(details)으로
 import type { FullSlug, QuartzComponent, QuartzComponentProps } from "@quartz-community/types"
 import { toJsxRuntime } from "hast-util-to-jsx-runtime"
 import type { Root } from "hast"
 import { Fragment, jsx, jsxs } from "preact/jsx-runtime"
+import { plural } from "../../../_shared/notes"
 import { resolveRelative } from "../../../_shared/path"
 import { groupBySeries, seriesLabel, type SeriesGroup } from "../../../_shared/series"
 import type { FolderListingOptions } from "../pageType"
@@ -142,8 +146,6 @@ function SectionLabel({ section, slug, sub }: { section: FolderSection; slug: Fu
     </div>
   )
 }
-
-const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`
 
 export default (opts?: Partial<FolderListingOptions>) => {
   const showFolderCount = opts?.showFolderCount ?? true

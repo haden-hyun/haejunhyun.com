@@ -1,5 +1,6 @@
-// 데스크톱 우측 island에 TOC만으로도 다 안 들어가면 h3를 접고 현재 h2 절의 h3만 펼친다(목록 안 스크롤 없음).
-// 접힌 항목은 화면에서만 숨겨 스크린리더·Tab엔 남는다 — 키보드 포커스가 들어오면 custom.scss가 전부 펼친다.
+// 긴 TOC 접기.
+// - 데스크톱 우측 island에 TOC만으로도 다 안 들어가면 h3를 접고 현재 h2 절의 h3만 펼친다(.toc-fold·.toc-folded)
+// - 접힌 항목은 화면에서만 숨겨 스크린리더·Tab엔 남는다 — 키보드 포커스가 들어오면 custom.scss가 전부 펼친다
 const DESKTOP = "(min-width: 1201px)"
 
 function sections(list: HTMLElement) {
@@ -8,7 +9,7 @@ function sections(list: HTMLElement) {
     if (li.classList.contains("depth-0") || !groups.length) {
       const slug = li.querySelector("a")?.dataset.for ?? ""
       groups.push({ head: li, target: document.getElementById(slug), subs: [] })
-    } else groups[groups.length - 1].subs.push(li)
+    } else groups[groups.length - 1]!.subs.push(li)
   }
   return groups
 }
@@ -43,6 +44,7 @@ function setup() {
       if (graph) graph.style.display = prev
     }
     list.classList.toggle("toc-fold", fold)
+    // 주의: -1(현재 절 없음)과도 달라야 mark()가 접기 클래스를 새로 칠한다.
     current = -2
     if (fold) mark()
   }

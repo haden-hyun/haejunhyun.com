@@ -48,7 +48,7 @@ function figure(el: HTMLElement, spec: AnimSpec, attrs: Record<string, string>) 
 function mountSteps(el: HTMLElement, spec: StepsSpec, host: Host) {
   const { root, caption } = figure(el, spec, { role: "group", "aria-label": spec.alt })
   const scene = root.createDiv({ cls: "anim-scene" })
-  // parse.ts가 script·on*을 이미 막았다. DOMParser 문서의 스크립트는 실행되지 않는다.
+  // scene은 parse.ts(scene.ts 허용 목록)를 통과한 SVG다. DOMParser 문서의 스크립트는 실행되지 않는다.
   // 주의: image/svg+xml로 읽으면 xmlns 없는 원고 SVG가 SVG 네임스페이스를 잃어 그려지지 않는다 — 블로그처럼 HTML 파서를 쓴다.
   const svg = new DOMParser().parseFromString(spec.scene, "text/html").body.firstElementChild
   if (!(svg instanceof SVGSVGElement)) throw new Error("scene SVG 파싱 실패")

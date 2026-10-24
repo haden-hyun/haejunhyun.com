@@ -98,14 +98,13 @@ function buildSax() {
 }
 var SAX_CFG = {
   cw: 4.6,
-  // 셀 가로 피치 — 기호 사이 숨 쉴 틈
   ch: 8.2,
   rows: 41,
   glyphTop: 1.5,
-  // 글자 위 여백 — 캔버스를 이만큼 올려 칠해진 윗끝 = 탭 윗끝
+  // 글자 위 여백 — 캔버스를 이만큼 올려 칠해진 윗끝을 선반 탭 윗끝에 맞춘다
   glyphBottom: 3,
   keyY: [0.78, 0.62, 0.46, 0.3, 0.14, -0.02, -0.18],
-  // 키 7개는 모두 몸통 앞면 원판. 맨 위(넥 쪽)를 옥타브 키 자리로 보고 ♭, 아래 6개 = 왼손 H·A·E / 오른손 J·U·N
+  // keyY와 같은 순서(위 → 아래). 키 i = 편수 순 i번째 토픽
   keyChars: ["\u266D", "H", "A", "E", "J", "U", "N"]
 };
 function rasterSax(model, buf, C2, R, cxp, cyp, ay, ax, scl) {
@@ -1080,6 +1079,7 @@ var TAB_NAMES = {
   "finance-property": "FINANCE",
   tools: "TOOLS"
 };
+var SHELF_H = SAX_CFG.rows * SAX_CFG.ch - SAX_CFG.glyphTop - SAX_CFG.glyphBottom + 1;
 var sweptScript = `try { if (sessionStorage.getItem("hero-swept")) document.documentElement.setAttribute("data-hero-swept", "") } catch {}`;
 var heroScript = `
 const heroLib = {
@@ -1091,6 +1091,7 @@ const heroLib = {
   SAX_CFG: ${JSON.stringify(SAX_CFG)},
   SHELF_CFG: ${JSON.stringify(SHELF_CFG)},
   REST: ${JSON.stringify(SAX_REST)},
+  shelfH: ${JSON.stringify(SHELF_H)},
 }
 const heroClient = (${heroClient.toString()})
 
@@ -1121,7 +1122,6 @@ function initHero() {
   if (!document.querySelector(".home-hero")) return
   heroLib.model = heroLib.model || heroLib.buildSax()
   heroLib.fit = heroLib.fit || heroLib.fitSax(heroLib.model, heroLib.rasterSax, heroLib.REST, heroLib.SAX_CFG.rows)
-  heroLib.shelfH = heroLib.SAX_CFG.rows * heroLib.SAX_CFG.ch - heroLib.SAX_CFG.glyphTop - heroLib.SAX_CFG.glyphBottom + 1
   heroClient(heroLib)
 }
 
@@ -1220,7 +1220,6 @@ var HomeHero_default = ((userOpts) => {
     }
     const buildNow = Date.now();
     const keyTopics = topicKeys.map((k) => ({ k, n: files.filter((f3) => topicKey(f3) === k).length, recent: notes.some((n2) => n2.tp === k && (buildNow - Date.parse(n2.p)) / 864e5 <= 45) })).sort((a2, b2) => b2.n - a2.n);
-    const shelfH = SAX_CFG.rows * SAX_CFG.ch - SAX_CFG.glyphTop - SAX_CFG.glyphBottom + 1;
     return /* @__PURE__ */ u2("section", { class: classNames(displayClass, "home-hero"), children: [
       /* @__PURE__ */ u2("link", { rel: "stylesheet", href: NOTO_MUSIC_CSS }),
       /* @__PURE__ */ u2("div", { class: "hero-text", children: [
@@ -1245,12 +1244,12 @@ var HomeHero_default = ((userOpts) => {
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ u2("div", { class: "hero-shelf-wrap hero-rise hero-rise-2", children: /* @__PURE__ */ u2("nav", { class: "hero-shelf", role: "group", "aria-label": `\uB178\uD2B8 \uCE74\uD0C8\uB85C\uADF8 ${noteCount}\uD3B8`, style: `--shelf-h:${shelfH.toFixed(2)}px`, children: notes.map((n2) => /* @__PURE__ */ u2("a", { class: "hero-spine", href: n2.h, title: n2.t, children: /* @__PURE__ */ u2("span", { class: "hero-spine-band" }) })) }) }),
+      /* @__PURE__ */ u2("div", { class: "hero-shelf-wrap hero-rise hero-rise-2", children: /* @__PURE__ */ u2("nav", { class: "hero-shelf", role: "group", "aria-label": `\uB178\uD2B8 \uCE74\uD0C8\uB85C\uADF8 ${noteCount}\uD3B8`, style: `--shelf-h:${SHELF_H.toFixed(2)}px`, children: notes.map((n2) => /* @__PURE__ */ u2("a", { class: "hero-spine", href: n2.h, title: n2.t, children: /* @__PURE__ */ u2("span", { class: "hero-spine-band" }) })) }) }),
       /* @__PURE__ */ u2(
         "div",
         {
           class: "hero-sax hero-rise hero-rise-1",
-          style: `--sax-w:${W.toFixed(1)}px;--sax-ar:${(W / H2).toFixed(4)};--box-h:${shelfH.toFixed(2)}px;--g-top:${SAX_CFG.glyphTop}px`,
+          style: `--sax-w:${W.toFixed(1)}px;--sax-ar:${(W / H2).toFixed(4)};--box-h:${SHELF_H.toFixed(2)}px;--g-top:${SAX_CFG.glyphTop}px`,
           children: [
             /* @__PURE__ */ u2("svg", { class: "hero-sax-pre", viewBox: `0 0 ${W.toFixed(1)} ${H2.toFixed(1)}`, "aria-hidden": "true", children: [
               [...byRow.values()].map((g2) => /* @__PURE__ */ u2("text", { class: `t${g2.tier}`, x: g2.xs.join(" "), y: g2.y.toFixed(1), children: g2.chs })),

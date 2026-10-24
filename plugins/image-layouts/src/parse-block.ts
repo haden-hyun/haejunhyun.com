@@ -1,3 +1,4 @@
+// ```image-layout 펜스 → 레이아웃 이름 + `---` 옵션 + 이미지 목록(위키링크 `![[a.png|캡션|300]]` 또는 `![캡션](url)`).
 import { parseOptions } from "./parse-options"
 
 export interface ParsedImage {

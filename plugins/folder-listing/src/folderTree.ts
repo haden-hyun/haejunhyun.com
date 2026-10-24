@@ -1,3 +1,6 @@
+// ctx.trie(폴더 노드) → 폴더 페이지 섹션 트리.
+// - 표시명: 폴더 노트 title → folderTitles → 토픽 표 → Title Case
+// - 사슬 접기("A / B")·한 단 펴기
 import type { QuartzPluginData } from "@quartz-community/types"
 import { folderTitle, isListedNote } from "../../_shared/notes"
 

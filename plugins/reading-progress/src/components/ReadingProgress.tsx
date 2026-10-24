@@ -8,6 +8,8 @@ import style from "./styles/readingProgress.scss"
 import readingProgressScript from "./scripts/readingProgress.inline.ts"
 import { isRealNote } from "../../../_shared/notes"
 
+// 읽기 진행바 — 노트 페이지에만, 스크롤 비율을 rAF로 그린다(스크립트).
+
 const ReadingProgress: QuartzComponent = ({ fileData }: QuartzComponentProps) =>
   isRealNote(fileData.slug) ? <div id="reading-progress-bar" aria-hidden="true" /> : <></>
 

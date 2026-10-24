@@ -1,4 +1,7 @@
-// 현재 노트의 최상위 주제 그래프(주제·폴더·노트 + 구조·링크·시리즈 간선). 빌드 산출물 없이 표로 검증할 수 있게 순수 함수로 둔다.
+// 주제 그래프 모델 — 순수 함수.
+// - buildTopicGraph: 현재 노트의 최상위 주제 안 주제·폴더·노트 노드와 구조·링크·시리즈 간선
+// - relations: 현재 노트 기준 링크·시리즈 이웃·형제·상위 폴더
+// - aliasCollisions: 노트 파일명과 겹치는 별칭 리다이렉트 슬러그(빌드 경고용)
 
 export interface NoteInput {
   slug: string
@@ -35,14 +38,13 @@ export interface TopicGraphModel {
   topic: string
   nodes: GraphNode[]
   edges: GraphEdge[]
-  current: string
 }
 
 const dirOf = (slug: string): string => slug.split("/").slice(0, -1).join("/")
 const folderId = (path: string): string => "f:" + path
 
 /** 태그 경로가 노트 폴더 경로와 같거나 그 접두면 폴더를 되풀이할 뿐이다. */
-export function isFolderMirrorTag(slug: string, tag: string): boolean {
+function isFolderMirrorTag(slug: string, tag: string): boolean {
   const dir = dirOf(slug)
   return dir === tag || dir.startsWith(tag + "/")
 }
@@ -121,7 +123,7 @@ export function buildTopicGraph(
     const chain = bySeries.get(key)!.sort((a, b) => a.seriesIndex! - b.seriesIndex!)
     for (let i = 1; i < chain.length; i++) edges.push({ s: chain[i - 1]!.slug, t: chain[i]!.slug, kind: "series" })
   }
-  return { topic, nodes, edges, current }
+  return { topic, nodes, edges }
 }
 
 /** 현재 노트 기준 관계 — 링크 이웃·시리즈 앞뒤·같은 폴더 형제·상위 폴더. */

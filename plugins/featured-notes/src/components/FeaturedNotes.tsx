@@ -1,34 +1,24 @@
+// 홈 Featured — 번호 + 제목 + 요약 + "토픽 · N min" 4행.
+// - `options.slugs`가 유일한 지정 수단, 쓴 순서가 표시 순서(번호)
+// - 부족분은 토픽 라운드로빈으로 채운다(전체 최신순은 큰 토픽이 슬롯을 독식)
+// - Recent Notes에 나온 노트는 지정·자동 채움 모두에서 뺀다
+// 주의: 지정 목록을 최신순으로 다시 정렬하지 말 것. 순서 제어가 이 방식의 목적이다.
 import type {
   QuartzComponent,
   QuartzComponentConstructor,
   QuartzComponentProps,
   QuartzPluginData,
 } from "@quartz-community/types"
-import { getListDate, readingMinutes } from "../../../_shared/noteMeta"
+import { readingMinutes } from "../../../_shared/noteMeta"
 import { buildRecentRows, byListDateDesc, isListedNote, topicName } from "../../../_shared/notes"
-import { resolveRelative } from "../util/path"
+import { resolveRelative } from "../../../_shared/path"
 import style from "./styles/featured.scss"
-
-/**
- * Featured — 홈 전용. 번호 + 제목 + "토픽 · N분" 4행.
- *
- * - `options.slugs`가 유일한 지정 수단. 쓴 순서가 표시 순서(번호)
- * - 부족분은 토픽 라운드로빈으로 채운다 (전체 최신순은 큰 토픽이 슬롯을 독식)
- * - Recent Notes에 나온 노트는 지정·자동 채움 모두에서 뺀다(중복 노출 금지)
- *
- * 주의: 목록 순서를 최신순으로 다시 정렬하지 말 것. 순서 제어가 이 방식의 목적이다.
- */
 
 const MAX_SLOTS = 4
 
 type FileData = QuartzPluginData & Record<string, unknown>
 
-/** recent-notes-index와 같은 목록 날짜 — max(created, revised ?? created). */
-function getTime(f: FileData): number {
-  return getListDate(f)?.getTime() ?? 0
-}
-
-/** Recent Notes 표에 나오는 노트 슬러그 — 묶음 행의 구성원 포함. 규칙은 recent-notes-index와 같은 _shared 구현. */
+/** Recent Notes 표에 나오는 노트 슬러그 — 묶음 행의 구성원 포함. */
 function getRecentSlugs(files: FileData[], limit: number): Set<string> {
   const sorted = files
     .filter((f) => (f.frontmatter as { title?: string } | undefined)?.title)
@@ -49,11 +39,9 @@ function pickRoundRobin(files: FileData[], count: number, exclude: Set<string>):
     list.push(f)
     byTopic.set(topic, list)
   }
-  for (const list of byTopic.values()) list.sort((a, b) => getTime(b) - getTime(a))
+  for (const list of byTopic.values()) list.sort(byListDateDesc)
 
-  const topicOrder = [...byTopic.keys()].sort(
-    (a, b) => getTime(byTopic.get(b)![0]!) - getTime(byTopic.get(a)![0]!),
-  )
+  const topicOrder = [...byTopic.keys()].sort((a, b) => byListDateDesc(byTopic.get(a)![0]!, byTopic.get(b)![0]!))
 
   const picked: FileData[] = []
   let round = 0
@@ -135,10 +123,7 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
     const exclude = new Set([...curated.map((f) => f.slug as string), ...recent])
     const needed = MAX_SLOTS - curated.length
     // 자동 채움분만 최신순으로 정렬한다 — curated의 순서는 그대로 둔다.
-    const autoFilled =
-      needed > 0
-        ? pickRoundRobin(files, needed, exclude).sort((a, b) => getTime(b) - getTime(a))
-        : []
+    const autoFilled = needed > 0 ? pickRoundRobin(files, needed, exclude).sort(byListDateDesc) : []
 
     const selected = [...curated, ...autoFilled]
     if (selected.length === 0) return <></>

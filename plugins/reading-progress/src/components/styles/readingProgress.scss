@@ -1,5 +1,4 @@
-// 시간 축(--accent-state) — 노트 페이지에서 이 색이 쓰이는 곳은 이 바 하나뿐이다.
-// 폭이 아니라 scaleX로 그려 레이아웃을 건드리지 않는다.
+// 읽기 진행바 — 시간 축(--accent-state). 폭이 아니라 scaleX로 그려 레이아웃을 건드리지 않는다.
 #reading-progress-bar {
   position: fixed;
   top: 0;

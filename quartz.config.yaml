@@ -40,24 +40,24 @@ configuration:
       lightMode:
         light: "#f7f5ef" # bg · 크림 인쇄지 (순백 대비 광량 91.3%)
         lightgray: "#e4dfd4" # border
-        gray: "#5f6773" # meta          5.27:1  AA (행 hover 10% 위 4.56)
-        darkgray: "#323e4c" # body          9.99:1  AAA
-        dark: "#141d28" # heading      15.58:1  AAA
-        secondary: "#1c5f95" # accent        6.17:1  AA
-        tertiary: "#17527f" # accent hover  7.55:1  AAA
+        gray: "#5f6773" # meta
+        darkgray: "#323e4c" # body
+        dark: "#141d28" # heading
+        secondary: "#1c5f95" # accent
+        tertiary: "#17527f" # accent hover
         highlight: rgba(28,95,149,0.10)
-        # `==강조==` 전체 채움(형광펜). 라임 — 두 모드 같은 색상, 의미색과 32°+ 이격. --highlight-ink 대비 13.86:1.
+        # `==강조==` 형광펜 전체 채움 — 라임, 두 모드 같은 색상.
         textHighlight: "#e2efa6"
       darkMode:
         light: "#0e1420" # bg · 잉크 네이비 (Blue Giant #0c0c24 계열)
         lightgray: "#1e2836" # border
-        gray: "#7f8b9c" # meta          5.34:1  AA (행 hover 10% 위 4.56)
-        darkgray: "#bcc9d9" # body         10.96:1  AAA
-        dark: "#e9eff7" # heading      15.93:1  AAA
-        secondary: "#6fb2e0" # accent        8.00:1  AAA
-        tertiary: "#9dcdec" # accent hover 10.86:1  AAA
+        gray: "#7f8b9c" # meta
+        darkgray: "#bcc9d9" # body
+        dark: "#e9eff7" # heading
+        secondary: "#6fb2e0" # accent
+        tertiary: "#9dcdec" # accent hover
         highlight: rgba(111,178,224,0.15)
-        # 라임(다크) — --highlight-ink 대비 5.96:1, 페이지 구분 2.87.
+        # 라임(다크) — 페이지 구분 2.87.
         textHighlight: "#56651a"
 plugins:
   - source: github:quartz-community/created-modified-date
@@ -92,7 +92,6 @@ plugins:
       callouts: true
       mermaid: true
       parseTags: true
-      parseArrows: true
       parseBlockReferences: true
       enableInHtmlEmbed: false
       enableYouTubeEmbed: true
@@ -328,7 +327,7 @@ plugins:
       condition: not-index
   - source: ./plugins/global-nav
     enabled: true
-    # Home|Topics|Archive|Notes 내비. topbar 포지션 = PageTitle과 같은 줄.
+    # Home|Topics|Archive 내비. topbar 포지션 = PageTitle과 같은 줄.
     options: {}
     order: 15
     layout:
@@ -574,8 +573,7 @@ plugins:
     order: 57
   - source: ./plugins/related-notes
     enabled: false
-    # 노트 하단 "연결된 노트" — 비활성.
-    # 우측 사이드바 backlinks는 별개 컴포넌트라 그대로 동작한다.
+    # 노트 하단 Related(링크 > 같은 시리즈 > 개념 태그 순위) — 비활성. 좌측 Backlinks는 별개 컴포넌트라 그대로 동작한다.
     options: {}
     order: 15
     layout:

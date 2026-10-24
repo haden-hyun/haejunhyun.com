@@ -3,7 +3,7 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from "@quartz-community/types"
-import { resolveRelative } from "../util/path"
+import { resolveRelative } from "../../../_shared/path"
 import { formatYmd, getNoteDates, readingMinutes } from "../../../_shared/noteMeta"
 import style from "./styles/noteSpecs.scss"
 import { isRealNote } from "../../../_shared/notes"

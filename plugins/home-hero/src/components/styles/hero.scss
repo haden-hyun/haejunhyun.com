@@ -1,4 +1,4 @@
-// 홈 히어로 — 좌측 텍스트, 우측 ASCII 색소폰(모바일은 색소폰이 위).
+// 홈 히어로 — 텍스트 | 노트 선반 | 색소폰 3열(좁으면 2줄, 모바일은 색소폰 → 텍스트 → 선반), 노트 카드, 첫 진입 연출.
 // 주의: 색은 테마 변수만 참조한다. 단일 소스는 quartz.config.yaml.
 
 $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
@@ -40,7 +40,6 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--dark);
-
 }
 
 .hero-author {
@@ -79,7 +78,6 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   gap: 8px;
   margin: 26px 0 0;
 
-  // 칩형 링크 — 블루 틴트 배경 + 헤딩체 볼드.
   a {
     display: inline-flex;
     align-items: center;
@@ -134,8 +132,7 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   text-align: right;
 }
 
-// 노트 선반 — 노트 1편 = 등 1개. 배치는 스크립트(균등 분할 + 단별 양쪽 맞춤), JS가 없으면 줄바꿈 목록.
-// 입체는 그림자·그라데이션 없이 헤어라인과 토큰 혼합색만(DESIGN-SYSTEM §4.9 히어로 예외 참고).
+// 노트 선반 — 노트 1편 = 등 1개. 배치는 스크립트(.is-laid 후 절대 배치), JS가 없으면 줄바꿈 목록.
 .hero-shelf-wrap {
   grid-area: shelf;
   min-width: 0;
@@ -323,8 +320,8 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   background: color-mix(in srgb, var(--gray) 14%, var(--light));
 }
 
-// 음표로 그린 색소폰 — 정지 자세 SVG를 먼저 보이고, 캔버스가 그려지면 갈아 끼운다.
-// 명암 3단은 모두 배경 대비 4.5 이상(라이트 15.6/6.17/4.99, 다크 4.52/8.00/15.9).
+// 음표로 그린 색소폰 — 정지 자세 SVG를 먼저 보이고, 캔버스가 그려지면(.is-live) 갈아 끼운다.
+// 주의: 명암 3단(--t0~--t2)은 모두 배경 대비 4.5 이상이어야 한다.
 .hero-sax {
   --t0: var(--dark);
   --t1: var(--secondary);
@@ -473,7 +470,7 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   }
 }
 
-// 노트 카드 — 등을 누르면 바로 이동하지 않고 요약을 보여 준다. DIVE IN만 이동.
+// 노트 카드 — 등을 누르면 요약 카드(<dialog>, 모바일은 .is-sheet 바텀시트). 이동은 DIVE IN만.
 .hero-card {
   width: min(520px, calc(100vw - 32px));
   max-height: min(80dvh, 640px);
@@ -589,7 +586,6 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   flex: 1 1 auto;
 }
 
-// DIVE IN = 행위 축(--accent-action)의 첫 적용처
 .hero-card-dive {
   display: inline-flex;
   align-items: center;

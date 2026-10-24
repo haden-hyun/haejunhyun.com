@@ -8,6 +8,8 @@ import style from "./styles/backToTop.scss"
 import backToTopScript from "./scripts/backToTop.inline.ts"
 import { isRealNote } from "../../../_shared/notes"
 
+// 맨 위로 버튼 — 노트 페이지에만, 1.5뷰포트 스크롤 뒤 등장(스크립트).
+
 const BackToTop: QuartzComponent = ({ fileData }: QuartzComponentProps) =>
   isRealNote(fileData.slug) ? (
     <button id="back-to-top" aria-label="Back to top">

@@ -1,4 +1,7 @@
-// 선반 배치 — 등·칸막이 순서를 지킨 채 단별 폭이 가장 고르게 되는 줄바꿈(선형 분할 DP) + 단별 양쪽 맞춤.
+// 선반 배치 — 노트 등·토픽 칸막이를 단(row)으로 나눠 x·폭을 정한다.
+// - 토픽 순서 → 시리즈 묶음(가장 이른 자리, series_index 순) → posted·created·href 순으로 나열
+// - 단 수·배율을 고르고, 배율 하한 아래면 오래된 글부터 잘라 ARCHIVE 칸으로
+// - 단별 폭이 가장 고르게 되는 줄바꿈(선형 분할 DP) + 단별 양쪽 맞춤
 // 주의: toString()으로 인라인된다. 바깥 식별자·import를 참조하지 말 것(상수는 cfg로).
 
 export interface ShelfNote {
@@ -42,7 +45,6 @@ export function planShelf(
   const baseW = (n: ShelfNote) => 1.8 + Math.sqrt(n.len) / 20
   const fmaxFor = (R: number) => (R <= 2 ? cfg.fmax2 : cfg.fmax3)
   const key = (n: ShelfNote) => n.posted + "|" + n.created + "|" + n.href
-  // 정렬: posted → created → href. 시리즈는 묶음의 가장 이른 자리에 series_index 순으로 붙인다.
   const order = notes.map((_, i) => i).sort((a, b) => key(notes[a]!).localeCompare(key(notes[b]!)))
   let keep = order
   let cut = 0

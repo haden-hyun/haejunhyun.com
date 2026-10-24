@@ -1,3 +1,7 @@
+// 우측 TOC 아래 GRAPH 패널.
+// - 현재 노트의 최상위 주제 그래프를 판 넷(패널 tall/short, 확대 보기 land/port)으로 빌드 타임 SVG 렌더
+// - 확대 칩이 같은 그래프의 큰 판을 <dialog>로 연다, ⌘G 칩은 업스트림 전역 그래프를 연다
+// - 별칭 리다이렉트 슬러그와 노트 파일명 충돌을 빌드 경고로 낸다
 import type {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -8,7 +12,7 @@ import { folderTitle, isListedNote, topicName } from "../../../_shared/notes"
 import { resolveRelative } from "../../../_shared/path"
 import { seriesIndexOf, seriesOf } from "../../../_shared/series"
 import { aliasCollisions, buildTopicGraph, relations, type GraphNode, type NoteInput } from "../core/graph"
-import { FONT, placeLabels, type Box } from "../core/labels"
+import { clip, FONT, placeLabels, type Box } from "../core/labels"
 import { layoutTopicGraph, VIEW_PORTRAIT, VIEW_SHORT, VIEW_TALL, VIEW_WIDE, type View } from "../core/layout"
 import style from "./styles/topicGraph.scss"
 // @ts-expect-error - inline script imported as string by esbuild loader
@@ -34,8 +38,8 @@ function tagsOf(f: FileData): string[] {
 
 // 빌드당 한 번만 — 컴포넌트는 페이지마다 렌더된다.
 const warned = new Set<string>()
-function warnAliasCollisions(files: FileData[]) {
-  const notes = files.filter((f) => f.slug && isListedNote(f)).map((f) => ({ slug: f.slug as string, aliases: ((f.aliases as string[] | undefined) ?? []).map(String) }))
+function warnAliasCollisions(listed: FileData[]) {
+  const notes = listed.map((f) => ({ slug: f.slug as string, aliases: ((f.aliases as string[] | undefined) ?? []).map(String) }))
   for (const c of aliasCollisions(notes)) {
     const key = `${c.slug}|${c.alias}`
     if (warned.has(key)) continue
@@ -51,8 +55,6 @@ const R_SIBLING = 2.8
 const R_OTHER = 1.8
 const NOTE_LABEL_MAX = 22
 
-const clip = (t: string, max: number) => ([...t].length > max ? [...t].slice(0, max - 1).join("") + "…" : t)
-
 export default ((userOpts?: Partial<TopicGraphOptions>) => {
   const opts = { ...defaultOptions, ...userOpts }
 
@@ -60,18 +62,17 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
     const current = fileData as FileData
     const slug = current.slug as string | undefined
     if (!slug || !isListedNote(current)) return null
-    warnAliasCollisions(allFiles as FileData[])
+    const listed = (allFiles as FileData[]).filter((f) => f.slug && isListedNote(f))
+    warnAliasCollisions(listed)
 
-    const notes: NoteInput[] = (allFiles as FileData[])
-      .filter((f) => f.slug && isListedNote(f))
-      .map((f) => ({
-        slug: f.slug as string,
-        title: String(f.frontmatter?.title ?? f.slug),
-        links: (f.links as string[] | undefined) ?? [],
-        tags: tagsOf(f),
-        series: seriesOf(f),
-        seriesIndex: seriesIndexOf(f),
-      }))
+    const notes: NoteInput[] = listed.map((f) => ({
+      slug: f.slug as string,
+      title: String(f.frontmatter?.title ?? f.slug),
+      links: (f.links as string[] | undefined) ?? [],
+      tags: tagsOf(f),
+      series: seriesOf(f),
+      seriesIndex: seriesIndexOf(f),
+    }))
     const model = buildTopicGraph(slug, notes, (p) => folderTitle(p, opts.folderTitles), topicName)
     if (!model) return null
 
@@ -136,70 +137,70 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
       return (
         <svg class={cls} viewBox={`0 0 ${view.w} ${view.h}`} role="group" aria-label={`${topicName(slug)} topic graph`}>
           <g class="tg-world">
-          <g class="tg-edges">
-            {edges.map((e) => {
-              const a = at(e.s)
-              const b = at(e.t)
-              const hot = e.kind !== "tree" && touches(e.s, e.t)
-              return (
-                <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} class={`tg-e tg-${e.kind}${hot ? " hot" : ""}`} data-s={e.s} data-t={e.t} />
-              )
-            })}
-          </g>
-          <g class="tg-nodes">
-            {nodes.map((n) => {
-              const p = at(n.id)
-              const here = n.id === rel.cur.parent
-              let shape
-              if (n.kind === "topic") shape = <circle r={4.5} class="tg-topic" />
-              else if (n.kind === "folder") {
-                const s = here ? 7 : 6
-                shape = <rect x={-s / 2} y={-s / 2} width={s} height={s} class={here ? "tg-folder here" : "tg-folder"} />
-              } else if (n.current)
-                shape = (
-                  <>
-                    <circle r={R_RING} class="tg-current-ring" />
-                    <circle r={R_CURRENT} class="tg-current" />
-                  </>
+            <g class="tg-edges">
+              {edges.map((e) => {
+                const a = at(e.s)
+                const b = at(e.t)
+                const hot = e.kind !== "tree" && touches(e.s, e.t)
+                return (
+                  <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} class={`tg-e tg-${e.kind}${hot ? " hot" : ""}`} data-s={e.s} data-t={e.t} />
                 )
-              else if (rel.direct.has(n.id)) shape = <circle r={R_DIRECT} class="tg-direct" />
-              else if (rel.siblings.has(n.id)) shape = <circle r={R_SIBLING} class="tg-sibling" />
-              else shape = <circle r={R_OTHER} class="tg-other" />
-              const tags = n.kind === "note" ? tagLine(n) : ""
-              return (
-                <g
-                  class={`tg-n${n.current ? " current" : ""}`}
-                  tabindex={0}
-                  role="link"
-                  aria-label={tipOf(n) + (tags ? ` · ${tags}` : "")}
-                  aria-current={n.current ? "page" : undefined}
-                  transform={`translate(${p.x},${p.y})`}
-                  data-href={hrefOf(n)}
-                  data-id={n.id}
-                  data-tip={tipOf(n)}
-                  data-name={n.label}
-                  data-tags={tags || undefined}
+              })}
+            </g>
+            <g class="tg-nodes">
+              {nodes.map((n) => {
+                const p = at(n.id)
+                const here = n.id === rel.cur.parent
+                let shape
+                if (n.kind === "topic") shape = <circle r={4.5} class="tg-topic" />
+                else if (n.kind === "folder") {
+                  const s = here ? 7 : 6
+                  shape = <rect x={-s / 2} y={-s / 2} width={s} height={s} class={here ? "tg-folder here" : "tg-folder"} />
+                } else if (n.current)
+                  shape = (
+                    <>
+                      <circle r={R_RING} class="tg-current-ring" />
+                      <circle r={R_CURRENT} class="tg-current" />
+                    </>
+                  )
+                else if (rel.direct.has(n.id)) shape = <circle r={R_DIRECT} class="tg-direct" />
+                else if (rel.siblings.has(n.id)) shape = <circle r={R_SIBLING} class="tg-sibling" />
+                else shape = <circle r={R_OTHER} class="tg-other" />
+                const tags = n.kind === "note" ? tagLine(n) : ""
+                return (
+                  <g
+                    class={`tg-n${n.current ? " current" : ""}`}
+                    tabindex={0}
+                    role="link"
+                    aria-label={tipOf(n) + (tags ? ` · ${tags}` : "")}
+                    aria-current={n.current ? "page" : undefined}
+                    transform={`translate(${p.x},${p.y})`}
+                    data-href={hrefOf(n)}
+                    data-id={n.id}
+                    data-tip={tipOf(n)}
+                    data-name={n.label}
+                    data-tags={tags || undefined}
+                  >
+                    <circle r={R_RING} class="tg-hit" />
+                    {shape}
+                  </g>
+                )
+              })}
+            </g>
+            <g class="tg-labels" aria-hidden="true">
+              {labels.map((l) => (
+                <text
+                  x={Math.round(l.x * 10) / 10}
+                  y={Math.round(l.y * 10) / 10}
+                  text-anchor={l.anchor}
+                  font-size={FONT}
+                  class={labelClass(l.id)}
+                  data-for={l.id}
                 >
-                  <circle r={R_RING} class="tg-hit" />
-                  {shape}
-                </g>
-              )
-            })}
-          </g>
-          <g class="tg-labels" aria-hidden="true">
-            {labels.map((l) => (
-              <text
-                x={Math.round(l.x * 10) / 10}
-                y={Math.round(l.y * 10) / 10}
-                text-anchor={l.anchor}
-                font-size={FONT}
-                class={labelClass(l.id)}
-                data-for={l.id}
-              >
-                {l.text}
-              </text>
-            ))}
-          </g>
+                  {l.text}
+                </text>
+              ))}
+            </g>
           </g>
         </svg>
       )
