@@ -120,7 +120,7 @@ const heroLib = {
   const sy = Math.sin(ay);
   const cx = Math.cos(ax);
   const sx = Math.sin(ax);
-  const L2 = [-0.43, 0.57, -0.71];
+  const L2 = [-0.62, 0.5, -0.6];
   const hl = Math.hypot(L2[0], L2[1], L2[2] - 1);
   const Hx = L2[0] / hl;
   const Hy = L2[1] / hl;
@@ -141,13 +141,19 @@ const heroLib = {
     let nz = -P2[i2 + 3] * sy + P2[i2 + 5] * cy;
     const ny = P2[i2 + 4] * cx - nz * sx;
     nz = P2[i2 + 4] * sx + nz * cx;
-    const lam = Math.max(0, nx * L2[0] + ny * L2[1] + nz * L2[2]);
+    const dl = nx * L2[0] + ny * L2[1] + nz * L2[2];
+    const wrap = Math.max(0, (dl + 0.15) / 1.15);
+    const lam = Math.max(0, dl);
     const spec = Math.pow(Math.max(0, nx * Hx + ny * Hy + nz * Hz), 20);
     const m2 = P2[i2 + 6];
-    let b2 = 0.06 + 0.8 * lam + 0.5 * spec;
+    const face = Math.min(1, Math.max(0, -nz) / 0.6);
+    const limb = 0.5 + 0.5 * face * face * (3 - 2 * face);
+    let b2 = (0.07 + 0.8 * wrap + 0.5 * spec) * limb;
     if (nz > 0.05 && m2 !== 2) b2 *= 0.35;
-    if (m2 === 2) b2 = 0.32;
-    else if (m2 === 3) b2 = 0.2 + 0.3 * lam;
+    if (m2 === 2) {
+      const q2 = Math.min(1, Math.hypot(P2[i2] - model.bell[0], P2[i2 + 2] - model.bell[2]) / 0.43);
+      b2 = 0.1 + 0.34 * q2 * Math.sqrt(q2);
+    } else if (m2 === 3) b2 = 0.2 + 0.3 * lam;
     else if (m2 === 1 || m2 === 4) b2 = Math.min(1, b2 + 0.25);
     const sc = Math.round(pr[0] * SX);
     const sr = Math.round(pr[1] * SY);
@@ -191,7 +197,7 @@ const heroLib = {
         }
       }
       const on = n2 / (SX * SY) >= 0.34;
-      v2[r2 * C2 + c2] = on ? tot / n2 : -1;
+      v2[r2 * C2 + c2] = on ? tot / n2 * (0.78 + 0.22 * Math.min(1, n2 / (SX * SY))) : -1;
       mm[r2 * C2 + c2] = fm;
       s2[r2 * C2 + c2] = fs;
     }
@@ -228,9 +234,10 @@ const heroLib = {
   }
   return { scl, cols: b2.c1 - b2.c0 + 3, cx: 70 - b2.c0 + 1, cy: 45 - b2.r0 };
 }),
-  composeSax: (function composeSax(model, raster, buf, fit, cfg, ay, ax, sweepAt) {
+  composeSax: (function composeSax(model, raster, buf, fit, cfg, ay, ax, sweepAt, dark) {
   const C2 = fit.cols;
   const R = cfg.rows;
+  const N2 = cfg.ramp.length;
   const ras = raster(model, buf, C2, R, fit.cx, fit.cy, ay, ax, fit.scl);
   const bell = ras.proj(model.bell[0], model.bell[1], model.bell[2]);
   const on = (c2, r2) => c2 >= 0 && r2 >= 0 && c2 < C2 && r2 < R && ras.v[r2 * C2 + c2] >= 0;
@@ -244,23 +251,19 @@ const heroLib = {
       const y2 = (r2 + 0.5) * cfg.ch;
       const m2 = ras.m[i2];
       const lit = sweepAt(x2) > 0.45;
-      if (m2 === 2 || m2 === 1 && r2 < bell[1] - 0.5) {
-        glyphs.push([x2, y2, cfg.notes[2], 3, lit]);
-        continue;
+      let sh = Math.pow(Math.min(1, Math.max(0, (v2 - cfg.lo) / (cfg.hi - cfg.lo))), dark ? cfg.gammaDark : cfg.gammaLight);
+      if (lit) sh = Math.min(1, sh + cfg.lift);
+      const q2 = Math.min(N2 - 1, Math.floor(sh * N2));
+      const k = dark ? q2 : N2 - 1 - q2;
+      let ch;
+      if (m2 === 2 || m2 === 1 && r2 < bell[1] - 0.5) ch = cfg.bell;
+      else if (ras.s[i2] > 0.6) ch = cfg.sparks[(c2 + r2) % 2];
+      else if (m2 === 1 && !(on(c2 - 1, r2) && on(c2 + 1, r2) && on(c2, r2 - 1) && on(c2, r2 + 1))) ch = cfg.rim;
+      else {
+        const g2 = cfg.ramp[k];
+        ch = g2[(c2 + r2) % g2.length];
       }
-      if (ras.s[i2] > 0.6) {
-        glyphs.push([x2, y2, cfg.sparks[(c2 + r2) % 2], 2, lit]);
-        continue;
-      }
-      const edge = !on(c2 - 1, r2) || !on(c2 + 1, r2) || !on(c2, r2 - 1) || !on(c2, r2 + 1);
-      const ch = (c2 * 5 + r2 * 3) % 7 === 0 ? cfg.accidentals[(c2 + r2) % 3] : cfg.notes[(c2 + r2 * 2) % 4];
-      if (edge) {
-        glyphs.push([x2, y2, m2 === 1 ? cfg.rim : ch, 1, lit]);
-        continue;
-      }
-      let tier = v2 < 0.33 ? 0 : v2 < 0.66 ? 1 : 2;
-      if (lit) tier = Math.min(2, tier + 1);
-      glyphs.push([x2, y2, ch, tier, lit]);
+      glyphs.push([x2, y2, ch, k, lit]);
     }
   }
   const keys = cfg.keyY.map((y2) => {
@@ -270,10 +273,10 @@ const heroLib = {
   });
   return { glyphs, keys };
 }),
-  SAX_CFG: {"cw":4.6,"ch":8.2,"rows":41,"notes":"♩♪♫♬","accidentals":"♭♯♮","sparks":"✦✧","rim":"◦","keyY":[0.78,0.62,0.46,0.3,0.14,-0.02,-0.18],"keyChars":["♭","H","A","E","J","U","N"],"keyRing":true},
+  SAX_CFG: {"cw":4.6,"ch":8.2,"rows":41,"ramp":["·","◦","♩♭","♪♮","♯♫","♬♫","♬","♬✧"],"sparks":"✦✧","rim":"◦","bell":"♫","lo":0.06,"hi":0.8,"gammaLight":1.9,"gammaDark":1.2,"lift":0.14,"keyY":[0.78,0.62,0.46,0.3,0.14,-0.02,-0.18],"keyChars":["♭","H","A","E","J","U","N"],"keyRing":true},
   REST: {"ay":-0.35,"ax":-0.25},
   FONT: "\"Noto Music\", \"Noto Sans Symbols 2\", sans-serif",
-  FONT_LOADS: [["10px \"Noto Music\"","♩♪♫♬♭♯♮"],["10px \"Noto Sans Symbols 2\"","✦✧◦"]],
+  FONT_LOADS: [["10px \"Noto Music\"","♩♪♫♬♭♮♯"],["10px \"Noto Sans Symbols 2\"","✦✧◦·"]],
 }
 const heroClient = (function heroClient(L2) {
   const root = document.querySelector(".home-hero");
@@ -298,10 +301,12 @@ const heroClient = (function heroClient(L2) {
     cleanups.push(() => t2.removeEventListener(ev, fn, opt));
   };
   const C2 = L2.SAX_CFG;
-  let colors = null;
+  let colors = null, keyInk = null, pressInk = null;
   const readColors = () => {
     const pick = (cls) => getComputedStyle(saxBox.querySelector(".hero-tone." + cls)).color;
-    colors = [pick("t0"), pick("t1"), pick("t2"), pick("tb")];
+    colors = [0, 1, 2, 3, 4, 5, 6, 7].map((k) => pick("s" + k));
+    keyInk = pick("tk");
+    pressInk = pick("tp");
   };
   let raf = 0, prev = 0, acc = 0, visible = false, drawn = false;
   const S2 = { off: { ay: 0, ax: 0 }, vel: { ay: 0, ax: 0 }, drag: false, lx: 0, ly: 0, keys: [], tipK: -1, t0: performance.now() };
@@ -338,7 +343,8 @@ const heroClient = (function heroClient(L2) {
     if (!colors) return false;
     const t2 = (nowT - S2.t0) / 1e3;
     const sway = reduce ? 0 : 0.15 * Math.sin(t2 / 9 * Math.PI * 2);
-    const { glyphs, keys } = L2.composeSax(L2.model, L2.rasterSax, buf, L2.fit, C2, L2.REST.ay + sway + S2.off.ay, L2.REST.ax + S2.off.ax, sweepAt(t2));
+    const dark = document.documentElement.getAttribute("saved-theme") === "dark";
+    const { glyphs, keys } = L2.composeSax(L2.model, L2.rasterSax, buf, L2.fit, C2, L2.REST.ay + sway + S2.off.ay, L2.REST.ax + S2.off.ax, sweepAt(t2), dark);
     const cssW = cv.clientWidth || W, dpr = Math.min(2, window.devicePixelRatio || 1);
     const bw = Math.round(cssW * dpr), bh = Math.round(cssW * (H2 / W) * dpr);
     if (cv.width !== bw || cv.height !== bh) {
@@ -375,7 +381,7 @@ const heroClient = (function heroClient(L2) {
       ctx.arc(p2[0], p2[1], r2 + 0.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.globalCompositeOperation = "source-over";
-      ctx.fillStyle = hot ? colors[3] : colors[1];
+      ctx.fillStyle = hot ? pressInk : keyInk;
       if (ring) {
         ctx.strokeStyle = ctx.fillStyle;
         ctx.lineWidth = 1;
