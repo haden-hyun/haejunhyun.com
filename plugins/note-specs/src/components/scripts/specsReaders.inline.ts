@@ -33,7 +33,7 @@ document.addEventListener("nav", () => {
       return
     }
     const n = views[path]
-    out.textContent = (Number.isFinite(n) ? n : 0).toLocaleString("en-US") + "명"
+    out.textContent = (Number.isFinite(n) ? n : 0).toLocaleString("en-US")
     row.classList.add("ready")
   })
 })

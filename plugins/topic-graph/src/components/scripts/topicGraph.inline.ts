@@ -126,6 +126,8 @@ const REDUCE = "(prefers-reduced-motion: reduce)"
 const K_MIN = 0.6
 const K_MAX = 4
 const DRAG_SLOP = 3
+const HOME_MS = 320
+const WHEEL_IDLE_MS = 700
 
 // 빌드 타임 좌표가 곧 평형점이다 — 간선 정지 길이와 제자리 인력이 그 좌표에서 0이라 손대지 않으면 SVG 그대로 멈춰 있다.
 function graph(svg: SVGSVGElement) {
@@ -215,7 +217,35 @@ function graph(svg: SVGSVGElement) {
     const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM()!.inverse())
     return { x: p.x, y: p.y }
   }
+  // 화면 이동·줌은 놓으면 원위치로 돌아온다 — 새 입력이 오면 진행 중인 복귀를 끊는다.
+  let homeRaf = 0
+  let homeTimer = 0
+  const stopHome = () => {
+    cancelAnimationFrame(homeRaf)
+    clearTimeout(homeTimer)
+  }
+  const returnHome = (delay = 0) => {
+    stopHome()
+    homeTimer = window.setTimeout(() => {
+      const from = view
+      if (from.k === 1 && !from.x && !from.y) return
+      if (window.matchMedia(REDUCE).matches) {
+        view = { k: 1, x: 0, y: 0 }
+        return applyView()
+      }
+      const t0 = performance.now()
+      const step = (t: number) => {
+        const q = Math.min(1, (t - t0) / HOME_MS)
+        const e = 1 - (1 - q) ** 3
+        view = { k: from.k + (1 - from.k) * e, x: from.x * (1 - e), y: from.y * (1 - e) }
+        applyView()
+        if (q < 1) homeRaf = requestAnimationFrame(step)
+      }
+      homeRaf = requestAnimationFrame(step)
+    }, delay)
+  }
   const zoomAt = (p: { x: number; y: number }, k: number) => {
+    stopHome()
     k = Math.min(K_MAX, Math.max(K_MIN, k))
     view = { k, x: p.x - ((p.x - view.x) * k) / view.k, y: p.y - ((p.y - view.y) * k) / view.k }
     applyView()
@@ -249,11 +279,14 @@ function graph(svg: SVGSVGElement) {
     get view() {
       return view
     },
+    returnHome,
     pan(dx: number, dy: number) {
+      stopHome()
       view = { ...view, x: view.x + dx, y: view.y + dy }
       applyView()
     },
     reset() {
+      stopHome()
       view = { k: 1, x: 0, y: 0 }
       applyView()
     },
@@ -495,6 +528,7 @@ function bind(box: HTMLElement, svg: SVGSVGElement) {
     if (!pointers.delete(e.pointerId)) return
     if (pinch) {
       if (pointers.size < 2) pinch = null
+      if (!pointers.size) g.returnHome()
       return
     }
     if (drag && drag.id === e.pointerId) {
@@ -505,12 +539,14 @@ function bind(box: HTMLElement, svg: SVGSVGElement) {
       if (pan.moved) suppressClick = true
       svg.classList.remove("tg-panning")
       pan = null
+      g.returnHome()
     }
   }
   const onWheel = (e: WheelEvent) => {
     e.preventDefault()
     const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY
     g.zoomAt(g.toView(e), g.view.k * Math.exp(-dy * 0.0025))
+    g.returnHome(WHEEL_IDLE_MS)
     if (hot) show(hot)
   }
   const onDblClick = (e: MouseEvent) => {

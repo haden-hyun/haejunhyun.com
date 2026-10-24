@@ -253,7 +253,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 - Recent Notes: 5행, `날짜(Mono YYYY-MM-DD) | 제목 + 요약 1줄 | 토픽 표시명`. 정렬 키는 `getListDate`(§4.11), 개정이 더 최근이면 제목 뒤 `Revised` 라벨. 같은 날짜·같은 2단계 폴더 3편 이상은 한 줄로 묶는다(`Docker · 5 notes`, 링크는 그 폴더).
   - Featured의 Recent 제외 집합과 Recent 표는 **같은 함수**(`plugins/_shared/notes.ts`의 `buildRecentRows`)로 만든다.
 - Topics: 토픽명 + 1단 폴더 표시명 부제(런타임, §4.6) + 노트 수, 행 얼룩.
-- Archive: 연도 라벨(Mono 0.95rem 700 `--gray`) 아래 같은 레코드 행. 맨 위 `인기 글 · 최근 30일` 섹션은 `/api/stats`(Pages Function, GoatCounter 프록시)의 `top`을 클라이언트가 채운다 — 빌드 데이터의 노트 슬러그 맵(제목·링크, `isListedNote`)으로 걸러 홈·태그·폴더·옛 URL을 버리고 상위 5편만, 행은 `순위 01(Mono) │ 제목 │ 읽은 사람 N명`(GoatCounter는 방문자 수라 "조회" 아님). 색은 연도 라벨·메타와 같은 `--gray`뿐. 섹션은 `hidden`으로 구워 JS 없음·API 실패·매칭 0편이면 제목째 안 보이고 자리도 없다. 600px 이하에선 순위 열이 좁아지고 수는 유지. SPA `nav`마다 다시 채우고 `addCleanup`으로 fetch를 중단한다.
+- Archive: 연도 라벨(Mono 0.95rem 700 `--gray`) 아래 같은 레코드 행. 맨 위 `인기 글 · 최근 30일` 섹션은 `/api/stats`(Pages Function, GoatCounter 프록시)의 `top`을 클라이언트가 채운다 — 빌드 데이터의 노트 슬러그 맵(제목·링크, `isListedNote`)으로 걸러 홈·태그·폴더·옛 URL을 버리고 상위 5편만, 행은 `순위 01(Mono) │ 제목 │ N readers`(GoatCounter는 방문자 수라 "views" 아님, 1이면 `1 reader`). 색은 연도 라벨·메타와 같은 `--gray`뿐. 섹션은 `hidden`으로 구워 JS 없음·API 실패·매칭 0편이면 제목째 안 보이고 자리도 없다. 600px 이하에선 순위 열이 좁아지고 수는 유지. SPA `nav`마다 다시 채우고 `addCleanup`으로 fetch를 중단한다.
 - 기각: `Notes` 탭(최신 노트 1편 바로가기 — 목적지가 아니고, 노트 위에선 링크 없는 span이 모든 노트에서 켜졌다. 전체 목록은 Archive가 맡는다). Archive → Notes 개명도 기각(히어로 `+N ARCHIVE`·홈 `Archive →`와 라벨이 갈라진다).
 - 댓글(giscus)은 노트에만. topics·archive·폴더·태그 가상 페이지는 `byPageType`의 `exclude: comments`.
 - 푸터: `© 2026 Haejun Hyun` + Mono `BUILT WITH OBSIDIAN + QUARTZ`.
@@ -381,6 +381,7 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - **확대 보기**: 패널 머리의 확대 칩(⌘G 칩과 같은 칩, 대각 화살표 아이콘으로 구분)이 같은 그래프의 큰 판을 `<dialog>` 모달로 연다. 데스크톱은 가운데 `min(60rem, 100% − 4rem)` × `min(42rem, 100% − 4rem)`, 800px 이하는 전체 화면. 바탕 `--light`·보더 `--lightgray`, 베일은 `--light` 78% — 두 테마에서 같은 문법이다. 패널과 같은 상호작용(끌기·줌·호버·클릭 이동)이고, 상시 라벨에 나머지 폴더·현재 노트·링크/시리즈 이웃 제목(22자)을 자리가 비는 만큼 더한다.
   - 닫기: Esc·베일 클릭·닫기 칩. 열면 닫기 칩에 포커스, Tab은 dialog 안에서 돌고, 닫으면 확대 칩으로 돌아간다. 노드를 누르면 닫고 SPA 이동, ⌘G는 닫고 전역 그래프에 넘긴다.
   - 주의: 패널은 desktop-only라 800px 미만에서 `display: none`이다 — 그 안의 dialog는 열려도 안 그려지므로 여는 동안 `body`로 옮기고 닫으면 되돌린다(열린 채 창을 줄여도 전체 화면으로 남는다).
+- 놓으면 제자리: 노드는 d3-force가 빌드 좌표로 되돌리고, 끌어 옮긴 화면(팬)은 놓는 즉시, 휠 줌은 0.7초 멈추면, 핀치는 손을 떼면 320ms 이징으로 원위치(`k=1`)로 돌아온다. 새 입력이 오면 복귀를 끊고, 움직임 줄이기 설정에선 즉시 돌아온다.
 - 판(인레이): 그래프는 island 위에 맨몸으로 두지 않고 **끼운 창**에 놓는다 — `--island-border` 1px + `--radius-s`, 면 `--graph-plate`(라이트 `--light`로 island보다 밝은 종이 / 다크 island에 black 35%로 더 깊게), 안쪽 그림자 + 아래 하이라이트로 파인 입체감, 가장자리 비네트(`--graph-plate-shade`, 라이트 6%·다크 28%). 토큰은 custom.scss, 라벨 헤일로(`--tg-halo`)도 판 색을 따른다. 확대 보기의 큰 판도 같다. 대비(판 위, 비네트 모서리 최악): 라이트 `--gray` 4.66(중앙 5.24)·`--dark` 13.9, 다크 `--gray` 5.73. 주의: 라이트 비네트를 6%보다 진하게 하면 모서리 `--gray` 라벨이 4.5 밑으로 내려간다.
 - 실측(98편, 두 판 각각): 진입 중 프레임 p95 16.8ms(1440×900, 노드 49개 판). 상시 라벨 296개(쪽당 최대 5), 라벨 겹침·노드 가림·잘림 0. 대비 라이트 / 다크 — island 위 `--gray` 4.95 / 5.55, 이웃 라벨 9.42 / 11.41, 현재 폴더 14.71 / 16.58, 툴팁 15.58 / 15.93. 확대 보기(`--light` 위) `--gray` 5.24 / 5.33, 이웃·노트 라벨 9.99 / 10.96, 현재 폴더 15.58 / 15.93.
 - ⌘G 전역 그래프는 업스트림 `graph`를 그대로 쓴다. 사이드바 로컬 그래프만 걷어 내고(`topicGraph.inline.ts`) 숨긴다(`custom.scss` §8). 주의: `.graph`에 `display: none` 금지 — 전역 모달이 그 안에 있다.

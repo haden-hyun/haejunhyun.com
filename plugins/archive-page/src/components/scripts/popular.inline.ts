@@ -16,7 +16,7 @@ function row(rank: number, meta: Meta, count: number) {
   t.textContent = meta.t
   const c = document.createElement("span")
   c.className = "archive-page-cat archive-page-count"
-  c.textContent = `읽은 사람 ${count.toLocaleString("ko-KR")}명`
+  c.textContent = `${count.toLocaleString("en-US")} ${count === 1 ? "reader" : "readers"}`
   a.append(r, t, c)
   return a
 }
