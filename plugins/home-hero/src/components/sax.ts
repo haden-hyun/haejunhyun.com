@@ -1,7 +1,8 @@
 // 음표로 그린 색소폰 — 빌드 시 정지 자세 프리렌더(SVG)와 브라우저 캔버스가 같은 함수를 쓴다.
 // - buildSax: 3D 점군 모델 / rasterSax: 회전·투영·조명 래스터 / fitSax: 높이 맞춤 / composeSax: 프레임 글자 목록
 // - 운지 키 7개(♭ + HAEJUN)의 위치도 composeSax가 투영해 돌려준다
-// - 글자는 밝기가 아니라 부위로 정한다: 관 ♩♪♫♬(+임시표 ♭♯♮ 드문 점), 광택 ✦✧, 벨 안 ♫, 벨 테 ◦
+// - 명암은 연속 음영(램버트+정반사+림·벨 속 어둠)을 SAX_CFG.ramp 8단으로 양자화한다: 단마다 글자(실제 잉크 면적순)와 잉크 세기가 하나씩
+// - 방향은 테마가 뒤집는다: 라이트 = 어두움이 조밀·진함, 다크 = 밝음이 조밀·진함. 정체성 표식: 광택 ✦✧, 벨 안 ♫, 벨 테 ◦
 // 주의: 함수들은 toString()으로 인라인 스크립트에 직렬화된다. 바깥 식별자·import를 참조하지 말 것(상수는 인자로).
 
 export interface SaxModel {
@@ -131,7 +132,7 @@ export interface SaxFit {
   cy: number
 }
 
-/** 칠할 글자 하나: x·y(px), 문자, 단(0 그림자 · 1 가운데 · 2 밝은 면 · 3 벨), 물결이 지나는 중인지. */
+/** 칠할 글자 하나: x·y(px), 문자, 조밀도 단(0 성김 … 7 조밀 = 잉크 세기 단), 물결이 지나는 중인지. */
 export type SaxGlyph = [number, number, string, number, boolean]
 
 /** 그리기 상수(글자 모음 포함). 주의: 아래 함수들은 이 객체를 인자로만 받는다(인라인 직렬화). */
@@ -139,10 +140,17 @@ export const SAX_CFG = {
   cw: 4.6,
   ch: 8.2,
   rows: 41,
-  notes: "♩♪♫♬",
-  accidentals: "♭♯♮",
+  // 조밀도 순(렌더 잉크 면적, 7.5px): · .024 | ◦ .046 | ♩ .062 ♭ .075 | ♪ .092 ♮ .098 | ♯ .141 ♫ .153 | ♬ .175 | ✧ .224. ✦(.366)는 정반사 정점 전용
+  ramp: ["·", "◦", "♩♭", "♪♮", "♯♫", "♬♫", "♬", "♬✧"],
   sparks: "✦✧",
   rim: "◦",
+  bell: "♫",
+  // 음영 값 → 단 정규화 구간, 빛 물결이 올리는 양
+  lo: 0.06,
+  hi: 0.8,
+  gammaLight: 1.9, // 라이트는 밝은 면이 종이로 날아가지 않게 음영을 어두운 쪽으로 당긴다
+  gammaDark: 1.2,
+  lift: 0.14,
   // 운지 키: 위 → 아래 7개, 키 i = 편수 순 i번째 토픽(맨 위는 ♭ 옥타브 키)
   keyY: [0.78, 0.62, 0.46, 0.3, 0.14, -0.02, -0.18],
   keyChars: ["♭", "H", "A", "E", "J", "U", "N"],
@@ -184,7 +192,7 @@ export function rasterSax(
   const sy = Math.sin(ay)
   const cx = Math.cos(ax)
   const sx = Math.sin(ax)
-  const L = [-0.43, 0.57, -0.71]
+  const L = [-0.62, 0.5, -0.6]
   const hl = Math.hypot(L[0]!, L[1]!, L[2]! - 1)
   const Hx = L[0]! / hl
   const Hy = L[1]! / hl
@@ -205,13 +213,19 @@ export function rasterSax(
     let nz = -P[i + 3]! * sy + P[i + 5]! * cy
     const ny = P[i + 4]! * cx - nz * sx
     nz = P[i + 4]! * sx + nz * cx
-    const lam = Math.max(0, nx * L[0]! + ny * L[1]! + nz * L[2]!)
+    const dl = nx * L[0]! + ny * L[1]! + nz * L[2]!
+    const wrap = Math.max(0, (dl + 0.15) / 1.15) // 부드러운 명암 경계
+    const lam = Math.max(0, dl)
     const spec = Math.pow(Math.max(0, nx * Hx + ny * Hy + nz * Hz), 20)
     const m = P[i + 6]!
-    let b = 0.06 + 0.8 * lam + 0.5 * spec
+    const face = Math.min(1, Math.max(0, -nz) / 0.6)
+    const limb = 0.5 + 0.5 * face * face * (3 - 2 * face) // 가장자리로 갈수록 어두워져 관이 원통으로 읽힌다
+    let b = (0.07 + 0.8 * wrap + 0.5 * spec) * limb
     if (nz > 0.05 && m !== 2) b *= 0.35
-    if (m === 2) b = 0.32
-    else if (m === 3) b = 0.2 + 0.3 * lam
+    if (m === 2) {
+      const q = Math.min(1, Math.hypot(P[i]! - model.bell[0], P[i + 2]! - model.bell[2]) / 0.43)
+      b = 0.1 + 0.34 * q * Math.sqrt(q) // 벨 속은 깊을수록 어둡다
+    } else if (m === 3) b = 0.2 + 0.3 * lam
     else if (m === 1 || m === 4) b = Math.min(1, b + 0.25)
     const sc = Math.round(pr[0] * SX)
     const sr = Math.round(pr[1] * SY)
@@ -255,7 +269,7 @@ export function rasterSax(
         }
       }
       const on = n / (SX * SY) >= 0.34
-      v[r * C + c] = on ? tot / n : -1
+      v[r * C + c] = on ? (tot / n) * (0.78 + 0.22 * Math.min(1, n / (SX * SY))) : -1 // 부분 커버 칸은 한 단 어둡게
       mm[r * C + c] = fm
       s[r * C + c] = fs
     }
@@ -296,8 +310,8 @@ export function fitSax(model: SaxModel, raster: typeof rasterSax, rest: { ay: nu
 }
 
 /**
- * 한 프레임의 글자 목록. 문자는 밝기가 아니라 부위·칸 위치로 정하고, 명암은 단(색)이 맡는다.
- * 벨 안·벨 윗쪽 = ♫, 광택 = ✦✧ 교대, 벨 테 가장자리 = ◦, 관 = ♩♪♫♬ 칸 고정 패턴 + 드문 ♭♯♮.
+ * 한 프레임의 글자 목록. 음영 값을 ramp 단으로 양자화하고, 단이 글자와 잉크 세기를 함께 정한다.
+ * dark면 밝은 쪽이 조밀, 아니면 어두운 쪽이 조밀. 벨 안 ♫·벨 테 ◦·정반사 ✦✧는 글자만 고정하고 세기는 음영을 따른다.
  */
 export function composeSax(
   model: SaxModel,
@@ -308,9 +322,11 @@ export function composeSax(
   ay: number,
   ax: number,
   sweepAt: (x: number) => number,
+  dark: boolean,
 ): { glyphs: SaxGlyph[]; keys: [number, number][] } {
   const C = fit.cols
   const R = cfg.rows
+  const N = cfg.ramp.length
   const ras = raster(model, buf, C, R, fit.cx, fit.cy, ay, ax, fit.scl)
   const bell = ras.proj(model.bell[0], model.bell[1], model.bell[2])
   const on = (c: number, r: number) => c >= 0 && r >= 0 && c < C && r < R && ras.v[r * C + c]! >= 0
@@ -324,23 +340,19 @@ export function composeSax(
       const y = (r + 0.5) * cfg.ch
       const m = ras.m[i]!
       const lit = sweepAt(x) > 0.45
-      if (m === 2 || (m === 1 && r < bell[1] - 0.5)) {
-        glyphs.push([x, y, cfg.notes[2]!, 3, lit])
-        continue
+      let sh = Math.pow(Math.min(1, Math.max(0, (v - cfg.lo) / (cfg.hi - cfg.lo))), dark ? cfg.gammaDark : cfg.gammaLight)
+      if (lit) sh = Math.min(1, sh + cfg.lift)
+      const q = Math.min(N - 1, Math.floor(sh * N))
+      const k = dark ? q : N - 1 - q
+      let ch: string
+      if (m === 2 || (m === 1 && r < bell[1] - 0.5)) ch = cfg.bell
+      else if (ras.s[i]! > 0.6) ch = cfg.sparks[(c + r) % 2]!
+      else if (m === 1 && !(on(c - 1, r) && on(c + 1, r) && on(c, r - 1) && on(c, r + 1))) ch = cfg.rim
+      else {
+        const g = cfg.ramp[k]!
+        ch = g[(c + r) % g.length]!
       }
-      if (ras.s[i]! > 0.6) {
-        glyphs.push([x, y, cfg.sparks[(c + r) % 2]!, 2, lit])
-        continue
-      }
-      const edge = !on(c - 1, r) || !on(c + 1, r) || !on(c, r - 1) || !on(c, r + 1)
-      const ch = (c * 5 + r * 3) % 7 === 0 ? cfg.accidentals[(c + r) % 3]! : cfg.notes[(c + r * 2) % 4]!
-      if (edge) {
-        glyphs.push([x, y, m === 1 ? cfg.rim : ch, 1, lit])
-        continue
-      }
-      let tier = v < 0.33 ? 0 : v < 0.66 ? 1 : 2
-      if (lit) tier = Math.min(2, tier + 1)
-      glyphs.push([x, y, ch, tier, lit])
+      glyphs.push([x, y, ch, k, lit])
     }
   }
   const keys = cfg.keyY.map((y): [number, number] => {

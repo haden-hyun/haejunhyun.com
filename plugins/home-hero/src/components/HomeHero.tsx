@@ -2,7 +2,7 @@
 // - 홈(slug "index")에서만 렌더한다. `condition: is-index`는 내장에 없어 내부 slug 가드로 거른다
 // - 통계는 allFiles 런타임 집계(하드코딩 금지). 방문 수는 /api/stats(KST 기준), 실패하면 GoatCounter 공개 카운터로 total만 채우고 today는 "-"
 // - 운지 키 7개 = 토픽 7개(편수 순, 최근 글이 있으면 눌린 키). 토픽 집계도 allFiles 런타임
-// - 색소폰 정지 자세를 빌드 시 SVG로 미리 굽고, 클라이언트(client.ts)가 캔버스로 이어받는다
+// - 색소폰 정지 자세를 빌드 시 SVG(라이트·다크 두 장, 테마 속성으로 전환)로 미리 굽고, 클라이언트(client.ts)가 캔버스로 이어받는다
 import type {
   QuartzComponent,
   QuartzComponentConstructor,
@@ -23,15 +23,15 @@ function classNames(...classes: (string | undefined | false)[]): string {
 }
 
 const GOATCOUNTER_SITE = "haejunhyun"
-// 글꼴 하위 집합(OFL 1.1, Google Fonts): Noto Music 음표·임시표 7자, Noto Sans Symbols 2 ✦✧◦ 3자.
+// 글꼴 하위 집합(OFL 1.1, Google Fonts): Noto Music 음표·임시표 7자, Noto Sans Symbols 2 ✦✧◦· 4자.
 const NOTO_MUSIC_CSS =
   "https://fonts.googleapis.com/css2?family=Noto+Music&text=%E2%99%A9%E2%99%AA%E2%99%AB%E2%99%AC%E2%99%AD%E2%99%AE%E2%99%AF&display=swap"
 const NOTO_SYMBOLS_CSS =
-  "https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&text=%E2%9C%A6%E2%9C%A7%E2%97%A6&display=swap"
+  "https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&text=%E2%9C%A6%E2%9C%A7%E2%97%A6%C2%B7&display=swap"
 const SAX_FONT = '"Noto Music", "Noto Sans Symbols 2", sans-serif'
 const SAX_FONT_LOADS = [
-  ['10px "Noto Music"', SAX_CFG.notes + SAX_CFG.accidentals],
-  ['10px "Noto Sans Symbols 2"', SAX_CFG.sparks + SAX_CFG.rim],
+  ['10px "Noto Music"', "♩♪♫♬♭♮♯"],
+  ['10px "Noto Sans Symbols 2"', "✦✧◦·"],
 ]
 
 // 헤드라인 sweep은 세션당 1회 — 첫 페인트 전에 판정해야 깜빡이지 않는다.
@@ -112,14 +112,14 @@ type FileData = QuartzPluginData & Record<string, unknown>
 
 let saxModel: SaxModel | undefined
 let saxFit: SaxFit | undefined
-let prerender: ReturnType<typeof composeSax> | undefined
+const prerender: Partial<Record<"light" | "dark", ReturnType<typeof composeSax>>> = {}
 
-/** 정지 자세 한 장을 빌드 시 미리 굽는다 — JS 없이도 보이고, 캔버스가 뜨기 전 빈칸·레이아웃 이동이 없다. */
-function getPrerender() {
+/** 정지 자세를 테마별로 빌드 시 미리 굽는다 — JS 없이도 보이고, 캔버스가 뜨기 전 빈칸·레이아웃 이동이 없다. */
+function getPrerender(theme: "light" | "dark") {
   saxModel ??= buildSax()
   saxFit ??= fitSax(saxModel, rasterSax, SAX_REST, SAX_CFG.rows)
-  prerender ??= composeSax(saxModel, rasterSax, {}, saxFit, SAX_CFG, SAX_REST.ay, SAX_REST.ax, () => 0)
-  return { fit: saxFit, ...prerender }
+  prerender[theme] ??= composeSax(saxModel, rasterSax, {}, saxFit, SAX_CFG, SAX_REST.ay, SAX_REST.ax, () => 0, theme === "dark")
+  return { fit: saxFit, ...prerender[theme]! }
 }
 
 export default ((userOpts?: Partial<HomeHeroOptions>) => {
@@ -154,17 +154,43 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
     const description =
       opts.description || ((fileData.frontmatter as { description?: string } | undefined)?.description ?? "")
 
-    const pre = getPrerender()
+    const pre = getPrerender("light")
     const W = pre.fit.cols * SAX_CFG.cw
     const H = SAX_CFG.rows * SAX_CFG.ch
-    const byRow = new Map<string, { y: number; tier: number; xs: string[]; chs: string }>()
-    for (const [x, y, ch, tier] of pre.glyphs) {
-      const k = y + "|" + tier
-      const g = byRow.get(k) ?? { y, tier, xs: [], chs: "" }
-      g.xs.push(x.toFixed(1))
-      g.chs += ch
-      byRow.set(k, g)
+    // 단마다 <text> 하나(x·y 목록)로 줄여 HTML을 작게 둔다.
+    const levels = (g: typeof pre.glyphs) => {
+      const by = new Map<number, { x: string[]; y: string[]; chs: string }>()
+      for (const [x, y, ch, k] of g) {
+        const e = by.get(k) ?? { x: [], y: [], chs: "" }
+        e.x.push(x.toFixed(1))
+        e.y.push(y.toFixed(1))
+        e.chs += ch
+        by.set(k, e)
+      }
+      return [...by.entries()].sort((a, b) => a[0] - b[0])
     }
+    const keyMarks = pre.keys.map(([x, y], i) => {
+      const pressed = !!topics[i] && isRecent(topics[i]!.p)
+      const music = i === 0
+      return (
+        <>
+          {SAX_CFG.keyRing && <circle class={classNames("kr", pressed && "is-pressed")} cx={x.toFixed(1)} cy={y.toFixed(1)} r={pressed ? 7 : 6} />}
+          <text class={classNames("k", pressed && "is-pressed", music && "is-music")} x={x.toFixed(1)} y={(y + (music ? 0 : 0.5)).toFixed(1)}>
+            {SAX_CFG.keyChars[i]}
+          </text>
+        </>
+      )
+    })
+    const preSvg = (theme: "light" | "dark") => (
+      <svg class={`hero-sax-pre on-${theme}`} viewBox={`0 0 ${W.toFixed(1)} ${H.toFixed(1)}`} aria-hidden="true">
+        {levels(getPrerender(theme).glyphs).map(([k, e]) => (
+          <text class={`s${k}`} x={e.x.join(" ")} y={e.y.join(" ")}>
+            {e.chs}
+          </text>
+        ))}
+        {keyMarks}
+      </svg>
+    )
 
     return (
       <section class={classNames(displayClass, "home-hero")}>
@@ -199,32 +225,16 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
           class="hero-sax hero-rise hero-rise-1"
           style={`--sax-w:${W.toFixed(1)}px;--sax-ar:${(W / H).toFixed(4)};--box-h:${H.toFixed(1)}px`}
         >
-          <svg class="hero-sax-pre" viewBox={`0 0 ${W.toFixed(1)} ${H.toFixed(1)}`} aria-hidden="true">
-            {[...byRow.values()].map((g) => (
-              <text class={`t${g.tier}`} x={g.xs.join(" ")} y={g.y.toFixed(1)}>
-                {g.chs}
-              </text>
-            ))}
-            {pre.keys.map(([x, y], i) => {
-              const pressed = !!topics[i] && isRecent(topics[i]!.p)
-              const music = i === 0
-              return (
-                <>
-                  {SAX_CFG.keyRing && <circle class={classNames("kr", pressed && "is-pressed")} cx={x.toFixed(1)} cy={y.toFixed(1)} r={pressed ? 7 : 6} />}
-                  <text class={classNames("k", pressed && "is-pressed", music && "is-music")} x={x.toFixed(1)} y={(y + (music ? 0 : 0.5)).toFixed(1)}>
-                    {SAX_CFG.keyChars[i]}
-                  </text>
-                </>
-              )
-            })}
-          </svg>
+          {preSvg("light")}
+          {preSvg("dark")}
           <canvas class="hero-sax-cv" aria-hidden="true" />
           <div class="hero-keys" role="group" aria-label="색소폰 키 = 토픽" />
           <div class="hero-keytip" role="tooltip" hidden />
-          <i class="hero-tone t0" />
-          <i class="hero-tone t1" />
-          <i class="hero-tone t2" />
-          <i class="hero-tone tb" />
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((k) => (
+            <i class={`hero-tone s${k}`} />
+          ))}
+          <i class="hero-tone tk" />
+          <i class="hero-tone tp" />
         </div>
         <script type="application/json" class="hero-data" dangerouslySetInnerHTML={{ __html: json }} />
       </section>

@@ -100,10 +100,18 @@ var SAX_CFG = {
   cw: 4.6,
   ch: 8.2,
   rows: 41,
-  notes: "\u2669\u266A\u266B\u266C",
-  accidentals: "\u266D\u266F\u266E",
+  // 조밀도 순(렌더 잉크 면적, 7.5px): · .024 | ◦ .046 | ♩ .062 ♭ .075 | ♪ .092 ♮ .098 | ♯ .141 ♫ .153 | ♬ .175 | ✧ .224. ✦(.366)는 정반사 정점 전용
+  ramp: ["\xB7", "\u25E6", "\u2669\u266D", "\u266A\u266E", "\u266F\u266B", "\u266C\u266B", "\u266C", "\u266C\u2727"],
   sparks: "\u2726\u2727",
   rim: "\u25E6",
+  bell: "\u266B",
+  // 음영 값 → 단 정규화 구간, 빛 물결이 올리는 양
+  lo: 0.06,
+  hi: 0.8,
+  gammaLight: 1.9,
+  // 라이트는 밝은 면이 종이로 날아가지 않게 음영을 어두운 쪽으로 당긴다
+  gammaDark: 1.2,
+  lift: 0.14,
   // 운지 키: 위 → 아래 7개, 키 i = 편수 순 i번째 토픽(맨 위는 ♭ 옥타브 키)
   keyY: [0.78, 0.62, 0.46, 0.3, 0.14, -0.02, -0.18],
   keyChars: ["\u266D", "H", "A", "E", "J", "U", "N"],
@@ -134,7 +142,7 @@ function rasterSax(model, buf, C2, R, cxp, cyp, ay, ax, scl) {
   const sy = Math.sin(ay);
   const cx = Math.cos(ax);
   const sx = Math.sin(ax);
-  const L2 = [-0.43, 0.57, -0.71];
+  const L2 = [-0.62, 0.5, -0.6];
   const hl = Math.hypot(L2[0], L2[1], L2[2] - 1);
   const Hx = L2[0] / hl;
   const Hy = L2[1] / hl;
@@ -155,13 +163,19 @@ function rasterSax(model, buf, C2, R, cxp, cyp, ay, ax, scl) {
     let nz = -P2[i2 + 3] * sy + P2[i2 + 5] * cy;
     const ny = P2[i2 + 4] * cx - nz * sx;
     nz = P2[i2 + 4] * sx + nz * cx;
-    const lam = Math.max(0, nx * L2[0] + ny * L2[1] + nz * L2[2]);
+    const dl = nx * L2[0] + ny * L2[1] + nz * L2[2];
+    const wrap = Math.max(0, (dl + 0.15) / 1.15);
+    const lam = Math.max(0, dl);
     const spec = Math.pow(Math.max(0, nx * Hx + ny * Hy + nz * Hz), 20);
     const m2 = P2[i2 + 6];
-    let b2 = 0.06 + 0.8 * lam + 0.5 * spec;
+    const face = Math.min(1, Math.max(0, -nz) / 0.6);
+    const limb = 0.5 + 0.5 * face * face * (3 - 2 * face);
+    let b2 = (0.07 + 0.8 * wrap + 0.5 * spec) * limb;
     if (nz > 0.05 && m2 !== 2) b2 *= 0.35;
-    if (m2 === 2) b2 = 0.32;
-    else if (m2 === 3) b2 = 0.2 + 0.3 * lam;
+    if (m2 === 2) {
+      const q2 = Math.min(1, Math.hypot(P2[i2] - model.bell[0], P2[i2 + 2] - model.bell[2]) / 0.43);
+      b2 = 0.1 + 0.34 * q2 * Math.sqrt(q2);
+    } else if (m2 === 3) b2 = 0.2 + 0.3 * lam;
     else if (m2 === 1 || m2 === 4) b2 = Math.min(1, b2 + 0.25);
     const sc = Math.round(pr[0] * SX);
     const sr = Math.round(pr[1] * SY);
@@ -205,7 +219,7 @@ function rasterSax(model, buf, C2, R, cxp, cyp, ay, ax, scl) {
         }
       }
       const on = n2 / (SX * SY) >= 0.34;
-      v2[r2 * C2 + c2] = on ? tot / n2 : -1;
+      v2[r2 * C2 + c2] = on ? tot / n2 * (0.78 + 0.22 * Math.min(1, n2 / (SX * SY))) : -1;
       mm[r2 * C2 + c2] = fm;
       s2[r2 * C2 + c2] = fs;
     }
@@ -242,9 +256,10 @@ function fitSax(model, raster, rest, rows) {
   }
   return { scl, cols: b2.c1 - b2.c0 + 3, cx: 70 - b2.c0 + 1, cy: 45 - b2.r0 };
 }
-function composeSax(model, raster, buf, fit, cfg, ay, ax, sweepAt) {
+function composeSax(model, raster, buf, fit, cfg, ay, ax, sweepAt, dark) {
   const C2 = fit.cols;
   const R = cfg.rows;
+  const N2 = cfg.ramp.length;
   const ras = raster(model, buf, C2, R, fit.cx, fit.cy, ay, ax, fit.scl);
   const bell = ras.proj(model.bell[0], model.bell[1], model.bell[2]);
   const on = (c2, r2) => c2 >= 0 && r2 >= 0 && c2 < C2 && r2 < R && ras.v[r2 * C2 + c2] >= 0;
@@ -258,23 +273,19 @@ function composeSax(model, raster, buf, fit, cfg, ay, ax, sweepAt) {
       const y2 = (r2 + 0.5) * cfg.ch;
       const m2 = ras.m[i2];
       const lit = sweepAt(x2) > 0.45;
-      if (m2 === 2 || m2 === 1 && r2 < bell[1] - 0.5) {
-        glyphs.push([x2, y2, cfg.notes[2], 3, lit]);
-        continue;
+      let sh = Math.pow(Math.min(1, Math.max(0, (v2 - cfg.lo) / (cfg.hi - cfg.lo))), dark ? cfg.gammaDark : cfg.gammaLight);
+      if (lit) sh = Math.min(1, sh + cfg.lift);
+      const q2 = Math.min(N2 - 1, Math.floor(sh * N2));
+      const k = dark ? q2 : N2 - 1 - q2;
+      let ch;
+      if (m2 === 2 || m2 === 1 && r2 < bell[1] - 0.5) ch = cfg.bell;
+      else if (ras.s[i2] > 0.6) ch = cfg.sparks[(c2 + r2) % 2];
+      else if (m2 === 1 && !(on(c2 - 1, r2) && on(c2 + 1, r2) && on(c2, r2 - 1) && on(c2, r2 + 1))) ch = cfg.rim;
+      else {
+        const g2 = cfg.ramp[k];
+        ch = g2[(c2 + r2) % g2.length];
       }
-      if (ras.s[i2] > 0.6) {
-        glyphs.push([x2, y2, cfg.sparks[(c2 + r2) % 2], 2, lit]);
-        continue;
-      }
-      const edge = !on(c2 - 1, r2) || !on(c2 + 1, r2) || !on(c2, r2 - 1) || !on(c2, r2 + 1);
-      const ch = (c2 * 5 + r2 * 3) % 7 === 0 ? cfg.accidentals[(c2 + r2) % 3] : cfg.notes[(c2 + r2 * 2) % 4];
-      if (edge) {
-        glyphs.push([x2, y2, m2 === 1 ? cfg.rim : ch, 1, lit]);
-        continue;
-      }
-      let tier = v2 < 0.33 ? 0 : v2 < 0.66 ? 1 : 2;
-      if (lit) tier = Math.min(2, tier + 1);
-      glyphs.push([x2, y2, ch, tier, lit]);
+      glyphs.push([x2, y2, ch, k, lit]);
     }
   }
   const keys = cfg.keyY.map((y2) => {
@@ -309,10 +320,12 @@ function heroClient(L2) {
     cleanups.push(() => t2.removeEventListener(ev, fn, opt));
   };
   const C2 = L2.SAX_CFG;
-  let colors = null;
+  let colors = null, keyInk = null, pressInk = null;
   const readColors = () => {
     const pick = (cls) => getComputedStyle(saxBox.querySelector(".hero-tone." + cls)).color;
-    colors = [pick("t0"), pick("t1"), pick("t2"), pick("tb")];
+    colors = [0, 1, 2, 3, 4, 5, 6, 7].map((k) => pick("s" + k));
+    keyInk = pick("tk");
+    pressInk = pick("tp");
   };
   let raf = 0, prev = 0, acc = 0, visible = false, drawn = false;
   const S2 = { off: { ay: 0, ax: 0 }, vel: { ay: 0, ax: 0 }, drag: false, lx: 0, ly: 0, keys: [], tipK: -1, t0: performance.now() };
@@ -349,7 +362,8 @@ function heroClient(L2) {
     if (!colors) return false;
     const t2 = (nowT - S2.t0) / 1e3;
     const sway = reduce ? 0 : 0.15 * Math.sin(t2 / 9 * Math.PI * 2);
-    const { glyphs, keys } = L2.composeSax(L2.model, L2.rasterSax, buf, L2.fit, C2, L2.REST.ay + sway + S2.off.ay, L2.REST.ax + S2.off.ax, sweepAt(t2));
+    const dark = document.documentElement.getAttribute("saved-theme") === "dark";
+    const { glyphs, keys } = L2.composeSax(L2.model, L2.rasterSax, buf, L2.fit, C2, L2.REST.ay + sway + S2.off.ay, L2.REST.ax + S2.off.ax, sweepAt(t2), dark);
     const cssW = cv.clientWidth || W, dpr = Math.min(2, window.devicePixelRatio || 1);
     const bw = Math.round(cssW * dpr), bh = Math.round(cssW * (H2 / W) * dpr);
     if (cv.width !== bw || cv.height !== bh) {
@@ -386,7 +400,7 @@ function heroClient(L2) {
       ctx.arc(p2[0], p2[1], r2 + 0.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.globalCompositeOperation = "source-over";
-      ctx.fillStyle = hot ? colors[3] : colors[1];
+      ctx.fillStyle = hot ? pressInk : keyInk;
       if (ring) {
         ctx.strokeStyle = ctx.fillStyle;
         ctx.lineWidth = 1;
@@ -532,7 +546,7 @@ function heroClient(L2) {
 }
 
 // src/components/styles/hero.scss
-var hero_default = '.home-hero {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;\n  grid-template-areas: "text sax";\n  align-items: center;\n  gap: 24px 56px;\n  padding: 48px 0 64px;\n}\n@media all and (max-width: 899px) {\n  .home-hero {\n    grid-template-columns: minmax(0, 1fr);\n    grid-template-areas: "sax" "text";\n    gap: 18px;\n    padding: 12px 0 40px;\n  }\n}\n\n.hero-text {\n  grid-area: text;\n  align-self: center;\n  min-width: 0;\n}\n\n.hero-headline {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-weight: 900;\n  font-size: clamp(2.5rem, 6vw, 3.75rem);\n  line-height: 1.1;\n  letter-spacing: -0.02em;\n  color: var(--dark);\n}\n\n.hero-author {\n  margin: 14px 0 0;\n  font-family: var(--headerFont);\n  font-size: 1.05rem;\n  font-weight: 700;\n  color: var(--darkgray);\n}\n@media all and (max-width: 800px) {\n  .hero-author {\n    margin-top: 10px;\n    font-size: 1rem;\n  }\n}\n\n.hero-description {\n  margin: 26px 0 0;\n  max-width: 29em;\n  font-family: var(--headerFont);\n  font-size: 17px;\n  line-height: 1.85;\n  color: var(--darkgray);\n  word-break: keep-all;\n}\n@media all and (max-width: 800px) {\n  .hero-description {\n    margin-top: 20px;\n    font-size: 16px;\n    line-height: 1.8;\n  }\n}\n\n.hero-links {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 8px;\n  margin: 26px 0 0;\n}\n.hero-links a {\n  display: inline-flex;\n  align-items: center;\n  min-height: 40px;\n  padding: 0 16px;\n  box-sizing: border-box;\n  border-radius: 10px;\n  background: rgba(var(--accent-rgb), 0.08);\n  color: var(--secondary);\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 700;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.hero-links a:hover {\n  background: rgba(var(--accent-rgb), 0.16);\n}\n@media all and (max-width: 800px) {\n  .hero-links a {\n    min-height: 44px;\n  }\n}\n@media all and (max-width: 800px) {\n  .hero-links {\n    margin-top: 16px;\n  }\n}\n\n.hero-meta {\n  margin: 12px 0 0;\n  font-family: var(--codeFont);\n  font-size: 12px;\n  letter-spacing: 0.02em;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n}\n@media all and (max-width: 800px) {\n  .hero-meta {\n    margin-top: 4px;\n    font-size: 11.5px;\n  }\n}\n\n.hero-num {\n  display: inline-block;\n  min-width: 1ch;\n}\n\n.hero-num-total {\n  min-width: 3ch;\n  text-align: right;\n}\n\n.hero-sax {\n  --t0: var(--dark);\n  --t1: var(--secondary);\n  --t2: color-mix(in srgb, var(--secondary) 90%, var(--light));\n  --tb: var(--dark);\n  grid-area: sax;\n  position: relative;\n  justify-self: end;\n  width: var(--sax-w);\n  height: var(--box-h);\n  touch-action: pan-y;\n}\n@media all and (max-width: 899px) {\n  .hero-sax {\n    justify-self: center;\n    width: calc(260px * var(--sax-ar));\n    height: 260px;\n  }\n}\n\n:root[saved-theme=dark] .hero-sax {\n  --t0: color-mix(in srgb, var(--secondary) 70%, var(--light));\n  --t2: var(--dark);\n}\n\n.hero-sax-pre,\n.hero-sax-cv,\n.hero-keys {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: auto;\n  aspect-ratio: var(--sax-ar);\n}\n\n.hero-sax-pre {\n  overflow: visible;\n  font-family: "Noto Music", "Noto Sans Symbols 2", sans-serif;\n  font-size: 7.5px;\n  text-anchor: middle;\n  dominant-baseline: central;\n}\n.hero-sax-pre .t0 {\n  fill: var(--t0);\n}\n.hero-sax-pre .t1 {\n  fill: var(--t1);\n}\n.hero-sax-pre .t2 {\n  fill: var(--t2);\n}\n.hero-sax-pre .t3 {\n  fill: var(--tb);\n}\n.hero-sax-pre .k {\n  font: 500 8px Inter, var(--bodyFont);\n  fill: var(--t1);\n}\n.hero-sax-pre .k.is-music {\n  font-family: "Noto Music", sans-serif;\n  font-size: 9px;\n}\n.hero-sax-pre .kr {\n  fill: none;\n  stroke: var(--t1);\n  stroke-width: 1px;\n}\n.hero-sax-pre .k.is-pressed {\n  fill: var(--tb);\n}\n.hero-sax-pre .kr.is-pressed {\n  stroke: var(--tb);\n}\n.is-live .hero-sax-pre {\n  visibility: hidden;\n}\n\n.hero-sax-cv {\n  cursor: grab;\n  visibility: hidden;\n}\n.is-live .hero-sax-cv {\n  visibility: visible;\n}\n.is-dragging .hero-sax-cv {\n  cursor: grabbing;\n}\n\n.hero-keys {\n  pointer-events: none;\n}\n\n.hero-key {\n  position: absolute;\n  width: 22px;\n  height: 22px;\n  margin: -11px 0 0 -11px;\n  padding: 0;\n  border: 0;\n  border-radius: 50%;\n  background: transparent;\n  cursor: help;\n  pointer-events: auto;\n}\n.hero-key:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 1px;\n}\n\n.hero-keytip {\n  position: absolute;\n  z-index: 3;\n  transform: translate(18px, -50%);\n  padding: 3px 8px;\n  font: 500 12px var(--bodyFont);\n  white-space: nowrap;\n  color: var(--darkgray);\n  background: var(--light);\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  pointer-events: none;\n}\n.hero-keytip b {\n  color: var(--dark);\n}\n\n.hero-tone {\n  display: none;\n}\n.hero-tone.t0 {\n  color: var(--t0);\n}\n.hero-tone.t1 {\n  color: var(--t1);\n}\n.hero-tone.t2 {\n  color: var(--t2);\n}\n.hero-tone.tb {\n  color: var(--tb);\n}\n\n@media (prefers-reduced-motion: no-preference) {\n  :root:not([data-hero-swept]) .hero-headline {\n    background-image: linear-gradient(90deg, currentColor 0 50%, transparent 50% 100%);\n    background-size: 200% 100%;\n    background-position: 100% 0;\n    -webkit-background-clip: text;\n    background-clip: text;\n    -webkit-text-fill-color: transparent;\n    animation: hero-sweep 1.4s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) 0.15s forwards;\n  }\n  :root:not([data-hero-swept]) .hero-rise {\n    animation: hero-rise var(--dur-slow, 900ms) var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) both;\n  }\n  :root:not([data-hero-swept]) .hero-rise-1 {\n    animation-delay: 0.12s;\n  }\n  :root:not([data-hero-swept]) .hero-rise-2 {\n    animation-delay: 0.24s;\n  }\n  :root:not([data-hero-swept]) .hero-rise-3 {\n    animation-delay: 0.36s;\n  }\n}\n@keyframes hero-sweep {\n  to {\n    background-position: 0 0;\n  }\n}\n@keyframes hero-rise {\n  from {\n    opacity: 0;\n    transform: translateY(12px);\n  }\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}';
+var hero_default = '.home-hero {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;\n  grid-template-areas: "text sax";\n  align-items: center;\n  gap: 24px 56px;\n  padding: 48px 0 64px;\n}\n@media all and (max-width: 899px) {\n  .home-hero {\n    grid-template-columns: minmax(0, 1fr);\n    grid-template-areas: "sax" "text";\n    gap: 18px;\n    padding: 12px 0 40px;\n  }\n}\n\n.hero-text {\n  grid-area: text;\n  align-self: center;\n  min-width: 0;\n}\n\n.hero-headline {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-weight: 900;\n  font-size: clamp(2.5rem, 6vw, 3.75rem);\n  line-height: 1.1;\n  letter-spacing: -0.02em;\n  color: var(--dark);\n}\n\n.hero-author {\n  margin: 14px 0 0;\n  font-family: var(--headerFont);\n  font-size: 1.05rem;\n  font-weight: 700;\n  color: var(--darkgray);\n}\n@media all and (max-width: 800px) {\n  .hero-author {\n    margin-top: 10px;\n    font-size: 1rem;\n  }\n}\n\n.hero-description {\n  margin: 26px 0 0;\n  max-width: 29em;\n  font-family: var(--headerFont);\n  font-size: 17px;\n  line-height: 1.85;\n  color: var(--darkgray);\n  word-break: keep-all;\n}\n@media all and (max-width: 800px) {\n  .hero-description {\n    margin-top: 20px;\n    font-size: 16px;\n    line-height: 1.8;\n  }\n}\n\n.hero-links {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 8px;\n  margin: 26px 0 0;\n}\n.hero-links a {\n  display: inline-flex;\n  align-items: center;\n  min-height: 40px;\n  padding: 0 16px;\n  box-sizing: border-box;\n  border-radius: 10px;\n  background: rgba(var(--accent-rgb), 0.08);\n  color: var(--secondary);\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 700;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.hero-links a:hover {\n  background: rgba(var(--accent-rgb), 0.16);\n}\n@media all and (max-width: 800px) {\n  .hero-links a {\n    min-height: 44px;\n  }\n}\n@media all and (max-width: 800px) {\n  .hero-links {\n    margin-top: 16px;\n  }\n}\n\n.hero-meta {\n  margin: 12px 0 0;\n  font-family: var(--codeFont);\n  font-size: 12px;\n  letter-spacing: 0.02em;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n}\n@media all and (max-width: 800px) {\n  .hero-meta {\n    margin-top: 4px;\n    font-size: 11.5px;\n  }\n}\n\n.hero-num {\n  display: inline-block;\n  min-width: 1ch;\n}\n\n.hero-num-total {\n  min-width: 3ch;\n  text-align: right;\n}\n\n.hero-sax {\n  --sa: color-mix(in srgb, var(--secondary) 90%, var(--light));\n  --s0: var(--sa);\n  --s1: color-mix(in srgb, var(--secondary) 28.6%, var(--sa));\n  --s2: color-mix(in srgb, var(--secondary) 57.1%, var(--sa));\n  --s3: color-mix(in srgb, var(--secondary) 85.7%, var(--sa));\n  --s4: color-mix(in srgb, var(--dark) 14.3%, var(--secondary));\n  --s5: color-mix(in srgb, var(--dark) 42.9%, var(--secondary));\n  --s6: color-mix(in srgb, var(--dark) 71.4%, var(--secondary));\n  --s7: var(--dark);\n  --tk: var(--secondary);\n  --tp: var(--dark);\n  grid-area: sax;\n  position: relative;\n  justify-self: end;\n  width: var(--sax-w);\n  height: var(--box-h);\n  touch-action: pan-y;\n}\n@media all and (max-width: 899px) {\n  .hero-sax {\n    justify-self: center;\n    width: calc(260px * var(--sax-ar));\n    height: 260px;\n  }\n}\n\n:root[saved-theme=dark] .hero-sax {\n  --sa: color-mix(in srgb, var(--secondary) 76%, var(--light));\n}\n\n.hero-sax-pre,\n.hero-sax-cv,\n.hero-keys {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 100%;\n  height: auto;\n  aspect-ratio: var(--sax-ar);\n}\n\n.hero-sax-pre {\n  overflow: visible;\n  font-family: "Noto Music", "Noto Sans Symbols 2", sans-serif;\n  font-size: 7.5px;\n  text-anchor: middle;\n  dominant-baseline: central;\n}\n.hero-sax-pre .s0 {\n  fill: var(--s0);\n}\n.hero-sax-pre .s1 {\n  fill: var(--s1);\n}\n.hero-sax-pre .s2 {\n  fill: var(--s2);\n}\n.hero-sax-pre .s3 {\n  fill: var(--s3);\n}\n.hero-sax-pre .s4 {\n  fill: var(--s4);\n}\n.hero-sax-pre .s5 {\n  fill: var(--s5);\n}\n.hero-sax-pre .s6 {\n  fill: var(--s6);\n}\n.hero-sax-pre .s7 {\n  fill: var(--s7);\n}\n.hero-sax-pre .k {\n  font: 500 8px Inter, var(--bodyFont);\n  fill: var(--tk);\n}\n.hero-sax-pre .k.is-music {\n  font-family: "Noto Music", sans-serif;\n  font-size: 9px;\n}\n.hero-sax-pre .kr {\n  fill: none;\n  stroke: var(--tk);\n  stroke-width: 1px;\n}\n.hero-sax-pre .k.is-pressed {\n  fill: var(--tp);\n}\n.hero-sax-pre .kr.is-pressed {\n  stroke: var(--tp);\n}\n.hero-sax-pre.on-dark {\n  display: none;\n}\n.is-live .hero-sax-pre {\n  visibility: hidden;\n}\n\n:root[saved-theme=dark] .hero-sax-pre.on-light {\n  display: none;\n}\n:root[saved-theme=dark] .hero-sax-pre.on-dark {\n  display: block;\n}\n\n.hero-sax-cv {\n  cursor: grab;\n  visibility: hidden;\n}\n.is-live .hero-sax-cv {\n  visibility: visible;\n}\n.is-dragging .hero-sax-cv {\n  cursor: grabbing;\n}\n\n.hero-keys {\n  pointer-events: none;\n}\n\n.hero-key {\n  position: absolute;\n  width: 22px;\n  height: 22px;\n  margin: -11px 0 0 -11px;\n  padding: 0;\n  border: 0;\n  border-radius: 50%;\n  background: transparent;\n  cursor: help;\n  pointer-events: auto;\n}\n.hero-key:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 1px;\n}\n\n.hero-keytip {\n  position: absolute;\n  z-index: 3;\n  transform: translate(18px, -50%);\n  padding: 3px 8px;\n  font: 500 12px var(--bodyFont);\n  white-space: nowrap;\n  color: var(--darkgray);\n  background: var(--light);\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  pointer-events: none;\n}\n.hero-keytip b {\n  color: var(--dark);\n}\n\n.hero-tone {\n  display: none;\n}\n.hero-tone.s0 {\n  color: var(--s0);\n}\n.hero-tone.s1 {\n  color: var(--s1);\n}\n.hero-tone.s2 {\n  color: var(--s2);\n}\n.hero-tone.s3 {\n  color: var(--s3);\n}\n.hero-tone.s4 {\n  color: var(--s4);\n}\n.hero-tone.s5 {\n  color: var(--s5);\n}\n.hero-tone.s6 {\n  color: var(--s6);\n}\n.hero-tone.s7 {\n  color: var(--s7);\n}\n.hero-tone.tk {\n  color: var(--tk);\n}\n.hero-tone.tp {\n  color: var(--tp);\n}\n\n@media (prefers-reduced-motion: no-preference) {\n  :root:not([data-hero-swept]) .hero-headline {\n    background-image: linear-gradient(90deg, currentColor 0 50%, transparent 50% 100%);\n    background-size: 200% 100%;\n    background-position: 100% 0;\n    -webkit-background-clip: text;\n    background-clip: text;\n    -webkit-text-fill-color: transparent;\n    animation: hero-sweep 1.4s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) 0.15s forwards;\n  }\n  :root:not([data-hero-swept]) .hero-rise {\n    animation: hero-rise var(--dur-slow, 900ms) var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) both;\n  }\n  :root:not([data-hero-swept]) .hero-rise-1 {\n    animation-delay: 0.12s;\n  }\n  :root:not([data-hero-swept]) .hero-rise-2 {\n    animation-delay: 0.24s;\n  }\n  :root:not([data-hero-swept]) .hero-rise-3 {\n    animation-delay: 0.36s;\n  }\n}\n@keyframes hero-sweep {\n  to {\n    background-position: 0 0;\n  }\n}\n@keyframes hero-rise {\n  from {\n    opacity: 0;\n    transform: translateY(12px);\n  }\n  to {\n    opacity: 1;\n    transform: none;\n  }\n}';
 
 // ../_shared/noteMeta.ts
 function toDate(value) {
@@ -617,11 +631,11 @@ function classNames(...classes) {
 }
 var GOATCOUNTER_SITE = "haejunhyun";
 var NOTO_MUSIC_CSS = "https://fonts.googleapis.com/css2?family=Noto+Music&text=%E2%99%A9%E2%99%AA%E2%99%AB%E2%99%AC%E2%99%AD%E2%99%AE%E2%99%AF&display=swap";
-var NOTO_SYMBOLS_CSS = "https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&text=%E2%9C%A6%E2%9C%A7%E2%97%A6&display=swap";
+var NOTO_SYMBOLS_CSS = "https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&text=%E2%9C%A6%E2%9C%A7%E2%97%A6%C2%B7&display=swap";
 var SAX_FONT = '"Noto Music", "Noto Sans Symbols 2", sans-serif';
 var SAX_FONT_LOADS = [
-  ['10px "Noto Music"', SAX_CFG.notes + SAX_CFG.accidentals],
-  ['10px "Noto Sans Symbols 2"', SAX_CFG.sparks + SAX_CFG.rim]
+  ['10px "Noto Music"', "\u2669\u266A\u266B\u266C\u266D\u266E\u266F"],
+  ['10px "Noto Sans Symbols 2"', "\u2726\u2727\u25E6\xB7"]
 ];
 var sweptScript = `try { if (sessionStorage.getItem("hero-swept")) document.documentElement.setAttribute("data-hero-swept", "") } catch {}`;
 var heroScript = `
@@ -685,12 +699,12 @@ var defaultOptions = {
 };
 var saxModel;
 var saxFit;
-var prerender;
-function getPrerender() {
+var prerender = {};
+function getPrerender(theme) {
   saxModel ??= buildSax();
   saxFit ??= fitSax(saxModel, rasterSax, SAX_REST, SAX_CFG.rows);
-  prerender ??= composeSax(saxModel, rasterSax, {}, saxFit, SAX_CFG, SAX_REST.ay, SAX_REST.ax, () => 0);
-  return { fit: saxFit, ...prerender };
+  prerender[theme] ??= composeSax(saxModel, rasterSax, {}, saxFit, SAX_CFG, SAX_REST.ay, SAX_REST.ax, () => 0, theme === "dark");
+  return { fit: saxFit, ...prerender[theme] };
 }
 var HomeHero_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
@@ -715,17 +729,32 @@ var HomeHero_default = ((userOpts) => {
     const isRecent = (p2) => !!p2 && (buildNow - Date.parse(p2)) / 864e5 <= 45;
     const json = JSON.stringify({ topics }).replace(/</g, "\\u003c");
     const description = opts.description || (fileData.frontmatter?.description ?? "");
-    const pre = getPrerender();
+    const pre = getPrerender("light");
     const W = pre.fit.cols * SAX_CFG.cw;
     const H2 = SAX_CFG.rows * SAX_CFG.ch;
-    const byRow = /* @__PURE__ */ new Map();
-    for (const [x2, y2, ch, tier] of pre.glyphs) {
-      const k = y2 + "|" + tier;
-      const g2 = byRow.get(k) ?? { y: y2, tier, xs: [], chs: "" };
-      g2.xs.push(x2.toFixed(1));
-      g2.chs += ch;
-      byRow.set(k, g2);
-    }
+    const levels = (g2) => {
+      const by = /* @__PURE__ */ new Map();
+      for (const [x2, y2, ch, k] of g2) {
+        const e2 = by.get(k) ?? { x: [], y: [], chs: "" };
+        e2.x.push(x2.toFixed(1));
+        e2.y.push(y2.toFixed(1));
+        e2.chs += ch;
+        by.set(k, e2);
+      }
+      return [...by.entries()].sort((a2, b2) => a2[0] - b2[0]);
+    };
+    const keyMarks = pre.keys.map(([x2, y2], i2) => {
+      const pressed = !!topics[i2] && isRecent(topics[i2].p);
+      const music = i2 === 0;
+      return /* @__PURE__ */ u2(S, { children: [
+        SAX_CFG.keyRing && /* @__PURE__ */ u2("circle", { class: classNames("kr", pressed && "is-pressed"), cx: x2.toFixed(1), cy: y2.toFixed(1), r: pressed ? 7 : 6 }),
+        /* @__PURE__ */ u2("text", { class: classNames("k", pressed && "is-pressed", music && "is-music"), x: x2.toFixed(1), y: (y2 + (music ? 0 : 0.5)).toFixed(1), children: SAX_CFG.keyChars[i2] })
+      ] });
+    });
+    const preSvg = (theme) => /* @__PURE__ */ u2("svg", { class: `hero-sax-pre on-${theme}`, viewBox: `0 0 ${W.toFixed(1)} ${H2.toFixed(1)}`, "aria-hidden": "true", children: [
+      levels(getPrerender(theme).glyphs).map(([k, e2]) => /* @__PURE__ */ u2("text", { class: `s${k}`, x: e2.x.join(" "), y: e2.y.join(" "), children: e2.chs })),
+      keyMarks
+    ] });
     return /* @__PURE__ */ u2("section", { class: classNames(displayClass, "home-hero"), children: [
       /* @__PURE__ */ u2("link", { rel: "stylesheet", href: NOTO_MUSIC_CSS }),
       /* @__PURE__ */ u2("link", { rel: "stylesheet", href: NOTO_SYMBOLS_CSS }),
@@ -757,24 +786,14 @@ var HomeHero_default = ((userOpts) => {
           class: "hero-sax hero-rise hero-rise-1",
           style: `--sax-w:${W.toFixed(1)}px;--sax-ar:${(W / H2).toFixed(4)};--box-h:${H2.toFixed(1)}px`,
           children: [
-            /* @__PURE__ */ u2("svg", { class: "hero-sax-pre", viewBox: `0 0 ${W.toFixed(1)} ${H2.toFixed(1)}`, "aria-hidden": "true", children: [
-              [...byRow.values()].map((g2) => /* @__PURE__ */ u2("text", { class: `t${g2.tier}`, x: g2.xs.join(" "), y: g2.y.toFixed(1), children: g2.chs })),
-              pre.keys.map(([x2, y2], i2) => {
-                const pressed = !!topics[i2] && isRecent(topics[i2].p);
-                const music = i2 === 0;
-                return /* @__PURE__ */ u2(S, { children: [
-                  SAX_CFG.keyRing && /* @__PURE__ */ u2("circle", { class: classNames("kr", pressed && "is-pressed"), cx: x2.toFixed(1), cy: y2.toFixed(1), r: pressed ? 7 : 6 }),
-                  /* @__PURE__ */ u2("text", { class: classNames("k", pressed && "is-pressed", music && "is-music"), x: x2.toFixed(1), y: (y2 + (music ? 0 : 0.5)).toFixed(1), children: SAX_CFG.keyChars[i2] })
-                ] });
-              })
-            ] }),
+            preSvg("light"),
+            preSvg("dark"),
             /* @__PURE__ */ u2("canvas", { class: "hero-sax-cv", "aria-hidden": "true" }),
             /* @__PURE__ */ u2("div", { class: "hero-keys", role: "group", "aria-label": "\uC0C9\uC18C\uD3F0 \uD0A4 = \uD1A0\uD53D" }),
             /* @__PURE__ */ u2("div", { class: "hero-keytip", role: "tooltip", hidden: true }),
-            /* @__PURE__ */ u2("i", { class: "hero-tone t0" }),
-            /* @__PURE__ */ u2("i", { class: "hero-tone t1" }),
-            /* @__PURE__ */ u2("i", { class: "hero-tone t2" }),
-            /* @__PURE__ */ u2("i", { class: "hero-tone tb" })
+            [0, 1, 2, 3, 4, 5, 6, 7].map((k) => /* @__PURE__ */ u2("i", { class: `hero-tone s${k}` })),
+            /* @__PURE__ */ u2("i", { class: "hero-tone tk" }),
+            /* @__PURE__ */ u2("i", { class: "hero-tone tp" })
           ]
         }
       ),

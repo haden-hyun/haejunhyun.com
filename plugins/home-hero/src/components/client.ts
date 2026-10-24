@@ -1,6 +1,6 @@
 // @ts-nocheck
 // 히어로 브라우저 로직(nav마다 HomeHero의 인라인 스크립트가 호출).
-// - 색소폰 캔버스: 자동 흔들림 · 드래그 회전 + 스프링 복귀 · 글자 사이로 지나는 빛 물결
+// - 색소폰 캔버스: 단(0~7)별 색을 CSS 변수에서 읽어 칠한다. 테마가 바뀌면 다시 읽고 다시 구성. 자동 흔들림 · 드래그 회전 + 스프링 복귀 · 글자 사이로 지나는 빛 물결
 // - 운지 키 7개 = 토픽: 원 테두리 + 글자(Inter 500), 최근 글이 있는 토픽은 눌린 키(--dark). Tab 정지점 하나, hover·포커스·탭 툴팁
 // - 화면 밖·탭 숨김에서 rAF 정지, 30fps 상한, 감속 모션이면 정지 프레임(드래그만). 리스너는 window.addCleanup으로 해제
 // 주의: toString()으로 인라인 스크립트에 직렬화된다. 바깥 식별자·import를 참조하지 말 것(전부 L로 받는다).
@@ -20,10 +20,11 @@ export function heroClient(L) {
   const on = (t, ev, fn, opt) => { t.addEventListener(ev, fn, opt); cleanups.push(() => t.removeEventListener(ev, fn, opt)) }
 
   const C = L.SAX_CFG
-  let colors = null
+  let colors = null, keyInk = null, pressInk = null
   const readColors = () => {
     const pick = (cls) => getComputedStyle(saxBox.querySelector(".hero-tone." + cls)).color
-    colors = [pick("t0"), pick("t1"), pick("t2"), pick("tb")]
+    colors = [0, 1, 2, 3, 4, 5, 6, 7].map((k) => pick("s" + k))
+    keyInk = pick("tk"); pressInk = pick("tp")
   }
   let raf = 0, prev = 0, acc = 0, visible = false, drawn = false
   const S = { off: { ay: 0, ax: 0 }, vel: { ay: 0, ax: 0 }, drag: false, lx: 0, ly: 0, keys: [], tipK: -1, t0: performance.now() }
@@ -57,7 +58,8 @@ export function heroClient(L) {
     if (!colors) return false
     const t = (nowT - S.t0) / 1000
     const sway = reduce ? 0 : 0.15 * Math.sin((t / 9) * Math.PI * 2)
-    const { glyphs, keys } = L.composeSax(L.model, L.rasterSax, buf, L.fit, C, L.REST.ay + sway + S.off.ay, L.REST.ax + S.off.ax, sweepAt(t))
+    const dark = document.documentElement.getAttribute("saved-theme") === "dark"
+    const { glyphs, keys } = L.composeSax(L.model, L.rasterSax, buf, L.fit, C, L.REST.ay + sway + S.off.ay, L.REST.ax + S.off.ax, sweepAt(t), dark)
     const cssW = cv.clientWidth || W, dpr = Math.min(2, window.devicePixelRatio || 1)
     const bw = Math.round(cssW * dpr), bh = Math.round(cssW * (H / W) * dpr)
     if (cv.width !== bw || cv.height !== bh) { cv.width = bw; cv.height = bh }
@@ -83,7 +85,7 @@ export function heroClient(L) {
       ctx.globalCompositeOperation = "destination-out"
       ctx.beginPath(); ctx.arc(p[0], p[1], r + 0.5, 0, Math.PI * 2); ctx.fill()
       ctx.globalCompositeOperation = "source-over"
-      ctx.fillStyle = hot ? colors[3] : colors[1]
+      ctx.fillStyle = hot ? pressInk : keyInk
       if (ring) { ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, Math.PI * 2); ctx.stroke() }
       ctx.font = music ? (hot ? "10px" : "9px") + " " + L.FONT : (hot ? "500 9px" : "500 8px") + " Inter, sans-serif"
       ctx.fillText(ch, p[0], p[1] + (music ? 0 : 0.5))

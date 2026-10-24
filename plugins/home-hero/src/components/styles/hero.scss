@@ -127,13 +127,20 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   text-align: right;
 }
 
-// 음표로 그린 색소폰 — 정지 자세 SVG를 먼저 보이고, 캔버스가 그려지면(.is-live) 갈아 끼운다.
-// 주의: 명암 3단(--t0~--t2)은 모두 배경 대비 4.5 이상이어야 한다.
+// 음표로 그린 색소폰 — 정지 자세 SVG(라이트·다크 두 장)를 먼저 보이고, 캔버스가 그려지면(.is-live) 갈아 끼운다.
+// 잉크 8단(--s0 성김 … --s7 조밀) = 성김 끝 → --secondary → --dark 사이를 보간. 주의: 모든 단이 배경 대비 4.5 이상이어야 한다.
 .hero-sax {
-  --t0: var(--dark);
-  --t1: var(--secondary);
-  --t2: color-mix(in srgb, var(--secondary) 90%, var(--light));
-  --tb: var(--dark);
+  --sa: color-mix(in srgb, var(--secondary) 90%, var(--light));
+  --s0: var(--sa);
+  --s1: color-mix(in srgb, var(--secondary) 28.6%, var(--sa));
+  --s2: color-mix(in srgb, var(--secondary) 57.1%, var(--sa));
+  --s3: color-mix(in srgb, var(--secondary) 85.7%, var(--sa));
+  --s4: color-mix(in srgb, var(--dark) 14.3%, var(--secondary));
+  --s5: color-mix(in srgb, var(--dark) 42.9%, var(--secondary));
+  --s6: color-mix(in srgb, var(--dark) 71.4%, var(--secondary));
+  --s7: var(--dark);
+  --tk: var(--secondary);
+  --tp: var(--dark);
   grid-area: sax;
   position: relative;
   justify-self: end;
@@ -149,8 +156,7 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 :root[saved-theme="dark"] .hero-sax {
-  --t0: color-mix(in srgb, var(--secondary) 70%, var(--light));
-  --t2: var(--dark);
+  --sa: color-mix(in srgb, var(--secondary) 76%, var(--light));
 }
 
 .hero-sax-pre,
@@ -171,21 +177,14 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   text-anchor: middle;
   dominant-baseline: central;
 
-  .t0 {
-    fill: var(--t0);
-  }
-  .t1 {
-    fill: var(--t1);
-  }
-  .t2 {
-    fill: var(--t2);
-  }
-  .t3 {
-    fill: var(--tb);
+  @for $k from 0 through 7 {
+    .s#{$k} {
+      fill: var(--s#{$k});
+    }
   }
   .k {
     font: 500 8px Inter, var(--bodyFont);
-    fill: var(--t1);
+    fill: var(--tk);
   }
   .k.is-music {
     font-family: "Noto Music", sans-serif;
@@ -193,18 +192,31 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   }
   .kr {
     fill: none;
-    stroke: var(--t1);
+    stroke: var(--tk);
     stroke-width: 1px;
   }
   .k.is-pressed {
-    fill: var(--tb);
+    fill: var(--tp);
   }
   .kr.is-pressed {
-    stroke: var(--tb);
+    stroke: var(--tp);
+  }
+
+  &.on-dark {
+    display: none;
   }
 
   .is-live & {
     visibility: hidden;
+  }
+}
+
+:root[saved-theme="dark"] .hero-sax-pre {
+  &.on-light {
+    display: none;
+  }
+  &.on-dark {
+    display: block;
   }
 }
 
@@ -266,17 +278,16 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 .hero-tone {
   display: none;
 
-  &.t0 {
-    color: var(--t0);
+  @for $k from 0 through 7 {
+    &.s#{$k} {
+      color: var(--s#{$k});
+    }
   }
-  &.t1 {
-    color: var(--t1);
+  &.tk {
+    color: var(--tk);
   }
-  &.t2 {
-    color: var(--t2);
-  }
-  &.tb {
-    color: var(--tb);
+  &.tp {
+    color: var(--tp);
   }
 }
 
