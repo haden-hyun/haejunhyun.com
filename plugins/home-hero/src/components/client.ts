@@ -79,13 +79,13 @@ export function heroClient(L) {
     keys.forEach((p, i) => {
       const tpc = topics[i]; if (!tpc) return
       const hot = tpc.recent || S.tipK === i, ch = C.keyChars[i], music = i === 0, ring = C.keyRing
-      const r = (ring ? 8 : 7) + (hot ? 1 : 0)
+      const r = (ring ? 6 : 5.5) + (hot ? 1 : 0)
       ctx.globalCompositeOperation = "destination-out"
       ctx.beginPath(); ctx.arc(p[0], p[1], r + 0.5, 0, Math.PI * 2); ctx.fill()
       ctx.globalCompositeOperation = "source-over"
       ctx.fillStyle = hot ? colors[3] : colors[1]
       if (ring) { ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, Math.PI * 2); ctx.stroke() }
-      ctx.font = music ? (hot ? "14px" : "12px") + " " + L.FONT : (hot ? "500 12.5px" : "500 11px") + " Inter, sans-serif"
+      ctx.font = music ? (hot ? "10px" : "9px") + " " + L.FONT : (hot ? "500 9px" : "500 8px") + " Inter, sans-serif"
       ctx.fillText(ch, p[0], p[1] + (music ? 0 : 0.5))
       const b = keyBtns[i]; if (b) { b.style.left = p[0] * sc + "px"; b.style.top = p[1] * sc + "px" }
     })

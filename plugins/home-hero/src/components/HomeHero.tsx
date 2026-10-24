@@ -210,7 +210,7 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
               const music = i === 0
               return (
                 <>
-                  {SAX_CFG.keyRing && <circle class={classNames("kr", pressed && "is-pressed")} cx={x.toFixed(1)} cy={y.toFixed(1)} r={pressed ? 9 : 8} />}
+                  {SAX_CFG.keyRing && <circle class={classNames("kr", pressed && "is-pressed")} cx={x.toFixed(1)} cy={y.toFixed(1)} r={pressed ? 7 : 6} />}
                   <text class={classNames("k", pressed && "is-pressed", music && "is-music")} x={x.toFixed(1)} y={(y + (music ? 0 : 0.5)).toFixed(1)}>
                     {SAX_CFG.keyChars[i]}
                   </text>

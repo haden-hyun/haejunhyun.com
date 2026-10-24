@@ -184,12 +184,12 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
     fill: var(--tb);
   }
   .k {
-    font: 500 11px Inter, var(--bodyFont);
+    font: 500 8px Inter, var(--bodyFont);
     fill: var(--t1);
   }
   .k.is-music {
     font-family: "Noto Music", sans-serif;
-    font-size: 12px;
+    font-size: 9px;
   }
   .kr {
     fill: none;
