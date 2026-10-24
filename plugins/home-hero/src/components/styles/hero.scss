@@ -1,32 +1,26 @@
-// 홈 히어로 — 텍스트 | 노트 선반 | 색소폰 3열(좁으면 2줄, 모바일은 색소폰 → 텍스트 → 선반), 노트 카드, 첫 진입 연출.
+// 홈 히어로 — 텍스트 | 2단 노트 선반 2열(900px 미만은 적층), 책등 hover 칩, 노트 카드.
 // 주의: 색은 테마 변수만 참조한다. 단일 소스는 quartz.config.yaml.
+// 주의: 책등 종이색은 두 테마 모두 밝아야 한다 — 다크에선 --dark/--light를 맞바꿔 쓴다.
 
 $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 
 .home-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(440px, 38%, 600px) auto;
-  grid-template-areas: "text shelf sax";
+  grid-template-columns: minmax(0, 1fr) clamp(400px, 50%, 600px);
+  grid-template-areas: "text shelf";
   align-items: end;
-  gap: 24px 40px;
-  padding: 56px 0 88px;
+  gap: 28px 56px;
+  padding: 40px 0 56px;
 
-  @media all and (max-width: 1279px) {
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas: "text text" "shelf sax";
-  }
-
-  @media all and (max-width: 800px) {
+  @media all and (max-width: 899px) {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "sax" "text" "shelf";
-    gap: 18px;
-    padding: 12px 0 56px;
+    grid-template-areas: "text" "shelf";
+    padding: 12px 0 40px;
   }
 }
 
 .hero-text {
   grid-area: text;
-  align-self: center;
   min-width: 0;
 }
 
@@ -132,341 +126,161 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   text-align: right;
 }
 
-// 노트 선반 — 노트 1편 = 등 1개. 배치는 스크립트(.is-laid 후 절대 배치), JS가 없으면 줄바꿈 목록.
-.hero-shelf-wrap {
-  grid-area: shelf;
-  min-width: 0;
-}
-
+// 노트 선반 — 2단 × 12권. 단마다 --dark 2px 바닥선 위에 서고, 박스는 두르지 않는다.
 .hero-shelf {
-  --sp-face: color-mix(in srgb, var(--gray) 9%, var(--light));
-  --sp-hi: color-mix(in srgb, var(--light) 60%, #fff);
-  --sp-lo: color-mix(in srgb, var(--gray) 48%, var(--light));
-  --sp-top: color-mix(in srgb, var(--gray) 22%, var(--light));
+  --paper: var(--light);
+  --ink: var(--dark);
+  --row-h: 120px;
+  --lift: 9px;
+  grid-area: shelf;
   position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1px;
-  align-items: flex-end;
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+  padding-top: var(--lift);
 
-  &:not(.is-laid) {
-    min-height: var(--shelf-h);
-  }
-
-  &.is-laid {
-    display: block;
+  @media all and (max-width: 700px) {
+    --row-h: 108px;
+    gap: 22px;
   }
 }
 
 :root[saved-theme="dark"] .hero-shelf {
-  --sp-hi: color-mix(in srgb, var(--gray) 32%, var(--light));
+  --paper: var(--dark);
+  --ink: var(--light);
+}
+
+.hero-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: var(--row-h);
+  border-bottom: 2px solid var(--dark);
+  box-shadow: 0 6px 6px -5px color-mix(in srgb, var(--dark) 22%, transparent);
+
+  @media all and (max-width: 700px) {
+    gap: 2px;
+  }
 }
 
 .hero-spine {
   position: relative;
-  display: block;
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
-  width: 7px;
-  height: 92px;
-  background: var(--sp-face);
-  border-left: 1px solid var(--sp-hi);
-  border-right: 1px solid var(--sp-lo);
+  min-width: 0;
+  max-width: 44px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, var(--paper));
+  border-bottom: 0;
+  border-radius: 2px 2px 0 0;
+  box-shadow: inset -3px 0 3px -2px color-mix(in srgb, var(--ink) 16%, transparent);
   text-decoration: none;
-  transition: transform var(--dur-fast) $ease, background-color var(--dur-fast) $ease;
+  transition: transform var(--dur-fast) $ease;
 
-  .is-laid & {
-    position: absolute;
+  &.has-gap {
+    margin-left: 9px;
+
+    @media all and (max-width: 700px) {
+      margin-left: 5px;
+    }
   }
 
-  // 윗면 두께
-  &::before {
+  // 들린 책등 아래 빈자리까지 hover로 잡아 가장자리 떨림을 막는다
+  &::after {
     content: "";
     position: absolute;
     left: 0;
-    right: -1px;
-    top: -3px;
-    height: 3px;
-    background: var(--sp-top);
-    transform: skewX(-45deg);
-    transform-origin: bottom left;
+    right: 0;
+    top: 100%;
+    height: var(--lift);
   }
 
   &.is-new {
-    background: color-mix(in srgb, var(--secondary) 12%, var(--light));
-    border-right-color: var(--secondary);
-    transform: translateY(-8px);
-
-    &::before {
-      background: color-mix(in srgb, var(--secondary) 35%, var(--light));
-    }
-
-    .hero-spine-band {
-      border-color: var(--secondary);
-    }
+    background: var(--secondary);
+    color: var(--light);
+    border-color: var(--tertiary);
+    box-shadow: inset -3px 0 3px -2px color-mix(in srgb, var(--light) 28%, transparent);
   }
 
+  // 주의: 전역 a:hover가 글자를 링크색으로 바꾸므로 고정한다(종이 위 secondary는 AA 미달)
   &:hover,
-  &.is-hot,
   &:focus-visible {
-    background: color-mix(in srgb, var(--secondary) 16%, var(--light));
-    border-right-color: var(--secondary);
-    transform: translateY(-14px);
-    outline: none;
+    color: var(--ink);
   }
 
-  &:focus-visible {
-    box-shadow: 0 0 0 2px var(--light), 0 0 0 3.5px var(--secondary);
+  &.is-new:hover,
+  &.is-new:focus-visible {
+    color: var(--light);
   }
-}
-
-.hero-spine-no {
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  writing-mode: vertical-rl;
-  font: 700 6.5px/1 var(--codeFont);
-  letter-spacing: 0.04em;
-  color: var(--gray);
-  pointer-events: none;
-}
-
-.hero-spine-band {
-  position: absolute;
-  left: 1px;
-  right: 1px;
-  top: 22%;
-  height: 3px;
-  border-top: 1px solid var(--sp-lo);
-  border-bottom: 1px solid var(--sp-lo);
-  pointer-events: none;
-}
-
-.hero-spine-foot {
-  position: absolute;
-  left: 50%;
-  bottom: 5px;
-  width: 3px;
-  height: 3px;
-  margin-left: -1.5px;
-  border-radius: 50%;
-  background: var(--sp-lo);
-  pointer-events: none;
-}
-
-.hero-divider {
-  position: absolute;
-  box-sizing: border-box;
-  background: var(--light);
-  border: 1px solid var(--sp-lo);
-  border-bottom: 0;
-}
-
-.hero-tab {
-  position: absolute;
-  z-index: 2;
-  height: 14px;
-  padding: 0 4px 0 5px;
-  font: 700 9px/13px var(--codeFont);
-  letter-spacing: 0.04em;
-  color: var(--darkgray);
-  white-space: nowrap;
-  background: var(--light);
-  border: 1px solid var(--sp-lo);
-  border-left: 0;
-  border-radius: 0 3px 3px 0;
-  pointer-events: none;
-
-  &.is-cont {
-    border-style: dashed;
-    border-left: 0;
-  }
-
-  &.is-arc {
-    color: var(--secondary);
-    border-color: var(--secondary);
-  }
-}
-
-.hero-cap {
-  position: absolute;
-  z-index: 1;
-  height: 3px;
-  border-radius: 1px;
-  background: var(--sp-lo);
-  pointer-events: none;
-}
-
-.hero-board,
-.hero-front {
-  position: absolute;
-  left: 0;
-  right: 0;
-  pointer-events: none;
-}
-
-.hero-board {
-  height: 1px;
-  background: var(--gray);
-  opacity: 0.55;
-
-  &.is-lower {
-    opacity: 0.28;
-  }
-}
-
-.hero-front {
-  height: 3px;
-  background: color-mix(in srgb, var(--gray) 14%, var(--light));
-}
-
-// 음표로 그린 색소폰 — 정지 자세 SVG를 먼저 보이고, 캔버스가 그려지면(.is-live) 갈아 끼운다.
-// 주의: 명암 3단(--t0~--t2)은 모두 배경 대비 4.5 이상이어야 한다.
-.hero-sax {
-  --t0: var(--dark);
-  --t1: var(--secondary);
-  --t2: color-mix(in srgb, var(--secondary) 90%, var(--light));
-  --tb: var(--dark);
-  grid-area: sax;
-  position: relative;
-  justify-self: end;
-  width: var(--sax-w);
-  height: var(--box-h);
-  touch-action: pan-y;
-
-  @media all and (max-width: 800px) {
-    justify-self: center;
-    width: calc(260px * var(--sax-ar));
-    height: 260px;
-  }
-}
-
-:root[saved-theme="dark"] .hero-sax {
-  --t0: color-mix(in srgb, var(--secondary) 70%, var(--light));
-  --t2: var(--dark);
-}
-
-// 글자 위 여백만큼 올려 칠해진 윗끝 = 첫 칸막이 탭 윗끝, 아래끝 = 선반 바닥 괘선
-.hero-sax-pre,
-.hero-sax-cv,
-.hero-keys {
-  position: absolute;
-  left: 0;
-  top: calc(-1 * var(--g-top));
-  width: 100%;
-  height: auto;
-  aspect-ratio: var(--sax-ar);
-
-  @media all and (max-width: 800px) {
-    top: 0;
-  }
-}
-
-.hero-sax-pre {
-  overflow: visible;
-  font-family: "Noto Music", sans-serif;
-  font-size: 7.5px;
-  text-anchor: middle;
-  dominant-baseline: central;
-
-  .t0 {
-    fill: var(--t0);
-  }
-  .t1 {
-    fill: var(--t1);
-  }
-  .t2 {
-    fill: var(--t2);
-  }
-  .t3 {
-    fill: var(--tb);
-  }
-  .k {
-    font: 800 11.5px Inter, var(--bodyFont);
-    fill: var(--t1);
-  }
-  .k.is-music {
-    font-family: "Noto Music", sans-serif;
-    font-size: 12px;
-  }
-  .k.is-pressed {
-    fill: var(--tb);
-  }
-
-  .is-live & {
-    visibility: hidden;
-  }
-}
-
-.hero-sax-cv {
-  cursor: grab;
-  visibility: hidden;
-
-  .is-live & {
-    visibility: visible;
-  }
-
-  .is-dragging & {
-    cursor: grabbing;
-  }
-}
-
-.hero-keys {
-  pointer-events: none;
-}
-
-.hero-key {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  margin: -11px 0 0 -11px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  cursor: help;
-  pointer-events: auto;
 
   &:focus-visible {
     outline: 2px solid var(--secondary);
-    outline-offset: 1px;
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(calc(-1 * var(--lift)));
+    }
+  }
+
+  &:focus-visible {
+    transform: translateY(calc(-1 * var(--lift)));
+  }
+
+  @media all and (max-width: 700px) {
+    min-width: 24px;
   }
 }
 
-.hero-keytip {
-  position: absolute;
-  z-index: 3;
-  margin-top: calc(-1 * var(--g-top));
-  transform: translate(18px, -50%);
-  padding: 3px 8px;
-  font: 500 12px var(--bodyFont);
+.hero-spine-t {
+  max-height: calc(100% - 20px);
+  overflow: hidden;
+  writing-mode: vertical-rl;
+  font: 700 12px/1.2 var(--headerFont);
   white-space: nowrap;
-  color: var(--darkgray);
-  background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: 6px;
+  text-overflow: ellipsis;
   pointer-events: none;
 
-  b {
-    color: var(--dark);
+  @media all and (max-width: 700px) {
+    font-size: 11px;
   }
 }
 
-// 캔버스가 테마 색을 읽어 가는 견본(화면에 보이지 않음)
-.hero-tone {
-  display: none;
+// hover·포커스 칩 — topic-graph 툴팁과 같은 잉크 반전(§4.17). 위치는 스크립트가 잡는다.
+.hero-tip {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  top: 0;
+  width: max-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  font: 600 12px/1.4 var(--bodyFont);
+  color: var(--light);
+  background: var(--dark);
+  border-radius: 4px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) $ease, visibility var(--dur-fast) $ease;
 
-  &.t0 {
-    color: var(--t0);
+  &.is-on {
+    opacity: 1;
+    visibility: visible;
   }
-  &.t1 {
-    color: var(--t1);
-  }
-  &.t2 {
-    color: var(--t2);
-  }
-  &.tb {
-    color: var(--tb);
+
+  small {
+    display: block;
+    font: 400 10px var(--codeFont);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--light) 82%, var(--dark));
   }
 }
 
@@ -620,56 +434,9 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 
 @media (prefers-reduced-motion: reduce) {
   .hero-spine,
+  .hero-tip,
   .hero-card[open] {
     transition: none;
     animation: none;
-  }
-}
-
-// 첫 진입 연출 — 세션당 1회(data-hero-swept), 모션 감소 설정이면 생략.
-@media (prefers-reduced-motion: no-preference) {
-  :root:not([data-hero-swept]) {
-    .hero-headline {
-      background-image: linear-gradient(90deg, currentColor 0 50%, transparent 50% 100%);
-      background-size: 200% 100%;
-      background-position: 100% 0;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: hero-sweep 1.4s $ease 0.15s forwards;
-    }
-
-    .hero-rise {
-      animation: hero-rise var(--dur-slow, 900ms) $ease both;
-    }
-
-    .hero-rise-1 {
-      animation-delay: 0.12s;
-    }
-
-    .hero-rise-2 {
-      animation-delay: 0.24s;
-    }
-
-    .hero-rise-3 {
-      animation-delay: 0.36s;
-    }
-  }
-}
-
-@keyframes hero-sweep {
-  to {
-    background-position: 0 0;
-  }
-}
-
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
   }
 }
