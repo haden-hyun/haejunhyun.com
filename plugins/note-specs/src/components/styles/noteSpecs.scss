@@ -52,4 +52,24 @@
       }
     }
   }
+
+  // 행 자리는 SSR로 잡아 두고 응답이 오면 페이드인 — 좌측 island가 밀리지 않는다. 주의: 값 숫자는 --dark(AA)
+  .note-specs-readers {
+    visibility: hidden;
+    opacity: 0;
+
+    &[hidden] {
+      display: none;
+    }
+
+    &.ready {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 0.2s;
+    }
+
+    dd {
+      font-variant-numeric: tabular-nums;
+    }
+  }
 }

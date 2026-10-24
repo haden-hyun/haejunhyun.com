@@ -1,7 +1,7 @@
 /**
  * GoatCounter 통계 프록시 (Cloudflare Pages Function → /api/stats)
  * - 토큰은 Pages Secret(GOATCOUNTER_TOKEN)에만 두고 브라우저에는 집계값만 내려준다
- * - 응답: { today(KST), total, views{경로:방문자}, top[{path,title,count}](최근 30일), updated }
+ * - 응답: { today(KST), total, views{경로:방문자}, top[{path,count}](최근 30일, 많이 읽힌 순), updated }
  * - 10분 엣지 캐시로 GoatCounter 요청 제한(초당 4회)을 피한다
  */
 
@@ -20,11 +20,21 @@ const EPOCH = "2020-01-01T00:00:00Z"
 const TTL = 600
 const KST_MS = 9 * 3600e3
 const HITS_PAGES = 3
-const TOP_LIMIT = 30
+const TOP_LIMIT = "100"
 
 type Hit = { path_id: number; path: string; title: string; count: number }
 type HitsRes = { hits: Hit[]; more: boolean }
 type TotalRes = { total: number; stats: { day: string; daily: number }[] }
+
+// 경로 정규화: 쿼리·해시·끝 슬래시를 떼고 퍼센트 인코딩을 푼다
+const normPath = (p: string) => {
+  const base = p.split(/[?#]/)[0].replace(/\/+$/, "") || "/"
+  try {
+    return decodeURIComponent(base)
+  } catch {
+    return base
+  }
+}
 
 const hourIso = (ms: number) => new Date(Math.ceil(ms / 3600e3) * 3600e3).toISOString().replace(/\.\d+Z$/, "Z")
 
@@ -57,16 +67,24 @@ async function collect(token: string) {
   const all = await gc<TotalRes>(token, "/stats/total", { start: EPOCH, end })
   const recent = await gc<TotalRes>(token, "/stats/total", { start: hourIso(now - 2 * 864e5), end })
   const hits = await allHits(token, EPOCH, end, HITS_PAGES)
-  const month = await gc<HitsRes>(token, "/stats/hits", { start: hourIso(now - 30 * 864e5), end, limit: String(TOP_LIMIT) })
+  const month = await gc<HitsRes>(token, "/stats/hits", { start: hourIso(now - 30 * 864e5), end, limit: TOP_LIMIT })
 
   const views: Record<string, number> = {}
-  for (const h of hits) views[h.path] = h.count
+  for (const h of hits) {
+    const k = normPath(h.path)
+    views[k] = (views[k] ?? 0) + h.count
+  }
+  const recentCount = new Map<string, number>()
+  for (const h of month.hits) {
+    const k = normPath(h.path)
+    recentCount.set(k, (recentCount.get(k) ?? 0) + h.count)
+  }
 
   return {
     today: recent.stats.find((s) => s.day === kstToday)?.daily ?? 0,
     total: all.total,
     views,
-    top: month.hits.map((h) => ({ path: h.path, title: h.title, count: h.count })),
+    top: [...recentCount].map(([path, count]) => ({ path, count })).sort((a, b) => b.count - a.count),
     updated: new Date(now).toISOString(),
   }
 }

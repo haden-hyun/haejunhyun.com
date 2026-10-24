@@ -82,7 +82,10 @@ function topicName(slug) {
 }
 
 // src/components/styles/archiveContent.scss
-var archiveContent_default = ".archive-page-sub {\n  font-family: var(--codeFont);\n  font-size: 0.8rem;\n  color: var(--text-3);\n  margin: 0 0 1.8rem;\n}\n\n.archive-page-year {\n  margin-bottom: 1.6rem;\n}\n.archive-page-year h2 {\n  margin: 0 0 0.6rem;\n  padding: 0;\n  border: none;\n  font-family: var(--codeFont);\n  font-size: 0.95rem;\n  font-weight: 700;\n  color: var(--text-3);\n}\n\n.archive-page-rows {\n  display: flex;\n  flex-direction: column;\n}\n\n.archive-page-row {\n  display: grid;\n  grid-template-columns: 6rem 1fr auto;\n  align-items: baseline;\n  gap: 14px;\n  padding: 0.6rem 0.3rem;\n  border-bottom: 1px solid var(--border) !important;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.archive-page-row:nth-child(even) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n.archive-page-row:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n.archive-page-row:hover .archive-page-title {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n@media all and (max-width: 600px) {\n  .archive-page-row {\n    grid-template-columns: 6rem 1fr;\n  }\n  .archive-page-row .archive-page-cat {\n    display: none;\n  }\n}\n\n.archive-page-date {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  font-variant-numeric: tabular-nums;\n  color: var(--text-3);\n}\n\n.archive-page-title {\n  font-family: var(--headerFont);\n  font-size: 0.92rem;\n  font-weight: 620;\n  color: var(--text);\n  line-height: 1.4;\n  word-break: keep-all;\n}\n\n.archive-page-rev {\n  margin-left: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.7rem;\n  font-weight: 400;\n  color: var(--text-3);\n  white-space: nowrap;\n}\n\n.archive-page-cat {\n  font-family: var(--codeFont);\n  font-size: 0.7rem;\n  color: var(--text-3);\n  white-space: nowrap;\n}";
+var archiveContent_default = ".archive-page-sub {\n  font-family: var(--codeFont);\n  font-size: 0.8rem;\n  color: var(--text-3);\n  margin: 0 0 1.8rem;\n}\n\n.archive-page-year {\n  margin-bottom: 1.6rem;\n}\n.archive-page-year h2 {\n  margin: 0 0 0.6rem;\n  padding: 0;\n  border: none;\n  font-family: var(--codeFont);\n  font-size: 0.95rem;\n  font-weight: 700;\n  color: var(--text-3);\n}\n\n.archive-page-popular[hidden] {\n  display: none;\n}\n\n.archive-page-h2-sub {\n  margin-left: 0.5rem;\n  font-size: 0.72rem;\n  font-weight: 400;\n}\n\n.archive-page-rank {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  font-variant-numeric: tabular-nums;\n  color: var(--text-3);\n}\n\n.archive-page-count {\n  font-variant-numeric: tabular-nums;\n}\n\n.archive-page-rows {\n  display: flex;\n  flex-direction: column;\n}\n\n.archive-page-row {\n  display: grid;\n  grid-template-columns: 6rem 1fr auto;\n  align-items: baseline;\n  gap: 14px;\n  padding: 0.6rem 0.3rem;\n  border-bottom: 1px solid var(--border) !important;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.archive-page-row:nth-child(even) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n.archive-page-row:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n.archive-page-row:hover .archive-page-title {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n@media all and (max-width: 600px) {\n  .archive-page-row {\n    grid-template-columns: 6rem 1fr;\n  }\n  .archive-page-row.archive-page-pop-row {\n    grid-template-columns: 1.6rem 1fr auto;\n  }\n  .archive-page-row.archive-page-pop-row .archive-page-cat {\n    display: inline;\n  }\n  .archive-page-row .archive-page-cat {\n    display: none;\n  }\n}\n\n.archive-page-date {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  font-variant-numeric: tabular-nums;\n  color: var(--text-3);\n}\n\n.archive-page-title {\n  font-family: var(--headerFont);\n  font-size: 0.92rem;\n  font-weight: 620;\n  color: var(--text);\n  line-height: 1.4;\n  word-break: keep-all;\n}\n\n.archive-page-rev {\n  margin-left: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.7rem;\n  font-weight: 400;\n  color: var(--text-3);\n  white-space: nowrap;\n}\n\n.archive-page-cat {\n  font-family: var(--codeFont);\n  font-size: 0.7rem;\n  color: var(--text-3);\n  white-space: nowrap;\n}";
+
+// src/components/scripts/popular.inline.ts
+var popular_inline_default = 'function m(a,s,i){let t=document.createElement("a");t.className="archive-page-row archive-page-pop-row",t.href=s.h;let r=document.createElement("span");r.className="archive-page-rank",r.textContent=String(a).padStart(2,"0");let o=document.createElement("span");o.className="archive-page-title",o.textContent=s.t;let c=document.createElement("span");return c.className="archive-page-cat archive-page-count",c.textContent=`\\uC77D\\uC740 \\uC0AC\\uB78C ${i.toLocaleString("ko-KR")}\\uBA85`,t.append(r,o,c),t}async function g(){let a=document.querySelector(".archive-page-popular"),s=a?.querySelector(".archive-page-rows");if(!a||!s)return;let i;try{i=JSON.parse(a.dataset.notes??"{}")}catch{return}let t=new AbortController;window.addCleanup(()=>t.abort());try{let r=await fetch("/api/stats",{signal:t.signal});if(!r.ok)return;let o=await r.json();if(t.signal.aborted||!Array.isArray(o.top))return;let c=new Set,u=[];for(let{path:e,count:n}of o.top){if(typeof e!="string"||typeof n!="number"||!(n>0))continue;let p=e.replace(/^\\/+|\\/+$/g,""),d=Object.prototype.hasOwnProperty.call(i,p)?i[p]:void 0;!d||c.has(p)||(c.add(p),u.push({meta:d,count:n}))}u.sort((e,n)=>n.count-e.count);let l=u.slice(0,5);if(!l.length)return;s.replaceChildren(...l.map((e,n)=>m(n+1,e.meta,e.count))),a.hidden=!1}catch{}}document.addEventListener("nav",g);\n';
 var l;
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
@@ -121,6 +124,14 @@ var ArchiveContent_default = (() => {
       byYear.set(year, list);
     }
     const years = [...byYear.keys()].sort((a2, b2) => b2 - a2);
+    const notes = {};
+    for (const { f: f3 } of entries) {
+      const slug = f3.slug;
+      notes[slug] = {
+        t: f3.frontmatter?.title ?? "Untitled",
+        h: resolveRelative(currentSlug, slug)
+      };
+    }
     return (
       // 주의: <h1>은 article-title이 렌더한다 — 여기서 중복 렌더 금지.
       /* @__PURE__ */ u2("article", { class: `${displayClass ?? ""} archive-page-content popover-hint`, children: [
@@ -129,6 +140,13 @@ var ArchiveContent_default = (() => {
           " notes \xB7 ",
           years.length,
           " years"
+        ] }),
+        /* @__PURE__ */ u2("section", { class: "archive-page-year archive-page-popular", "data-notes": JSON.stringify(notes), hidden: true, children: [
+          /* @__PURE__ */ u2("h2", { children: [
+            "\uC778\uAE30 \uAE00 ",
+            /* @__PURE__ */ u2("span", { class: "archive-page-h2-sub", children: "\uCD5C\uADFC 30\uC77C" })
+          ] }),
+          /* @__PURE__ */ u2("div", { class: "archive-page-rows" })
         ] }),
         years.map((year) => /* @__PURE__ */ u2("section", { class: "archive-page-year", children: [
           /* @__PURE__ */ u2("h2", { children: year }),
@@ -150,6 +168,7 @@ var ArchiveContent_default = (() => {
     );
   };
   ArchiveContent.css = archiveContent_default;
+  ArchiveContent.afterDOMLoaded = popular_inline_default;
   return ArchiveContent;
 });
 

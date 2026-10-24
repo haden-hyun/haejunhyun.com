@@ -7,6 +7,7 @@ interface NoteSpecsOptions {
         revised: string;
         updated: string;
         runtime: string;
+        readers: string;
         topic: string;
     };
 }

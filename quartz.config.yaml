@@ -600,11 +600,6 @@ plugins:
     layout:
       position: afterBody
       priority: 20
-  - source: ./plugins/visitor-counter
-    # 미사용 — 방문 수 표시는 home-hero 메타 줄로 옮겼다. 주의: 이 플러그인은 API 토큰을 클라이언트에 노출한다.
-    enabled: false
-    options: {}
-    order: 15
   - source: ./plugins/goatcounter-tracking
     enabled: true
     options:

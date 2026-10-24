@@ -89,7 +89,7 @@ function getNoteDates(file) {
 }
 
 // src/components/styles/noteSpecs.scss
-var noteSpecs_default = ".note-specs {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-specs .note-specs-list {\n  margin: 0.5rem 0 0;\n  padding: 0.6rem 0;\n  border-block: 1px solid var(--lightgray);\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n}\n.note-specs .note-specs-row {\n  display: grid;\n  grid-template-columns: 4.6rem 1fr;\n  gap: 0.4rem;\n  align-items: baseline;\n}\n.note-specs dt {\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-specs dd {\n  margin: 0;\n  font-size: 0.8rem;\n  color: var(--dark);\n  min-width: 0;\n  overflow-wrap: anywhere;\n}\n.note-specs .note-specs-date {\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  font-variant-numeric: tabular-nums;\n}\n.note-specs .note-specs-tags {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.3rem;\n}\n.note-specs .note-specs-tags a {\n  color: var(--secondary);\n}\n.note-specs .note-specs-tags a:hover {\n  color: var(--tertiary);\n}";
+var noteSpecs_default = ".note-specs {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-specs .note-specs-list {\n  margin: 0.5rem 0 0;\n  padding: 0.6rem 0;\n  border-block: 1px solid var(--lightgray);\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n}\n.note-specs .note-specs-row {\n  display: grid;\n  grid-template-columns: 4.6rem 1fr;\n  gap: 0.4rem;\n  align-items: baseline;\n}\n.note-specs dt {\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-specs dd {\n  margin: 0;\n  font-size: 0.8rem;\n  color: var(--dark);\n  min-width: 0;\n  overflow-wrap: anywhere;\n}\n.note-specs .note-specs-date {\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  font-variant-numeric: tabular-nums;\n}\n.note-specs .note-specs-tags {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.3rem;\n}\n.note-specs .note-specs-tags a {\n  color: var(--secondary);\n}\n.note-specs .note-specs-tags a:hover {\n  color: var(--tertiary);\n}\n.note-specs .note-specs-readers {\n  visibility: hidden;\n  opacity: 0;\n}\n.note-specs .note-specs-readers[hidden] {\n  display: none;\n}\n.note-specs .note-specs-readers.ready {\n  visibility: visible;\n  opacity: 1;\n  transition: opacity 0.2s;\n}\n.note-specs .note-specs-readers dd {\n  font-variant-numeric: tabular-nums;\n}";
 
 // ../_shared/topics.ts
 var TOPICS = [
@@ -112,6 +112,9 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
+
+// src/components/scripts/specsReaders.inline.ts
+var specsReaders_inline_default = 'var s;function a(){return s??(s=fetch("/api/stats").then(e=>e.ok?e.json():null).then(e=>e&&typeof e.views=="object"&&e.views?e.views:null).catch(()=>null)),s}function i(){let e=location.pathname;try{e=decodeURIComponent(e)}catch{}return e.length>1?e.replace(/\\/+$/,""):"/"}document.addEventListener("nav",()=>{let e=document.querySelector(".note-specs-readers"),t=e?.querySelector(".note-specs-readers-count");if(!e||!t)return;let c=i(),n=!0;window.addCleanup(()=>{n=!1}),a().then(r=>{if(!n)return;if(!r){e.hidden=!0;return}let o=r[c];t.textContent=(Number.isFinite(o)?o:0).toLocaleString("en-US")+"\\uBA85",e.classList.add("ready")})});\n';
 var l;
 function S(n2) {
   return n2.children;
@@ -139,7 +142,7 @@ function u2(e2, t2, n2, o2, i2, u3) {
 // src/components/NoteSpecs.tsx
 var defaultOptions = {
   title: "SPECS",
-  labels: { created: "Created", revised: "Revised", updated: "Updated", runtime: "Read time", topic: "Topic" }
+  labels: { created: "Created", revised: "Revised", updated: "Updated", runtime: "Read time", readers: "Readers", topic: "Topic" }
 };
 var NoteSpecs_default = ((userOpts) => {
   const opts = {
@@ -175,6 +178,10 @@ var NoteSpecs_default = ((userOpts) => {
             " min"
           ] })
         ] }),
+        /* @__PURE__ */ u2("div", { class: "note-specs-row note-specs-readers", children: [
+          /* @__PURE__ */ u2("dt", { children: opts.labels.readers }),
+          /* @__PURE__ */ u2("dd", { class: "note-specs-readers-count", children: "\xA0" })
+        ] }),
         tags.length > 0 && /* @__PURE__ */ u2("div", { class: "note-specs-row", children: [
           /* @__PURE__ */ u2("dt", { children: opts.labels.topic }),
           /* @__PURE__ */ u2("dd", { class: "note-specs-tags", children: tags.map((tag) => /* @__PURE__ */ u2("a", { href: resolveRelative(slug, `tags/${tag}`), children: tag }, tag)) })
@@ -183,6 +190,7 @@ var NoteSpecs_default = ((userOpts) => {
     ] });
   };
   NoteSpecs.css = noteSpecs_default;
+  NoteSpecs.beforeDOMLoaded = specsReaders_inline_default;
   return NoteSpecs;
 });
 

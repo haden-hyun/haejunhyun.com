@@ -19,6 +19,28 @@
   }
 }
 
+// 인기 글 — hidden 속성이 display를 못 이기는 경우를 막는다.
+.archive-page-popular[hidden] {
+  display: none;
+}
+
+.archive-page-h2-sub {
+  margin-left: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+
+.archive-page-rank {
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+}
+
+.archive-page-count {
+  font-variant-numeric: tabular-nums;
+}
+
 .archive-page-rows {
   display: flex;
   flex-direction: column;
@@ -50,6 +72,15 @@
 
   @media all and (max-width: 600px) {
     grid-template-columns: 6rem 1fr;
+
+    // 인기 글 행은 순위 열을 좁히고 읽은 사람 수를 남긴다.
+    &.archive-page-pop-row {
+      grid-template-columns: 1.6rem 1fr auto;
+
+      .archive-page-cat {
+        display: inline;
+      }
+    }
 
     .archive-page-cat {
       display: none;

@@ -7,15 +7,17 @@ import { resolveRelative } from "../../../_shared/path"
 import { formatYmd, getNoteDates, readingMinutes } from "../../../_shared/noteMeta"
 import style from "./styles/noteSpecs.scss"
 import { isRealNote } from "../../../_shared/notes"
+// @ts-expect-error - Inline script loaded as text by esbuild plugin
+import readersScript from "./scripts/specsReaders.inline.ts"
 
 export interface NoteSpecsOptions {
   title: string
-  labels: { created: string; revised: string; updated: string; runtime: string; topic: string }
+  labels: { created: string; revised: string; updated: string; runtime: string; readers: string; topic: string }
 }
 
 const defaultOptions: NoteSpecsOptions = {
   title: "SPECS",
-  labels: { created: "Created", revised: "Revised", updated: "Updated", runtime: "Read time", topic: "Topic" },
+  labels: { created: "Created", revised: "Revised", updated: "Updated", runtime: "Read time", readers: "Readers", topic: "Topic" },
 }
 
 /**
@@ -66,6 +68,10 @@ export default ((userOpts?: Partial<NoteSpecsOptions>) => {
               <dd>{minutes} min</dd>
             </div>
           )}
+          <div class="note-specs-row note-specs-readers">
+            <dt>{opts.labels.readers}</dt>
+            <dd class="note-specs-readers-count">&nbsp;</dd>
+          </div>
           {tags.length > 0 && (
             <div class="note-specs-row">
               <dt>{opts.labels.topic}</dt>
@@ -84,5 +90,6 @@ export default ((userOpts?: Partial<NoteSpecsOptions>) => {
   }
 
   NoteSpecs.css = style
+  NoteSpecs.beforeDOMLoaded = readersScript
   return NoteSpecs
 }) satisfies QuartzComponentConstructor<Partial<NoteSpecsOptions>>

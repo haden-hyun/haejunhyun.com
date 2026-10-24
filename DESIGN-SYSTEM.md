@@ -240,7 +240,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 - 히어로: H1 "Blue Notes."(Hahmlet 900, `clamp(2.5rem, 6vw, 3.75rem)`, 자간 −0.02em) → "Haejun Hyun"(Hahmlet 700 1.05rem, `--darkgray`) → 설명문 → 링크 칩 GitHub·LinkedIn → Mono 12px 메타 줄 `N notes · N topics · N visits · N today`.
   - 설명문은 `summary-description`의 `fallbackDescriptions.index`(홈 meta/og description)를 그대로 쓴다 — 문장이 한 곳에만 있다.
   - 링크 칩: accent 8% 배경(hover 16%) + Hahmlet 700 `--secondary`, 높이 40px(모바일 44px). RSS 링크 없음.
-  - 노트·토픽 수는 `allFiles` 런타임 집계, 방문은 GoatCounter 공개 카운터 `TOTAL.json`(토큰 없이 `start/end`로 오늘 수). 숫자 자리는 `min-width`로 폭 고정. 주의: 날짜는 UTC 자정·`end` 배타 — today는 KST 09시에 리셋된다.
+  - 노트·토픽 수는 `allFiles` 런타임 집계, 방문은 `/api/stats`(Pages Function, 토큰은 Pages Secret `GOATCOUNTER_TOKEN`)의 `total`·`today`(GoatCounter 사이트 시간대 Asia/Seoul 기준 하루). 숫자 자리는 `min-width`로 폭 고정. 실패하면 total만 공개 카운터 `TOTAL.json`으로 채우고 today는 `-`.
   - 그림 영역은 `텍스트 | 노트 선반 | 색소폰` 3열(1280px 이상), 텍스트 아래 `선반 | 색소폰` 2줄(801~1279px), `색소폰 → 텍스트 → 선반` 적층(800px 이하). 선반과 색소폰은 연결선 없이 위끝(첫 칸막이 탭 윗끝)·아래끝(바닥 괘선)을 맞춰 한 진열대로 읽힌다.
   - **노트 선반**: 노트 1편 = 등 1개(`allFiles` 집계, posted → created → slug 순, 카탈로그 번호 `HJ 4001~`). 등 두께 ∝ √본문 길이, 높이는 읽는 시간 3단, 최근 45일(클라이언트 날짜로 재판정)은 덜 꽂히고 `--secondary`. 토픽마다 칸막이 + 가로 탭(`PROG 39`), 단을 넘으면 점선 탭, 시리즈는 간격 0 박스 세트 + 덮개 선. 배치는 선형 분할 DP로 단 폭을 고르게 하고 단마다 ±12% 안에서 양쪽 맞춤, 배율 하한 0.62 아래면 오래된 글부터 `+N ARCHIVE`. 입체는 그림자·그라데이션 없이 헤어라인(밝은 왼쪽·어두운 오른쪽)·윗면 평행사변형·선반 앞면 띠와 `color-mix` 토큰색만.
   - **노트 카드**: 등을 누르면 바로 이동하지 않고 `<dialog>` 카드(800px 이하 바텀시트)에 번호·토픽·시리즈 편·제목·posted·작성일·읽는 시간·요약을 보인다. 이동은 **DIVE IN**(`--accent-action`, `spaNavigate`)만. 바깥 클릭·Esc로 닫히고 연 등으로 포커스 복귀. 선반은 Tab 정지점 하나(로빙 tabindex, ←/→).
@@ -253,6 +253,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 - Recent Notes: 5행, `날짜(Mono YYYY-MM-DD) | 제목 + 요약 1줄 | 토픽 표시명`. 정렬 키는 `getListDate`(§4.11), 개정이 더 최근이면 제목 뒤 `Revised` 라벨. 같은 날짜·같은 2단계 폴더 3편 이상은 한 줄로 묶는다(`Docker · 5 notes`, 링크는 그 폴더).
   - Featured의 Recent 제외 집합과 Recent 표는 **같은 함수**(`plugins/_shared/notes.ts`의 `buildRecentRows`)로 만든다.
 - Topics: 토픽명 + 1단 폴더 표시명 부제(런타임, §4.6) + 노트 수, 행 얼룩.
+- Archive: 연도 라벨(Mono 0.95rem 700 `--gray`) 아래 같은 레코드 행. 맨 위 `인기 글 · 최근 30일` 섹션은 `/api/stats`(Pages Function, GoatCounter 프록시)의 `top`을 클라이언트가 채운다 — 빌드 데이터의 노트 슬러그 맵(제목·링크, `isListedNote`)으로 걸러 홈·태그·폴더·옛 URL을 버리고 상위 5편만, 행은 `순위 01(Mono) │ 제목 │ 읽은 사람 N명`(GoatCounter는 방문자 수라 "조회" 아님). 색은 연도 라벨·메타와 같은 `--gray`뿐. 섹션은 `hidden`으로 구워 JS 없음·API 실패·매칭 0편이면 제목째 안 보이고 자리도 없다. 600px 이하에선 순위 열이 좁아지고 수는 유지. SPA `nav`마다 다시 채우고 `addCleanup`으로 fetch를 중단한다.
 - 기각: `Notes` 탭(최신 노트 1편 바로가기 — 목적지가 아니고, 노트 위에선 링크 없는 span이 모든 노트에서 켜졌다. 전체 목록은 Archive가 맡는다). Archive → Notes 개명도 기각(히어로 `+N ARCHIVE`·홈 `Archive →`와 라벨이 갈라진다).
 - 댓글(giscus)은 노트에만. topics·archive·폴더·태그 가상 페이지는 `byPageType`의 `exclude: comments`.
 - 푸터: `© 2026 Haejun Hyun` + Mono `BUILT WITH OBSIDIAN + QUARTZ`.

@@ -1,7 +1,7 @@
 // 홈 히어로 — 헤드라인·이름·설명·링크·메타 줄, 노트 선반(CATALOG), 음표로 그린 색소폰, 노트 카드.
 // - 홈(slug "index")에서만 렌더한다. `condition: is-index`는 내장에 없어 내부 slug 가드로 거른다
 // - 통계·선반·키 토픽은 전부 allFiles 런타임 집계(하드코딩 금지)
-// - 방문 수는 GoatCounter 공개 카운터(토큰 불필요). 사이트 설정의 visitor counter 허용이 꺼지면 "-"로 남는다
+// - 방문 수는 /api/stats(KST 기준). 실패하면 GoatCounter 공개 카운터로 total만 채우고 today는 "-"로 남긴다
 // - 색소폰 정지 자세를 빌드 시 SVG로 미리 굽고, 클라이언트(client.ts)가 캔버스로 이어받는다
 import type {
   QuartzComponent,
@@ -45,7 +45,7 @@ const SHELF_H = SAX_CFG.rows * SAX_CFG.ch - SAX_CFG.glyphTop - SAX_CFG.glyphBott
 // 헤드라인 sweep은 세션당 1회 — 첫 페인트 전에 판정해야 깜빡이지 않는다.
 const sweptScript = `try { if (sessionStorage.getItem("hero-swept")) document.documentElement.setAttribute("data-hero-swept", "") } catch {}`
 
-// 주의: fillHeroVisits의 GoatCounter start/end는 UTC 자정이고 end는 배타적이다 — start=end면 항상 0. KST 하루는 표현 불가
+// 주의: 공개 카운터 폴백은 UTC 일 단위라 KST today를 낼 수 없다 — 폴백에선 today를 채우지 않는다
 const heroScript = `
 const heroLib = {
   buildSax: (${buildSax.toString()}),
@@ -64,16 +64,20 @@ function fillHeroVisits() {
   const total = document.getElementById("hero-visits-total")
   const today = document.getElementById("hero-visits-today")
   if (!total && !today) return
-  const base = "https://${GOATCOUNTER_SITE}.goatcounter.com/counter/TOTAL.json"
-  const day = new Date().toISOString().slice(0, 10)
-  const next = new Date(Date.now() + 864e5).toISOString().slice(0, 10)
-  const get = (url, el) =>
-    fetch(url)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (d && el) el.textContent = d.count })
-      .catch(() => {})
-  get(base, total)
-  get(base + "?start=" + day + "&end=" + next, today)
+  const set = (el, n) => { if (el && Number.isFinite(n)) el.textContent = n }
+  fetch("/api/stats")
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((d) => {
+      if (!d || !Number.isFinite(d.total) || !Number.isFinite(d.today)) return Promise.reject()
+      set(total, d.total)
+      set(today, d.today)
+    })
+    .catch(() =>
+      fetch("https://${GOATCOUNTER_SITE}.goatcounter.com/counter/TOTAL.json")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => { if (d && total) total.textContent = d.count })
+        .catch(() => {}),
+    )
 }
 
 function markHeroSwept() {
