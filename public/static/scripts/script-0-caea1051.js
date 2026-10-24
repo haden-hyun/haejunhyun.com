@@ -369,7 +369,7 @@ const heroClient = (function heroClient(L2) {
       const tpc = topics[i2];
       if (!tpc) return;
       const hot = tpc.recent || S2.tipK === i2, ch = C2.keyChars[i2], music = i2 === 0, ring = C2.keyRing;
-      const r2 = (ring ? 8 : 7) + (hot ? 1 : 0);
+      const r2 = (ring ? 6 : 5.5) + (hot ? 1 : 0);
       ctx.globalCompositeOperation = "destination-out";
       ctx.beginPath();
       ctx.arc(p2[0], p2[1], r2 + 0.5, 0, Math.PI * 2);
@@ -383,7 +383,7 @@ const heroClient = (function heroClient(L2) {
         ctx.arc(p2[0], p2[1], r2, 0, Math.PI * 2);
         ctx.stroke();
       }
-      ctx.font = music ? (hot ? "14px" : "12px") + " " + L2.FONT : (hot ? "500 12.5px" : "500 11px") + " Inter, sans-serif";
+      ctx.font = music ? (hot ? "10px" : "9px") + " " + L2.FONT : (hot ? "500 9px" : "500 8px") + " Inter, sans-serif";
       ctx.fillText(ch, p2[0], p2[1] + (music ? 0 : 0.5));
       const b2 = keyBtns[i2];
       if (b2) {
