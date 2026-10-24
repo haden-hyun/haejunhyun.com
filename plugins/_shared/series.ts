@@ -51,9 +51,9 @@ export function getSeriesEntries(series: string, allFiles: SeriesFile[]): Series
     )
 }
 
-/** 편 번호 표기의 단일 구현 — 사이트의 모든 편 번호는 `N편`(실제 series_index, 분수·`N.` 없음). */
+/** 편 번호 표기의 단일 구현 — 사이트의 모든 편 번호는 `N편`(실제 series_index, 분수·`N.` 없음), 0편만 `서문`. */
 export function episodeLabel(index: number): string {
-  return `${index}편`
+  return index === 0 ? "서문" : `${index}편`
 }
 
 /** 파일의 편 번호 표기. 시리즈가 아니거나 번호가 없으면 undefined. */

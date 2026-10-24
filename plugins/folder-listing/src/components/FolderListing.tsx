@@ -2,8 +2,6 @@ import type { FullSlug, QuartzComponent, QuartzComponentProps } from "@quartz-co
 import { toJsxRuntime } from "hast-util-to-jsx-runtime"
 import type { Root } from "hast"
 import { Fragment, jsx, jsxs } from "preact/jsx-runtime"
-import { formatYmd, getListDate } from "../../../_shared/noteMeta"
-import { byListDateDesc } from "../../../_shared/notes"
 import { resolveRelative } from "../../../_shared/path"
 import { groupBySeries, seriesLabel, type SeriesGroup } from "../../../_shared/series"
 import type { FolderListingOptions } from "../pageType"
@@ -14,54 +12,10 @@ import {
   type PageEntry,
   type TrieNode,
 } from "../folderTree"
+import { byListDate, descOf, PageRow, type RowContext } from "./rows"
 import style from "./styles/folderListing.scss"
 
-interface RowContext {
-  slug: FullSlug
-  seriesTitles: Record<string, string>
-  /** 시리즈 키 → 로드맵이 있는 노트(series-roadmap이 남긴 data.seriesRoadmap). */
-  roadmaps: Map<string, PageEntry>
-}
-
 const sectionId = (path: string) => `folder-${path.replace(/\//g, "-")}`
-
-// 목록 날짜(posted → created) 최신순, 같은 날이면 제목순.
-const byListDate = (a: PageEntry, b: PageEntry): number =>
-  byListDateDesc(a, b) ||
-  String(a.frontmatter?.title ?? "").localeCompare(String(b.frontmatter?.title ?? ""), "ko", { numeric: true })
-
-const descOf = (page: PageEntry): string =>
-  typeof page.description === "string" ? page.description.trim() : ""
-
-function Ymd({ page, class: cls }: { page: PageEntry; class: string }) {
-  const date = getListDate(page)
-  return date ? (
-    <time class={cls} dateTime={formatYmd(date)}>
-      {formatYmd(date)}
-    </time>
-  ) : (
-    <span class={cls} />
-  )
-}
-
-/** 노트 행 = 행 전체가 링크 하나. track이면 메타 열에 `N편`, 날짜는 끝 열. */
-function PageRow({ page, ctx, track }: { page: PageEntry; ctx: RowContext; track?: boolean }) {
-  const desc = descOf(page)
-  return (
-    <li>
-      <a
-        class={track ? "fi-row is-track" : "fi-row"}
-        href={resolveRelative(ctx.slug, page.slug!)}
-        data-no-popover="true"
-      >
-        {track ? <span class="fi-no">{seriesLabel(page)}</span> : <Ymd page={page} class="fi-date" />}
-        <span class="fi-title">{page.frontmatter?.title}</span>
-        {track && <Ymd page={page} class="fi-date fi-end" />}
-        {desc && <span class="fi-desc">{desc}</span>}
-      </a>
-    </li>
-  )
-}
 
 /** 폴더 노트 — 그 폴더 페이지 본문이라 섹션 맨 위 소개 행으로 그 페이지를 가리킨다. */
 function IntroRow({ page, ctx }: { page: PageEntry; ctx: RowContext }) {

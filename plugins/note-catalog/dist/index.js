@@ -75,7 +75,7 @@ function seriesIndexOf(file) {
   return void 0;
 }
 function episodeLabel(index) {
-  return `${index}\uD3B8`;
+  return index === 0 ? "\uC11C\uBB38" : `${index}\uD3B8`;
 }
 function seriesLabel(file) {
   const index = seriesIndexOf(file);

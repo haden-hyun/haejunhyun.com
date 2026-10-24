@@ -1,0 +1,1 @@
+export { TagListingPage } from "./pageType"

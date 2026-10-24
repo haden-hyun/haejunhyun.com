@@ -729,6 +729,22 @@ ul.toc-content.overflow {
   overflow: visible;
 }
 
+// TOC만으로 우측 island를 넘는 노트는 현재 h2 절의 h3만 펼친다(topic-graph의 tocFold 스크립트가 `.toc-fold`·`.toc-folded`를 단다).
+// 접힌 h3는 화면에서만 숨겨 스크린리더엔 남기고, 키보드 포커스가 들어오면 전부 펼친다(넘치면 island가 스크롤).
+ul.toc-content.toc-fold:not(:has(a:focus-visible)) > li.toc-folded {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// 접기 모드에선 GRAPH를 계속 숨긴다 — 펼친 절이 바뀔 때마다 그래프가 나타났다 사라지지 않게.
+.sidebar.right:has(ul.toc-content.toc-fold) .topic-graph {
+  display: none;
+}
+
 // 업스트림 TOC 접기는 flex 높이를 줄여 숨기는데, 위에서 TOC를 내용 높이로 고정해 접기가 먹지 않는다 — 목록을 직접 숨긴다.
 ul.toc-content.collapsed {
   display: none;

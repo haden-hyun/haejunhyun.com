@@ -41,7 +41,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 로컬 플러그인은 `dist/`가 커밋 대상
 
-`plugins/*` 25종(`_shared` 제외). 각각 독립 npm 패키지다.
+`plugins/*` 26종(`_shared` 제외). 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
 `plugins/_shared/`는 플러그인이 아니라 공유 소스다(노트 판별 `isRealNote`·토픽 표시명·Recent 묶음·`noteMeta`·
@@ -52,6 +52,8 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 주의: 폴더 페이지는 `plugins/folder-listing`이 그린다(외부 `folder-page`는 꺼 두고 그 생성 로직만 의존성으로 재사용).
 둘을 함께 켜면 가상 폴더 페이지가 업스트림 본문으로 렌더돼 편 순서·배지가 사라진다.
 폴더 페이지는 하위 전체 색인이며, `generate`가 폴더 표시명을 공유 `ctx.trie`에 심어 **모든 페이지의 breadcrumb** 폴더명도 바뀐다.
+태그 페이지도 같은 방식이다 — `plugins/tag-listing`이 외부 `tag-page`의 생성 로직만 쓰고 행은 folder-listing의 `rows.tsx`·scss를 상대 경로로 가져온다.
+주의: 그래서 folder-listing 행·스타일을 고치면 `tag-listing`도 재빌드할 것.
 
 주의: 루트 `.gitignore`의 `.gitignore` 줄이 하위 `.gitignore`까지 무시해, 일부 플러그인의 `.gitignore`가
 추적되지 않는다(`series-roadmap`·`anim-widgets`의 `obsidian/dist` 무시 규칙 포함). 로컬에선 적용되지만 새 클론에선 없다.
@@ -77,6 +79,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 - ⌘G 전역 그래프는 업스트림 `graph` 플러그인 몫이다. 사이드바 로컬 그래프만 topic-graph 스크립트가 지우고 `custom.scss`가 숨긴다.
   주의: 업스트림 graph를 끄면 ⌘G가 사라진다. `.graph`에 `display: none`을 걸면 안의 전역 모달까지 죽는다.
 - 주의: `folderTitles`는 `folder-listing`과 `topic-graph` 옵션 두 곳에 중복이다.
+- 긴 TOC 접기(`tocFold.inline.ts` — TOC만으로 island를 넘으면 현재 h2 절의 h3만 펼침)도 이 플러그인 스크립트다.
 - 빌드 경고 `[topic-graph]`: 별칭 리다이렉트 슬러그가 노트 파일명과 겹친다. `markdownLinkResolution: shortest`가 노트 대신
   루트의 별칭 페이지를 골라 `[[파일명]]` 링크가 Backlinks에서 빠진다(2026-10-24 볼트 별칭 정리로 0건). 경고만 내고 빌드는 통과한다.
 - 모바일 Backlinks는 YAML이 아니라 `quartz.ts`가 content 페이지 afterBody(시리즈 페이저 뒤)에 `MobileOnly`로 하나 더 넣는다.

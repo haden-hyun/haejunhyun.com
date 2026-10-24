@@ -1,0 +1,61 @@
+{
+  "name": "@haejunhyun/tag-listing",
+  "version": "0.1.0",
+  "description": "Tag page type that keeps tag-page's virtual pages but lists notes as folder-listing record rows.",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "preact": {
+      "optional": false
+    }
+  },
+  "dependencies": {
+    "@quartz-community/tag-page": "github:quartz-community/tag-page#eabf3eec55c0bab7f49e69957341f34d2ae3c5a1",
+    "@quartz-community/types": "^0.3.0",
+    "hast-util-to-jsx-runtime": "^2.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "preact": "^10.28.2",
+    "sass": "^1.97.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "quartz": {
+    "name": "tag-listing",
+    "displayName": "Tag Listing",
+    "category": [
+      "pageType"
+    ],
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 50,
+    "defaultEnabled": true,
+    "defaultOptions": {}
+  }
+}

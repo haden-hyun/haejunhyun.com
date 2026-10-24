@@ -41,7 +41,7 @@ npx quartz build            # → public/
 | `quartz.config.yaml` | **설정의 중심** — 테마(색·서체)·플러그인·레이아웃 전부           |
 | `content/`           | 원고. vault 심볼릭 링크 (실제 파일 없음)                         |
 | `public/`            | 빌드 결과물. **커밋 대상**                                       |
-| `plugins/`           | 로컬 커스텀 플러그인 25종. 각각 독립 npm 패키지(`_shared`는 공유 소스) |
+| `plugins/`           | 로컬 커스텀 플러그인 26종. 각각 독립 npm 패키지(`_shared`는 공유 소스) |
 | `quartz/`            | 코어. `styles/custom.scss`·`styles/syntax.scss` 외 수정 금지     |
 | `quartz/static/`     | 빌드에 실려 나가는 정적 파일(아이콘·OG 이미지 등)                |
 | `scripts/`           | 배포 스크립트 3종                                                |

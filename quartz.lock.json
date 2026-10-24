@@ -312,6 +312,12 @@
       "commit": "c48324e2ba768e2a0a5c4c17cd0661b190d075c5",
       "installedAt": "2026-07-18T13:09:11.787Z"
     },
+    "tag-listing": {
+      "source": "./plugins/tag-listing",
+      "resolved": "/Users/haejun/Developer/haejunhyun.com/plugins/tag-listing",
+      "commit": "local",
+      "installedAt": "2026-10-24T04:30:00.000Z"
+    },
     "tag-page": {
       "source": "github:quartz-community/tag-page",
       "resolved": "https://github.com/quartz-community/tag-page.git",

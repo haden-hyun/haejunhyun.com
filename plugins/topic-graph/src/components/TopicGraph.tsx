@@ -13,6 +13,8 @@ import { layoutTopicGraph, VIEW_PORTRAIT, VIEW_SHORT, VIEW_TALL, VIEW_WIDE, type
 import style from "./styles/topicGraph.scss"
 // @ts-expect-error - inline script imported as string by esbuild loader
 import script from "./scripts/topicGraph.inline.ts"
+// @ts-expect-error - inline script imported as string by esbuild loader
+import tocFold from "./scripts/tocFold.inline.ts"
 
 type FileData = QuartzPluginData & Record<string, unknown>
 
@@ -245,6 +247,7 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
   }
 
   TopicGraph.css = style
-  TopicGraph.afterDOMLoaded = script
+  // 긴 TOC 접기도 우측 island 판정이라 여기 싣는다. 주의: 두 스크립트의 축약된 최상위 이름이 겹치므로 IIFE로 가둔다.
+  TopicGraph.afterDOMLoaded = script + ";\n(() => {\n" + tocFold + "\n})();"
   return TopicGraph
 }) satisfies QuartzComponentConstructor<Partial<TopicGraphOptions>>

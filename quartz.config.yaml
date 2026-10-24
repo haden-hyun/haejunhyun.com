@@ -244,8 +244,12 @@ plugins:
         obsidian-quartz-blog: "Obsidian과 Quartz로 블로그 만들기"
         statistics-basics: "통계학 기초"
         docker-basics: "Airflow를 위한 Docker 기초"
+  # ./plugins/tag-listing으로 대체됨. 주의: folder-page와 같은 이유로 둘을 함께 켜지 말 것.
   - source: github:quartz-community/tag-page
+    enabled: false
+  - source: ./plugins/tag-listing
     enabled: true
+    # 태그 페이지 = folder-listing 레코드 행(시리즈 묶음 없음), /tags = 태그 행 색인.
   - source: ./plugins/topics-page
     enabled: true
     # /topics 가상 페이지 = 주제 색인(토픽 섹션 · 시리즈 행 · 1단 폴더 행). 폴더명은 folder-listing이 심은 trie에서 읽는다.

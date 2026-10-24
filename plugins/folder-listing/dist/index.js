@@ -4888,6 +4888,39 @@ function u4(e2, t2, n3, o2, i2, u5) {
   return l2.vnode && l2.vnode(l3), l3;
 }
 
+// ../_shared/path.ts
+function endsWith2(s2, suffix) {
+  return s2 === suffix || s2.endsWith("/" + suffix);
+}
+function trimSuffix2(s2, suffix) {
+  return endsWith2(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
+}
+function stripSlashes2(s2, onlyStripPrefix) {
+  if (s2.startsWith("/")) s2 = s2.substring(1);
+  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
+  return s2;
+}
+function simplifySlug2(fp) {
+  const res = stripSlashes2(trimSuffix2(fp, "index"), true);
+  return res.length === 0 ? "/" : res;
+}
+function joinSegments2(...args) {
+  if (args.length === 0) return "";
+  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes2(segment)).join("/");
+  const first = args[0];
+  const last = args[args.length - 1];
+  if (first?.startsWith("/")) joined = "/" + joined;
+  if (last?.endsWith("/")) joined = joined + "/";
+  return joined;
+}
+function pathToRoot2(slug) {
+  const rootPath = slug.split("/").filter((x3) => x3 !== "").slice(0, -1).map(() => "..").join("/");
+  return rootPath.length === 0 ? "." : rootPath;
+}
+function resolveRelative2(current, target) {
+  return joinSegments2(pathToRoot2(current), simplifySlug2(target));
+}
+
 // ../_shared/noteMeta.ts
 function toDate(value) {
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? void 0 : value;
@@ -4943,39 +4976,6 @@ function folderTitle(path2, overrides = {}) {
 }
 var byListDateDesc = (a2, b2) => (getListDate(b2)?.getTime() ?? 0) - (getListDate(a2)?.getTime() ?? 0);
 
-// ../_shared/path.ts
-function endsWith2(s2, suffix) {
-  return s2 === suffix || s2.endsWith("/" + suffix);
-}
-function trimSuffix2(s2, suffix) {
-  return endsWith2(s2, suffix) ? s2.slice(0, -suffix.length) : s2;
-}
-function stripSlashes2(s2, onlyStripPrefix) {
-  if (s2.startsWith("/")) s2 = s2.substring(1);
-  if (!onlyStripPrefix && s2.endsWith("/")) s2 = s2.slice(0, -1);
-  return s2;
-}
-function simplifySlug2(fp) {
-  const res = stripSlashes2(trimSuffix2(fp, "index"), true);
-  return res.length === 0 ? "/" : res;
-}
-function joinSegments2(...args) {
-  if (args.length === 0) return "";
-  let joined = args.filter((segment) => segment !== "" && segment !== "/").map((segment) => stripSlashes2(segment)).join("/");
-  const first = args[0];
-  const last = args[args.length - 1];
-  if (first?.startsWith("/")) joined = "/" + joined;
-  if (last?.endsWith("/")) joined = joined + "/";
-  return joined;
-}
-function pathToRoot2(slug) {
-  const rootPath = slug.split("/").filter((x3) => x3 !== "").slice(0, -1).map(() => "..").join("/");
-  return rootPath.length === 0 ? "." : rootPath;
-}
-function resolveRelative2(current, target) {
-  return joinSegments2(pathToRoot2(current), simplifySlug2(target));
-}
-
 // ../_shared/series.ts
 function seriesOf(file) {
   const raw = file.frontmatter?.series;
@@ -4991,7 +4991,7 @@ function seriesIndexOf(file) {
   return void 0;
 }
 function episodeLabel(index3) {
-  return `${index3}\uD3B8`;
+  return index3 === 0 ? "\uC11C\uBB38" : `${index3}\uD3B8`;
 }
 function seriesLabel(file) {
   const index3 = seriesIndexOf(file);
@@ -5063,11 +5063,7 @@ function flattenSections(sections, prefix = "") {
   });
 }
 
-// src/components/styles/folderListing.scss
-var folderListing_default = ".folder-index {\n  container-type: inline-size;\n}\n.folder-index .folder-meta {\n  margin: 1.5rem 0 0;\n  font-size: 0.85rem;\n  line-height: 1.5;\n  color: var(--gray);\n}\n.folder-index ul.fi-rows {\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n.folder-index ul.fi-rows > li {\n  margin: 0;\n}\n.folder-index ul.fi-root {\n  margin-top: 1.75rem;\n  border-top: 1px solid var(--lightgray);\n}\n\n.folder-index .folder-section {\n  margin-top: 2.5rem;\n}\n\n.folder-index .folder-sub {\n  margin-top: 1.75rem;\n}\n\n.folder-index .fi-label {\n  display: flex;\n  align-items: baseline;\n  gap: 0.75rem;\n  padding-bottom: 10px;\n  border-bottom: 1px solid var(--lightgray);\n}\n.folder-index .fi-label h2,\n.folder-index .fi-label h3 {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-family: var(--headerFont);\n  font-weight: 700;\n  line-height: 1.3;\n  scroll-margin-top: 1.5rem;\n}\n.folder-index .fi-label h2 {\n  font-size: 1.15rem;\n  color: var(--secondary);\n}\n.folder-index .fi-label.is-sub {\n  gap: 0.6rem;\n  padding-bottom: 6px;\n}\n.folder-index .fi-label.is-sub h3 {\n  font-size: 0.95rem;\n  color: var(--darkgray);\n}\n.folder-index .fi-label.is-sub .fi-open {\n  font-size: 0.8rem;\n}\n\n.folder-index .fi-count {\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}\n\n.folder-index .fi-open,\n.folder-index .fi-acts a {\n  display: inline-flex;\n  align-items: center;\n  min-height: 2.75rem;\n  font-family: var(--headerFont);\n  font-weight: 600;\n  color: var(--secondary);\n  text-decoration: none;\n  white-space: nowrap;\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-index .fi-open:hover,\n  .folder-index .fi-acts a:hover {\n    color: var(--secondary);\n    text-decoration: underline;\n    text-underline-offset: 3px;\n  }\n}\n.folder-index .fi-open:focus-visible,\n.folder-index .fi-acts a:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n\n.folder-index .fi-open {\n  margin: -0.75rem 0 -0.75rem auto;\n  font-size: 0.85rem;\n}\n\n.folder-index .fi-row {\n  display: grid;\n  grid-template-columns: 6.25rem minmax(0, 1fr);\n  column-gap: 14px;\n  align-items: baseline;\n  box-sizing: border-box;\n  min-height: 44px;\n  padding: 0.6rem 0.4rem;\n  border-bottom: 1px solid var(--lightgray);\n  font-weight: 400;\n  color: var(--darkgray);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.folder-index .fi-row.is-track, .folder-index .fi-row.is-series {\n  grid-template-columns: 6.25rem minmax(0, 1fr) auto;\n}\n.folder-index .fi-row:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: -2px;\n}\n\n.folder-index li:nth-child(even) > .fi-row,\n.folder-index li:nth-child(even) > details > summary.fi-row {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n\n@media (hover: hover) and (pointer: fine) {\n  .folder-index li > .fi-row:hover,\n  .folder-index li > details > summary.fi-row:hover {\n    background: rgba(var(--accent-rgb), 0.1);\n    color: var(--darkgray);\n  }\n  .folder-index li > .fi-row:hover .fi-title,\n  .folder-index li > details > summary.fi-row:hover .fi-title {\n    text-decoration: underline;\n    text-underline-offset: 3px;\n  }\n}\n.folder-index li > .fi-row:active,\n.folder-index li > details > summary.fi-row:active {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n\n.folder-index .fi-date,\n.folder-index .fi-kind {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  font-weight: 400;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n  white-space: nowrap;\n}\n\n.folder-index .fi-end {\n  justify-self: end;\n}\n\n.folder-index .fi-no {\n  font-family: var(--bodyFont);\n  font-size: 0.8rem;\n  font-weight: 600;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--darkgray);\n  white-space: nowrap;\n}\n\n.folder-index .fi-title {\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 620;\n  line-height: 1.45;\n  color: var(--dark);\n  word-break: keep-all;\n}\n\n.folder-index .fi-desc {\n  grid-column: 2/-1;\n  margin-top: 0.15rem;\n  overflow: hidden;\n  font-size: 0.82rem;\n  line-height: 1.55;\n  color: var(--darkgray);\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.folder-index .fi-row.is-intro .fi-kind {\n  font-family: var(--bodyFont);\n  font-weight: 600;\n}\n.folder-index .fi-row.is-intro .fi-title {\n  font-weight: 700;\n}\n\n.folder-index .fi-series-head {\n  display: grid;\n  grid-template-columns: 6.25rem minmax(0, 1fr) auto;\n  column-gap: 14px;\n  align-items: baseline;\n  padding: 0.9rem 0.4rem 0.55rem;\n  border-bottom: 1px solid var(--border-strong);\n}\n.folder-index .fi-series-head .fi-acts a {\n  margin-block: -0.9rem;\n}\n\n.folder-index .fi-series-name {\n  font-family: var(--headerFont);\n  font-size: 1.02rem;\n  font-weight: 700;\n  line-height: 1.4;\n  color: var(--dark);\n  word-break: keep-all;\n}\n\n.folder-index .fi-acts {\n  display: flex;\n  gap: 0 1rem;\n  margin: 0;\n  font-size: 0.85rem;\n}\n\n.folder-index summary.fi-row {\n  cursor: pointer;\n  list-style: none;\n}\n.folder-index summary.fi-row::-webkit-details-marker {\n  display: none;\n}\n.folder-index summary.fi-row .fi-title {\n  font-weight: 700;\n}\n\n.folder-index .fi-chev {\n  align-self: center;\n  width: 0.45rem;\n  height: 0.45rem;\n  margin-right: 0.3rem;\n  border-right: 2px solid var(--gray);\n  border-bottom: 2px solid var(--gray);\n  transform: rotate(-45deg);\n  transition: transform var(--dur-base) var(--ease);\n}\n\n.folder-index details[open] > summary .fi-chev {\n  transform: rotate(45deg);\n}\n\n.folder-index .fi-fold-body {\n  margin-left: 6.25rem;\n  border-left: 1px solid var(--lightgray);\n}\n.folder-index .fi-fold-body .fi-row.is-track {\n  grid-template-columns: 3rem minmax(0, 1fr) auto;\n}\n.folder-index .fi-fold-body .fi-acts {\n  padding: 0.55rem 0.4rem;\n  border-bottom: 1px solid var(--lightgray);\n}\n.folder-index .fi-fold-body .fi-acts a {\n  margin-block: -0.6rem;\n}\n\n@container (max-width: 600px) {\n  .folder-index .fi-open-word {\n    display: none;\n  }\n  .folder-index .fi-row {\n    grid-template-columns: minmax(0, 1fr);\n    row-gap: 2px;\n    padding: 0.7rem 0.25rem;\n  }\n  .folder-index .fi-row .fi-desc {\n    grid-column: 1;\n  }\n  .folder-index .fi-row.is-track {\n    grid-template-columns: 2.75rem minmax(0, 1fr);\n  }\n  .folder-index .fi-row.is-track .fi-end {\n    display: none;\n  }\n  .folder-index .fi-row.is-track .fi-desc {\n    grid-column: 2;\n  }\n  .folder-index .fi-row.is-series {\n    grid-template-columns: minmax(0, 1fr) auto;\n  }\n  .folder-index .fi-row.is-series .fi-kind {\n    grid-column: 1/-1;\n  }\n  .folder-index .fi-row.is-series .fi-chev {\n    grid-row: 2;\n    grid-column: 2;\n  }\n  .folder-index .fi-series-head {\n    grid-template-columns: minmax(0, 1fr);\n    row-gap: 2px;\n  }\n  .folder-index .fi-series-head .fi-acts {\n    margin-top: 0.35rem;\n  }\n  .folder-index .fi-series-head .fi-acts a {\n    margin-block: -0.4rem;\n  }\n  .folder-index .fi-fold-body {\n    margin-left: 0.75rem;\n  }\n  .folder-index .fi-fold-body .fi-row.is-track {\n    grid-template-columns: 2.75rem minmax(0, 1fr);\n  }\n}\n.folder-jump ul {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem;\n  margin: 0.75rem 0 0;\n  padding: 0;\n  list-style: none;\n}\n.folder-jump ul a {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n  min-height: 2.25rem;\n  padding: 0 0.85rem;\n  border-radius: var(--radius-s);\n  background: rgba(var(--accent-rgb), 0.08);\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 700;\n  color: var(--secondary);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-jump ul a:hover {\n    background: rgba(var(--accent-rgb), 0.16);\n  }\n  .folder-jump ul a:hover .folder-jump-count {\n    color: var(--darkgray);\n  }\n}\n.folder-jump ul a:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n@media all and (max-width: 600px) {\n  .folder-jump ul a {\n    min-height: 2.75rem;\n  }\n}\n.folder-jump ul .folder-jump-count {\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}";
-
-// src/components/FolderListing.tsx
-var sectionId = (path2) => `folder-${path2.replace(/\//g, "-")}`;
+// src/components/rows.tsx
 var byListDate = (a2, b2) => byListDateDesc(a2, b2) || String(a2.frontmatter?.title ?? "").localeCompare(String(b2.frontmatter?.title ?? ""), "ko", { numeric: true });
 var descOf = (page) => typeof page.description === "string" ? page.description.trim() : "";
 function Ymd({ page, class: cls }) {
@@ -5091,6 +5087,12 @@ function PageRow({ page, ctx, track }) {
     }
   ) });
 }
+
+// src/components/styles/folderListing.scss
+var folderListing_default = ".folder-index {\n  container-type: inline-size;\n}\n.folder-index .folder-meta {\n  margin: 1.5rem 0 0;\n  font-size: 0.85rem;\n  line-height: 1.5;\n  color: var(--gray);\n}\n.folder-index ul.fi-rows {\n  margin: 0;\n  padding: 0;\n  list-style: none;\n}\n.folder-index ul.fi-rows > li {\n  margin: 0;\n}\n.folder-index ul.fi-root {\n  margin-top: 1.75rem;\n  border-top: 1px solid var(--lightgray);\n}\n\n.folder-index .folder-section {\n  margin-top: 2.5rem;\n}\n\n.folder-index .folder-sub {\n  margin-top: 1.75rem;\n}\n\n.folder-index .fi-label {\n  display: flex;\n  align-items: baseline;\n  gap: 0.75rem;\n  padding-bottom: 10px;\n  border-bottom: 1px solid var(--lightgray);\n}\n.folder-index .fi-label h2,\n.folder-index .fi-label h3 {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-family: var(--headerFont);\n  font-weight: 700;\n  line-height: 1.3;\n  scroll-margin-top: 1.5rem;\n}\n.folder-index .fi-label h2 {\n  font-size: 1.15rem;\n  color: var(--secondary);\n}\n.folder-index .fi-label.is-sub {\n  gap: 0.6rem;\n  padding-bottom: 6px;\n}\n.folder-index .fi-label.is-sub h3 {\n  font-size: 0.95rem;\n  color: var(--darkgray);\n}\n.folder-index .fi-label.is-sub .fi-open {\n  font-size: 0.8rem;\n}\n\n.folder-index .fi-count {\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}\n\n.folder-index .fi-open,\n.folder-index .fi-acts a {\n  display: inline-flex;\n  align-items: center;\n  min-height: 2.75rem;\n  font-family: var(--headerFont);\n  font-weight: 600;\n  color: var(--secondary);\n  text-decoration: none;\n  white-space: nowrap;\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-index .fi-open:hover,\n  .folder-index .fi-acts a:hover {\n    color: var(--secondary);\n    text-decoration: underline;\n    text-underline-offset: 3px;\n  }\n}\n.folder-index .fi-open:focus-visible,\n.folder-index .fi-acts a:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n\n.folder-index .fi-open {\n  margin: -0.75rem 0 -0.75rem auto;\n  font-size: 0.85rem;\n}\n\n.folder-index .fi-row {\n  display: grid;\n  grid-template-columns: 6.25rem minmax(0, 1fr);\n  column-gap: 14px;\n  align-items: baseline;\n  box-sizing: border-box;\n  min-height: 44px;\n  padding: 0.6rem 0.4rem;\n  border-bottom: 1px solid var(--lightgray);\n  font-weight: 400;\n  color: var(--darkgray);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.folder-index .fi-row.is-track, .folder-index .fi-row.is-series {\n  grid-template-columns: 6.25rem minmax(0, 1fr) auto;\n}\n.folder-index .fi-row:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: -2px;\n}\n\n.folder-index li:nth-child(even) > .fi-row,\n.folder-index li:nth-child(even) > details > summary.fi-row {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n\n@media (hover: hover) and (pointer: fine) {\n  .folder-index li > .fi-row:hover,\n  .folder-index li > details > summary.fi-row:hover {\n    background: rgba(var(--accent-rgb), 0.1);\n    color: var(--darkgray);\n  }\n  .folder-index li > .fi-row:hover .fi-title,\n  .folder-index li > details > summary.fi-row:hover .fi-title {\n    text-decoration: underline;\n    text-underline-offset: 3px;\n  }\n}\n.folder-index li > .fi-row:active,\n.folder-index li > details > summary.fi-row:active {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n\n.folder-index .fi-date,\n.folder-index .fi-kind {\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  font-weight: 400;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n  white-space: nowrap;\n}\n\n.folder-index .fi-end {\n  justify-self: end;\n}\n\n.folder-index .fi-no {\n  font-family: var(--bodyFont);\n  font-size: 0.8rem;\n  font-weight: 600;\n  line-height: 1.3;\n  font-variant-numeric: tabular-nums;\n  color: var(--darkgray);\n  white-space: nowrap;\n}\n\n.folder-index .fi-title {\n  font-family: var(--headerFont);\n  font-size: 0.95rem;\n  font-weight: 620;\n  line-height: 1.45;\n  color: var(--dark);\n  word-break: keep-all;\n}\n\n.folder-index .fi-desc {\n  grid-column: 2/-1;\n  margin-top: 0.15rem;\n  overflow: hidden;\n  font-size: 0.82rem;\n  line-height: 1.55;\n  color: var(--darkgray);\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.folder-index .fi-row.is-intro .fi-kind {\n  font-family: var(--bodyFont);\n  font-weight: 600;\n}\n.folder-index .fi-row.is-intro .fi-title {\n  font-weight: 700;\n}\n\n.folder-index .fi-series-head {\n  display: grid;\n  grid-template-columns: 6.25rem minmax(0, 1fr) auto;\n  column-gap: 14px;\n  align-items: baseline;\n  padding: 0.9rem 0.4rem 0.55rem;\n  border-bottom: 1px solid var(--border-strong);\n}\n.folder-index .fi-series-head .fi-acts a {\n  margin-block: -0.9rem;\n}\n\n.folder-index .fi-series-name {\n  font-family: var(--headerFont);\n  font-size: 1.02rem;\n  font-weight: 700;\n  line-height: 1.4;\n  color: var(--dark);\n  word-break: keep-all;\n}\n\n.folder-index .fi-acts {\n  display: flex;\n  gap: 0 1rem;\n  margin: 0;\n  font-size: 0.85rem;\n}\n\n.folder-index summary.fi-row {\n  cursor: pointer;\n  list-style: none;\n}\n.folder-index summary.fi-row::-webkit-details-marker {\n  display: none;\n}\n.folder-index summary.fi-row .fi-title {\n  font-weight: 700;\n}\n\n.folder-index .fi-chev {\n  align-self: center;\n  width: 0.45rem;\n  height: 0.45rem;\n  margin-right: 0.3rem;\n  border-right: 2px solid var(--gray);\n  border-bottom: 2px solid var(--gray);\n  transform: rotate(-45deg);\n  transition: transform var(--dur-base) var(--ease);\n}\n\n.folder-index details[open] > summary .fi-chev {\n  transform: rotate(45deg);\n}\n\n.folder-index .fi-fold-body {\n  margin-left: 6.25rem;\n  border-left: 1px solid var(--lightgray);\n}\n.folder-index .fi-fold-body .fi-row.is-track {\n  grid-template-columns: 3rem minmax(0, 1fr) auto;\n}\n.folder-index .fi-fold-body .fi-acts {\n  padding: 0.55rem 0.4rem;\n  border-bottom: 1px solid var(--lightgray);\n}\n.folder-index .fi-fold-body .fi-acts a {\n  margin-block: -0.6rem;\n}\n\n@container (max-width: 600px) {\n  .folder-index .fi-open-word {\n    display: none;\n  }\n  .folder-index .fi-row {\n    grid-template-columns: minmax(0, 1fr);\n    row-gap: 2px;\n    padding: 0.7rem 0.25rem;\n  }\n  .folder-index .fi-row .fi-desc {\n    grid-column: 1;\n  }\n  .folder-index .fi-row.is-track {\n    grid-template-columns: 2.75rem minmax(0, 1fr);\n  }\n  .folder-index .fi-row.is-track .fi-end {\n    display: none;\n  }\n  .folder-index .fi-row.is-track .fi-desc {\n    grid-column: 2;\n  }\n  .folder-index .fi-row.is-series {\n    grid-template-columns: minmax(0, 1fr) auto;\n  }\n  .folder-index .fi-row.is-series .fi-kind {\n    grid-column: 1/-1;\n  }\n  .folder-index .fi-row.is-series .fi-chev {\n    grid-row: 2;\n    grid-column: 2;\n  }\n  .folder-index .fi-series-head {\n    grid-template-columns: minmax(0, 1fr);\n    row-gap: 2px;\n  }\n  .folder-index .fi-series-head .fi-acts {\n    margin-top: 0.35rem;\n  }\n  .folder-index .fi-series-head .fi-acts a {\n    margin-block: -0.4rem;\n  }\n  .folder-index .fi-fold-body {\n    margin-left: 0.75rem;\n  }\n  .folder-index .fi-fold-body .fi-row.is-track {\n    grid-template-columns: 2.75rem minmax(0, 1fr);\n  }\n}\n.folder-jump ul {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.5rem;\n  margin: 0.75rem 0 0;\n  padding: 0;\n  list-style: none;\n}\n.folder-jump ul a {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n  min-height: 2.25rem;\n  padding: 0 0.85rem;\n  border-radius: var(--radius-s);\n  background: rgba(var(--accent-rgb), 0.08);\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 700;\n  color: var(--secondary);\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n@media (hover: hover) and (pointer: fine) {\n  .folder-jump ul a:hover {\n    background: rgba(var(--accent-rgb), 0.16);\n  }\n  .folder-jump ul a:hover .folder-jump-count {\n    color: var(--darkgray);\n  }\n}\n.folder-jump ul a:focus-visible {\n  outline: 2px solid var(--secondary);\n  outline-offset: 2px;\n}\n@media all and (max-width: 600px) {\n  .folder-jump ul a {\n    min-height: 2.75rem;\n  }\n}\n.folder-jump ul .folder-jump-count {\n  font-weight: 600;\n  font-variant-numeric: tabular-nums;\n  color: var(--gray);\n}";
+
+// src/components/FolderListing.tsx
+var sectionId = (path2) => `folder-${path2.replace(/\//g, "-")}`;
 function IntroRow({ page, ctx }) {
   const desc = descOf(page);
   return /* @__PURE__ */ u4("ul", { class: "fi-rows", children: /* @__PURE__ */ u4("li", { children: /* @__PURE__ */ u4("a", { class: "fi-row is-intro", href: resolveRelative2(ctx.slug, page.slug), "data-no-popover": "true", children: [

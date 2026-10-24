@@ -124,7 +124,7 @@ function getSeriesEntries(series, allFiles) {
   );
 }
 function episodeLabel(index) {
-  return `${index}\uD3B8`;
+  return index === 0 ? "\uC11C\uBB38" : `${index}\uD3B8`;
 }
 
 // ../_shared/topicIndex.ts
