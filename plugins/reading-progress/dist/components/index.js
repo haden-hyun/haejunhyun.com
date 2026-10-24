@@ -4,6 +4,18 @@ var readingProgress_default = "#reading-progress-bar {\n  position: fixed;\n  to
 // src/components/scripts/readingProgress.inline.ts
 var readingProgress_inline_default = 'document.addEventListener("nav",()=>{let t=document.getElementById("reading-progress-bar");if(!t)return;let e=0,r=()=>{e=0;let i=document.documentElement.scrollHeight-window.innerHeight,o=i>0?Math.min(window.scrollY/i,1):0;t.style.transform=`scaleX(${o})`},n=()=>{e||(e=requestAnimationFrame(r))};window.addEventListener("scroll",n,{passive:!0}),window.addEventListener("resize",n,{passive:!0}),window.addCleanup(()=>{window.removeEventListener("scroll",n),window.removeEventListener("resize",n),cancelAnimationFrame(e)}),r()});\n';
 
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;

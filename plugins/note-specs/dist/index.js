@@ -91,6 +91,18 @@ function getNoteDates(file) {
 // src/components/styles/noteSpecs.scss
 var noteSpecs_default = ".note-specs {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-specs .note-specs-list {\n  margin: 0.5rem 0 0;\n  padding: 0.6rem 0;\n  border-block: 1px solid var(--lightgray);\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n}\n.note-specs .note-specs-row {\n  display: grid;\n  grid-template-columns: 4.6rem 1fr;\n  gap: 0.4rem;\n  align-items: baseline;\n}\n.note-specs dt {\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-specs dd {\n  margin: 0;\n  font-size: 0.8rem;\n  color: var(--dark);\n  min-width: 0;\n  overflow-wrap: anywhere;\n}\n.note-specs .note-specs-date {\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  font-variant-numeric: tabular-nums;\n}\n.note-specs .note-specs-tags {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.3rem;\n}\n.note-specs .note-specs-tags a {\n  color: var(--secondary);\n}\n.note-specs .note-specs-tags a:hover {\n  color: var(--tertiary);\n}";
 
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;

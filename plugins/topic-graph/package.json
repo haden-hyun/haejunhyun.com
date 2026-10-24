@@ -1,7 +1,7 @@
 {
   "name": "@haejunhyun/topic-graph",
   "version": "0.1.0",
-  "description": "Topic graph panel for Quartz - folder-cluster graph of the current note's top-level topic, rendered as a build-time SVG.",
+  "description": "Topic graph panel for Quartz - folder-cluster graph of the current note's top-level topic, rendered as a build-time SVG that a client d3-force simulation takes over.",
   "type": "module",
   "license": "MIT",
   "private": true,

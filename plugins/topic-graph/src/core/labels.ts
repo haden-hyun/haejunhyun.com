@@ -30,6 +30,8 @@ export interface LabelRequest {
   at: Point
   /** 노드 중심에서 글자까지 간격. */
   gap: number
+  /** 겹치지 않는 자리가 없으면 버린다. */
+  optional?: boolean
 }
 
 export interface PlacedLabel {
@@ -86,6 +88,7 @@ export function placeLabels(requests: LabelRequest[], obstacles: (Box & { id: st
       if (!best || cost < best.cost) best = { label, cost }
       if (cost === 0) break
     }
+    if (req.optional && best!.cost > 0) continue
     placed.push(best!.label)
   }
   return placed

@@ -52,6 +52,18 @@ function getNoteDates(file) {
   return { created, revised, updated };
 }
 
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+var TOPIC_NAMES = Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
@@ -64,15 +76,6 @@ function isRealNote(slug) {
 function isListedNote(file) {
   return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
 }
-var TOPIC_NAMES = {
-  "computer-science": "Computer Science",
-  "data-engineering": "Data Engineering",
-  "data-science": "Data Science",
-  gis: "GIS",
-  programming: "Programming",
-  "finance-property": "Finance & Property",
-  tools: "Tools"
-};
 function titleCase(key) {
   return key.replace(/-/g, " ").replace(/\b\w/g, (c2) => c2.toUpperCase());
 }

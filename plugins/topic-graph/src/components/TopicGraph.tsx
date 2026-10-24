@@ -9,7 +9,7 @@ import { resolveRelative } from "../../../_shared/path"
 import { seriesIndexOf, seriesOf } from "../../../_shared/series"
 import { aliasCollisions, buildTopicGraph, relations, type GraphNode, type NoteInput } from "../core/graph"
 import { FONT, placeLabels, type Box } from "../core/labels"
-import { layoutTopicGraph, VIEW_SHORT, VIEW_TALL, type View } from "../core/layout"
+import { layoutTopicGraph, VIEW_PORTRAIT, VIEW_SHORT, VIEW_TALL, VIEW_WIDE, type View } from "../core/layout"
 import style from "./styles/topicGraph.scss"
 // @ts-expect-error - inline script imported as string by esbuild loader
 import script from "./scripts/topicGraph.inline.ts"
@@ -47,6 +47,9 @@ const R_RING = 9
 const R_DIRECT = 3.8
 const R_SIBLING = 2.8
 const R_OTHER = 1.8
+const NOTE_LABEL_MAX = 22
+
+const clip = (t: string, max: number) => ([...t].length > max ? [...t].slice(0, max - 1).join("") + "…" : t)
 
 export default ((userOpts?: Partial<TopicGraphOptions>) => {
   const opts = { ...defaultOptions, ...userOpts }
@@ -92,7 +95,18 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
     )
     const nodes = [...model.nodes].sort((a, b) => rank(a) - rank(b))
 
-    const renderSvg = (view: View, cls: string) => {
+    // 확대 판은 나머지 폴더·현재 노트·직접 관련 노트도 자리가 비면 단다.
+    const extra = [
+      ...model.nodes.filter((n) => n.current),
+      ...model.nodes.filter((n) => n.kind === "note" && rel.direct.has(n.id)),
+      ...model.nodes.filter((n) => n.kind === "folder" && !labelled.includes(n)),
+    ]
+    const labelClass = (id: string) => {
+      const n = model.nodes.find((m) => m.id === id)!
+      return id === rel.cur.parent ? "tg-label here" : n.current ? "tg-label cur" : n.kind === "note" ? "tg-label note" : "tg-label"
+    }
+
+    const renderSvg = (view: View, cls: string, wide = false) => {
       const pos = layoutTopicGraph(model, view)
       const at = (id: string) => pos.get(id)!
       const obstacles: (Box & { id: string })[] = model.nodes
@@ -103,18 +117,31 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
           return { id: n.id, x: p.x - r, y: p.y - r, w: 2 * r, h: 2 * r }
         })
       const labels = placeLabels(
-        labelled.map((n) => ({ id: n.id, text: n.label, bold: n.id === rel.cur.parent, at: at(n.id), gap: 7 })),
+        [
+          ...labelled.map((n) => ({ id: n.id, text: n.label, bold: n.id === rel.cur.parent, at: at(n.id), gap: 7 })),
+          ...(wide ? extra : []).map((n) => ({
+            id: n.id,
+            text: n.kind === "note" ? clip(n.label, NOTE_LABEL_MAX) : n.label,
+            bold: n.current,
+            at: at(n.id),
+            gap: n.current ? R_RING + 3 : 7,
+            optional: true,
+          })),
+        ],
         obstacles,
         view,
       )
       return (
         <svg class={cls} viewBox={`0 0 ${view.w} ${view.h}`} role="group" aria-label={`${topicName(slug)} topic graph`}>
+          <g class="tg-world">
           <g class="tg-edges">
             {edges.map((e) => {
               const a = at(e.s)
               const b = at(e.t)
               const hot = e.kind !== "tree" && touches(e.s, e.t)
-              return <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} class={`tg-e tg-${e.kind}${hot ? " hot" : ""}`} />
+              return (
+                <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} class={`tg-e tg-${e.kind}${hot ? " hot" : ""}`} data-s={e.s} data-t={e.t} />
+              )
             })}
           </g>
           <g class="tg-nodes">
@@ -122,20 +149,20 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
               const p = at(n.id)
               const here = n.id === rel.cur.parent
               let shape
-              if (n.kind === "topic") shape = <circle cx={p.x} cy={p.y} r={4.5} class="tg-topic" />
+              if (n.kind === "topic") shape = <circle r={4.5} class="tg-topic" />
               else if (n.kind === "folder") {
                 const s = here ? 7 : 6
-                shape = <rect x={p.x - s / 2} y={p.y - s / 2} width={s} height={s} class={here ? "tg-folder here" : "tg-folder"} />
+                shape = <rect x={-s / 2} y={-s / 2} width={s} height={s} class={here ? "tg-folder here" : "tg-folder"} />
               } else if (n.current)
                 shape = (
                   <>
-                    <circle cx={p.x} cy={p.y} r={R_RING} class="tg-current-ring" />
-                    <circle cx={p.x} cy={p.y} r={R_CURRENT} class="tg-current" />
+                    <circle r={R_RING} class="tg-current-ring" />
+                    <circle r={R_CURRENT} class="tg-current" />
                   </>
                 )
-              else if (rel.direct.has(n.id)) shape = <circle cx={p.x} cy={p.y} r={R_DIRECT} class="tg-direct" />
-              else if (rel.siblings.has(n.id)) shape = <circle cx={p.x} cy={p.y} r={R_SIBLING} class="tg-sibling" />
-              else shape = <circle cx={p.x} cy={p.y} r={R_OTHER} class="tg-other" />
+              else if (rel.direct.has(n.id)) shape = <circle r={R_DIRECT} class="tg-direct" />
+              else if (rel.siblings.has(n.id)) shape = <circle r={R_SIBLING} class="tg-sibling" />
+              else shape = <circle r={R_OTHER} class="tg-other" />
               const tags = n.kind === "note" ? tagLine(n) : ""
               return (
                 <g
@@ -144,14 +171,14 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
                   role="link"
                   aria-label={tipOf(n) + (tags ? ` · ${tags}` : "")}
                   aria-current={n.current ? "page" : undefined}
+                  transform={`translate(${p.x},${p.y})`}
                   data-href={hrefOf(n)}
-                  data-id={n.kind !== "note" ? n.id : undefined}
+                  data-id={n.id}
                   data-tip={tipOf(n)}
+                  data-name={n.label}
                   data-tags={tags || undefined}
-                  data-x={p.x}
-                  data-y={p.y}
                 >
-                  <circle cx={p.x} cy={p.y} r={R_RING} class="tg-hit" />
+                  <circle r={R_RING} class="tg-hit" />
                   {shape}
                 </g>
               )
@@ -164,12 +191,13 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
                 y={Math.round(l.y * 10) / 10}
                 text-anchor={l.anchor}
                 font-size={FONT}
-                class={l.id === rel.cur.parent ? "tg-label here" : "tg-label"}
+                class={labelClass(l.id)}
                 data-for={l.id}
               >
                 {l.text}
               </text>
             ))}
+          </g>
           </g>
         </svg>
       )
@@ -180,7 +208,12 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
         <div class="topic-graph-head">
           <h3 class="topic-graph-title">{opts.title}</h3>
           <span class="topic-graph-topic">{topicName(slug)}</span>
-          <button type="button" class="global-graph-icon topic-graph-global" aria-label="Global Graph" title="Global graph (⌘G)">
+          <button type="button" class="topic-graph-btn topic-graph-expand" aria-label="Expand graph" aria-haspopup="dialog" title="확대 보기">
+            <svg viewBox="0 0 12 12" aria-hidden="true">
+              <path d="M7.5 1.5h3v3M4.5 10.5h-3v-3M10.5 1.5 7 5M1.5 10.5 5 7" />
+            </svg>
+          </button>
+          <button type="button" class="global-graph-icon topic-graph-btn topic-graph-global" aria-label="Global Graph" title="Global graph (⌘G)">
             ⌘G
           </button>
         </div>
@@ -189,6 +222,24 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
           {renderSvg(VIEW_SHORT, "tg-short")}
           <div class="topic-graph-tip" hidden></div>
         </div>
+        <dialog class="topic-graph-dialog" aria-label={`${opts.title} · ${topicName(slug)}`}>
+          <div class="topic-graph-sheet">
+            <div class="topic-graph-head">
+              <h3 class="topic-graph-title">{opts.title}</h3>
+              <span class="topic-graph-topic">{topicName(slug)}</span>
+              <button type="button" class="topic-graph-btn topic-graph-close" aria-label="Close" title="닫기 (Esc)">
+                <svg viewBox="0 0 12 12" aria-hidden="true">
+                  <path d="M2.5 2.5l7 7M9.5 2.5l-7 7" />
+                </svg>
+              </button>
+            </div>
+            <div class="topic-graph-box tg-wide-box">
+              {renderSvg(VIEW_WIDE, "tg-wide tg-land", true)}
+              {renderSvg(VIEW_PORTRAIT, "tg-wide tg-port", true)}
+              <div class="topic-graph-tip" hidden></div>
+            </div>
+          </div>
+        </dialog>
       </div>
     )
   }

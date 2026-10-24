@@ -231,7 +231,7 @@ export function heroClient(L) {
   const fillCard = () => {
     const n = spines[card.k].n
     const q = (s) => dlg.querySelector(s)
-    q(".hero-card-eyebrow").textContent = n.n + " · " + (D.tabs[n.tp] || n.tp) + (n.st ? " · SERIES " + n.si + "/" + n.st : "") + (n.recent ? " · NEW" : "")
+    q(".hero-card-eyebrow").textContent = n.n + " · " + (D.tabs[n.tp] || n.tp) + (n.sl ? " · 시리즈 " + n.sl : "") + (n.recent ? " · NEW" : "")
     q(".hero-card-title").textContent = n.t
     q(".hero-card-meta").textContent = "posted " + n.p + (n.c && n.c !== n.p ? " · 작성 " + n.c : "") + (n.m ? " · " + n.m + " min read" : "")
     q(".hero-card-desc").textContent = n.d || "요약이 없는 노트입니다."

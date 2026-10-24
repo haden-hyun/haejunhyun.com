@@ -3337,6 +3337,18 @@ function resolveRelative(current, target) {
   return joinSegments(pathToRoot(current), simplifySlug(target));
 }
 
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+Object.fromEntries(TOPICS.map((t) => [t.key, t.label]));
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
@@ -3379,6 +3391,9 @@ function getSeriesEntries(series, allFiles) {
   return allFiles.filter((f) => seriesOf(f) === series).map(toEntry).filter((e) => e !== void 0).sort(
     (a, b) => a.index - b.index || a.title.localeCompare(b.title, "ko", { numeric: true })
   );
+}
+function episodeLabel(index) {
+  return `${index}\uD3B8`;
 }
 
 // src/core/render.ts
@@ -3450,7 +3465,7 @@ function validateRequires(ep, byIndex, partOrder, warn) {
   return valid;
 }
 function chip(r, target, linked, hrefFor) {
-  const label = `\uC120\uC218 ${r}\uD3B8`;
+  const label = `\uC120\uC218 ${episodeLabel(r)}`;
   if (!target) return h("span", { className: ["chip", "is-missing"] }, label);
   const props = { className: ["chip"], title: target.title };
   if (linked) props.dataFrom = String(r);
@@ -3472,7 +3487,7 @@ function card(ep, valid, byIndex, hrefFor, isCurrent) {
       "div",
       { className: ["rm-ep-top"] },
       h("span", { className: ["dot", ...state ? [state] : []], ariaHidden: "true" }),
-      h("span", { className: ["no"] }, `${ep.index}\uD3B8`),
+      h("span", { className: ["no"] }, episodeLabel(ep.index)),
       isCurrent && h("span", { className: ["rm-current"] }, "\uC774 \uAE00")
     ),
     h(

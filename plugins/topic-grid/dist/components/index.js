@@ -37,6 +37,40 @@ function resolveRelative(current, target) {
 // src/components/styles/topicGrid.scss
 var topicGrid_default = ".topic-grid-section {\n  margin: 0;\n  padding: 0 0 96px;\n}\n@media all and (max-width: 800px) {\n  .topic-grid-section {\n    padding-bottom: 48px;\n  }\n}\n\n.topic-grid-label {\n  display: flex;\n  align-items: center;\n  min-height: 37px;\n  margin: 0;\n  padding: 0 0 14px;\n  border: none;\n  border-bottom: 1px solid var(--lightgray);\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: 0;\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .topic-grid-label {\n    padding-bottom: 10px;\n  }\n}\n\n.topic-index {\n  list-style: none;\n  margin: 0;\n  padding: 6px 0 0;\n}\n.topic-index li {\n  margin: 0;\n}\n@media all and (max-width: 800px) {\n  .topic-index {\n    padding-top: 0;\n  }\n}\n\n.topic-entry {\n  display: flex;\n  align-items: baseline;\n  gap: 10px;\n  padding: 9px 10px;\n  min-height: 44px;\n  box-sizing: border-box;\n  color: inherit;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.topic-entry:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n.topic-entry:hover .topic-entry-name {\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .topic-entry {\n    padding: 10px;\n  }\n}\n\n.topic-index > li:nth-child(even) > .topic-entry:not(:hover) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n\n.topic-entry-name {\n  font-family: var(--headerFont);\n  font-weight: 600;\n  color: var(--dark);\n}\n.topic-entry-name small {\n  display: block;\n  margin-top: 0.1rem;\n  font-family: var(--bodyFont);\n  font-size: 0.78rem;\n  font-weight: 400;\n  color: var(--gray);\n}\n\n.topic-entry-leader {\n  flex: 1;\n  min-width: 1rem;\n  border-bottom: 1px dotted var(--lightgray);\n  transform: translateY(-4px);\n}\n\n.topic-entry-count {\n  font-family: var(--codeFont);\n  font-size: 12px;\n  color: var(--darkgray);\n  font-variant-numeric: tabular-nums;\n}";
 
+// ../_shared/noteMeta.ts
+function toDate(value) {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? void 0 : value;
+  if (typeof value !== "string" && typeof value !== "number") return void 0;
+  const d2 = new Date(value);
+  return Number.isNaN(d2.getTime()) ? void 0 : d2;
+}
+function formatYmd(date) {
+  return date.toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
+}
+function getNoteDates(file) {
+  const created = file.dates?.created ?? file.dates?.published;
+  const differs = (d2, ...others) => d2 && !others.some((o2) => o2 && formatYmd(o2) === formatYmd(d2)) ? d2 : void 0;
+  const revised = differs(toDate(file.frontmatter?.posted), created);
+  const updated = differs(file.dates?.modified, created, revised);
+  return { created, revised, updated };
+}
+function getListDate(file) {
+  const { created, revised } = getNoteDates(file);
+  return revised ?? created;
+}
+
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+var TOPIC_NAMES = Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
@@ -48,6 +82,106 @@ function isRealNote(slug) {
 }
 function isListedNote(file) {
   return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
+}
+function titleCase(key) {
+  return key.replace(/-/g, " ").replace(/\b\w/g, (c2) => c2.toUpperCase());
+}
+function folderTitle(path, overrides = {}) {
+  const segment = path.split("/").pop() ?? path;
+  return overrides[path] ?? overrides[segment] ?? TOPIC_NAMES[segment] ?? titleCase(segment);
+}
+var byListDateDesc = (a2, b2) => (getListDate(b2)?.getTime() ?? 0) - (getListDate(a2)?.getTime() ?? 0);
+
+// ../_shared/series.ts
+function seriesOf(file) {
+  const raw = file.frontmatter?.series;
+  return raw == null ? "" : String(raw).trim();
+}
+function seriesIndexOf(file) {
+  const raw = file.frontmatter?.series_index;
+  if (typeof raw === "number") return Number.isFinite(raw) ? raw : void 0;
+  if (typeof raw === "string" && raw.trim() !== "") {
+    const index = Number(raw);
+    return Number.isFinite(index) ? index : void 0;
+  }
+  return void 0;
+}
+function toEntry(file) {
+  const index = seriesIndexOf(file);
+  if (index === void 0 || !isListedNote(file)) return void 0;
+  const question = file.frontmatter?.series_question;
+  return {
+    file,
+    index,
+    title: String(file.frontmatter?.title ?? file.slug),
+    question: question == null || String(question).trim() === "" ? void 0 : String(question).trim()
+  };
+}
+function getSeriesEntries(series, allFiles) {
+  return allFiles.filter((f3) => seriesOf(f3) === series).map(toEntry).filter((e2) => e2 !== void 0).sort(
+    (a2, b2) => a2.index - b2.index || a2.title.localeCompare(b2.title, "ko", { numeric: true })
+  );
+}
+
+// ../_shared/topicIndex.ts
+function folderNameResolver(trie) {
+  const t2 = trie;
+  return (path) => {
+    const node = typeof t2?.findNode === "function" ? t2.findNode(path.split("/")) : void 0;
+    return node?.isFolder && node.displayName ? node.displayName : folderTitle(path);
+  };
+}
+var latestOf = (notes) => notes.reduce((acc, f3) => {
+  const d2 = getListDate(f3);
+  return d2 && (!acc || d2 > acc) ? d2 : acc;
+}, void 0);
+function subFolders(base, notes, nameOf) {
+  const depth = base.split("/").length;
+  const byChild = /* @__PURE__ */ new Map();
+  for (const f3 of notes) {
+    const parts = f3.slug.split("/");
+    if (parts.length <= depth + 1) continue;
+    const child = parts.slice(0, depth + 1).join("/");
+    byChild.set(child, [...byChild.get(child) ?? [], f3]);
+  }
+  return [...byChild.entries()].map(([path, members]) => {
+    let cur = path;
+    const names = [nameOf(cur)];
+    for (; ; ) {
+      const d2 = cur.split("/").length;
+      const direct = members.some((f3) => f3.slug.split("/").length === d2 + 1);
+      const next = new Set(members.map((f3) => f3.slug.split("/").slice(0, d2 + 1).join("/")));
+      if (direct || next.size !== 1) break;
+      cur = [...next][0];
+      names.push(nameOf(cur));
+    }
+    return { title: names.join(" / "), count: members.length };
+  }).sort((a2, b2) => b2.count - a2.count || a2.title.localeCompare(b2.title, "ko"));
+}
+function buildTopicIndex(allFiles, nameOf) {
+  const listed = allFiles.filter((f3) => isListedNote(f3)).sort(byListDateDesc);
+  return TOPICS.map(({ key, label }) => {
+    const notes = listed.filter((f3) => f3.slug.split("/")[0] === key);
+    const direct = notes.filter((f3) => f3.slug.split("/").length === 2);
+    const byFolder = /* @__PURE__ */ new Map();
+    for (const f3 of notes) {
+      const parts = f3.slug.split("/");
+      if (parts.length < 3) continue;
+      const path = parts.slice(0, 2).join("/");
+      byFolder.set(path, [...byFolder.get(path) ?? [], f3]);
+    }
+    const folders = [...byFolder.entries()].map(([path, members]) => ({
+      path,
+      title: nameOf(path),
+      count: members.length,
+      latest: latestOf(members),
+      subs: subFolders(path, members, nameOf),
+      notes: members
+    })).sort((a2, b2) => b2.count - a2.count || (b2.latest?.getTime() ?? 0) - (a2.latest?.getTime() ?? 0));
+    const seriesKeys = [...new Set(notes.map(seriesOf).filter(Boolean))];
+    const series = seriesKeys.map((s2) => ({ key: s2, entries: getSeriesEntries(s2, allFiles) })).filter((s2) => s2.entries.length > 0);
+    return { key, label, count: notes.length, direct, folders, series };
+  }).sort((a2, b2) => b2.count - a2.count);
 }
 var l;
 function S(n2) {
@@ -74,37 +208,21 @@ function u2(e2, t2, n2, o2, i2, u3) {
 }
 
 // src/components/TopicGrid.tsx
-var TOPICS = [
-  { key: "computer-science", label: "Computer Science", subtext: "Algorithms \xB7 Data Structures" },
-  { key: "data-engineering", label: "Data Engineering", subtext: "Airflow \xB7 Docker \xB7 PostgreSQL" },
-  { key: "data-science", label: "Data Science", subtext: "DL \xB7 ML \xB7 Statistics \xB7 Visualization" },
-  { key: "gis", label: "GIS", subtext: "Spatial Data Analysis" },
-  { key: "programming", label: "Programming", subtext: "Python \xB7 SQL" },
-  { key: "finance-property", label: "Finance & Property", subtext: "Real Estate \xB7 Finance" },
-  { key: "tools", label: "Tools", subtext: "Obsidian \xB7 Workflow" }
-];
 var defaultOptions = {
   showHeader: true
 };
 var TopicGrid_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
   const TopicGrid = ({
+    ctx,
     fileData,
     allFiles,
     displayClass
   }) => {
     if (fileData.slug !== "index") return /* @__PURE__ */ u2(S, {});
-    const files = allFiles;
-    const counts = /* @__PURE__ */ new Map();
-    for (const f3 of files) {
-      const slug = f3.slug ?? "";
-      if (!isListedNote(f3)) continue;
-      const key = slug.split("/")[0];
-      if (!key) continue;
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    }
-    const topicsWithCounts = TOPICS.map((t2) => ({ ...t2, count: counts.get(t2.key) ?? 0 })).sort(
-      (a2, b2) => b2.count - a2.count
+    const topics = buildTopicIndex(
+      allFiles,
+      folderNameResolver(ctx?.trie)
     );
     return /* @__PURE__ */ u2(
       "section",
@@ -113,10 +231,10 @@ var TopicGrid_default = ((userOpts) => {
         "aria-labelledby": opts.showHeader ? "topic-grid-h" : void 0,
         children: [
           opts.showHeader && /* @__PURE__ */ u2("h2", { id: "topic-grid-h", class: "topic-grid-label", children: "Topics" }),
-          /* @__PURE__ */ u2("ul", { class: "topic-index", children: topicsWithCounts.map((t2) => /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2("a", { class: "topic-entry", href: resolveRelative(fileData.slug, t2.key), children: [
+          /* @__PURE__ */ u2("ul", { class: "topic-index", children: topics.map((t2) => /* @__PURE__ */ u2("li", { children: /* @__PURE__ */ u2("a", { class: "topic-entry", href: resolveRelative(fileData.slug, t2.key), children: [
             /* @__PURE__ */ u2("span", { class: "topic-entry-name", children: [
               t2.label,
-              /* @__PURE__ */ u2("small", { children: t2.subtext })
+              /* @__PURE__ */ u2("small", { children: t2.folders.map((f3) => f3.title).join(" \xB7 ") })
             ] }),
             /* @__PURE__ */ u2("span", { class: "topic-entry-leader", "aria-hidden": "true" }),
             /* @__PURE__ */ u2("span", { class: "topic-entry-count", children: t2.count })

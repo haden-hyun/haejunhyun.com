@@ -755,7 +755,7 @@ function heroClient(L2) {
   const fillCard = () => {
     const n2 = spines[card.k].n;
     const q2 = (s2) => dlg.querySelector(s2);
-    q2(".hero-card-eyebrow").textContent = n2.n + " \xB7 " + (D2.tabs[n2.tp] || n2.tp) + (n2.st ? " \xB7 SERIES " + n2.si + "/" + n2.st : "") + (n2.recent ? " \xB7 NEW" : "");
+    q2(".hero-card-eyebrow").textContent = n2.n + " \xB7 " + (D2.tabs[n2.tp] || n2.tp) + (n2.sl ? " \xB7 \uC2DC\uB9AC\uC988 " + n2.sl : "") + (n2.recent ? " \xB7 NEW" : "");
     q2(".hero-card-title").textContent = n2.t;
     q2(".hero-card-meta").textContent = "posted " + n2.p + (n2.c && n2.c !== n2.p ? " \xB7 \uC791\uC131 " + n2.c : "") + (n2.m ? " \xB7 " + n2.m + " min read" : "");
     q2(".hero-card-desc").textContent = n2.d || "\uC694\uC57D\uC774 \uC5C6\uB294 \uB178\uD2B8\uC785\uB2C8\uB2E4.";
@@ -955,6 +955,18 @@ function getListDate(file) {
   return revised ?? created;
 }
 
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+var TOPIC_NAMES = Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
@@ -967,15 +979,6 @@ function isRealNote(slug) {
 function isListedNote(file) {
   return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
 }
-var TOPIC_NAMES = {
-  "computer-science": "Computer Science",
-  "data-engineering": "Data Engineering",
-  "data-science": "Data Science",
-  gis: "GIS",
-  programming: "Programming",
-  "finance-property": "Finance & Property",
-  tools: "Tools"
-};
 function titleCase(key) {
   return key.replace(/-/g, " ").replace(/\b\w/g, (c2) => c2.toUpperCase());
 }
@@ -1015,6 +1018,28 @@ function pathToRoot(slug) {
 }
 function resolveRelative(current, target) {
   return joinSegments(pathToRoot(current), simplifySlug(target));
+}
+
+// ../_shared/series.ts
+function seriesOf(file) {
+  const raw = file.frontmatter?.series;
+  return raw == null ? "" : String(raw).trim();
+}
+function seriesIndexOf(file) {
+  const raw = file.frontmatter?.series_index;
+  if (typeof raw === "number") return Number.isFinite(raw) ? raw : void 0;
+  if (typeof raw === "string" && raw.trim() !== "") {
+    const index = Number(raw);
+    return Number.isFinite(index) ? index : void 0;
+  }
+  return void 0;
+}
+function episodeLabel(index) {
+  return `${index}\uD3B8`;
+}
+function seriesLabel(file) {
+  const index = seriesIndexOf(file);
+  return seriesOf(file) && index !== void 0 ? episodeLabel(index) : void 0;
 }
 var l;
 function S(n2) {
@@ -1149,11 +1174,10 @@ var HomeHero_default = ((userOpts) => {
         tp: topicKey(f3),
         len: text.replace(/\s+/g, "").length,
         series: fm.series ?? "",
-        sidx: Number(fm.series_index ?? 0) || 0
+        sidx: Number(fm.series_index ?? 0) || 0,
+        sl: seriesLabel(f3) ?? ""
       };
     }).sort((a2, b2) => a2.p.localeCompare(b2.p) || a2.c.localeCompare(b2.c) || a2.slug.localeCompare(b2.slug));
-    const seriesTotal = /* @__PURE__ */ new Map();
-    for (const r2 of rows) if (r2.series) seriesTotal.set(r2.series, (seriesTotal.get(r2.series) ?? 0) + 1);
     const notes = rows.map((r2, i2) => ({
       n: "HJ " + (4001 + i2),
       t: r2.t,
@@ -1170,8 +1194,7 @@ var HomeHero_default = ((userOpts) => {
       href: r2.h,
       series: r2.series,
       sidx: r2.sidx,
-      si: r2.sidx,
-      st: r2.series ? seriesTotal.get(r2.series) : 0
+      sl: r2.sl
     }));
     const tabs = Object.fromEntries(topicKeys.map((k) => [k, TAB_NAMES[k] ?? k.toUpperCase()]));
     const labels = Object.fromEntries(topicKeys.map((k) => [k, topicName(k)]));

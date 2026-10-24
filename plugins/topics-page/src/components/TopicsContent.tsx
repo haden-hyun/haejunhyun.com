@@ -6,110 +6,149 @@ import type {
 } from "@quartz-community/types"
 import { resolveRelative } from "../util/path"
 import style from "./styles/topicsContent.scss"
-import { isListedNote } from "../../../_shared/notes"
+import { formatYmd, getListDate } from "../../../_shared/noteMeta"
+import { buildTopicIndex, folderNameResolver, type TopicFolder, type TopicSeries } from "../../../_shared/topicIndex"
+import { topicAnchor } from "../../../_shared/topics"
+import { episodeLabel } from "../../../_shared/series"
 
 /**
- * 내비의 "Topics" 라우트 — 홈 TopicGrid와 같은 데이터·카드를 독립 페이지로.
- *
- * 주의: topic-grid의 TopicGrid.tsx와 의도적으로 중복되어 있다(TOPICS 상수,
- *    집계 로직, 카드 마크업 전부). 서로 import하려면 워크스페이스 링크가 필요해
- *    복잡도 대비 이득이 없다고 판단. 토픽을 바꾸면 두 파일을 함께 고칠 것.
+ * 내비의 "Topics" 라우트 — 토픽마다 섹션 라벨 + 시리즈 행 + 1단 폴더 행(폴더 페이지 §4.16 문법).
+ * 수치·부제는 전부 allFiles 런타임 집계, 토픽 표는 `_shared/topics.ts` 하나.
  */
+
+export interface TopicsContentOptions {
+  /** 시리즈 키 → 표시명. 주의: folder-listing·series-box·series-pager·series-roadmap 옵션과 같게 둘 것. */
+  seriesTitles: Record<string, string>
+}
 
 type FileData = QuartzPluginData & Record<string, unknown>
 
-interface Topic {
-  key: string
-  label: string
-  subtext: string
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`
+
+function Ymd({ date }: { date?: Date }) {
+  return date ? (
+    <time class="tp-end tp-date" dateTime={formatYmd(date)}>
+      {formatYmd(date)}
+    </time>
+  ) : (
+    <span class="tp-end" />
+  )
 }
 
-const TOPICS: Topic[] = [
-  {
-    key: "computer-science",
-    label: "Computer Science",
-    subtext: "Algorithms · Data Structures",
-  },
-  {
-    key: "data-engineering",
-    label: "Data Engineering",
-    subtext: "Airflow · Docker · PostgreSQL",
-  },
-  {
-    key: "data-science",
-    label: "Data Science",
-    subtext: "DL · ML · Statistics · Visualization",
-  },
-  { key: "gis", label: "GIS", subtext: "Spatial Data Analysis" },
-  {
-    key: "programming",
-    label: "Programming",
-    subtext: "Python · SQL",
-  },
-  {
-    key: "finance-property",
-    label: "Finance & Property",
-    subtext: "Real Estate · Finance",
-  },
-  {
-    key: "tools",
-    label: "Tools",
-    subtext: "Obsidian · Workflow",
-  },
-]
+function SeriesRow(props: { series: TopicSeries; title: string; slug: string }) {
+  const first = props.series.entries[0]!
+  return (
+    <li>
+      <a class="tp-row is-series" href={resolveRelative(props.slug, first.file.slug as string)} data-no-popover="true">
+        <span class="tp-kind">시리즈 · {props.series.entries.length}편</span>
+        <span class="tp-title">{props.title}</span>
+        <span class="tp-end tp-go">{episodeLabel(first.index)}부터 →</span>
+        <span class="tp-desc">
+          {episodeLabel(first.index)} {first.title}
+        </span>
+      </a>
+    </li>
+  )
+}
 
-export default (() => {
-  const TopicsContent: QuartzComponent = ({
-    fileData,
-    allFiles,
-    displayClass,
-  }: QuartzComponentProps) => {
-    const currentSlug = (fileData.slug as string) ?? "topics"
-    const files = allFiles as FileData[]
-    const counts = new Map<string, number>()
-    for (const f of files) {
-      const slug = (f.slug as string | undefined) ?? ""
-      if (!isListedNote(f)) continue
-      const key = slug.split("/")[0]
-      if (!key) continue
-      counts.set(key, (counts.get(key) ?? 0) + 1)
-    }
+/** 하위 폴더가 있으면 그 이름들, 없으면 최근 노트 제목 2편. */
+const folderLine = (f: TopicFolder): string =>
+  f.subs.length > 0
+    ? f.subs.map((s) => s.title).join(" · ")
+    : f.notes
+        .slice(0, 2)
+        .map((n) => String(n.frontmatter?.title ?? ""))
+        .join(" · ")
 
-    const topicsWithCounts = TOPICS.map((t) => ({ ...t, count: counts.get(t.key) ?? 0 })).sort(
-      (a, b) => b.count - a.count,
-    )
-    const maxCount = Math.max(1, ...topicsWithCounts.map((t) => t.count))
-    const totalCount = topicsWithCounts.reduce((sum, t) => sum + t.count, 0)
+function FolderRow(props: { folder: TopicFolder; slug: string }) {
+  const { folder } = props
+  return (
+    <li>
+      <a class="tp-row" href={resolveRelative(props.slug, `${folder.path}/index`)} data-no-popover="true">
+        <span class="tp-kind">{plural(folder.count, "note")}</span>
+        <span class="tp-title">{folder.title}</span>
+        <Ymd date={folder.latest} />
+        <span class="tp-desc">{folderLine(folder)}</span>
+      </a>
+    </li>
+  )
+}
+
+function NoteRow(props: { file: FileData; slug: string }) {
+  return (
+    <li>
+      <a class="tp-row" href={resolveRelative(props.slug, props.file.slug as string)} data-no-popover="true">
+        <span class="tp-kind">노트</span>
+        <span class="tp-title">{props.file.frontmatter?.title}</span>
+        <Ymd date={getListDate(props.file)} />
+      </a>
+    </li>
+  )
+}
+
+export default ((opts?: Partial<TopicsContentOptions>) => {
+  const seriesTitles = opts?.seriesTitles ?? {}
+
+  const TopicsContent: QuartzComponent = ({ ctx, fileData, allFiles, displayClass }: QuartzComponentProps) => {
+    const slug = (fileData.slug as string) ?? "topics"
+    const topics = buildTopicIndex(
+      allFiles as FileData[],
+      folderNameResolver((ctx as { trie?: unknown } | undefined)?.trie),
+    ).filter((t) => t.count > 0)
+    const total = topics.reduce((n, t) => n + t.count, 0)
+    const folders = topics.reduce((n, t) => n + t.folders.length, 0)
+    const series = topics.reduce((n, t) => n + t.series.length, 0)
 
     return (
-      // 주의: <h1>을 여기서 렌더하면 안 된다 — article-title 플러그인이 이미
-      // frontmatter.title로 렌더한다(중복 방지, folder-page와 동일 패턴).
-      <article class={`${displayClass ?? ""} topics-page-content popover-hint`}>
-        <p class="topics-page-sub">
-          {totalCount} notes · {topicsWithCounts.length} topics
+      // 주의: <h1>은 article-title이 frontmatter.title로 렌더한다. <article>로 감싸면 custom.scss `article a`가 행에 붙는다.
+      <div class={`${displayClass ?? ""} topics-index popover-hint`}>
+        <p class="tp-meta">
+          {plural(total, "note")} · {plural(topics.length, "topic")} · {plural(folders, "folder")} ·{" "}
+          {series} series
         </p>
-        <div class="topics-page-grid">
-          {topicsWithCounts.map((t) => (
-            <a
-              class="topics-page-card"
-              href={resolveRelative(currentSlug, t.key)}
-            >
-              <b class="topics-page-label">{t.label}</b>
-              <span class="topics-page-subtext">{t.subtext}</span>
-              <div class="topics-page-count">{t.count} notes</div>
-              <div class="topics-page-share" aria-hidden="true">
-                <div
-                  class="topics-page-share-fill"
-                  style={`width:${(t.count / maxCount) * 100}%`}
-                />
-              </div>
-            </a>
-          ))}
-        </div>
-      </article>
+        <nav class="tp-jump" aria-label="토픽 바로가기">
+          <ul>
+            {topics.map((t) => (
+              <li>
+                <a href={`#${topicAnchor(t.key)}`} data-no-popover="true">
+                  {t.label}
+                  <span class="tp-jump-count">{t.count}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        {topics.map((t) => (
+          <section class="tp-section" aria-labelledby={topicAnchor(t.key)}>
+            <div class="tp-label">
+              <h2 id={topicAnchor(t.key)}>{t.label}</h2>
+              <span class="tp-count">{plural(t.count, "note")}</span>
+              <a
+                class="tp-open"
+                href={resolveRelative(slug, `${t.key}/index`)}
+                aria-label={`${t.label} 주제 열기`}
+                data-no-popover="true"
+              >
+                <span class="tp-open-word">주제&nbsp;</span>열기 →
+              </a>
+            </div>
+            <ul class="tp-rows">
+              {t.series.map((s) => (
+                <SeriesRow series={s} title={seriesTitles[s.key] ?? s.key} slug={slug} />
+              ))}
+              {t.direct.map((f) => (
+                <NoteRow file={f} slug={slug} />
+              ))}
+              {t.folders.map((f) => (
+                <FolderRow folder={f} slug={slug} />
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
     )
   }
 
   TopicsContent.css = style
   return TopicsContent
-}) satisfies QuartzComponentConstructor
+}) satisfies QuartzComponentConstructor<Partial<TopicsContentOptions>>

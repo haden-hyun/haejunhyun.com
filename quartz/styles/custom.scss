@@ -73,8 +73,8 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --radius-s: 6px;
   --radius-m: 10px;
 
-  // 사이드바 island — 경계는 보더가, 면은 장식 수준(페이지 대비 1.04)으로만 띄운다.
-  --island-bg: color-mix(in srgb, var(--light), white 50%); // --gray 5.48
+  // 사이드바 island — 경계는 보더가 맡고, 면은 페이지보다 한 톤 낮춰 본문 뒤로 물린다.
+  --island-bg: color-mix(in srgb, var(--light), var(--lightgray) 30%); // --gray 4.95
   --island-border: var(--lightgray);
   --island-inset: 0.75rem;
 
@@ -106,8 +106,8 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   --cal-quote: #9a938c;
   --cal-ref: #b39ae0; // 7.56  AAA
 
-  // 주의: 다크는 띄울수록 --gray가 떨어진다(4% = 4.87). 더 올리거나 패널에 행 hover 배경을 넣지 말 것.
-  --island-bg: color-mix(in srgb, var(--light), white 4%);
+  // 주의: 다크 면은 위(white)로 띄우지 말 것 — --gray가 4.87까지 떨어진다(현재 black 25% = 5.55).
+  --island-bg: color-mix(in srgb, var(--light), black 25%);
 }
 
 // 고대비 설정에선 장식 수준 보더(1.1~1.3)가 안 보인다 — 메타 색으로 올린다.

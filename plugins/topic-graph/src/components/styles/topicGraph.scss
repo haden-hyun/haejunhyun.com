@@ -1,8 +1,6 @@
 // 색은 theme.colors 토큰에서만 온다. 구조선·주변 노트는 장식이라 대비 요구가 없다.
+// 확대 보기 dialog는 여는 동안 body로 옮겨지므로 패널과 같은 규칙을 따로 받는다.
 .topic-graph {
-  --tg-edge: color-mix(in srgb, var(--lightgray), var(--gray) 22%);
-  --tg-mute: color-mix(in srgb, var(--lightgray), var(--gray) 45%);
-  --tg-halo: var(--island-bg, var(--light));
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -11,6 +9,13 @@
   &.tg-overflow {
     display: none;
   }
+}
+
+.topic-graph,
+.topic-graph-dialog {
+  --tg-edge: color-mix(in srgb, var(--lightgray), var(--gray) 22%);
+  --tg-mute: color-mix(in srgb, var(--lightgray), var(--gray) 45%);
+  --tg-halo: var(--island-bg, var(--light));
 
   .topic-graph-head {
     display: flex;
@@ -28,8 +33,11 @@
     color: var(--gray);
   }
 
-  .topic-graph-global {
-    margin-left: auto;
+  // 확대·⌘G 버튼은 같은 칩이다 — 확대는 아이콘, ⌘G는 단축키 글자로 구분한다.
+  .topic-graph-btn {
+    display: inline-flex;
+    align-items: center;
+    align-self: center;
     padding: 0 0.35rem;
     border: 1px solid var(--lightgray);
     border-radius: 4px;
@@ -45,6 +53,26 @@
       color: var(--secondary);
       border-color: var(--secondary);
     }
+
+    &:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: 1px;
+    }
+
+    svg {
+      width: 0.75rem;
+      height: 1.6em;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  .topic-graph-expand,
+  .topic-graph-close {
+    margin-left: auto;
   }
 
   .topic-graph-box {
@@ -52,23 +80,32 @@
     margin-top: 0.5rem;
   }
 
-  svg {
+  // 줌·팬한 그림이 TOC 위로 넘치지 않게 판 안에서 자른다. 끌기·핀치를 브라우저 스크롤이 가로채지 않게 한다.
+  .topic-graph-box svg {
     display: block;
     width: 100%;
     height: auto;
-    overflow: visible;
-  }
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
 
-  // 낮은 화면에선 260×220 판으로 바꾼다 — 두 판 모두 빌드 타임에 따로 배치했다.
-  .tg-short {
-    display: none;
-  }
-  @media (max-height: 760px) {
-    .tg-tall {
+    &.tg-panning,
+    &.tg-dragging {
+      cursor: grabbing;
+    }
+
+    // 낮은 화면에선 260×220 판으로 바꾼다 — 두 판 모두 빌드 타임에 따로 배치했다.
+    &.tg-short {
       display: none;
     }
-    .tg-short {
-      display: block;
+    @media (max-height: 760px) {
+      &.tg-tall {
+        display: none;
+      }
+      &.tg-short {
+        display: block;
+      }
     }
   }
 }
@@ -137,6 +174,38 @@
 .tg-hit {
   fill: transparent;
 }
+.tg-dragging .tg-n {
+  cursor: grabbing;
+}
+
+// 호버·포커스한 노드와 이웃만 남기고 점·선을 흐린다. 라벨(텍스트)은 흐리지 않는다 — AA.
+.tg-focus {
+  .tg-n:not(.near),
+  .tg-e:not(.near) {
+    opacity: 0.2;
+  }
+  .tg-e.near {
+    stroke: var(--secondary);
+    stroke-width: 1.5;
+    opacity: 1;
+  }
+  // 이웃 밖 상시 라벨은 흐리지 않고 숨긴다 — 보이는 글자는 늘 AA.
+  .tg-labels .tg-label:not(.near) {
+    visibility: hidden;
+  }
+}
+.tg-n.hot > :not(.tg-hit) {
+  transform: scale(1.35);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tg-n,
+  .tg-e {
+    transition: opacity var(--dur-fast) var(--ease), stroke var(--dur-fast) var(--ease);
+  }
+  .tg-n > * {
+    transition: transform var(--dur-fast) var(--ease);
+  }
+}
 .tg-n:focus-visible .tg-hit,
 .tg-n.armed .tg-hit {
   stroke: var(--secondary);
@@ -155,6 +224,73 @@
   &.here {
     fill: var(--dark);
     font-weight: 700;
+  }
+
+  &.cur {
+    fill: var(--dark);
+    font-weight: 600;
+  }
+
+  &.note,
+  &.tg-hover {
+    fill: var(--darkgray);
+  }
+}
+
+// 확대 보기 — 데스크톱은 가운데 큰 판, 모바일은 전체 화면. 베일은 페이지 바탕색이라 두 테마에서 같은 문법이다.
+.topic-graph-dialog {
+  --tg-halo: var(--light);
+  box-sizing: border-box;
+  width: min(60rem, calc(100% - 4rem));
+  height: min(42rem, calc(100% - 4rem));
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-m, 8px);
+  background: var(--light);
+  color: var(--darkgray);
+  overscroll-behavior: contain;
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--light) 78%, transparent);
+  }
+
+  @media (max-width: 800px) {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .topic-graph-sheet {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1rem 1.25rem 1.25rem;
+  }
+
+  .tg-wide-box {
+    flex: 1 1 0;
+    min-height: 0;
+    margin-top: 0.75rem;
+
+    svg {
+      height: 100%;
+
+      &.tg-port {
+        display: none;
+      }
+      @media (max-width: 800px) {
+        &.tg-land {
+          display: none;
+        }
+        &.tg-port {
+          display: block;
+        }
+      }
+    }
   }
 }
 

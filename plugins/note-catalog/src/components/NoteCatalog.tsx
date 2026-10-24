@@ -8,11 +8,13 @@ import { resolveRelative } from "../util/path"
 import style from "./styles/noteCatalog.scss"
 import { isListedNote, isRealNote } from "../../../_shared/notes"
 import { groupBySeries, seriesLabel } from "../../../_shared/series"
+import { topicAnchor } from "../../../_shared/topics"
 
 type CatalogPluginData = QuartzPluginData & Record<string, unknown>
 
 export interface NoteCatalogOptions {
   title: string
+  /** Topics 페이지면 현재 토픽 섹션 앵커(`#topic-<key>`)를 붙인다. */
   moreHref: string
   moreLabel: string
   /** 현재 노트 앞뒤로 보일 편 수. 폴더 처음·끝에선 반대쪽을 더 보여 2·radius+1행을 채운다. */
@@ -93,7 +95,12 @@ export default ((userOpts?: Partial<NoteCatalogOptions>) => {
             All {siblings.length} notes →
           </a>
         )}
-        <a class="note-catalog-more" href={resolveRelative(currentSlug, opts.moreHref)}>
+        <a
+          class="note-catalog-more"
+          href={`${resolveRelative(currentSlug, opts.moreHref)}${
+            opts.moreHref === "topics" ? `#${topicAnchor(currentSlug.split("/")[0]!)}` : ""
+          }`}
+        >
           {opts.moreLabel}
         </a>
       </nav>

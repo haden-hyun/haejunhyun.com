@@ -4,6 +4,18 @@ var backToTop_default = "#back-to-top {\n  position: fixed;\n  bottom: 2rem;\n  
 // src/components/scripts/backToTop.inline.ts
 var backToTop_inline_default = 'document.addEventListener("nav",()=>{let e=document.getElementById("back-to-top");if(!e)return;let n=()=>e.classList.toggle("visible",window.scrollY>window.innerHeight*1.5),o=()=>{let t=window.matchMedia("(prefers-reduced-motion: reduce)").matches;window.scrollTo({top:0,behavior:t?"auto":"smooth"})};window.addEventListener("scroll",n,{passive:!0}),e.addEventListener("click",o),window.addCleanup(()=>{window.removeEventListener("scroll",n),e.removeEventListener("click",o)}),n()});\n';
 
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;

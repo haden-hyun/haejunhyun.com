@@ -7,6 +7,10 @@ export type View = { w: number; h: number; pad: number }
 export const VIEW_TALL: View = { w: 260, h: 280, pad: 8 }
 // 화면 높이 760px 이하에서 쓰는 낮은 판 — 같은 모델을 이 비율로 따로 배치한다.
 export const VIEW_SHORT: View = { w: 260, h: 220, pad: 8 }
+// 확대 보기(dialog) 판 — 라벨을 더 많이 단다.
+export const VIEW_WIDE: View = { w: 640, h: 440, pad: 12 }
+// 확대 보기의 좁은 화면(전체 화면) 판 — 가로 판을 390px에 맞추면 글자가 6px 아래로 줄어든다.
+export const VIEW_PORTRAIT: View = { w: 260, h: 400, pad: 8 }
 const TICKS = 300
 
 interface SimNode extends SimulationNodeDatum {

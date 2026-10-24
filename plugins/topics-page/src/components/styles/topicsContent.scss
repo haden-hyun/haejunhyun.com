@@ -1,78 +1,245 @@
-.topics-page-sub {
-  font-family: var(--codeFont);
-  font-size: 0.8rem;
-  color: var(--text-3);
-  margin: 0 0 1.5rem;
-}
+// ── 주제 색인: 토픽 = 섹션 라벨, 시리즈·폴더 = 레코드 행 — folder-listing 값 복제(DESIGN-SYSTEM §4.6·§4.16) ──
+$meta-col: 6.25rem;
 
-.topics-page-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+.topics-index {
+  container-type: inline-size;
 
-  @media all and (max-width: 1080px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  ul.tp-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 
-  @media all and (max-width: 480px) {
-    grid-template-columns: 1fr;
+    & > li {
+      margin: 0;
+    }
   }
 }
 
-.topics-page-card {
-  position: relative;
+.topics-index .tp-meta {
+  margin: 1.5rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--gray);
+}
+
+// ── 점프 칩 — 줄바꿈, 가로 스크롤 없음 ──
+.topics-index .tp-jump ul {
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 1.1rem 1.1rem 1rem 1.2rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius, 10px);
-  background: var(--surface);
-  text-decoration: none;
-  overflow: hidden;
-  transition: border-color var(--dur-fast) var(--ease);
-  min-height: 116px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
 
-  // 주의: 하단선 !important는 custom.scss `article a`(비-레이어)의 투명 하단선을 이기기 위함.
-  border-bottom-color: var(--border) !important;
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.25rem;
+    padding: 0 0.85rem;
+    border-radius: var(--radius-s);
+    background: rgba(var(--accent-rgb), 0.08);
+    font-family: var(--headerFont);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--secondary);
+    text-decoration: none;
+    transition: background-color var(--dur-fast) var(--ease);
 
-  &:hover {
-    border-color: var(--border-strong) !important;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: rgba(var(--accent-rgb), 0.16);
+      }
+
+      // 주의: 16% 위의 --gray는 4.1로 AA 미달 — hover 동안 숫자는 --darkgray.
+      &:hover .tp-jump-count {
+        color: var(--darkgray);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: 2px;
+    }
+
+    @media all and (max-width: 600px) {
+      min-height: 2.75rem;
+    }
+  }
+
+  .tp-jump-count {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--gray);
   }
 }
 
-.topics-page-label {
-  font-family: var(--headerFont);
-  font-size: 1.2rem;
-  font-weight: 670;
-  color: var(--text);
-  margin-top: 0.2rem;
+// ── 섹션 라벨 — 이름 · 노트 수 · 우측 이동 링크 ──
+.topics-index .tp-section {
+  margin-top: 2.5rem;
 }
 
-.topics-page-subtext {
-  font-size: 0.8rem;
-  color: var(--text-2);
-  line-height: 1.4;
+.topics-index .tp-label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--lightgray);
+
+  h2 {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--headerFont);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--secondary);
+    scroll-margin-top: 1.5rem;
+  }
 }
 
-.topics-page-count {
-  margin-top: 0.55rem;
+.topics-index .tp-count {
   font-family: var(--codeFont);
-  font-size: 0.7rem;
-  color: var(--text-3);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
 }
 
-.topics-page-share {
-  margin-top: 0.4rem;
-  height: 3px;
-  border-radius: 2px;
-  background: var(--surface-2);
+// 터치 44px — 음수 margin-block으로 라벨 줄 높이는 그대로 둔다.
+.topics-index .tp-open {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin: -0.75rem 0 -0.75rem auto;
+  font-family: var(--headerFont);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--secondary);
+  text-decoration: none;
+  white-space: nowrap;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}
+
+// ── 행 — `메타 열 │ 제목 + 요약 │ 끝 열`, 하단 헤어라인 · 얼룩 3.5% · hover 10% ──
+.topics-index .tp-row {
+  display: grid;
+  grid-template-columns: $meta-col minmax(0, 1fr) auto;
+  column-gap: 14px;
+  align-items: baseline;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0.6rem 0.4rem;
+  border-bottom: 1px solid var(--lightgray);
+  font-weight: 400;
+  color: var(--darkgray);
+  text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease);
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: -2px; // 행이 맞붙어 바깥 offset은 이웃 행에 가린다
+  }
+}
+
+// 주의: 얼룩과 hover는 명시도가 같아 순서 의존 — hover가 뒤에 와야 한다.
+.topics-index li:nth-child(even) > .tp-row {
+  background: rgba(var(--accent-rgb), 0.035);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .topics-index li > .tp-row:hover {
+    background: rgba(var(--accent-rgb), 0.1);
+
+    .tp-title {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+}
+
+// 주의: 10%를 넘기면 그 위 --gray 메타가 AA를 잃는다.
+.topics-index li > .tp-row:active {
+  background: rgba(var(--accent-rgb), 0.1);
+}
+
+.topics-index .tp-kind,
+.topics-index .tp-date {
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-weight: 400;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.topics-index .tp-end {
+  justify-self: end;
+}
+
+.topics-index .tp-go {
+  font-family: var(--headerFont);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--secondary);
+  white-space: nowrap;
+}
+
+.topics-index .tp-title {
+  font-family: var(--headerFont);
+  font-size: 0.95rem;
+  font-weight: 620;
+  line-height: 1.45;
+  color: var(--dark);
+  word-break: keep-all;
+}
+
+.topics-index .tp-row.is-series .tp-title {
+  font-weight: 700;
+}
+
+.topics-index .tp-desc {
+  grid-column: 2 / -1;
+  margin-top: 0.15rem;
   overflow: hidden;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--darkgray);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.topics-page-share-fill {
-  height: 100%;
-  background: var(--text-3);
-  opacity: 0.55;
-  border-radius: 2px;
+// ── 좁은 폭(목록 폭 600px 이하) — 메타를 제목 위 줄로 ──
+@container (max-width: 600px) {
+  .topics-index .tp-open-word {
+    display: none;
+  }
+
+  .topics-index .tp-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 2px;
+    padding: 0.7rem 0.25rem;
+
+    .tp-kind {
+      grid-column: 1 / -1;
+    }
+
+    .tp-desc {
+      grid-column: 1 / -1;
+    }
+  }
 }

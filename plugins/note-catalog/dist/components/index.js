@@ -34,6 +34,19 @@ function resolveRelative(current, target) {
 // src/components/styles/noteCatalog.scss
 var noteCatalog_default = ".note-catalog {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-catalog .note-catalog-title {\n  margin: 0;\n}\n.note-catalog .note-catalog-path {\n  margin-top: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  letter-spacing: 0.06em;\n  color: var(--gray);\n  word-break: break-all;\n}\n.note-catalog .note-catalog-path:hover {\n  color: var(--secondary);\n}\n.note-catalog .note-catalog-list {\n  margin: 0.7rem 0 0;\n  padding: 0;\n  list-style: none;\n  min-height: 0;\n  overflow-y: auto;\n}\n.note-catalog .note-catalog-link {\n  display: block;\n  padding: 4px 0 4px 0.6rem;\n  border-left: 2px solid transparent;\n  line-height: 1.45;\n  word-break: keep-all;\n  transition: color var(--dur-fast) var(--ease);\n}\n.note-catalog .note-catalog-link.active {\n  color: var(--secondary);\n  font-weight: 600;\n  border-left-color: var(--secondary);\n}\n.note-catalog .note-catalog-all {\n  margin-top: 0.4rem;\n  padding-left: calc(0.6rem + 2px);\n  font-family: var(--codeFont);\n  font-size: 0.68rem;\n  letter-spacing: 0.06em;\n  color: var(--gray);\n}\n.note-catalog .note-catalog-all:hover {\n  color: var(--secondary);\n}\n.note-catalog .note-catalog-index {\n  margin-right: 0.4em;\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n.note-catalog .note-catalog-more {\n  margin-top: 0.9rem;\n  padding-top: 0.7rem;\n  border-top: 1px solid var(--lightgray);\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-catalog .note-catalog-more:hover {\n  color: var(--secondary);\n}";
 
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
+var topicAnchor = (key) => `topic-${key}`;
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
@@ -61,9 +74,12 @@ function seriesIndexOf(file) {
   }
   return void 0;
 }
+function episodeLabel(index) {
+  return `${index}\uD3B8`;
+}
 function seriesLabel(file) {
   const index = seriesIndexOf(file);
-  return seriesOf(file) && index !== void 0 ? `${index}\uD3B8` : void 0;
+  return seriesOf(file) && index !== void 0 ? episodeLabel(index) : void 0;
 }
 function groupBySeries(sorted) {
   const groups = [];
@@ -165,7 +181,14 @@ var NoteCatalog_default = ((userOpts) => {
         siblings.length,
         " notes \u2192"
       ] }),
-      /* @__PURE__ */ u2("a", { class: "note-catalog-more", href: resolveRelative(currentSlug, opts.moreHref), children: opts.moreLabel })
+      /* @__PURE__ */ u2(
+        "a",
+        {
+          class: "note-catalog-more",
+          href: `${resolveRelative(currentSlug, opts.moreHref)}${opts.moreHref === "topics" ? `#${topicAnchor(currentSlug.split("/")[0])}` : ""}`,
+          children: opts.moreLabel
+        }
+      )
     ] });
   };
   NoteCatalog.css = noteCatalog_default;

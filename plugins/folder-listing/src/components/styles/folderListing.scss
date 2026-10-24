@@ -388,6 +388,11 @@ $meta-col: 6.25rem;
       &:hover {
         background: rgba(var(--accent-rgb), 0.16);
       }
+
+      // 주의: 16% 위의 --gray는 4.1로 AA 미달 — hover 동안 숫자는 --darkgray.
+      &:hover .folder-jump-count {
+        color: var(--darkgray);
+      }
     }
 
     &:focus-visible {

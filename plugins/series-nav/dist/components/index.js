@@ -31,6 +31,18 @@ function resolveRelative(current, target) {
   return joinSegments(pathToRoot(current), simplifySlug(target));
 }
 
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
@@ -74,6 +86,9 @@ function getSeriesEntries(series, allFiles) {
     (a2, b2) => a2.index - b2.index || a2.title.localeCompare(b2.title, "ko", { numeric: true })
   );
 }
+function episodeLabel(index) {
+  return `${index}\uD3B8`;
+}
 
 // src/components/series.ts
 var defaultOptions = {
@@ -95,7 +110,7 @@ function getSeriesContext(fileData, allFiles, opts) {
 }
 
 // src/components/styles/seriesBox.scss
-var seriesBox_default = ".series-box {\n  margin: 1rem 0 1.5rem;\n  padding: 0.7rem 1rem;\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  font-size: 0.85rem;\n  min-width: 0;\n}\n.series-box .series-box-header {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: baseline;\n  justify-content: space-between;\n  gap: 0.2rem 0.8rem;\n}\n.series-box .series-box-title {\n  font-weight: 600;\n  color: var(--dark);\n}\n.series-box .series-box-position {\n  font-size: 0.75rem;\n  font-weight: 600;\n  color: var(--secondary);\n  font-variant-numeric: tabular-nums;\n}\n.series-box .series-box-adjacent {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0.8rem;\n  margin-top: 0.5rem;\n}\n.series-box .series-box-link {\n  min-width: 0;\n  color: var(--darkgray);\n  line-height: 1.4;\n  word-break: keep-all;\n  overflow-wrap: anywhere;\n}\n.series-box .series-box-link:hover {\n  color: var(--tertiary);\n}\n.series-box .series-box-link.next {\n  text-align: right;\n}\n.series-box .series-box-details {\n  margin-top: 0.5rem;\n  padding-top: 0.5rem;\n  border-top: 1px solid var(--lightgray);\n}\n.series-box .series-box-details summary {\n  cursor: pointer;\n  width: fit-content;\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.series-box .series-box-details summary:hover {\n  color: var(--secondary);\n}\n.series-box .series-box-list {\n  list-style: none;\n  margin: 0.5rem 0 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 0.45rem;\n}\n.series-box .series-box-list li {\n  display: flex;\n  flex-direction: column;\n  gap: 0.1rem;\n  margin: 0;\n  min-width: 0;\n}\n.series-box .series-box-entry {\n  line-height: 1.4;\n  word-break: keep-all;\n  overflow-wrap: anywhere;\n}\n.series-box strong.series-box-entry {\n  color: var(--dark);\n}\n.series-box .series-box-question {\n  font-size: 0.75rem;\n  color: var(--gray);\n  line-height: 1.4;\n  word-break: keep-all;\n  overflow-wrap: anywhere;\n}";
+var seriesBox_default = ".series-box {\n  margin: 1rem 0 1.5rem;\n  padding: 0.7rem 1rem;\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  font-size: 0.85rem;\n  min-width: 0;\n}\n.series-box .series-box-header {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: baseline;\n  justify-content: space-between;\n  gap: 0.2rem 0.8rem;\n}\n.series-box .series-box-title {\n  font-weight: 600;\n  color: var(--dark);\n}\n.series-box .series-box-position {\n  font-size: 0.75rem;\n  font-weight: 600;\n  color: var(--secondary);\n  font-variant-numeric: tabular-nums;\n}\n.series-box .series-box-adjacent {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0.8rem;\n  margin-top: 0.5rem;\n}\n.series-box .series-box-link {\n  min-width: 0;\n  color: var(--darkgray);\n  line-height: 1.4;\n  word-break: keep-all;\n  overflow-wrap: anywhere;\n}\n.series-box .series-box-link:hover {\n  color: var(--tertiary);\n}\n.series-box .series-box-link.next {\n  text-align: right;\n}\n.series-box .series-box-details {\n  margin-top: 0.5rem;\n  padding-top: 0.5rem;\n  border-top: 1px solid var(--lightgray);\n}\n.series-box .series-box-details summary {\n  cursor: pointer;\n  width: fit-content;\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.series-box .series-box-details summary:hover {\n  color: var(--secondary);\n}\n.series-box .series-box-list {\n  list-style: none;\n  margin: 0.5rem 0 0;\n  padding: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 0.45rem;\n}\n.series-box .series-box-list li {\n  display: flex;\n  flex-direction: column;\n  gap: 0.1rem;\n  margin: 0;\n  min-width: 0;\n}\n.series-box .series-box-no {\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n.series-box .series-box-entry {\n  line-height: 1.4;\n  word-break: keep-all;\n  overflow-wrap: anywhere;\n}\n.series-box strong.series-box-entry {\n  color: var(--dark);\n}\n.series-box .series-box-question {\n  font-size: 0.75rem;\n  color: var(--gray);\n  line-height: 1.4;\n  word-break: keep-all;\n  overflow-wrap: anywhere;\n}";
 var l;
 function S(n2) {
   return n2.children;
@@ -131,21 +146,18 @@ var SeriesBox_default = ((userOpts) => {
     return /* @__PURE__ */ u2("nav", { class: "series-box", "aria-label": title, children: [
       /* @__PURE__ */ u2("div", { class: "series-box-header", children: [
         /* @__PURE__ */ u2("span", { class: "series-box-title", children: title }),
-        /* @__PURE__ */ u2("span", { class: "series-box-position", children: [
-          entries[current].index,
-          "\uD3B8"
-        ] })
+        /* @__PURE__ */ u2("span", { class: "series-box-position", children: episodeLabel(entries[current].index) })
       ] }),
       (prev || next) && /* @__PURE__ */ u2("div", { class: "series-box-adjacent", children: [
         prev ? /* @__PURE__ */ u2("a", { class: "series-box-link prev", href: resolveRelative(slug, prev.file.slug), children: [
           "\u2190 ",
-          prev.index,
-          ". ",
+          /* @__PURE__ */ u2("span", { class: "series-box-no", children: episodeLabel(prev.index) }),
+          " ",
           prev.title
         ] }) : /* @__PURE__ */ u2("span", {}),
         next ? /* @__PURE__ */ u2("a", { class: "series-box-link next", href: resolveRelative(slug, next.file.slug), children: [
-          next.index,
-          ". ",
+          /* @__PURE__ */ u2("span", { class: "series-box-no", children: episodeLabel(next.index) }),
+          " ",
           next.title,
           " \u2192"
         ] }) : /* @__PURE__ */ u2("span", {})
@@ -154,12 +166,12 @@ var SeriesBox_default = ((userOpts) => {
         /* @__PURE__ */ u2("summary", { children: "\uBAA9\uB85D \uBCF4\uAE30" }),
         /* @__PURE__ */ u2("ol", { class: "series-box-list", children: entries.map((e2, i2) => /* @__PURE__ */ u2("li", { class: i2 === current ? "current" : void 0, children: [
           i2 === current ? /* @__PURE__ */ u2("strong", { class: "series-box-entry", "aria-current": "page", children: [
-            e2.index,
-            ". ",
+            /* @__PURE__ */ u2("span", { class: "series-box-no", children: episodeLabel(e2.index) }),
+            " ",
             e2.title
           ] }) : /* @__PURE__ */ u2("a", { class: "series-box-entry", href: resolveRelative(slug, e2.file.slug), children: [
-            e2.index,
-            ". ",
+            /* @__PURE__ */ u2("span", { class: "series-box-no", children: episodeLabel(e2.index) }),
+            " ",
             e2.title
           ] }),
           e2.question && /* @__PURE__ */ u2("span", { class: "series-box-question", children: e2.question })
@@ -172,7 +184,7 @@ var SeriesBox_default = ((userOpts) => {
 });
 
 // src/components/styles/seriesPager.scss
-var seriesPager_default = ".series-pager {\n  margin-top: 3rem;\n  padding-top: 2rem;\n  border-top: 1px solid var(--lightgray);\n}\n.series-pager .series-pager-inner {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0.8rem;\n}\n.series-pager .series-pager-link {\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n  min-width: 0;\n  padding: 0.8rem 1rem;\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);\n}\n.series-pager .series-pager-link:hover {\n  border-color: var(--secondary);\n  background: rgba(var(--accent-rgb), 0.04);\n}\n.series-pager .series-pager-link.next {\n  text-align: right;\n}\n.series-pager .series-pager-link .direction {\n  font-size: 0.7rem;\n  font-weight: 600;\n  color: var(--secondary);\n  letter-spacing: 0.06em;\n}\n.series-pager .series-pager-link .ptitle {\n  font-size: 0.85rem;\n  color: var(--darkgray);\n  font-weight: 500;\n  line-height: 1.4;\n  word-break: keep-all;\n  overflow-wrap: anywhere;\n}";
+var seriesPager_default = ".series-pager {\n  margin-top: 3rem;\n  padding-top: 2rem;\n  border-top: 1px solid var(--lightgray);\n}\n.series-pager .series-pager-inner {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0.8rem;\n}\n.series-pager .series-pager-link {\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n  min-width: 0;\n  padding: 0.8rem 1rem;\n  border: 1px solid var(--lightgray);\n  border-radius: 6px;\n  transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease);\n}\n.series-pager .series-pager-link:hover {\n  border-color: var(--secondary);\n  background: rgba(var(--accent-rgb), 0.04);\n}\n.series-pager .series-pager-link.next {\n  text-align: right;\n}\n.series-pager .series-pager-link .direction {\n  font-size: 0.7rem;\n  font-weight: 600;\n  color: var(--secondary);\n  letter-spacing: 0.06em;\n}\n.series-pager .series-pager-link .ptitle {\n  font-size: 0.85rem;\n  color: var(--darkgray);\n  font-weight: 500;\n  line-height: 1.4;\n  word-break: keep-all;\n  overflow-wrap: anywhere;\n}\n.series-pager .series-pager-link .pno {\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}";
 
 // src/components/SeriesPager.tsx
 var SeriesPager_default = ((userOpts) => {
@@ -186,16 +198,16 @@ var SeriesPager_default = ((userOpts) => {
       prev ? /* @__PURE__ */ u2("a", { class: "series-pager-link prev", href: resolveRelative(slug, prev.file.slug), children: [
         /* @__PURE__ */ u2("span", { class: "direction", children: "\u2190 \uC774\uC804 \uD3B8" }),
         /* @__PURE__ */ u2("span", { class: "ptitle", children: [
-          prev.index,
-          ". ",
+          /* @__PURE__ */ u2("span", { class: "pno", children: episodeLabel(prev.index) }),
+          " ",
           prev.title
         ] })
       ] }) : /* @__PURE__ */ u2("div", {}),
       next ? /* @__PURE__ */ u2("a", { class: "series-pager-link next", href: resolveRelative(slug, next.file.slug), children: [
         /* @__PURE__ */ u2("span", { class: "direction", children: "\uB2E4\uC74C \uD3B8 \u2192" }),
         /* @__PURE__ */ u2("span", { class: "ptitle", children: [
-          next.index,
-          ". ",
+          /* @__PURE__ */ u2("span", { class: "pno", children: episodeLabel(next.index) }),
+          " ",
           next.title
         ] })
       ] }) : /* @__PURE__ */ u2("div", {})

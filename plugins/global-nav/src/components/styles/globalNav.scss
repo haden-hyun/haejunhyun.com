@@ -27,4 +27,11 @@
     color: var(--accent);
     border-bottom-color: var(--accent);
   }
+
+  // 조상 탭(aria-current="true") — 현재 페이지(실선)와 같은 색, 점선으로 "이 갈래 안"만 말한다.
+  &.is-ancestor {
+    color: var(--accent);
+    border-bottom-style: dotted;
+    border-bottom-color: var(--accent);
+  }
 }

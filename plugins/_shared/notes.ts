@@ -1,5 +1,6 @@
 // 노트 판별·토픽 표시명·Recent 묶음 규칙의 단일 구현. 로컬 플러그인들이 상대 경로로 가져다 번들한다.
 import { formatYmd, getListDate } from "./noteMeta"
+import { TOPIC_NAMES } from "./topics"
 
 type SlugFile = {
   slug?: string
@@ -20,16 +21,6 @@ export function isRealNote(slug: string | undefined): boolean {
 /** 목록에 올릴 노트. `unlisted: true`는 URL로만 열리고 홈·아카이브·토픽·카탈로그 집계에서 빠진다. */
 export function isListedNote(file: SlugFile & { unlisted?: unknown }): boolean {
   return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true
-}
-
-const TOPIC_NAMES: Record<string, string> = {
-  "computer-science": "Computer Science",
-  "data-engineering": "Data Engineering",
-  "data-science": "Data Science",
-  gis: "GIS",
-  programming: "Programming",
-  "finance-property": "Finance & Property",
-  tools: "Tools",
 }
 
 /** kebab-case → Title Case. */

@@ -4,6 +4,7 @@ import type {
   QuartzComponentProps,
 } from "@quartz-community/types"
 import { resolveRelative } from "../../../_shared/path"
+import { episodeLabel } from "../../../_shared/series"
 import { defaultOptions, getSeriesContext, type SeriesFile, type SeriesNavOptions } from "./series"
 import style from "./styles/seriesPager.scss"
 
@@ -25,7 +26,7 @@ export default ((userOpts?: Partial<SeriesNavOptions>) => {
             <a class="series-pager-link prev" href={resolveRelative(slug, prev.file.slug!)}>
               <span class="direction">← 이전 편</span>
               <span class="ptitle">
-                {prev.index}. {prev.title}
+                <span class="pno">{episodeLabel(prev.index)}</span> {prev.title}
               </span>
             </a>
           ) : (
@@ -35,7 +36,7 @@ export default ((userOpts?: Partial<SeriesNavOptions>) => {
             <a class="series-pager-link next" href={resolveRelative(slug, next.file.slug!)}>
               <span class="direction">다음 편 →</span>
               <span class="ptitle">
-                {next.index}. {next.title}
+                <span class="pno">{episodeLabel(next.index)}</span> {next.title}
               </span>
             </a>
           ) : (

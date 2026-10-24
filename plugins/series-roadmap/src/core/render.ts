@@ -1,5 +1,6 @@
 // 로드맵 데이터 병합·검증·마크업의 단일 구현. 블로그(hast)와 Obsidian 미리보기(DOM)가 이 노드 트리를 함께 쓴다.
 import { toIndexList, type OutlineItem, type RoadmapSpec } from "../parse"
+import { episodeLabel } from "../../../_shared/series"
 
 /** 발행본 한 편. id는 블로그 slug 또는 볼트 경로이고 href는 hrefFor(id)로 만든다. */
 export interface PublishedEntry {
@@ -127,7 +128,7 @@ function validateRequires(
 type HrefFor = (id: string) => string
 
 function chip(r: number, target: Episode | undefined, linked: boolean, hrefFor: HrefFor): RNode {
-  const label = `선수 ${r}편`
+  const label = `선수 ${episodeLabel(r)}`
   if (!target) return h("span", { className: ["chip", "is-missing"] }, label)
   const props: Properties = { className: ["chip"], title: target.title }
   if (linked) props.dataFrom = String(r)
@@ -162,7 +163,7 @@ function card(
       "div",
       { className: ["rm-ep-top"] },
       h("span", { className: ["dot", ...(state ? [state] : [])], ariaHidden: "true" }),
-      h("span", { className: ["no"] }, `${ep.index}편`),
+      h("span", { className: ["no"] }, episodeLabel(ep.index)),
       isCurrent && h("span", { className: ["rm-current"] }, "이 글"),
     ),
     h(

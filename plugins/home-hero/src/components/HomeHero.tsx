@@ -12,6 +12,7 @@ import style from "./styles/hero.scss"
 import { isListedNote, topicName } from "../../../_shared/notes"
 import { formatYmd, getListDate, getNoteDates, readingMinutes } from "../../../_shared/noteMeta"
 import { resolveRelative } from "../../../_shared/path"
+import { seriesLabel } from "../../../_shared/series"
 
 // 주의: `@quartz-community/utils`를 쓰지 않고 인라인한 것은 의도적이다.
 // github: 참조 의존성이라 fresh npm install에서 dist 없이 설치돼 빌드가 깨진다.
@@ -163,11 +164,10 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
           len: text.replace(/\s+/g, "").length,
           series: (fm.series as string | undefined) ?? "",
           sidx: Number(fm.series_index ?? 0) || 0,
+          sl: seriesLabel(f as Parameters<typeof seriesLabel>[0]) ?? "",
         }
       })
       .sort((a, b) => a.p.localeCompare(b.p) || a.c.localeCompare(b.c) || a.slug.localeCompare(b.slug))
-    const seriesTotal = new Map<string, number>()
-    for (const r of rows) if (r.series) seriesTotal.set(r.series, (seriesTotal.get(r.series) ?? 0) + 1)
     const notes = rows.map((r, i) => ({
       n: "HJ " + (4001 + i),
       t: r.t,
@@ -184,8 +184,7 @@ export default ((userOpts?: Partial<HomeHeroOptions>) => {
       href: r.h,
       series: r.series,
       sidx: r.sidx,
-      si: r.sidx,
-      st: r.series ? seriesTotal.get(r.series) : 0,
+      sl: r.sl,
     }))
     const tabs = Object.fromEntries(topicKeys.map((k) => [k, TAB_NAMES[k] ?? k.toUpperCase()]))
     const labels = Object.fromEntries(topicKeys.map((k) => [k, topicName(k)]))

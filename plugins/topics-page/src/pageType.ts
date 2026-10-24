@@ -4,7 +4,7 @@ import type {
   QuartzPageTypePlugin,
   VirtualPage,
 } from "@quartz-community/types"
-import TopicsContentComponent from "./components/TopicsContent"
+import TopicsContent, { type TopicsContentOptions } from "./components/TopicsContent"
 
 /**
  * VirtualPage 패턴 — folder-page / tag-page의 pageType.ts와 동일 구조.
@@ -15,7 +15,7 @@ import TopicsContentComponent from "./components/TopicsContent"
  */
 const neverMatch: PageMatcher = () => false
 
-export const TopicsPage: QuartzPageTypePlugin = () => ({
+export const TopicsPage: QuartzPageTypePlugin<Partial<TopicsContentOptions>> = (opts) => ({
   name: "TopicsPage",
   priority: 5,
   match: neverMatch,
@@ -30,5 +30,5 @@ export const TopicsPage: QuartzPageTypePlugin = () => ({
     return virtualPages
   },
   layout: "topics",
-  body: TopicsContentComponent,
+  body: () => TopicsContent(opts),
 })

@@ -1,7 +1,7 @@
 {
   "name": "@haejunhyun/topics-page",
   "version": "0.1.0",
-  "description": "Generates a standalone /topics page — the same 7-category card grid shown on the homepage (topic-grid), as a dedicated route the global nav can link to.",
+  "description": "Generates the /topics page — a topic index (series rows and first-level folder rows per topic, counted from allFiles at render time) that the global nav links to.",
   "type": "module",
   "license": "MIT",
   "private": true,

@@ -66,12 +66,12 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
   (볼트 `.obsidian/plugins/series-roadmap-preview`에 설치, Obsidian에서 플러그인을 껐다 켜야 반영).
 - 빌드 경고 `[series-roadmap]`: requires가 같은 부 직전 편·자기 번호 이상·없는 번호·뒤 부를 가리킴,
   outline 번호 중복, 편 1개뿐인 부 이름이 다른 부와 비슷함(오타 의심), 같은 부 안 번호 공백. 경고만 내고 빌드는 통과한다.
-- 주의: `seriesTitles`는 다섯 곳에 중복이다 — `quartz.config.yaml`의 `series-box`·`series-pager`·`series-roadmap`·`folder-listing`
-  옵션과 Obsidian 미리보기 플러그인 설정. 새 시리즈를 추가하면 다섯 곳 다 고칠 것.
+- 주의: `seriesTitles`는 여섯 곳에 중복이다 — `quartz.config.yaml`의 `series-box`·`series-pager`·`series-roadmap`·`folder-listing`·`topics-page`
+  옵션과 Obsidian 미리보기 플러그인 설정. 새 시리즈를 추가하면 여섯 곳 다 고칠 것.
 
 ### 주제 그래프 `plugins/topic-graph`
 
-우측 TOC 아래 GRAPH 패널(TOC와 함께 island에 다 안 들어가면 스크립트가 GRAPH를 숨긴다). 현재 노트의 최상위 주제를 폴더 클러스터로 그린 빌드 타임 SVG다(DESIGN-SYSTEM §4.17).
+우측 TOC 아래 GRAPH 패널(TOC와 함께 island에 다 안 들어가면 스크립트가 GRAPH를 숨긴다). 현재 노트의 최상위 주제를 폴더 클러스터로 그린 빌드 타임 SVG를 클라이언트 d3-force가 이어받고, 확대 칩이 같은 그래프의 큰 판을 `<dialog>`로 연다(DESIGN-SYSTEM §4.17).
 배치·라벨은 `src/core/`의 순수 함수(d3-force, 고정 틱)라 같은 원고면 같은 SVG가 나온다.
 
 - ⌘G 전역 그래프는 업스트림 `graph` 플러그인 몫이다. 사이드바 로컬 그래프만 topic-graph 스크립트가 지우고 `custom.scss`가 숨긴다.

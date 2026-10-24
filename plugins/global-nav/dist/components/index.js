@@ -35,42 +35,7 @@ function resolveRelative(current, target) {
 }
 
 // src/components/styles/globalNav.scss
-var globalNav_default = ".global-nav {\n  display: flex;\n  align-items: center;\n  gap: 1.4rem;\n  flex-wrap: wrap;\n}\n\n.global-nav-link {\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  color: var(--text-2);\n  text-decoration: none;\n  padding: 0.3rem 0;\n  border-bottom: 2px solid transparent;\n  transition: color 0.15s, border-color 0.15s;\n}\n.global-nav-link:hover {\n  color: var(--text);\n}\n.global-nav-link.active {\n  color: var(--accent);\n  border-bottom-color: var(--accent);\n}";
-
-// ../_shared/noteMeta.ts
-function toDate(value) {
-  if (value instanceof Date) return Number.isNaN(value.getTime()) ? void 0 : value;
-  if (typeof value !== "string" && typeof value !== "number") return void 0;
-  const d2 = new Date(value);
-  return Number.isNaN(d2.getTime()) ? void 0 : d2;
-}
-function formatYmd(date) {
-  return date.toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
-}
-function getNoteDates(file) {
-  const created = file.dates?.created ?? file.dates?.published;
-  const differs = (d2, ...others) => d2 && !others.some((o2) => o2 && formatYmd(o2) === formatYmd(d2)) ? d2 : void 0;
-  const revised = differs(toDate(file.frontmatter?.posted), created);
-  const updated = differs(file.dates?.modified, created, revised);
-  return { created, revised, updated };
-}
-function getListDate(file) {
-  const { created, revised } = getNoteDates(file);
-  return revised ?? created;
-}
-
-// ../_shared/notes.ts
-function isRealNote(slug) {
-  if (!slug) return false;
-  if (slug.startsWith("tags/")) return false;
-  if (slug === "index" || slug.endsWith("/index")) return false;
-  if (slug === "404") return false;
-  if (slug === "topics" || slug === "archive") return false;
-  return true;
-}
-function isListedNote(file) {
-  return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
-}
+var globalNav_default = ".global-nav {\n  display: flex;\n  align-items: center;\n  gap: 1.4rem;\n  flex-wrap: wrap;\n}\n\n.global-nav-link {\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  color: var(--text-2);\n  text-decoration: none;\n  padding: 0.3rem 0;\n  border-bottom: 2px solid transparent;\n  transition: color 0.15s, border-color 0.15s;\n}\n.global-nav-link:hover {\n  color: var(--text);\n}\n.global-nav-link.active {\n  color: var(--accent);\n  border-bottom-color: var(--accent);\n}\n.global-nav-link.is-ancestor {\n  color: var(--accent);\n  border-bottom-style: dotted;\n  border-bottom-color: var(--accent);\n}";
 var l;
 l = { __e: function(n2, l2, u3, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
@@ -94,41 +59,27 @@ function u2(e2, t2, n2, o2, i2, u3) {
 
 // src/components/GlobalNav.tsx
 var NAV_ITEMS = [
-  { label: "Home", kind: "static", slug: "index" },
-  { label: "Topics", kind: "static", slug: "topics" },
-  { label: "Archive", kind: "static", slug: "archive" },
-  { label: "Notes", kind: "latest-note" }
+  { label: "Home", slug: "index" },
+  { label: "Topics", slug: "topics" },
+  { label: "Archive", slug: "archive" }
 ];
-var LATEST_NOTE_FALLBACK = "archive";
-var getSortTime = (f3) => getListDate(f3)?.getTime() ?? 0;
-function findLatestNoteSlug(allFiles) {
-  let latest = null;
-  for (const f3 of allFiles) {
-    const slug = f3.slug;
-    if (!slug || !f3.frontmatter?.title || !isListedNote(f3)) continue;
-    if (latest === null || getSortTime(f3) > getSortTime(latest)) latest = f3;
-  }
-  return latest?.slug ?? null;
+function ancestorSlug(slug) {
+  if (slug === "index" || slug === "404" || slug === "topics" || slug === "archive") return void 0;
+  return "topics";
 }
 var GlobalNav_default = (() => {
-  const GlobalNav = ({
-    allFiles,
-    fileData,
-    displayClass
-  }) => {
+  const GlobalNav = ({ fileData, displayClass }) => {
     const currentSlug = fileData.slug || "index";
-    const onNote = isRealNote(currentSlug) && Boolean(fileData.frontmatter?.title);
+    const ancestor = ancestorSlug(currentSlug);
     return /* @__PURE__ */ u2("nav", { class: `${displayClass ?? ""} global-nav`, children: NAV_ITEMS.map((item) => {
-      if (item.kind === "latest-note" && onNote) {
-        return /* @__PURE__ */ u2("span", { class: "global-nav-link active", "aria-current": "page", children: item.label });
-      }
-      const isActive = item.kind === "static" && currentSlug === item.slug;
-      const targetSlug = item.kind === "static" ? item.slug : findLatestNoteSlug(allFiles) ?? LATEST_NOTE_FALLBACK;
+      const current = currentSlug === item.slug;
+      const isAncestor = !current && ancestor === item.slug;
       return /* @__PURE__ */ u2(
         "a",
         {
-          class: `global-nav-link${isActive ? " active" : ""}`,
-          href: resolveRelative(currentSlug, targetSlug),
+          class: `global-nav-link${current ? " active" : ""}${isAncestor ? " is-ancestor" : ""}`,
+          href: resolveRelative(currentSlug, item.slug),
+          "aria-current": current ? "page" : isAncestor ? "true" : void 0,
           children: item.label
         }
       );

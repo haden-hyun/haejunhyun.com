@@ -248,8 +248,14 @@ plugins:
     enabled: true
   - source: ./plugins/topics-page
     enabled: true
-    # /topics 가상 페이지 (실제 콘텐츠 파일과 매치되지 않음).
-    options: {}
+    # /topics 가상 페이지 = 주제 색인(토픽 섹션 · 시리즈 행 · 1단 폴더 행). 폴더명은 folder-listing이 심은 trie에서 읽는다.
+    options:
+      # 주의: folder-listing·series-box·series-pager·series-roadmap의 seriesTitles와 같게 둘 것.
+      seriesTitles:
+        deep-learning-basics: "딥러닝 기초 시리즈"
+        obsidian-quartz-blog: "Obsidian과 Quartz로 블로그 만들기"
+        statistics-basics: "통계학 기초"
+        docker-basics: "Airflow를 위한 Docker 기초"
   - source: ./plugins/archive-page
     enabled: true
     # /archive 가상 페이지, topics-page와 동일한 패턴.
@@ -628,23 +634,27 @@ layout:
     folder:
       exclude:
         - reader-mode
+        - comments
       positions:
         right: []
     tag:
       exclude:
         - reader-mode
+        - comments
       positions:
         right: []
     canvas: {}
     bases: {}
-    # topics/archive 가상 페이지 — folder/tag와 동일하게 우측 사이드바만 비움.
+    # topics/archive 가상 페이지 — folder/tag와 동일하게 우측 사이드바를 비우고 댓글을 뺀다.
     topics:
       exclude:
         - reader-mode
+        - comments
       positions:
         right: []
     archive:
       exclude:
         - reader-mode
+        - comments
       positions:
         right: []

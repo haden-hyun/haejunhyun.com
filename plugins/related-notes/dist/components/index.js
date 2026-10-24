@@ -37,6 +37,18 @@ function resolveRelative(current, target) {
 // src/components/styles/relatedNotes.scss
 var relatedNotes_default = ".related-notes {\n  display: flex;\n  flex-direction: column;\n}\n.related-notes > h3 {\n  margin: 0;\n}\n.related-notes > ul {\n  list-style: none;\n  padding: 0;\n  margin: 0.5rem 0;\n}\n.related-notes > ul > li > a {\n  background-color: transparent;\n}";
 
+// ../_shared/topics.ts
+var TOPICS = [
+  { key: "computer-science", label: "Computer Science" },
+  { key: "data-engineering", label: "Data Engineering" },
+  { key: "data-science", label: "Data Science" },
+  { key: "gis", label: "GIS" },
+  { key: "programming", label: "Programming" },
+  { key: "finance-property", label: "Finance & Property" },
+  { key: "tools", label: "Tools" }
+];
+Object.fromEntries(TOPICS.map((t2) => [t2.key, t2.label]));
+
 // ../_shared/notes.ts
 function isRealNote(slug) {
   if (!slug) return false;
