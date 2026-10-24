@@ -373,6 +373,7 @@ const heroLib = {
   SAX_CFG: {"cw":4.6,"ch":8.2,"rows":41,"glyphTop":1.5,"glyphBottom":3,"keyY":[0.78,0.62,0.46,0.3,0.14,-0.02,-0.18],"keyChars":["♭","H","A","E","J","U","N"]},
   SHELF_CFG: {"div":5,"gap":1,"dgap":3,"fmin":0.62,"fmax2":3,"fmax3":2.2},
   REST: {"ay":-0.35,"ax":-0.25},
+  shelfH: 332.7,
 }
 const heroClient = (function heroClient(L2) {
   const root = document.querySelector(".home-hero");
@@ -905,7 +906,6 @@ function initHero() {
   if (!document.querySelector(".home-hero")) return
   heroLib.model = heroLib.model || heroLib.buildSax()
   heroLib.fit = heroLib.fit || heroLib.fitSax(heroLib.model, heroLib.rasterSax, heroLib.REST, heroLib.SAX_CFG.rows)
-  heroLib.shelfH = heroLib.SAX_CFG.rows * heroLib.SAX_CFG.ch - heroLib.SAX_CFG.glyphTop - heroLib.SAX_CFG.glyphBottom + 1
   heroClient(heroLib)
 }
 
