@@ -76,9 +76,18 @@
     margin-left: auto;
   }
 
+  // 인레이 판 — 토큰은 custom.scss(--graph-plate*). 라벨 헤일로도 판 색을 따른다(AA).
   .topic-graph-box {
+    --tg-halo: var(--graph-plate);
     position: relative;
     margin-top: 0.5rem;
+    overflow: hidden;
+    border: 1px solid var(--island-border);
+    border-radius: var(--radius-s);
+    background:
+      radial-gradient(ellipse 85% 80% at 50% 46%, transparent 55%, var(--graph-plate-shade) 100%),
+      var(--graph-plate);
+    box-shadow: var(--graph-plate-depth);
   }
 
   // 줌·팬한 그림이 TOC 위로 넘치지 않게 판 안에서 자른다. 끌기·핀치를 브라우저 스크롤이 가로채지 않게 한다.
