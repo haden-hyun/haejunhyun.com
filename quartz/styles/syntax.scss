@@ -3,6 +3,7 @@
 // - 토큰 8종 × 라이트·다크 팔레트 + 기본색(ink)
 // 주의: 기성 라이트 테마의 색 값을 가져오지 말 것 — 우리 배경이 더 어두워 대비가 무너진다.
 // 주의: 대비는 페이지 배경이 아니라 코드블럭 배경(--code-bg) 기준으로 잰다. 예외 없이 AA 4.5 이상.
+// 주의: 같은 값이 Obsidian 스니펫 obsidian/theme/haejun-records.css §0에도 있다 — 바꾸면 같이 고치고 check.mjs로 대조(DESIGN-SYSTEM §4.19).
 
 :root {
   --syn-muted: #6e685e; // comment

@@ -420,6 +420,42 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - 감속 모션: 전환·페이드는 §13이 즉시 끝낸다. 펼침 지연(300ms)·닫힘 유예(500ms)는 모션이 아니라 의도 판별이라 남긴다.
 - 기각: 업스트림 `reader-mode`(사이드 패널 `opacity: 0` + hover 때 복원) — 숨은 패널 위에 커서를 두는 습관(커서 주차)만으로 패널이 되살아나고, 페이드 중간값이 AA를 깬다. 투명도로 숨기는 안은 되살리지 말 것.
 
+### 4.19 Obsidian 미러 — 볼트에서 같은 색·서체
+
+**역할**: 원고를 쓰는 Obsidian(기본 테마)에서 사이트와 같은 색·서체로 읽는다. 원본은 `obsidian/theme/haejun-records.css`(CSS 스니펫), 볼트 `.obsidian/snippets/`엔 사본만 둔다 — `node obsidian/theme/install.mjs`로 복사(볼트 경로 `VAULT_DIR`, 기본 `~/Documents/obsidian` — anim-widgets 미리보기와 같은 방식).
+
+- **같게 적용되는 것**: 색 9키 · 코드 토큰 8그룹과 코드블럭 배경·행간 1.65 · 인라인 코드 칩 · 하이라이트 · 콜아웃 6그룹 + `reference` 색과 Hairline 면 처리·여백(§4.1) · 표 헤더·얼룩·hover(§4.3) · 인용문 바·면·상하 패딩·반경 · 목록 마커 · 내부 링크 칩(배경·반경)·굵기 600(hover에도 색 고정) · 서체 스택 · 헤딩 굵기·자간·행간 1.3 · 본문 행간 1.9 · 본문 폭 672px · `em` 자간·색 · `keep-all` · `hr` 1px.
+- 스니펫 §0이 사이트 값을 `--hr-*`로 한 번만 적고, 나머지 절은 그 변수로 Obsidian 변수를 채운다.
+
+| 사이트 토큰                        | Obsidian 변수                                                                 |
+| ---------------------------------- | ----------------------------------------------------------------------------- |
+| `light` / `--island-bg`            | `--background-primary` / `--background-secondary`                             |
+| `lightgray`                        | `--background-modifier-border`                                                |
+| `darkgray` / `gray`                | `--text-normal` · `--italic-color` · `--list-marker-color` / `--text-muted`   |
+| `dark`                             | `--h1~h6-color`(h2 제외) · `--bold-color` · 표 `--table-header-color`         |
+| `secondary`                        | `--h2-color` · `--link-color`(·`-hover`·`-unresolved`) · `--link-external-color`(·`-hover`) · `--blockquote-border-color` · `--accent-h/s/l`(HSL 환산) |
+| `highlight`                        | 내부 링크 칩 배경(`.internal-link`·`cm-hmd-internal-link`)                    |
+| `textHighlight` / `--highlight-ink` | `--text-highlight-bg` / `mark`·`cm-highlight` 글자색                        |
+| `--accent-rgb`                     | `--table-header-background` · 얼룩 3.5% · hover 10% · `--blockquote-background-color` 4% |
+| `--code-bg`                        | `--code-background`                                                           |
+| `--syn-ink` · `muted` · `value` · `lit` | `--code-normal` · `--code-comment` · `--code-value` · `--code-string`    |
+| `--syn-key`                        | `--code-keyword` · `--code-important`                                         |
+| `--syn-punct`                      | `--code-punctuation` · `--code-operator`                                      |
+| `--syn-name`                       | `--code-function` · `--code-property` · `--code-tag`                          |
+| `--code-chip-bg` / `-border`       | 칩 요소에서만 `--code-background` / `--code-border-color` 재정의               |
+| `--cal-info`                       | `--callout-default` · `summary` · `info` · `todo` · `example`                 |
+| `--cal-good` / `warn` / `bad` / `quote` | `--callout-tip`·`important`·`success` / `warning`·`question` / `error`·`fail`·`bug` / `quote` |
+| `--cal-ref`                        | `[data-callout="reference"]`의 `--callout-color`                              |
+| 서체 header / body / code          | `--h1~h6-font` / `--font-text-theme`·`--font-interface-theme` / `--font-monospace-theme` |
+
+- 주의: Obsidian 1.14의 `--callout-*`는 RGB 트리플이 아니라 완전한 색값이다(`color-mix`로 파생). 사이트(ofm)는 `important`를 `tip`으로 바꿔 그려서 `--callout-important`도 긍정 그룹이다.
+- 주의: Obsidian 변수 묶음이 사이트 토큰 분류와 다른 코드 토큰(`variable` → ink, `parameter`·`attr-name`·`atrule`·`cm-attribute` → key, `constant`·`symbol`·`cm-atom` → value, CSS 문자열·`attr-value` → lit)은 셀렉터로 직접 칠한다. 값은 같은 8그룹이라 근사가 아니다.
+- 주의: Inter는 `"HR Inter"`라는 이름으로 싣는다 — Obsidian 내장 `"Inter"`(범위 없음)와 한 패밀리가 되면 `·` 같은 범위 밖 글자를 내장 Inter가 가로챈다.
+- **유일한 근사 — `regexp`·`error`(alert)**: Obsidian은 regex를 important와 한 변수(`--code-important`)로 묶는다. 그래서 변수 대신 읽기 모드 `.token.regex`·Live Preview `span.cm-error`를 직접 셀렉터로 칠한다. Live Preview의 regex는 string과 같은 클래스(`cm-string-2`)라 string 색으로 남는다.
+- **범위 밖**: 코드블럭 맥 창(제목 줄·점·그림자)·줄 번호·글자 0.82rem, 콜아웃 아이콘 정렬 지오메트리(그래서 제목 아래 구분선은 아이콘 열이 아니라 제목 패딩에서 시작한다), 헤딩 크기·h2 하단선, 링크 밑줄 제거·hover 하단선과 그 전환·내부 링크 칩 좌우 패딩(에디터에서 조각마다 붙는다), 인라인 코드 0.85em, 하이라이트 반경·패딩(Live Preview에서 서식 조각마다 끊긴다), 표 폰트 크기·세로 테두리, 선택 영역 색, 본문 16px(Obsidian 글꼴 크기 설정이 이긴다), 사이트 레이아웃(패널·island·그래프).
+- 주의: `codeblock-customizer` 같은 코드 플러그인은 `--code-*`를 덮는다 — 볼트에선 꺼 둔다. Obsidian 설정의 강조 색을 지정하면 `body` 인라인 스타일이 `--accent-h/s/l`을 이기므로 비워 둔다.
+- **색·서체를 바꾸면 스니펫 §0도 같이 고치고 `install.mjs` → `check.mjs`를 돌릴 것.** `check.mjs`는 색 9키·코드 8그룹·코드/칩/하이라이트/콜아웃 토큰·`--accent-rgb`·`--island-bg`·accent HSL·서체 스택을 라이트·다크로 대조하고, 볼트 사본이 원본과 바이트까지 같은지 본다. 하나라도 어긋나면 exit 1.
+
 ---
 
 ## 5. 고칠 때 규칙

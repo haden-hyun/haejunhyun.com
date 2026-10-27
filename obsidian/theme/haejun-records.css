@@ -1,0 +1,399 @@
+/* haejun-records — haejunhyun.com(Quartz) 디자인을 Obsidian 기본 테마 위에 옮긴 스니펫.
+   값은 사이트 원본에서 그대로 가져온다. 사이트 :root ↔ .theme-light, [saved-theme="dark"] ↔ .theme-dark.
+   주의: 이후 섹션은 §0의 --hr-* 변수만 참조한다 — 색을 바꿀 땐 §0만 고친다.
+   주의: 원본은 이 저장소(obsidian/theme/). 볼트 사본을 직접 고치지 말 것 — install.mjs로 설치, check.mjs로 사이트 값과 대조. */
+
+/* ── §0 토큰 — quartz.config.yaml theme.colors · quartz/styles/syntax.scss · quartz/styles/custom.scss :root ── */
+
+.theme-light {
+  /* 사이트 색 9키 */
+  --hr-light: #f7f5ef;
+  --hr-lightgray: #e4dfd4;
+  --hr-gray: #5f6773;
+  --hr-darkgray: #323e4c;
+  --hr-dark: #141d28;
+  --hr-secondary: #1c5f95;
+  --hr-tertiary: #17527f;
+  --hr-highlight: rgba(28, 95, 149, 0.1);
+  --hr-text-highlight: #e2efa6;
+  --hr-accent-rgb: 28, 95, 149;
+  /* 코드 토큰 8그룹 */
+  --hr-syn-muted: #6e685e;
+  --hr-syn-key: #9e3a16;
+  --hr-syn-punct: #5f5850;
+  --hr-syn-value: #1a6152;
+  --hr-syn-alert: #9c1327;
+  --hr-syn-name: #7c2f5e;
+  --hr-syn-lit: #14456b;
+  --hr-syn-ink: #26221c;
+  /* 보조 토큰 */
+  --hr-code-bg: #efebe0;
+  --hr-code-chip-bg: #ebe6da;
+  --hr-code-chip-border: #ddd6c7;
+  --hr-highlight-ink: var(--hr-dark);
+  --hr-cal-info: var(--hr-secondary);
+  --hr-cal-good: #187755;
+  --hr-cal-warn: #8a600f;
+  --hr-cal-bad: #b8324a;
+  --hr-cal-quote: #6b6560;
+  --hr-cal-ref: #6b3fa0;
+  --hr-island-bg: color-mix(in srgb, var(--hr-light), var(--hr-lightgray) 30%);
+  --hr-accent-h: 206.8;
+  --hr-accent-s: 68.4%;
+  --hr-accent-l: 34.7%;
+}
+
+.theme-dark {
+  --hr-light: #0e1420;
+  --hr-lightgray: #1e2836;
+  --hr-gray: #7f8b9c;
+  --hr-darkgray: #bcc9d9;
+  --hr-dark: #e9eff7;
+  --hr-secondary: #6fb2e0;
+  --hr-tertiary: #9dcdec;
+  --hr-highlight: rgba(111, 178, 224, 0.15);
+  --hr-text-highlight: #56651a;
+  --hr-accent-rgb: 111, 178, 224;
+  --hr-syn-muted: #7e8794;
+  --hr-syn-key: #e8946a;
+  --hr-syn-punct: #98a2b0;
+  --hr-syn-value: #6fc4aa;
+  --hr-syn-alert: #f08498;
+  --hr-syn-name: #dda2c8;
+  --hr-syn-lit: #9ecbee;
+  --hr-syn-ink: #e9eff7;
+  --hr-code-bg: #141b28;
+  --hr-code-chip-bg: #1c2535;
+  --hr-code-chip-border: #2a3446;
+  --hr-highlight-ink: #f6f8e6;
+  --hr-cal-info: var(--hr-secondary);
+  --hr-cal-good: #4cbf87;
+  --hr-cal-warn: #d9a441;
+  --hr-cal-bad: #e8695c;
+  --hr-cal-quote: #9a938c;
+  --hr-cal-ref: #b39ae0;
+  --hr-island-bg: color-mix(in srgb, var(--hr-light), black 25%);
+  --hr-accent-h: 204.4;
+  --hr-accent-s: 64.6%;
+  --hr-accent-l: 65.7%;
+}
+
+body {
+  --hr-font-header: "Hahmlet", serif;
+  --hr-font-body: "HR Inter", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+  --hr-font-code: "JetBrains Mono", "Noto Sans KR", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ── §1 색 매핑 — quartz.config.yaml theme.colors, custom.scss --island-bg ── */
+
+.theme-light,
+.theme-dark {
+  --background-primary: var(--hr-light);
+  --background-secondary: var(--hr-island-bg);
+  --background-modifier-border: var(--hr-lightgray);
+  --text-normal: var(--hr-darkgray);
+  --text-muted: var(--hr-gray);
+  --h1-color: var(--hr-dark);
+  --h2-color: var(--hr-secondary);
+  --h3-color: var(--hr-dark);
+  --h4-color: var(--hr-dark);
+  --h5-color: var(--hr-dark);
+  --h6-color: var(--hr-dark);
+  --bold-color: var(--hr-dark);
+  --link-color: var(--hr-secondary);
+  --link-external-color: var(--hr-secondary);
+  /* 사이트 본문 링크는 hover에도 색이 그대로다(article a가 base의 tertiary hover를 덮는다) */
+  --link-color-hover: var(--hr-secondary);
+  --link-external-color-hover: var(--hr-secondary);
+  --link-unresolved-color: var(--hr-secondary);
+  --list-marker-color: var(--hr-darkgray);
+  --blockquote-border-thickness: 3px;
+  --blockquote-border-color: var(--hr-secondary);
+  --blockquote-background-color: rgba(var(--hr-accent-rgb), 0.04);
+  /* 주의: --hr-thickness는 스니펫 토큰이 아니라 Obsidian 자체 변수(구분선 두께)다 */
+  --hr-thickness: 1px;
+  /* Obsidian UI 액센트 = secondary를 HSL로 환산 */
+  --accent-h: var(--hr-accent-h);
+  --accent-s: var(--hr-accent-s);
+  --accent-l: var(--hr-accent-l);
+  --text-highlight-bg: var(--hr-text-highlight);
+}
+
+/* ── §2 타이포 — quartz.config.yaml fonts 플러그인, custom.scss @font-face·@layer quartz-base ── */
+
+/* 라틴 전용 Inter. 주의: U+00B7(·)은 한글 문장 부호라 범위에서 뺀다.
+   주의: 이름이 "HR Inter"인 건 Obsidian 내장 "Inter"(범위 없음)와 한 패밀리로 합쳐지면 범위 밖 글자를 내장 Inter가 가로채서다. */
+@font-face {
+  font-family: "HR Inter";
+  src: local("Inter Regular"), local("Inter-Regular"),
+    url("https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.2.8/files/inter-latin-wght-normal.woff2")
+    format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00B6, U+00B8-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+20AC, U+2122;
+}
+
+body {
+  --font-text-theme: var(--hr-font-body);
+  --font-interface-theme: var(--hr-font-body);
+  --font-monospace-theme: var(--hr-font-code);
+  --h1-font: var(--hr-font-header);
+  --h2-font: var(--hr-font-header);
+  --h3-font: var(--hr-font-header);
+  --h4-font: var(--hr-font-header);
+  --h5-font: var(--hr-font-header);
+  --h6-font: var(--hr-font-header);
+  /* h4~h6 = base.scss `font-weight: revert`(UA bold) */
+  --h1-weight: 800;
+  --h2-weight: 700;
+  --h3-weight: 700;
+  --h4-weight: 700;
+  --h5-weight: 700;
+  --h6-weight: 700;
+  /* 자간은 h1만 음수 — 작은 헤딩을 조이면 Hahmlet 한글 자소가 붙는다 */
+  --h1-letter-spacing: -0.02em;
+  --h2-letter-spacing: 0;
+  --h3-letter-spacing: 0;
+  --h4-letter-spacing: 0;
+  --h5-letter-spacing: 0;
+  --h6-letter-spacing: 0;
+  --h1-line-height: 1.3;
+  --h2-line-height: 1.3;
+  --h3-line-height: 1.3;
+  --h4-line-height: 1.3;
+  --h5-line-height: 1.3;
+  --h6-line-height: 1.3;
+  --bold-weight: 700;
+  --italic-color: var(--hr-darkgray);
+  --file-line-width: 672px;
+}
+
+/* 행간·링크 굵기는 노트 뷰에만 — body에 걸면 설정 창·모달까지 바뀐다 */
+.markdown-preview-view,
+.markdown-source-view {
+  --line-height-normal: 1.9;
+  --link-weight: 600;
+}
+
+/* 인용문 — custom.scss blockquote:not(.callout). Obsidian 콜아웃은 blockquote가 아니라 :not이 필요 없다 */
+.markdown-rendered blockquote {
+  padding-block: 0.7rem;
+  border-radius: 0 6px 6px 0;
+}
+
+/* 내부 링크 칩 — base.scss a.internal */
+.markdown-rendered a.internal-link,
+.cm-s-obsidian span.cm-hmd-internal-link {
+  background-color: var(--hr-highlight);
+  border-radius: 5px;
+}
+
+.markdown-rendered :is(h1, h2, h3, h4, h5, h6) {
+  word-break: keep-all;
+}
+
+.markdown-rendered :is(p, li),
+.markdown-source-view.mod-cm6 .cm-line:not(.HyperMD-codeblock) {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* 기울임 대신 자간 — Noto Sans KR엔 이탤릭이 없어 합성 오블리크가 된다 */
+.markdown-rendered em,
+.cm-s-obsidian .cm-em {
+  font-style: normal;
+  letter-spacing: 0.02em;
+}
+
+/* ── §3 코드 — quartz/styles/syntax.scss, custom.scss code:not(pre code) ── */
+
+.theme-light,
+.theme-dark {
+  --code-background: var(--hr-code-bg);
+  --code-normal: var(--hr-syn-ink);
+  --code-comment: var(--hr-syn-muted);
+  --code-keyword: var(--hr-syn-key);
+  --code-important: var(--hr-syn-key);
+  --code-punctuation: var(--hr-syn-punct);
+  --code-operator: var(--hr-syn-punct);
+  --code-value: var(--hr-syn-value);
+  --code-function: var(--hr-syn-name);
+  --code-property: var(--hr-syn-name);
+  --code-tag: var(--hr-syn-name);
+  --code-string: var(--hr-syn-lit);
+}
+
+.markdown-rendered pre,
+.markdown-rendered pre > code,
+.cm-s-obsidian .HyperMD-codeblock {
+  line-height: 1.65;
+}
+
+.markdown-rendered .token.comment,
+.cm-s-obsidian .HyperMD-codeblock .cm-comment {
+  font-style: italic;
+}
+
+/* Obsidian 변수 묶음이 사이트 분류(token-classifier)와 다른 토큰은 사이트 그룹으로 직접 칠한다 */
+.markdown-rendered .token.variable,
+.cm-s-obsidian .HyperMD-codeblock :is(.cm-variable, .cm-variable-2, .cm-variable-3) {
+  color: var(--hr-syn-ink);
+}
+
+.markdown-rendered :is(.token.parameter, .token.attr-name, .token.atrule),
+.cm-s-obsidian .HyperMD-codeblock .cm-attribute {
+  color: var(--hr-syn-key);
+}
+
+.markdown-rendered :is(.token.constant, .token.symbol),
+.cm-s-obsidian .HyperMD-codeblock .cm-atom {
+  color: var(--hr-syn-value);
+}
+
+.markdown-rendered :is(.language-css, .style) .token.string,
+.markdown-rendered .token.attr-value {
+  color: var(--hr-syn-lit);
+}
+
+/* 사이트엔 없는 Prism 기본 장식 */
+.markdown-rendered .token.important {
+  font-weight: inherit;
+}
+
+.markdown-rendered .token.namespace {
+  opacity: 1;
+}
+
+/* Obsidian은 regex를 --code-important(key)에 묶는다 — 사이트는 regexp·error = alert라 직접 칠한다 */
+.markdown-rendered .token.regex,
+.cm-s-obsidian .HyperMD-codeblock span.cm-error {
+  color: var(--hr-syn-alert);
+}
+
+/* 인라인 코드 칩 — Obsidian 규칙이 읽는 변수를 칩 요소에서만 재정의해 코드블럭 배경과 분리한다 */
+.markdown-rendered :not(pre) > code,
+.cm-s-obsidian span.cm-inline-code {
+  --code-background: var(--hr-code-chip-bg);
+  --code-border-width: 1px;
+  --code-border-color: var(--hr-code-chip-border);
+  --code-radius: 4px;
+  --code-normal: var(--hr-dark);
+}
+
+.markdown-rendered :not(pre) > code,
+.cm-s-obsidian .cm-inline-code:not(.cm-formatting) {
+  padding: 0.15em 0.4em;
+}
+
+/* ── §4 하이라이트 — custom.scss .text-highlight / article mark ── */
+
+.markdown-rendered mark,
+.cm-s-obsidian span.cm-highlight {
+  color: var(--hr-highlight-ink);
+}
+
+/* ── §5 콜아웃 — custom.scss .callout (Hairline, 6그룹 매핑, reference) ── */
+
+/* 주의: Obsidian 1.14는 --callout-*가 RGB 트리플이 아니라 완전한 색이다(app.css color-mix 사용). */
+.theme-light,
+.theme-dark {
+  --callout-default: var(--hr-cal-info);
+  --callout-summary: var(--hr-cal-info);
+  --callout-info: var(--hr-cal-info);
+  --callout-todo: var(--hr-cal-info);
+  --callout-example: var(--hr-cal-info);
+  --callout-tip: var(--hr-cal-good);
+  /* 사이트(ofm)는 important를 tip으로 바꿔 그린다 */
+  --callout-important: var(--hr-cal-good);
+  --callout-success: var(--hr-cal-good);
+  --callout-warning: var(--hr-cal-warn);
+  --callout-question: var(--hr-cal-warn);
+  --callout-error: var(--hr-cal-bad);
+  --callout-fail: var(--hr-cal-bad);
+  --callout-bug: var(--hr-cal-bad);
+  --callout-quote: var(--hr-cal-quote);
+}
+
+.callout[data-callout="reference"] {
+  --callout-color: var(--hr-cal-ref);
+  --callout-icon: lucide-book-text;
+}
+
+.callout {
+  --callout-padding: 0;
+  --callout-radius: 6px;
+  --callout-border-width: 1px;
+  --callout-blend-mode: normal;
+  --callout-title-padding: 12px 16px 7px 14px;
+  --callout-content-padding: 8px 16px 12px 14px;
+  --callout-title-size: 0.92rem;
+  --callout-title-weight: 700;
+  /* 보더·배경은 전부 타입 색에서 파생 — 신규 타입도 --callout-color만 주면 된다 */
+  border-color: color-mix(in srgb, var(--callout-color) 22%, transparent);
+  border-left: 3px solid var(--callout-color);
+  background-color: color-mix(in srgb, var(--callout-color) 5%, transparent);
+  --list-marker-color: var(--callout-color);
+  margin: 1.2rem 0;
+  line-height: 1.75;
+}
+
+.callout > .callout-title {
+  --hr-cal-hair: color-mix(in srgb, var(--callout-color) 24%, transparent);
+  font-family: var(--hr-font-header);
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--callout-color) 82%, var(--hr-dark));
+  background: linear-gradient(var(--hr-cal-hair), var(--hr-cal-hair)) no-repeat 14px 100% / calc(100% - 14px) 1px;
+}
+
+/* 본문 여백은 패딩 하나로 — 형제 간격은 위쪽에만 */
+.callout > .callout-content > * {
+  margin-block: 0;
+}
+
+.callout > .callout-content > * + * {
+  margin-top: 0.6rem;
+}
+
+.callout > .callout-content > .callout,
+.callout > .callout-content > .callout + * {
+  margin-top: 0.85rem;
+}
+
+/* 제목만 있거나 접혔으면 구분선 없이 상하 12px 대칭 */
+.callout > .callout-title:last-child,
+.callout.is-collapsed > .callout-title {
+  background: none;
+  padding-bottom: 12px;
+}
+
+/* ── §6 표 — custom.scss §9 Table ── */
+
+.theme-light,
+.theme-dark {
+  --table-header-background: rgba(var(--hr-accent-rgb), 0.08);
+  --table-header-background-hover: rgba(var(--hr-accent-rgb), 0.08);
+  --table-header-weight: 700;
+  --table-header-color: var(--hr-dark);
+  /* Obsidian의 홀수 행 hover 규칙이 명시도가 더 높다 — 같은 10%로 맞춘다 */
+  --table-row-alt-background-hover: rgba(var(--hr-accent-rgb), 0.1);
+}
+
+/* 주의: Obsidian `thead tr > th`의 border-color가 더 높은 명시도로 덮으므로 같은 셀렉터 형태로 건다 */
+.markdown-rendered thead tr > th,
+.cm-html-embed thead tr > th {
+  border-bottom: 2px solid var(--hr-secondary);
+}
+
+/* 사이트는 짝수 행 얼룩(Obsidian 기본은 홀수) */
+.markdown-rendered tbody tr:nth-child(even),
+.cm-html-embed tbody tr:nth-child(even) {
+  background-color: rgba(var(--hr-accent-rgb), 0.035);
+}
+
+/* 주의: nth-child와 명시도가 같아 순서 의존이다 — 반드시 얼룩 뒤에 와야 이긴다 */
+.markdown-rendered tbody tr:hover,
+.cm-html-embed tbody tr:hover {
+  background-color: rgba(var(--hr-accent-rgb), 0.1);
+}

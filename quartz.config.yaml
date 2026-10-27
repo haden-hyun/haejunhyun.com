@@ -21,6 +21,7 @@ configuration:
     cdnCaching: true
     # 폰트 로딩(Google Fonts URL) + og-image 렌더용.
     # 실제 표시 폰트는 아래 `fonts` 플러그인이 결정한다 — 두 곳을 같이 고칠 것.
+    # 세 번째 장소: Obsidian 스니펫 obsidian/theme/haejun-records.css §0 — 색·서체를 바꾸면 같이 고치고 check.mjs로 대조(DESIGN-SYSTEM §4.19).
     # 예외: body의 Inter(라틴 전용)는 Google 슬롯이 하나뿐이라 custom.scss @font-face로 싣는다.
     typography:
       title:
