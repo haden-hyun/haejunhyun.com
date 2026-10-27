@@ -89,7 +89,7 @@ function getNoteDates(file) {
 }
 
 // src/components/styles/noteSpecs.scss
-var noteSpecs_default = ".note-specs {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n.note-specs .note-specs-list {\n  margin: 0.5rem 0 0;\n  padding: 0.6rem 0;\n  border-block: 1px solid var(--lightgray);\n  display: flex;\n  flex-direction: column;\n  gap: 0.3rem;\n}\n.note-specs .note-specs-row {\n  display: grid;\n  grid-template-columns: 4.6rem 1fr;\n  gap: 0.4rem;\n  align-items: baseline;\n}\n.note-specs dt {\n  font-size: 0.75rem;\n  color: var(--gray);\n}\n.note-specs dd {\n  margin: 0;\n  font-size: 0.8rem;\n  color: var(--dark);\n  min-width: 0;\n  overflow-wrap: anywhere;\n}\n.note-specs .note-specs-date {\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  font-variant-numeric: tabular-nums;\n}\n.note-specs .note-specs-tags {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.3rem;\n}\n.note-specs .note-specs-tags a {\n  color: var(--secondary);\n}\n.note-specs .note-specs-tags a:hover {\n  color: var(--tertiary);\n}\n.note-specs .note-specs-readers {\n  visibility: hidden;\n  opacity: 0;\n}\n.note-specs .note-specs-readers[hidden] {\n  display: none;\n}\n.note-specs .note-specs-readers.ready {\n  visibility: visible;\n  opacity: 1;\n  transition: opacity 0.2s;\n}\n.note-specs .note-specs-readers dd {\n  font-variant-numeric: tabular-nums;\n}";
+var noteSpecs_default = '@charset "UTF-8";\n.note-specs {\n  margin: 0.6rem 0 0;\n  font-family: var(--codeFont);\n  font-size: 0.75rem;\n  line-height: 1.6;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n}\n.note-specs > span {\n  white-space: nowrap;\n}\n.note-specs > * + *::before {\n  content: "\xB7";\n  margin-inline: 0.5em;\n}\n.note-specs .note-specs-tags {\n  white-space: normal;\n}\n.note-specs .note-specs-tags a {\n  color: var(--secondary);\n}\n.note-specs .note-specs-tags a:hover {\n  color: var(--tertiary);\n}\n.note-specs .note-specs-tags a + a {\n  margin-inline-start: 0.5em;\n}\n.note-specs .note-specs-readers {\n  display: inline-block;\n  min-width: 13ch;\n  visibility: hidden;\n  opacity: 0;\n}\n.note-specs .note-specs-readers[hidden] {\n  display: none;\n}\n.note-specs .note-specs-readers.ready {\n  visibility: visible;\n  opacity: 1;\n  transition: opacity 0.2s;\n}';
 
 // ../_shared/topics.ts
 var TOPICS = [
@@ -112,9 +112,16 @@ function isRealNote(slug) {
   if (slug === "topics" || slug === "archive") return false;
   return true;
 }
+function isFolderMirrorTag(slug, tag) {
+  const dir = slug.split("/").slice(0, -1).join("/");
+  return dir === tag || dir.startsWith(tag + "/");
+}
 
 // src/components/scripts/specsReaders.inline.ts
-var specsReaders_inline_default = 'var s;function a(){return s??(s=fetch("/api/stats").then(e=>e.ok?e.json():null).then(e=>e&&typeof e.views=="object"&&e.views?e.views:null).catch(()=>null)),s}function i(){let e=location.pathname;try{e=decodeURIComponent(e)}catch{}return e.length>1?e.replace(/\\/+$/,""):"/"}document.addEventListener("nav",()=>{let e=document.querySelector(".note-specs-readers"),t=e?.querySelector(".note-specs-readers-count");if(!e||!t)return;let c=i(),n=!0;window.addCleanup(()=>{n=!1}),a().then(r=>{if(!n)return;if(!r){e.hidden=!0;return}let o=r[c];t.textContent=(Number.isFinite(o)?o:0).toLocaleString("en-US"),e.classList.add("ready")})});\n';
+var specsReaders_inline_default = 'var a;function c(){return a??(a=fetch("/api/stats").then(e=>e.ok?e.json():null).then(e=>e&&typeof e.views=="object"&&e.views?e.views:null).catch(()=>null)),a}function l(){let e=location.pathname;try{e=decodeURIComponent(e)}catch{}return e.length>1?e.replace(/\\/+$/,""):"/"}document.addEventListener("nav",()=>{let e=document.querySelector(".note-specs-readers"),n=e?.querySelector(".note-specs-readers-count");if(!e||!n)return;let r=l(),o=!0;window.addCleanup(()=>{o=!1}),c().then(t=>{if(!o)return;if(!t){e.hidden=!0;return}let s=Number.isFinite(t[r])?t[r]:0;n.textContent=`${s.toLocaleString("en-US")} reader${s===1?"":"s"}`,e.classList.add("ready")})});\n';
+
+// src/components/scripts/backlinkPaths.inline.ts
+var backlinkPaths_inline_default = 'document.addEventListener("nav",()=>{for(let e of document.querySelectorAll(".page-footer .backlinks li > a")){if(e.nextElementSibling?.classList.contains("backlink-path"))continue;let t=e.getAttribute("href")??"";try{t=decodeURIComponent(t)}catch{}let c=t.replace(/[?#].*$/,"").replace(/^(\\.\\.?\\/)+/,"").split("/").slice(0,-1);if(!c.length)continue;let n=document.createElement("span");n.className="backlink-path",n.textContent=c.join(" / "),e.after(n)}});\n';
 var l;
 function S(n2) {
   return n2.children;
@@ -141,56 +148,45 @@ function u2(e2, t2, n2, o2, i2, u3) {
 
 // src/components/NoteSpecs.tsx
 var defaultOptions = {
-  title: "SPECS",
-  labels: { created: "Created", revised: "Revised", updated: "Updated", runtime: "Read time", readers: "Readers", topic: "Topic" }
+  labels: { created: "Created", revised: "Revised", updated: "Updated", runtime: "min read" }
 };
 var NoteSpecs_default = ((userOpts) => {
-  const opts = {
-    ...defaultOptions,
-    ...userOpts,
-    labels: { ...defaultOptions.labels, ...userOpts?.labels }
-  };
+  const opts = { labels: { ...defaultOptions.labels, ...userOpts?.labels } };
   const NoteSpecs = ({ fileData }) => {
     const slug = fileData.slug;
     if (!slug || !isRealNote(slug)) return /* @__PURE__ */ u2(S, {});
     const { created, revised, updated } = getNoteDates(fileData);
     const minutes = readingMinutes(fileData.text);
-    const tags = fileData.frontmatter?.tags ?? [];
+    const tags = (fileData.frontmatter?.tags ?? []).filter((tag) => !isFolderMirrorTag(slug, tag));
     if (!created && !minutes && tags.length === 0) return /* @__PURE__ */ u2(S, {});
-    const dateRows = [
+    const dates = [
       [opts.labels.created, created],
       [opts.labels.revised, revised],
       [opts.labels.updated, updated]
     ];
-    return /* @__PURE__ */ u2("aside", { class: "note-specs", children: [
-      /* @__PURE__ */ u2("h3", { class: "note-specs-title", children: opts.title }),
-      /* @__PURE__ */ u2("dl", { class: "note-specs-list", children: [
-        dateRows.map(
-          ([label, date]) => date && /* @__PURE__ */ u2("div", { class: "note-specs-row", children: [
-            /* @__PURE__ */ u2("dt", { children: label }),
-            /* @__PURE__ */ u2("dd", { class: "note-specs-date", children: /* @__PURE__ */ u2("time", { datetime: date.toISOString(), children: formatYmd(date) }) })
-          ] })
-        ),
-        minutes > 0 && /* @__PURE__ */ u2("div", { class: "note-specs-row", children: [
-          /* @__PURE__ */ u2("dt", { children: opts.labels.runtime }),
-          /* @__PURE__ */ u2("dd", { children: [
-            minutes,
-            " min"
-          ] })
-        ] }),
-        /* @__PURE__ */ u2("div", { class: "note-specs-row note-specs-readers", children: [
-          /* @__PURE__ */ u2("dt", { children: opts.labels.readers }),
-          /* @__PURE__ */ u2("dd", { class: "note-specs-readers-count", children: "\xA0" })
-        ] }),
-        tags.length > 0 && /* @__PURE__ */ u2("div", { class: "note-specs-row", children: [
-          /* @__PURE__ */ u2("dt", { children: opts.labels.topic }),
-          /* @__PURE__ */ u2("dd", { class: "note-specs-tags", children: tags.map((tag) => /* @__PURE__ */ u2("a", { href: resolveRelative(slug, `tags/${tag}`), children: tag }, tag)) })
+    return /* @__PURE__ */ u2("p", { class: "note-specs", children: [
+      dates.map(
+        ([label, date]) => date && /* @__PURE__ */ u2("span", { children: [
+          label,
+          " ",
+          /* @__PURE__ */ u2("time", { datetime: date.toISOString(), children: formatYmd(date) })
         ] })
-      ] })
+      ),
+      minutes > 0 && /* @__PURE__ */ u2("span", { children: [
+        minutes,
+        " ",
+        opts.labels.runtime
+      ] }),
+      /* @__PURE__ */ u2("span", { class: "note-specs-readers", children: /* @__PURE__ */ u2("span", { class: "note-specs-readers-count", children: "\xA0" }) }),
+      tags.length > 0 && /* @__PURE__ */ u2("span", { class: "note-specs-tags", children: tags.map((tag) => /* @__PURE__ */ u2("a", { href: resolveRelative(slug, `tags/${tag}`), children: [
+        "#",
+        tag
+      ] }, tag)) })
     ] });
   };
   NoteSpecs.css = noteSpecs_default;
   NoteSpecs.beforeDOMLoaded = specsReaders_inline_default;
+  NoteSpecs.afterDOMLoaded = backlinkPaths_inline_default;
   return NoteSpecs;
 });
 

@@ -154,8 +154,39 @@ function resolveRelative(current, target) {
   return joinSegments(pathToRoot(current), simplifySlug(target));
 }
 
+// ../_shared/series.ts
+function seriesOf(file) {
+  const raw = file.frontmatter?.series;
+  return raw == null ? "" : String(raw).trim();
+}
+function seriesIndexOf(file) {
+  const raw = file.frontmatter?.series_index;
+  if (typeof raw === "number") return Number.isFinite(raw) ? raw : void 0;
+  if (typeof raw === "string" && raw.trim() !== "") {
+    const index = Number(raw);
+    return Number.isFinite(index) ? index : void 0;
+  }
+  return void 0;
+}
+function toEntry(file) {
+  const index = seriesIndexOf(file);
+  if (index === void 0 || !isListedNote(file)) return void 0;
+  const question = file.frontmatter?.series_question;
+  return {
+    file,
+    index,
+    title: String(file.frontmatter?.title ?? file.slug),
+    question: question == null || String(question).trim() === "" ? void 0 : String(question).trim()
+  };
+}
+function getSeriesEntries(series, allFiles) {
+  return allFiles.filter((f3) => seriesOf(f3) === series).map(toEntry).filter((e2) => e2 !== void 0).sort(
+    (a2, b2) => a2.index - b2.index || a2.title.localeCompare(b2.title, "ko", { numeric: true })
+  );
+}
+
 // src/components/styles/featured.scss
-var featured_default = ".page-header > .popover-hint:has(> .featured-section) {\n  display: grid;\n  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);\n  column-gap: 56px;\n  align-items: start;\n}\n.page-header > .popover-hint:has(> .featured-section) > * {\n  grid-column: 1/-1;\n}\n.page-header > .popover-hint:has(> .featured-section) > .recent-notes {\n  grid-column: 1;\n}\n.page-header > .popover-hint:has(> .featured-section) > .topic-grid-section {\n  grid-column: 2;\n}\n@media all and (max-width: 800px) {\n  .page-header > .popover-hint:has(> .featured-section) {\n    grid-template-columns: minmax(0, 1fr);\n  }\n  .page-header > .popover-hint:has(> .featured-section) > .recent-notes,\n  .page-header > .popover-hint:has(> .featured-section) > .topic-grid-section {\n    grid-column: 1;\n  }\n}\n\n.featured-section {\n  margin: 0;\n  padding: 0 0 96px;\n}\n@media all and (max-width: 800px) {\n  .featured-section {\n    padding-bottom: 48px;\n  }\n}\n\n.featured-label {\n  margin: 0;\n  padding: 0 0 14px;\n  border: none;\n  border-bottom: 1px solid var(--lightgray);\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: 0;\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .featured-label {\n    padding-bottom: 10px;\n  }\n}\n\n.featured-tracks {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n}\n.featured-tracks li {\n  margin: 0;\n}\n\n.featured-row {\n  display: grid;\n  grid-template-columns: 32px minmax(0, 1fr);\n  gap: 12px;\n  align-items: baseline;\n  padding: 14px 10px;\n  border-bottom: 1px solid var(--lightgray);\n  color: inherit;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.featured-row:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n.featured-row:hover .featured-title {\n  color: var(--secondary);\n}\n\n.featured-tracks > li:nth-child(even) > .featured-row:not(:hover) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n\n.featured-no {\n  font-family: var(--codeFont);\n  font-size: 12px;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n}\n\n.featured-body {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n\n.featured-title {\n  font-family: var(--headerFont);\n  font-size: 1.06rem;\n  font-weight: 700;\n  line-height: 1.4;\n  color: var(--dark);\n  word-break: keep-all;\n}\n\n.featured-desc {\n  display: -webkit-box;\n  margin-top: 0.2rem;\n  max-width: 46em;\n  overflow: hidden;\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 1;\n  font-size: 0.92rem;\n  line-height: 1.6;\n  color: var(--darkgray);\n  word-break: keep-all;\n}\n\n.is-lead > .featured-row {\n  padding-block: 1.25rem;\n}\n.is-lead > .featured-row .featured-title {\n  font-size: clamp(1.35rem, 3vw, 1.75rem);\n  font-weight: 900;\n  line-height: 1.3;\n}\n.is-lead > .featured-row .featured-desc {\n  margin-top: 0.35rem;\n  -webkit-line-clamp: 2;\n  font-size: 0.97rem;\n  line-height: 1.65;\n}\n\n.featured-meta {\n  margin-top: 0.3rem;\n  font-size: 13px;\n  color: var(--gray);\n}";
+var featured_default = ".page-header > .popover-hint:has(> .featured-section) {\n  display: grid;\n  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);\n  column-gap: 56px;\n  align-items: start;\n}\n.page-header > .popover-hint:has(> .featured-section) > * {\n  grid-column: 1/-1;\n}\n.page-header > .popover-hint:has(> .featured-section) > .recent-notes {\n  grid-column: 1;\n}\n.page-header > .popover-hint:has(> .featured-section) > .topic-grid-section {\n  grid-column: 2;\n}\n@media all and (max-width: 800px) {\n  .page-header > .popover-hint:has(> .featured-section) {\n    grid-template-columns: minmax(0, 1fr);\n  }\n  .page-header > .popover-hint:has(> .featured-section) > .recent-notes,\n  .page-header > .popover-hint:has(> .featured-section) > .topic-grid-section {\n    grid-column: 1;\n  }\n}\n\n.featured-section {\n  margin: 0;\n  padding: 0 0 96px;\n}\n@media all and (max-width: 800px) {\n  .featured-section {\n    padding-bottom: 48px;\n  }\n}\n\n.featured-label {\n  margin: 0;\n  padding: 0 0 14px;\n  border: none;\n  border-bottom: 1px solid var(--lightgray);\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: 0;\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .featured-label {\n    padding-bottom: 10px;\n  }\n}\n\n.featured-label-sub {\n  margin-left: 0.5rem;\n  font-family: var(--codeFont);\n  font-size: 0.72rem;\n  font-weight: 400;\n  color: var(--gray);\n}\n\n.featured-tracks {\n  list-style: none;\n  margin: 0;\n  padding: 0;\n}\n.featured-tracks li {\n  margin: 0;\n}\n\n.featured-row {\n  display: grid;\n  grid-template-columns: 32px minmax(0, 1fr);\n  gap: 12px;\n  align-items: baseline;\n  padding: 14px 10px;\n  border-bottom: 1px solid var(--lightgray);\n  color: inherit;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.featured-row:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n.featured-row:hover .featured-title {\n  color: var(--secondary);\n}\n\n.featured-tracks > li:nth-child(even) > .featured-row:not(:hover) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n\n.featured-no {\n  font-family: var(--codeFont);\n  font-size: 12px;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n}\n\n.featured-body {\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n\n.featured-title {\n  font-family: var(--headerFont);\n  font-size: 1.06rem;\n  font-weight: 700;\n  line-height: 1.4;\n  color: var(--dark);\n  word-break: keep-all;\n}\n\n.featured-desc {\n  display: -webkit-box;\n  margin-top: 0.2rem;\n  max-width: 46em;\n  overflow: hidden;\n  -webkit-box-orient: vertical;\n  -webkit-line-clamp: 1;\n  font-size: 0.92rem;\n  line-height: 1.6;\n  color: var(--darkgray);\n  word-break: keep-all;\n}\n\n.is-lead > .featured-row {\n  padding-block: 1.25rem;\n}\n.is-lead > .featured-row .featured-title {\n  font-size: clamp(1.35rem, 3vw, 1.75rem);\n  font-weight: 900;\n  line-height: 1.3;\n}\n.is-lead > .featured-row .featured-desc {\n  margin-top: 0.35rem;\n  -webkit-line-clamp: 2;\n  font-size: 0.97rem;\n  line-height: 1.65;\n}\n\n.featured-meta {\n  margin-top: 0.3rem;\n  font-size: 13px;\n  color: var(--gray);\n}";
 var l;
 function S(n2) {
   return n2.children;
@@ -221,7 +252,7 @@ var defaultOptions = {
   recentExcludeCount: 5,
   slugs: []
 };
-function resolveSlugs(slugs, files, recent) {
+function resolveSlugs(slugs, files) {
   const bySlug = new Map(files.map((f3) => [f3.slug, f3]));
   const resolved = [];
   const seen = /* @__PURE__ */ new Set();
@@ -234,10 +265,6 @@ function resolveSlugs(slugs, files, recent) {
     const file = bySlug.get(slug);
     if (!file) {
       console.warn(`[featured-notes] \uC2AC\uB7EC\uADF8\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC5B4 \uAC74\uB108\uB701\uB2C8\uB2E4: "${slug}"`);
-      continue;
-    }
-    if (recent.has(slug)) {
-      console.warn(`[featured-notes] Recent Notes\uC5D0 \uC774\uBBF8 \uB098\uC640 \uAC74\uB108\uB701\uB2C8\uB2E4: "${slug}"`);
       continue;
     }
     resolved.push(file);
@@ -259,7 +286,7 @@ var FeaturedNotes_default = ((userOpts) => {
     if (fileData.slug !== "index") return /* @__PURE__ */ u2(S, {});
     const files = allFiles.filter((f3) => isListedNote(f3));
     const recent = getRecentSlugs(files, opts.recentExcludeCount);
-    const curated = resolveSlugs(opts.slugs, files, recent);
+    const curated = resolveSlugs(opts.slugs, files);
     const exclude = /* @__PURE__ */ new Set([...curated.map((f3) => f3.slug), ...recent]);
     const needed = MAX_SLOTS - curated.length;
     const autoFilled = needed > 0 ? pickRoundRobin(files, needed, exclude).sort(byListDateDesc) : [];
@@ -269,10 +296,19 @@ var FeaturedNotes_default = ((userOpts) => {
     const titleOf = (f3) => f3.frontmatter?.title ?? "Untitled";
     const descOf = (f3) => f3.frontmatter?.description ?? "";
     return /* @__PURE__ */ u2("section", { class: `${displayClass ?? ""} featured-section`, "aria-labelledby": "featured-h", children: [
-      /* @__PURE__ */ u2("h2", { id: "featured-h", class: "featured-label", children: "Featured" }),
+      /* @__PURE__ */ u2("h2", { id: "featured-h", class: "featured-label", children: [
+        "Featured ",
+        /* @__PURE__ */ u2("span", { class: "featured-label-sub", children: "editor's picks" })
+      ] }),
       /* @__PURE__ */ u2("ol", { class: "featured-tracks", children: selected.map((item, i2) => {
         const minutes = readingMinutes(item.text);
-        const meta = [topicName(item.slug ?? ""), minutes ? `${minutes} min` : ""].filter(Boolean).join(" \xB7 ");
+        const series = seriesOf(item);
+        const episodes = series ? getSeriesEntries(series, files).length : 0;
+        const meta = [
+          topicName(item.slug ?? ""),
+          episodes ? `\uC2DC\uB9AC\uC988 \xB7 ${episodes}\uD3B8` : "",
+          minutes ? `${minutes} min` : ""
+        ].filter(Boolean).join(" \xB7 ");
         const desc = descOf(item);
         return /* @__PURE__ */ u2("li", { class: i2 === 0 ? "is-lead" : void 0, children: /* @__PURE__ */ u2("a", { class: "featured-row", href: resolveRelative(fileData.slug, item.slug), children: [
           /* @__PURE__ */ u2("span", { class: "featured-no", children: pad(i2 + 1) }),

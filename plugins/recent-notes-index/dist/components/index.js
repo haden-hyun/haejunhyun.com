@@ -56,6 +56,11 @@ function topicName(slug) {
   const key = slug.split("/")[0] ?? "";
   return TOPIC_NAMES[key] ?? titleCase(key);
 }
+function folderTitle(path, overrides = {}) {
+  const segment = path.split("/").pop() ?? path;
+  return overrides[path] ?? overrides[segment] ?? TOPIC_NAMES[segment] ?? titleCase(segment);
+}
+var plural = (n2, word) => `${n2} ${word}${n2 === 1 ? "" : "s"}`;
 var byListDateDesc = (a2, b2) => (getListDate(b2)?.getTime() ?? 0) - (getListDate(a2)?.getTime() ?? 0);
 var GROUP_MIN = 3;
 function buildRecentRows(sorted, limit) {
@@ -120,6 +125,40 @@ function resolveRelative(current, target) {
   return joinSegments(pathToRoot(current), simplifySlug(target));
 }
 
+// ../_shared/series.ts
+function seriesOf(file) {
+  const raw = file.frontmatter?.series;
+  return raw == null ? "" : String(raw).trim();
+}
+function seriesIndexOf(file) {
+  const raw = file.frontmatter?.series_index;
+  if (typeof raw === "number") return Number.isFinite(raw) ? raw : void 0;
+  if (typeof raw === "string" && raw.trim() !== "") {
+    const index = Number(raw);
+    return Number.isFinite(index) ? index : void 0;
+  }
+  return void 0;
+}
+function toEntry(file) {
+  const index = seriesIndexOf(file);
+  if (index === void 0 || !isListedNote(file)) return void 0;
+  const question = file.frontmatter?.series_question;
+  return {
+    file,
+    index,
+    title: String(file.frontmatter?.title ?? file.slug),
+    question: question == null || String(question).trim() === "" ? void 0 : String(question).trim()
+  };
+}
+function getSeriesEntries(series, allFiles) {
+  return allFiles.filter((f3) => seriesOf(f3) === series).map(toEntry).filter((e2) => e2 !== void 0).sort(
+    (a2, b2) => a2.index - b2.index || a2.title.localeCompare(b2.title, "ko", { numeric: true })
+  );
+}
+function episodeLabel(index) {
+  return index === 0 ? "\uC11C\uBB38" : `${index}\uD3B8`;
+}
+
 // src/components/styles/recentNotes.scss
 var recentNotes_default = '@charset "UTF-8";\n.recent-notes {\n  padding: 0 0 72px;\n}\n@media all and (max-width: 800px) {\n  .recent-notes {\n    padding-bottom: 48px;\n  }\n}\n\n.recent-notes-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding-bottom: 14px;\n  border-bottom: 1px solid var(--lightgray);\n}\n.recent-notes-header h2 {\n  margin: 0;\n  padding: 0;\n  border: none;\n  font-family: var(--headerFont);\n  font-size: 1.15rem;\n  font-weight: 700;\n  letter-spacing: 0;\n  color: var(--secondary);\n}\n@media all and (max-width: 800px) {\n  .recent-notes-header {\n    padding-bottom: 10px;\n  }\n}\n\n.recent-notes-more {\n  padding: 8px 0;\n  font-family: var(--headerFont);\n  font-size: 0.9rem;\n  font-weight: 600;\n  color: var(--secondary);\n  text-decoration: none;\n}\n.recent-notes-more:hover {\n  text-decoration: underline;\n  text-underline-offset: 3px;\n}\n@media all and (max-width: 800px) {\n  .recent-notes-more {\n    padding: 10px 0;\n  }\n}\n\n.recent-row {\n  display: grid;\n  grid-template-columns: 120px minmax(0, 1fr) auto;\n  gap: 24px;\n  align-items: baseline;\n  padding: 22px 10px;\n  border-bottom: 1px solid var(--lightgray);\n  color: inherit;\n  text-decoration: none;\n  transition: background-color var(--dur-fast) var(--ease);\n}\n.recent-row:nth-child(even) {\n  background: rgba(var(--accent-rgb), 0.035);\n}\n.recent-row:hover {\n  background: rgba(var(--accent-rgb), 0.1);\n}\n@media all and (max-width: 800px) {\n  .recent-row {\n    grid-template-columns: auto minmax(0, 1fr);\n    gap: 4px 0;\n    padding: 18px 10px;\n  }\n}\n\n.recent-date {\n  font-family: var(--codeFont);\n  font-size: 12.5px;\n  color: var(--gray);\n  font-variant-numeric: tabular-nums;\n  white-space: nowrap;\n}\n@media all and (max-width: 800px) {\n  .recent-date {\n    font-size: 11.5px;\n  }\n}\n\n.recent-main {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n@media all and (max-width: 800px) {\n  .recent-main {\n    grid-column: 1/-1;\n    grid-row: 2;\n  }\n}\n\n.recent-title {\n  font-family: var(--headerFont);\n  font-size: 17px;\n  font-weight: 700;\n  letter-spacing: -0.01em;\n  color: var(--dark);\n  word-break: keep-all;\n}\n@media all and (max-width: 800px) {\n  .recent-title {\n    font-size: 16px;\n  }\n}\n\n.recent-revised {\n  display: inline-block;\n  margin-left: 8px;\n  padding: 0 5px;\n  border: 1px solid var(--lightgray);\n  border-radius: 4px;\n  font-size: 11px;\n  font-weight: 400;\n  letter-spacing: 0;\n  line-height: 1.6;\n  color: var(--gray);\n  vertical-align: 2px;\n}\n\n.recent-sub {\n  font-size: 14.5px;\n  line-height: 1.65;\n  color: var(--gray);\n  word-break: keep-all;\n  overflow: hidden;\n  display: -webkit-box;\n  -webkit-line-clamp: 1;\n  -webkit-box-orient: vertical;\n}\n@media all and (max-width: 800px) {\n  .recent-sub {\n    font-size: 14px;\n    line-height: 1.6;\n  }\n}\n\n.recent-topic {\n  font-size: 12.5px;\n  color: var(--gray);\n  white-space: nowrap;\n}\n@media all and (max-width: 800px) {\n  .recent-topic {\n    grid-row: 1;\n    grid-column: 2;\n    font-family: var(--codeFont);\n    font-size: 11.5px;\n  }\n  .recent-topic::before {\n    content: " \xB7 ";\n    white-space: pre;\n  }\n}';
 var l;
@@ -151,7 +190,9 @@ var defaultOptions = {
   limit: 5,
   linkToMore: false,
   linkToMoreLabel: "ALL NOTES \u2192",
-  showTags: true
+  showTags: true,
+  seriesTitles: {},
+  folderTitles: {}
 };
 var RecentNotesForIndex_default = ((userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
@@ -179,11 +220,24 @@ var RecentNotesForIndex_default = ((userOpts) => {
         let sub;
         let revised = false;
         if (row.kind === "group") {
-          const shown = row.files.slice(0, 2).map(titleOf);
-          const rest = row.files.length - shown.length;
           href = resolveRelative(here, `${row.folder}/index`);
-          title = `${titleCase(row.folder.split("/").pop() ?? "")} \xB7 ${row.files.length} notes`;
-          sub = shown.join(", ") + (rest > 0 ? ` +${rest} more` : "");
+          revised = row.files.every((f3) => getNoteDates(f3).revised);
+          const series = seriesOf(row.files[0]);
+          const all = series ? getSeriesEntries(series, allFiles) : [];
+          const episodes = all.filter((e2) => row.files.includes(e2.file));
+          if (series && episodes.length === row.files.length) {
+            title = opts.seriesTitles[series] ?? series;
+            const [head, next] = [episodes[0], episodes[1]];
+            const first = head.index === 0 && head.title === title && next ? next : head;
+            sub = `\uC2DC\uB9AC\uC988 \xB7 ${all.length}\uD3B8 \u2014 ${episodeLabel(first.index)} ${first.title}\uBD80\uD130`;
+          } else {
+            const parts = row.folder.split("/");
+            const parent = parts.length > 2 ? `${folderTitle(parts.slice(0, -1).join("/"), opts.folderTitles)} \u203A ` : "";
+            const shown = row.files.slice(0, 2).map(titleOf);
+            const rest = row.files.length - shown.length;
+            title = `${parent}${folderTitle(row.folder, opts.folderTitles)} \xB7 ${plural(row.files.length, "note")}`;
+            sub = shown.join(", ") + (rest > 0 ? ` +${rest} more` : "");
+          }
         } else {
           href = resolveRelative(here, slug);
           title = titleOf(row.file);

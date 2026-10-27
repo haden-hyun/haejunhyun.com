@@ -4,7 +4,7 @@ import { FolderPageOptions } from '@quartz-community/folder-page';
 interface FolderListingOptions extends FolderPageOptions {
     /** 폴더 경로 또는 마지막 세그먼트 → 표시명. 폴더 노트 title이 우선한다. */
     folderTitles: Record<string, string>;
-    /** 시리즈 키 → 표시명. 주의: series-box·series-pager·series-roadmap 옵션과 같게 둘 것. */
+    /** 시리즈 키 → 표시명. quartz.config.yaml의 `&seriesTitles` 앵커 정의처다. */
     seriesTitles: Record<string, string>;
 }
 /**

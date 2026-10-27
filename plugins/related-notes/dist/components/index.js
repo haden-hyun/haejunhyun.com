@@ -58,6 +58,10 @@ function isRealNote(slug) {
 function isListedNote(file) {
   return isRealNote(file.slug) && file.unlisted !== true && file.frontmatter?.unlisted !== true;
 }
+function isFolderMirrorTag(slug, tag) {
+  const dir = slug.split("/").slice(0, -1).join("/");
+  return dir === tag || dir.startsWith(tag + "/");
+}
 
 // ../_shared/series.ts
 function seriesOf(file) {
@@ -82,10 +86,6 @@ var SERIES_FLOOR = 20;
 var TAG = 10;
 var MIN_SCORE = 10;
 var dirOf = (slug) => slug.split("/").slice(0, -1).join("/");
-function isFolderMirrorTag(slug, tag) {
-  const dir = dirOf(slug);
-  return dir === tag || dir.startsWith(tag + "/");
-}
 function commonDepth(a2, b2) {
   const pa = a2.split("/");
   const pb = b2.split("/");
