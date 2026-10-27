@@ -1,7 +1,7 @@
 /* haejun-records — haejunhyun.com(Quartz) 디자인을 Obsidian 기본 테마 위에 옮긴 스니펫.
    값은 사이트 원본에서 그대로 가져온다. 사이트 :root ↔ .theme-light, [saved-theme="dark"] ↔ .theme-dark.
    주의: 이후 섹션은 §0의 --hr-* 변수만 참조한다 — 색을 바꿀 땐 §0만 고친다.
-   주의: 원본은 이 저장소(obsidian/theme/). 볼트 사본을 직접 고치지 말 것 — install.mjs로 설치, check.mjs로 사이트 값과 대조. */
+   주의: 원본은 이 저장소(obsidian/theme/). 볼트 사본을 직접 고치지 말 것 — 볼트가 GitHub v5에서 받아 간다, check.mjs로 사이트 값과 대조. */
 
 /* ── §0 토큰 — quartz.config.yaml theme.colors · quartz/styles/syntax.scss · quartz/styles/custom.scss :root ── */
 

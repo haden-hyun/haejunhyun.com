@@ -422,7 +422,7 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 
 ### 4.19 Obsidian 미러 — 볼트에서 같은 색·서체
 
-**역할**: 원고를 쓰는 Obsidian(기본 테마)에서 사이트와 같은 색·서체로 읽는다. 원본은 `obsidian/theme/haejun-records.css`(CSS 스니펫), 볼트 `.obsidian/snippets/`엔 사본만 둔다 — `node obsidian/theme/install.mjs`로 복사(볼트 경로 `VAULT_DIR`, 기본 `~/Documents/obsidian` — anim-widgets 미리보기와 같은 방식).
+**역할**: 원고를 쓰는 Obsidian(기본 테마)에서 사이트와 같은 색·서체로 읽는다. 원본은 `obsidian/theme/haejun-records.css`(CSS 스니펫), 볼트 `.obsidian/snippets/`엔 사본만 둔다. 이 저장소는 볼트 경로를 모른다 — 볼트가 `.config/sync_obsidian_snippet.py`로 GitHub `v5`의 원본을 받아 간다(Windows·Mac 같은 명령, 경로 설정 없음).
 
 - **같게 적용되는 것**: 색 9키 · 코드 토큰 8그룹과 코드블럭 배경·행간 1.65 · 인라인 코드 칩 · 하이라이트 · 콜아웃 6그룹 + `reference` 색과 Hairline 면 처리·여백(§4.1) · 표 헤더·얼룩·hover(§4.3) · 인용문 바·면·상하 패딩·반경 · 목록 마커 · 내부 링크 칩(배경·반경)·굵기 600(hover에도 색 고정) · 서체 스택 · 헤딩 굵기·자간·행간 1.3 · 본문 행간 1.9 · 본문 폭 672px · `em` 자간·색 · `keep-all` · `hr` 1px.
 - 스니펫 §0이 사이트 값을 `--hr-*`로 한 번만 적고, 나머지 절은 그 변수로 Obsidian 변수를 채운다.
@@ -454,7 +454,7 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - **유일한 근사 — `regexp`·`error`(alert)**: Obsidian은 regex를 important와 한 변수(`--code-important`)로 묶는다. 그래서 변수 대신 읽기 모드 `.token.regex`·Live Preview `span.cm-error`를 직접 셀렉터로 칠한다. Live Preview의 regex는 string과 같은 클래스(`cm-string-2`)라 string 색으로 남는다.
 - **범위 밖**: 코드블럭 맥 창(제목 줄·점·그림자)·줄 번호·글자 0.82rem, 콜아웃 아이콘 정렬 지오메트리(그래서 제목 아래 구분선은 아이콘 열이 아니라 제목 패딩에서 시작한다), 헤딩 크기·h2 하단선, 링크 밑줄 제거·hover 하단선과 그 전환·내부 링크 칩 좌우 패딩(에디터에서 조각마다 붙는다), 인라인 코드 0.85em, 하이라이트 반경·패딩(Live Preview에서 서식 조각마다 끊긴다), 표 폰트 크기·세로 테두리, 선택 영역 색, 본문 16px(Obsidian 글꼴 크기 설정이 이긴다), 사이트 레이아웃(패널·island·그래프).
 - 주의: `codeblock-customizer` 같은 코드 플러그인은 `--code-*`를 덮는다 — 볼트에선 꺼 둔다. Obsidian 설정의 강조 색을 지정하면 `body` 인라인 스타일이 `--accent-h/s/l`을 이기므로 비워 둔다.
-- **색·서체를 바꾸면 스니펫 §0도 같이 고치고 `install.mjs` → `check.mjs`를 돌릴 것.** `check.mjs`는 색 9키·코드 8그룹·코드/칩/하이라이트/콜아웃 토큰·`--accent-rgb`·`--island-bg`·accent HSL·서체 스택을 라이트·다크로 대조하고, 볼트 사본이 원본과 바이트까지 같은지 본다. 하나라도 어긋나면 exit 1.
+- **색·서체를 바꾸면 스니펫 §0도 같이 고치고 `check.mjs`를 돌릴 것.** `check.mjs`는 색 9키·코드 8그룹·코드/칩/하이라이트/콜아웃 토큰·`--accent-rgb`·`--island-bg`·accent HSL·서체 스택을 라이트·다크로 대조한다. 하나라도 어긋나면 exit 1. `v5`에 push된 뒤 볼트에서 동기화 스크립트를 돌리면 반영된다.
 
 ---
 

@@ -1,7 +1,5 @@
-// 스니펫 값이 사이트 원본(quartz.config.yaml·syntax.scss·custom.scss)과 같은지, 볼트 사본이 원본과 같은지 검사한다. 불일치 시 exit 1.
-import { existsSync, readFileSync } from "node:fs"
-import { homedir } from "node:os"
-import path from "node:path"
+// 스니펫 값이 사이트 원본(quartz.config.yaml·syntax.scss·custom.scss)과 같은지 검사한다. 불일치 시 exit 1.
+import { readFileSync } from "node:fs"
 
 const ROOT = new URL("../../", import.meta.url)
 const read = (p) => readFileSync(new URL(p, ROOT), "utf8")
@@ -130,14 +128,9 @@ const snipBody = decls(snippet, "body")
 // 스니펫의 "HR Inter"는 내장 Inter와 겹치지 않게 바꾼 이름일 뿐 사이트 "Inter"와 같은 파일이다.
 for (const [k, name] of Object.entries(FONTS)) compare(`fonts.${k} → ${name}`, fonts[k], snipBody[name]?.replace('"HR Inter"', '"Inter"'))
 
-const vault = process.env.VAULT_DIR ?? path.join(homedir(), "Documents/obsidian")
-const installed = path.join(vault, ".obsidian/snippets/haejun-records.css")
-if (!existsSync(installed)) fails.push(`볼트 사본 없음: ${installed} (install.mjs를 돌릴 것)`)
-else if (!readFileSync(installed).equals(readFileSync(new URL(SNIPPET, ROOT)))) fails.push(`볼트 사본이 원본과 다르다: ${installed} (install.mjs를 돌릴 것)`)
-
 if (fails.length) {
   console.error(fails.map((f) => `✗ ${f}`).join("\n"))
   console.error(`\n불일치 ${fails.length}건 (일치 ${ok}건)`)
   process.exit(1)
 }
-console.log(`✓ 값 ${ok}건 일치(라이트·다크 각 ${Object.keys(MAP).length + 1} + 서체 ${Object.keys(FONTS).length}), 볼트 사본 동일 — ${installed}`)
+console.log(`✓ 값 ${ok}건 일치(라이트·다크 각 ${Object.keys(MAP).length + 1} + 서체 ${Object.keys(FONTS).length})`)
