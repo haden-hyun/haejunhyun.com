@@ -845,12 +845,12 @@ ul.toc-content.collapsed {
   }
 }
 
-// ── 8.6 집중 모드 — 양쪽 패널을 걷고 본문 단을 ×1.125 (plugins/focus-mode) ──
+// ── 8.6 집중 모드 — 양쪽 패널을 걷고 본문 단을 56rem으로 넓힌다 (plugins/focus-mode) ──
 // `<html focus-mode>`는 토글 스크립트가 단다. 토글이 있는 노트 페이지·데스크톱만 적용한다.
 // 주의: 좌측 단을 display: none으로 빼지 말 것 — 자동 배치인 .center가 좌측 열(320px)로 빨려 들어간다.
 @media all and (min-width: #{map.get($breakpoints, desktop) + 1px}) {
   :root[focus-mode] .page > #quartz-body:has(.focus-toggle) {
-    grid-template-columns: minmax(0, 1fr) calc(42rem * 1.125) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 56rem minmax(0, 1fr);
 
     > .sidebar.left {
       visibility: hidden;
@@ -870,14 +870,7 @@ ul.toc-content.collapsed {
     }
 
     > .center {
-      max-width: calc(42rem * 1.125);
-    }
-
-    // 주의: 진행바·맨 위로(fixed)는 확대하지 않는다 — 확대된 조상 안에선 위치·크기도 함께 커진다.
-    // shortcut: zoom을 모르는 브라우저(Firefox 126 미만)는 756px 단에 16px 본문으로 남는다, 그 범위를 지원하려면 rem 크기를 em으로 옮길 것.
-    > .center > :is(.page-header, article),
-    > .center > .page-footer > :not(#reading-progress-bar, #back-to-top) {
-      zoom: 1.125;
+      max-width: 56rem;
     }
   }
 }

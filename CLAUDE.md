@@ -89,7 +89,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 집중 모드 `plugins/focus-mode`
 
-상단 바 토글(⌘\)이 `<html focus-mode>`를 달면 `custom.scss` §8.6이 양쪽 패널을 걷고 본문 단을 `zoom: 1.125`로 키운다. 우측 TOC 자리엔
+상단 바 토글(⌘\)이 `<html focus-mode>`를 달면 `custom.scss` §8.6이 양쪽 패널을 걷고 본문 단을 56rem으로 넓힌다(글자 크기는 그대로). 우측 TOC 자리엔
 스크립트가 만든 레일(눈금 → 펼침 패널)이 들어가고, 현재 절은 업스트림 TOC의 `in-view`를 그대로 받는다(DESIGN-SYSTEM §4.18). 노트 페이지·데스크톱(1200px 초과)만.
 주의: 좌측 단을 `display: none`으로 빼지 말 것 — `.center`가 좌측 열로 빨려 들어간다. `visibility: hidden` + 그리드 열 교체로 숨긴다.
 업스트림 `reader-mode`는 꺼 둔다(패널 투명도 + hover 복원 — AA 위반).
