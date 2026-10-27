@@ -1,7 +1,7 @@
-// 홈 Featured — 번호 + 제목 + 요약 + "토픽 · N min" 4행.
+// 홈 Featured — 번호 + 제목 + 요약 + "토픽 · 시리즈 · N편 · N min" 4행.
 // - `options.slugs`가 유일한 지정 수단, 쓴 순서가 표시 순서(번호)
 // - 부족분은 토픽 라운드로빈으로 채운다(전체 최신순은 큰 토픽이 슬롯을 독식)
-// - Recent Notes에 나온 노트는 지정·자동 채움 모두에서 뺀다
+// - Recent Notes에 나온 노트는 자동 채움에서만 뺀다. 직접 지정한 슬러그는 Recent와 겹쳐도 싣는다
 // 주의: 지정 목록을 최신순으로 다시 정렬하지 말 것. 순서 제어가 이 방식의 목적이다.
 import type {
   QuartzComponent,
@@ -12,6 +12,7 @@ import type {
 import { readingMinutes } from "../../../_shared/noteMeta"
 import { buildRecentRows, byListDateDesc, isListedNote, topicName } from "../../../_shared/notes"
 import { resolveRelative } from "../../../_shared/path"
+import { getSeriesEntries, seriesOf } from "../../../_shared/series"
 import style from "./styles/featured.scss"
 
 const MAX_SLOTS = 4
@@ -73,8 +74,8 @@ const defaultOptions: FeaturedNotesOptions = {
   slugs: [],
 }
 
-/** 슬러그를 노트로 해석한다. 미해결·중복·Recent 중복·초과는 빌드 로그에 경고를 남긴다. */
-function resolveSlugs(slugs: string[], files: FileData[], recent: Set<string>): FileData[] {
+/** 슬러그를 노트로 해석한다. 미해결·중복·초과는 빌드 로그에 경고를 남긴다. */
+function resolveSlugs(slugs: string[], files: FileData[]): FileData[] {
   const bySlug = new Map(files.map((f) => [f.slug as string, f]))
   const resolved: FileData[] = []
   const seen = new Set<string>()
@@ -88,10 +89,6 @@ function resolveSlugs(slugs: string[], files: FileData[], recent: Set<string>): 
     const file = bySlug.get(slug)
     if (!file) {
       console.warn(`[featured-notes] 슬러그를 찾을 수 없어 건너뜁니다: "${slug}"`)
-      continue
-    }
-    if (recent.has(slug)) {
-      console.warn(`[featured-notes] Recent Notes에 이미 나와 건너뜁니다: "${slug}"`)
       continue
     }
     resolved.push(file)
@@ -118,7 +115,7 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
 
     const files = (allFiles as FileData[]).filter((f) => isListedNote(f))
     const recent = getRecentSlugs(files, opts.recentExcludeCount)
-    const curated = resolveSlugs(opts.slugs, files, recent)
+    const curated = resolveSlugs(opts.slugs, files)
 
     const exclude = new Set([...curated.map((f) => f.slug as string), ...recent])
     const needed = MAX_SLOTS - curated.length
@@ -138,12 +135,18 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
     return (
       <section class={`${displayClass ?? ""} featured-section`} aria-labelledby="featured-h">
         <h2 id="featured-h" class="featured-label">
-          Featured
+          Featured <span class="featured-label-sub">editor's picks</span>
         </h2>
         <ol class="featured-tracks">
           {selected.map((item, i) => {
             const minutes = readingMinutes(item.text as string | undefined)
-            const meta = [topicName((item.slug as string) ?? ""), minutes ? `${minutes} min` : ""]
+            const series = seriesOf(item)
+            const episodes = series ? getSeriesEntries(series, files).length : 0
+            const meta = [
+              topicName((item.slug as string) ?? ""),
+              episodes ? `시리즈 · ${episodes}편` : "",
+              minutes ? `${minutes} min` : "",
+            ]
               .filter(Boolean)
               .join(" · ")
             const desc = descOf(item)

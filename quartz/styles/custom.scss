@@ -1,6 +1,6 @@
 // custom.scss — 사이트 커스텀 스타일. 색 값은 quartz.config.yaml theme.colors 별칭만 쓴다.
 // - 토큰(§0) · 타이포(§1) · 코드 창(§2) · KaTeX(§3) · 콜아웃(§4) · 태그·breadcrumb·로고(§5~6)
-// - 사이드바 패널·island(§7~8.5) · 표(§9) · 페이지 폭·상단 바·홈(§10.4~10.6) · 미디어·유틸·감속 모션(§11~13)
+// - 사이드바 패널·글 끝 Backlinks·island(§7~8.5) · 표(§9) · 페이지 폭·상단 바·홈(§10.4~10.6) · 미디어·유틸·감속 모션(§11~13)
 // 주의: 출력이 @layer quartz-base 밖이라 명시도와 무관하게 base·플러그인을 이긴다 — 전역 요소 선택자는 레이어 안에 둘 것.
 // 주의: base.scss를 여기서 @use하면 전체가 중복 컴파일된다.
 
@@ -176,6 +176,11 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   li {
     word-break: keep-all;
     overflow-wrap: break-word;
+  }
+
+  // 본문 목록 행간 = 문단. 주의: base의 `li { line-height: 1.6rem }`이 남아 있어 article로 좁혀 덮는다.
+  article li {
+    line-height: 1.9;
   }
 
   strong {
@@ -454,7 +459,7 @@ body .katex-display .katex {
   }
   & > .callout-content {
     padding: 8px 16px 12px 14px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     // 주의: grid라 여백이 상쇄되지 않는다 — 형제 간격은 위쪽 하나로만 준다.
     & > * {
       margin-top: 0;
@@ -467,8 +472,9 @@ body .katex-display .katex {
     & > .callout + * {
       margin-top: 0.85rem;
     }
-    // 주의: 레이어 안 `p { font-size; line-height }`가 콜아웃 본문 크기를 무시한다.
-    p {
+    // 주의: 레이어 안 `p`·`article li`의 크기·행간이 콜아웃 본문 값을 무시한다.
+    p,
+    li {
       font-size: inherit;
       line-height: inherit;
     }
@@ -609,39 +615,94 @@ a.tag-link {
   padding: 0;
 }
 
-// ── 7. 좌측 사이드바 — SPECS / Backlinks / CATALOG ─────────────────────────
-// 패널 자체 스타일은 각 플러그인 몫, 여긴 컨테이너 맥락만. 셋 다 자연 높이다.
+// ── 7. 좌측 사이드바 — CATALOG / GRAPH ────────────────────────────────────
+// 패널 자체 스타일은 각 플러그인 몫, 여긴 컨테이너 맥락만. 둘 다 자연 높이고, 순서는 layout priority가 정한다.
+// 주의: `min-height: 0`을 빼지 말 것 — flex 자식 기본값 `auto`라 flex 값을 뭘 주든 줄지 않는다.
+// 주의: `.desktop-only` 래퍼는 `display: contents`라 flex에 투명하다 — 패널을 직접 타겟할 것.
 .sidebar.left {
   gap: 1.6rem;
 
-  > .note-specs,
-  > .desktop-only > .note-specs,
   > .note-catalog,
-  > .desktop-only > .note-catalog {
+  > .desktop-only > .note-catalog,
+  > .topic-graph,
+  > .desktop-only > .topic-graph {
     flex: 0 0 auto;
     min-height: 0;
-  }
-
-  > .backlinks,
-  > .desktop-only > .backlinks {
-    flex: 0 0 auto;
-    min-height: 0;
-    max-height: 9rem;
   }
 }
 
-// 모바일 Backlinks(quartz.ts가 본문 뒤에 넣는다) — 시리즈 페이저·댓글과 같은 블록 간격.
+// 글 끝 Backlinks — 라벨 + 개수, 행 = 제목 링크 + 폴더 경로(note-specs 스크립트가 단다), 2열(모바일 1열).
 .page-footer .backlinks {
+  counter-reset: backlinks;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  // base `div:has(> .overflow)`의 overflow 숨김을 풀어 포커스 링이 잘리지 않게 한다.
+  overflow: visible;
   margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--lightgray);
+
+  // 개수 — 목록 뒤 ::after가 센 값을 라벨 옆 칸으로 올린다.
+  &::after {
+    content: counter(backlinks);
+    grid-area: 1 / 2;
+    font-family: var(--codeFont);
+    font-size: 0.75rem;
+    color: var(--gray);
+  }
+
+  > ul.overflow {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1.5rem;
+    margin: 0.75rem 0 0;
+    max-height: none;
+    overflow: visible;
+    // 주의: 업스트림 IntersectionObserver가 붙이는 하단 페이드를 끈다 — 글 끝 목록은 잘리지 않는다.
+    mask-image: none;
+
+    @media all and ($mobile) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    > li {
+      counter-increment: backlinks;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      line-height: 1.5;
+    }
+
+    > li.overflow-end {
+      display: none;
+      counter-increment: none;
+    }
+  }
+
+  li > a {
+    font-family: var(--headerFont);
+    font-size: 0.875rem;
+    color: var(--secondary);
+
+    &:hover {
+      color: var(--tertiary);
+    }
+  }
+
+  .backlink-path {
+    font-family: var(--codeFont);
+    font-size: 0.6875rem;
+    color: var(--gray);
+    overflow-wrap: anywhere;
+  }
 }
 
-// ── 8. 우측 사이드바 — TOC / GRAPH ────────────────────────────────────────
-// 순서는 quartz.config.yaml의 layout priority가 정하고, 여기선 높이 배분만 고정한다.
-// 주의: `min-height: 0`을 빼지 말 것 — flex 자식 기본값 `auto`라 flex 값을 뭘 주든 줄지 않는다.
-// 주의: `.desktop-only` 래퍼는 `display: contents`라 flex에 투명하다 — .toc/.topic-graph를 직접 타겟할 것.
+// ── 8. 우측 사이드바 — TOC ────────────────────────────────────────────────
 
-// 패널 라벨 5종은 한 규칙. 주의: 패널별 색·조판으로 나누지 말 것 — 라벨이 콘텐츠보다 시끄러워진다.
-.note-specs-title,
+// 패널 라벨 4종은 한 규칙. 주의: 패널별 색·조판으로 나누지 말 것 — 라벨이 콘텐츠보다 시끄러워진다.
 .note-catalog-title,
 button.toc-header h3,
 .backlinks > h3,
@@ -655,7 +716,7 @@ button.toc-header h3,
   margin: 0;
 }
 
-// TOC 라벨은 다른 패널 라벨(SPECS·CATALOG)처럼 짧게 — i18n 원문은 크기 0으로 숨긴다(접근성 이름은 유지).
+// TOC 라벨은 다른 패널 라벨(CATALOG·GRAPH)처럼 짧게 — i18n 원문은 크기 0으로 숨긴다(접근성 이름은 유지).
 button.toc-header h3 {
   font-size: 0;
 
@@ -665,30 +726,9 @@ button.toc-header h3 {
   }
 }
 
-.sidebar.right {
-  .toc {
-    flex: 1 1 0;
-    min-height: 4rem;
-  }
-
-  // 본문 아래로 내려오는 폭에선 base가 가로 배치다 — 위 `0 0 auto`가 제목 폭으로 늘어 화면 밖으로 밀리므로 등분하고, 모바일은 쌓는다.
-  // 주의: base의 not($desktop)은 1200 미만이다 — 1200에서 켜면 세로 배치에 basis 0이 걸려 패널이 접힌다.
-  @media all and (max-width: #{map.get($breakpoints, desktop) - 0.02px}) {
-    > .topic-graph,
-    > .desktop-only > .topic-graph {
-      flex: 1 1 0;
-      min-width: 0;
-    }
-  }
-
-  @media all and ($mobile) {
-    flex-direction: column;
-
-    > .topic-graph,
-    > .desktop-only > .topic-graph {
-      flex: 0 0 auto;
-    }
-  }
+.sidebar.right .toc {
+  flex: 1 1 0;
+  min-height: 4rem;
 }
 
 // 업스트림 graph는 ⌘G 전역 모달만 남긴다 — 로컬 그래프 자리는 topic-graph가 맡는다.
@@ -702,7 +742,7 @@ button.toc-header h3 {
   }
 }
 
-// TOC는 목록 안에서 스크롤하지 않는다 — TOC와 GRAPH가 island에 다 안 들어가면 topic-graph 스크립트가 GRAPH를 숨긴다.
+// TOC는 목록 안에서 스크롤하지 않는다 — island를 넘으면 아래 접기 규칙이 맡는다.
 ul.toc-content.overflow {
   max-height: none;
   overflow: visible;
@@ -719,27 +759,16 @@ ul.toc-content.toc-fold:not(:has(a:focus-visible)) > li.toc-folded {
   white-space: nowrap;
 }
 
-// 접기 모드에선 GRAPH를 계속 숨긴다 — 펼친 절이 바뀔 때마다 그래프가 나타났다 사라지지 않게.
-.sidebar.right:has(ul.toc-content.toc-fold) .topic-graph {
-  display: none;
-}
-
 // 업스트림 TOC 접기는 flex 높이를 줄여 숨기는데, 위에서 TOC를 내용 높이로 고정해 접기가 먹지 않는다 — 목록을 직접 숨긴다.
 ul.toc-content.collapsed {
   display: none;
 }
 
-.backlinks > ul.overflow {
-  max-height: 6.5rem;
-  overflow-y: auto;
-}
-
-// 패널 항목 3종(CATALOG·TOC·Backlinks)은 한 규칙 — 기본 --gray, 현재 위치만 블루.
+// 패널 항목 2종(CATALOG·TOC)은 한 규칙 — 기본 --gray, 현재 위치만 블루.
 // 주의: 항목 전체를 --secondary나 웜 액센트로 칠하지 말 것 — "지금 여기"가 묻히거나 다른 축과 겹친다.
 // 주의: CATALOG 항목 규칙은 플러그인의 noteCatalog.scss에도 있다 — 둘을 같이 고칠 것.
 .note-catalog .note-catalog-link,
-.toc-content li > a,
-.backlinks ul li a {
+.toc-content li > a {
   font-family: var(--headerFont);
   font-size: 0.8rem;
   color: var(--gray);
@@ -788,7 +817,7 @@ ul.toc-content.collapsed {
 // 주의: $desktop·$tablet이 1200px에서 겹친다(1200은 우측 사이드바가 본문 아래인 tablet 그리드) — 1px 올린다.
 // 주의: 폴더·태그·archive·topics는 사이드바가 비어 있다 — 패널이 있을 때만 그린다.
 @media all and (min-width: #{map.get($breakpoints, desktop) + 1px}) {
-  .page > #quartz-body .sidebar:has(.note-specs, .note-catalog, .topic-graph, .toc, .backlinks) {
+  .page > #quartz-body .sidebar:has(.note-catalog, .topic-graph, .toc) {
     top: calc(var(--topbar-h) + var(--island-inset));
     height: auto;
     max-height: calc(100vh - var(--topbar-h) - var(--island-inset) * 2);
@@ -810,16 +839,46 @@ ul.toc-content.collapsed {
     max-height: calc(100vh - var(--topbar-h) - var(--island-inset) * 2 - 4.75rem);
 
     // 주의: 높이가 auto라 1 1 0이면 TOC가 min-height로 접힌다 — 내용 크기 그대로 둔다.
-    .toc,
-    .topic-graph {
+    .toc {
       flex: 0 0 auto;
     }
   }
+}
 
-  // SPECS 괘선은 island 보더와 겹쳐 선이 이중이 된다.
-  .sidebar .note-specs .note-specs-list {
-    border-block: 0;
-    padding-block: 0.2rem;
+// ── 8.6 집중 모드 — 양쪽 패널을 걷고 본문 단을 ×1.125 (plugins/focus-mode) ──
+// `<html focus-mode>`는 토글 스크립트가 단다. 토글이 있는 노트 페이지·데스크톱만 적용한다.
+// 주의: 좌측 단을 display: none으로 빼지 말 것 — 자동 배치인 .center가 좌측 열(320px)로 빨려 들어간다.
+@media all and (min-width: #{map.get($breakpoints, desktop) + 1px}) {
+  :root[focus-mode] .page > #quartz-body:has(.focus-toggle) {
+    grid-template-columns: minmax(0, 1fr) calc(42rem * 1.125) minmax(0, 1fr);
+
+    > .sidebar.left {
+      visibility: hidden;
+    }
+
+    // 우측 island는 걷고 레일만 남긴다 — 레일 상자는 본문 오른쪽 끝 + 48px(column-gap 5px 포함).
+    > .sidebar.right {
+      margin-inline-start: calc(48px - 5px);
+      padding: 0;
+      overflow: visible;
+      background: none;
+      border-color: transparent;
+
+      .toc {
+        display: none;
+      }
+    }
+
+    > .center {
+      max-width: calc(42rem * 1.125);
+    }
+
+    // 주의: 진행바·맨 위로(fixed)는 확대하지 않는다 — 확대된 조상 안에선 위치·크기도 함께 커진다.
+    // shortcut: zoom을 모르는 브라우저(Firefox 126 미만)는 756px 단에 16px 본문으로 남는다, 그 범위를 지원하려면 rem 크기를 em으로 옮길 것.
+    > .center > :is(.page-header, article),
+    > .center > .page-footer > :not(#reading-progress-bar, #back-to-top) {
+      zoom: 1.125;
+    }
   }
 }
 
@@ -895,6 +954,15 @@ body {
   }
 }
 
+// 노트 본문 단 상한 42rem — 헤더·본문·글 끝 블록이 한 단으로 가운데 정렬된다. 노트 판별은 메타 줄(note-specs).
+// 주의: base의 `min-width: 100%`가 max-width를 이기므로 함께 풀고, auto 여백에 폭이 내용 크기로 줄지 않게 width를 준다.
+.center:has(> .page-header .note-specs) {
+  width: 100%;
+  max-width: 42rem;
+  min-width: 0;
+  margin-inline: auto;
+}
+
 // ── 10.5 전역 상단 바 (topbar) ────────────────────────────────────────────
 // 데스크톱 한 줄, 모바일 1행 로고+검색+테마 / 2행 탭. 행 높이 고정(CLS).
 // 폭은 `.page`를 따르고(§10.4), 배경·구분선만 ::before로 화면 끝까지 번진다.
@@ -935,9 +1003,21 @@ body {
     align-items: center;
     gap: 0.75rem !important;
 
-    > div:has(> .darkmode) {
+    > div:has(> .darkmode, > .focus-toggle) {
       display: flex;
       align-items: center;
+    }
+
+    // 컴포넌트가 아무것도 안 그린 래퍼(노트 아닌 페이지의 집중 모드 토글)가 gap을 남기지 않게.
+    > div:empty {
+      display: none;
+    }
+
+    // 집중 모드 토글은 데스크톱 전용 — 래퍼째 뺀다.
+    @media all and (max-width: #{map.get($breakpoints, desktop)}) {
+      > div:has(> .focus-toggle) {
+        display: none;
+      }
     }
   }
 

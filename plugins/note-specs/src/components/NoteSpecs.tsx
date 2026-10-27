@@ -6,30 +6,26 @@ import type {
 import { resolveRelative } from "../../../_shared/path"
 import { formatYmd, getNoteDates, readingMinutes } from "../../../_shared/noteMeta"
 import style from "./styles/noteSpecs.scss"
-import { isRealNote } from "../../../_shared/notes"
+import { isFolderMirrorTag, isRealNote } from "../../../_shared/notes"
 // @ts-expect-error - Inline script loaded as text by esbuild plugin
 import readersScript from "./scripts/specsReaders.inline.ts"
+// @ts-expect-error - Inline script loaded as text by esbuild plugin
+import backlinkPaths from "./scripts/backlinkPaths.inline.ts"
 
 export interface NoteSpecsOptions {
-  title: string
-  labels: { created: string; revised: string; updated: string; runtime: string; readers: string; topic: string }
+  labels: { created: string; revised: string; updated: string; runtime: string }
 }
 
 const defaultOptions: NoteSpecsOptions = {
-  title: "SPECS",
-  labels: { created: "Created", revised: "Revised", updated: "Updated", runtime: "Read time", readers: "Readers", topic: "Topic" },
+  labels: { created: "Created", revised: "Revised", updated: "Updated", runtime: "min read" },
 }
 
 /**
- * 좌측 사이드바 최상단 스펙 블록 — 음반 슬리브의 사양 표기.
- * 개정·수정 행은 앞선 날짜와 다를 때만 나온다(getNoteDates).
+ * 제목 아래 메타 한 줄 — 날짜 · 읽는 시간 · 독자 수 · 개념 태그(폴더 미러 태그 제외).
+ * 개정·수정은 앞선 날짜와 다를 때만 나온다(getNoteDates). 구분자 `·`는 CSS가 단다.
  */
 export default ((userOpts?: Partial<NoteSpecsOptions>) => {
-  const opts = {
-    ...defaultOptions,
-    ...userOpts,
-    labels: { ...defaultOptions.labels, ...userOpts?.labels },
-  }
+  const opts = { labels: { ...defaultOptions.labels, ...userOpts?.labels } }
 
   const NoteSpecs: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
     const slug = fileData.slug
@@ -37,59 +33,50 @@ export default ((userOpts?: Partial<NoteSpecsOptions>) => {
 
     const { created, revised, updated } = getNoteDates(fileData)
     const minutes = readingMinutes(fileData.text as string | undefined)
-    const tags = (fileData.frontmatter?.tags ?? []) as string[]
+    const tags = ((fileData.frontmatter?.tags ?? []) as string[]).filter((tag) => !isFolderMirrorTag(slug, tag))
 
     if (!created && !minutes && tags.length === 0) return <></>
 
-    const dateRows: [string, Date | undefined][] = [
+    const dates: [string, Date | undefined][] = [
       [opts.labels.created, created],
       [opts.labels.revised, revised],
       [opts.labels.updated, updated],
     ]
 
     return (
-      <aside class="note-specs">
-        <h3 class="note-specs-title">{opts.title}</h3>
-        <dl class="note-specs-list">
-          {dateRows.map(
-            ([label, date]) =>
-              date && (
-                <div class="note-specs-row">
-                  <dt>{label}</dt>
-                  <dd class="note-specs-date">
-                    <time datetime={date.toISOString()}>{formatYmd(date)}</time>
-                  </dd>
-                </div>
-              ),
-          )}
-          {minutes > 0 && (
-            <div class="note-specs-row">
-              <dt>{opts.labels.runtime}</dt>
-              <dd>{minutes} min</dd>
-            </div>
-          )}
-          <div class="note-specs-row note-specs-readers">
-            <dt>{opts.labels.readers}</dt>
-            <dd class="note-specs-readers-count">&nbsp;</dd>
-          </div>
-          {tags.length > 0 && (
-            <div class="note-specs-row">
-              <dt>{opts.labels.topic}</dt>
-              <dd class="note-specs-tags">
-                {tags.map((tag) => (
-                  <a key={tag} href={resolveRelative(slug, `tags/${tag}`)}>
-                    {tag}
-                  </a>
-                ))}
-              </dd>
-            </div>
-          )}
-        </dl>
-      </aside>
+      <p class="note-specs">
+        {dates.map(
+          ([label, date]) =>
+            date && (
+              <span>
+                {label} <time datetime={date.toISOString()}>{formatYmd(date)}</time>
+              </span>
+            ),
+        )}
+        {minutes > 0 && (
+          <span>
+            {minutes} {opts.labels.runtime}
+          </span>
+        )}
+        <span class="note-specs-readers">
+          <span class="note-specs-readers-count">&nbsp;</span>
+        </span>
+        {tags.length > 0 && (
+          <span class="note-specs-tags">
+            {tags.map((tag) => (
+              <a key={tag} href={resolveRelative(slug, `tags/${tag}`)}>
+                #{tag}
+              </a>
+            ))}
+          </span>
+        )}
+      </p>
     )
   }
 
   NoteSpecs.css = style
   NoteSpecs.beforeDOMLoaded = readersScript
+  // 글 끝 Backlinks(업스트림) 폴더 경로도 여기 싣는다 — 노트 메타 플러그인이 모든 폭에 실린다.
+  NoteSpecs.afterDOMLoaded = backlinkPaths
   return NoteSpecs
 }) satisfies QuartzComponentConstructor<Partial<NoteSpecsOptions>>

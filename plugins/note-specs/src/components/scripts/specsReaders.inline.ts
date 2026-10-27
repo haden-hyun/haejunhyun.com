@@ -1,4 +1,4 @@
-// 노트 조회 수(/api/stats) — 실패하면 행을 접는다. 응답은 5분 캐시라 SPA 이동마다 다시 받지 않고 한 번만 쓴다.
+// 노트 독자 수(/api/stats) — 실패하면 항목을 숨긴다. 응답은 5분 캐시라 SPA 이동마다 다시 받지 않고 한 번만 쓴다.
 let stats: Promise<Record<string, number> | null> | undefined
 
 function loadViews() {
@@ -32,8 +32,8 @@ document.addEventListener("nav", () => {
       row.hidden = true
       return
     }
-    const n = views[path]
-    out.textContent = (Number.isFinite(n) ? n : 0).toLocaleString("en-US")
+    const n = Number.isFinite(views[path]) ? views[path]! : 0
+    out.textContent = `${n.toLocaleString("en-US")} reader${n === 1 ? "" : "s"}`
     row.classList.add("ready")
   })
 })

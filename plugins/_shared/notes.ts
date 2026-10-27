@@ -40,6 +40,12 @@ export function folderTitle(path: string, overrides: Record<string, string> = {}
   return overrides[path] ?? overrides[segment] ?? TOPIC_NAMES[segment] ?? titleCase(segment)
 }
 
+/** 태그 경로가 노트 폴더 경로와 같거나 그 접두면 폴더를 되풀이할 뿐이다. */
+export function isFolderMirrorTag(slug: string, tag: string): boolean {
+  const dir = slug.split("/").slice(0, -1).join("/")
+  return dir === tag || dir.startsWith(tag + "/")
+}
+
 /** 영문 개수 표기 — `1 note`, `3 notes`. */
 export const plural = (n: number, word: string): string => `${n} ${word}${n === 1 ? "" : "s"}`
 

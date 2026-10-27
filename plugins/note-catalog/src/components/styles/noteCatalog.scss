@@ -3,8 +3,7 @@
   flex-direction: column;
   min-width: 0;
 
-  // 조판·색은 custom.scss가 우측 패널 라벨 3종과 함께 한 곳에서 정한다
-  // (네 패널이 같은 규칙을 공유해야 "패널 라벨"로 읽힌다).
+  // 조판·색은 custom.scss가 패널 라벨 4종 한 규칙으로 정한다.
   .note-catalog-title {
     margin: 0;
   }
@@ -32,8 +31,7 @@
     overflow-y: auto;
   }
 
-  // 주의: 서체·크기는 custom.scss가 TOC·Backlinks 항목과 함께 한 규칙으로 정한다
-  //    (셋 다 "다른 곳으로 가는 링크"라 같은 물건이다). 여긴 형태만.
+  // 주의: 서체·크기는 custom.scss가 TOC 항목과 함께 한 규칙으로 정한다. 여긴 형태만.
   .note-catalog-link {
     display: block;
     padding: 4px 0 4px 0.6rem;

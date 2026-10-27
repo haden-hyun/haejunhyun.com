@@ -41,10 +41,10 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ### 로컬 플러그인은 `dist/`가 커밋 대상
 
-`plugins/*` 25종(`_shared` 제외). 각각 독립 npm 패키지다.
+`plugins/*` 26종(`_shared` 제외). 각각 독립 npm 패키지다.
 **소스만 고치면 반영되지 않는다** — 해당 플러그인에서 `npm run build`(tsup) 필요.
 
-`plugins/_shared/`는 플러그인이 아니라 공유 소스다(노트 판별 `isRealNote`·토픽 표시명·Recent 묶음·`noteMeta`·
+`plugins/_shared/`는 플러그인이 아니라 공유 소스다(노트 판별 `isRealNote`·폴더 미러 태그 `isFolderMirrorTag`·토픽 표시명·Recent 묶음·`noteMeta`·
 시리즈 편 목록 `series.ts`·상대경로 `path.ts`·토픽 표 `topics.ts`·주제 색인 집계 `topicIndex.ts`).
 각 플러그인이 상대 경로로 가져와 dist에 번들한다. **여기를 고치면 가져다 쓰는 플러그인을 전부 재빌드할 것**
 (`grep -l _shared plugins/*/src -r` — `series-nav`·`series-roadmap` 포함). 주의: 가져다 쓰는 플러그인의 tsconfig는 `rootDir: ".."`이어야 dts 빌드가 통과한다.
@@ -68,22 +68,31 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
   (볼트 `.obsidian/plugins/series-roadmap-preview`에 설치, Obsidian에서 플러그인을 껐다 켜야 반영).
 - 빌드 경고 `[series-roadmap]`: requires가 같은 부 직전 편·자기 번호 이상·없는 번호·뒤 부를 가리킴,
   outline 번호 중복, 편 1개뿐인 부 이름이 다른 부와 비슷함(오타 의심), 같은 부 안 번호 공백. 경고만 내고 빌드는 통과한다.
-- 주의: `seriesTitles`는 여섯 곳에 중복이다 — `quartz.config.yaml`의 `series-box`·`series-pager`·`series-roadmap`·`folder-listing`·`topics-page`
-  옵션과 Obsidian 미리보기 플러그인 설정. 새 시리즈를 추가하면 여섯 곳 다 고칠 것.
+- `seriesTitles`는 `quartz.config.yaml`의 `folder-listing` 옵션에 앵커 `&seriesTitles`로 한 번 정의하고, `topics-page`·`recent-notes-index`·
+  `series-box`·`series-pager`·`series-roadmap`은 `*seriesTitles` 별칭으로 받는다. 주의: Obsidian 미리보기 플러그인 기본값(`obsidian/src/main.ts`)과
+  볼트에 저장된 그 설정은 앵커 밖이라 따로 고칠 것. 주의: `quartz plugin add/remove/enable/disable/config`는 YAML을 다시 써서
+  주석이 사라지고 앵커가 자동명(`&a1`)으로 바뀌거나 풀릴 수 있다 — 실행 후 `git diff quartz.config.yaml`로 확인할 것.
 
 ### 주제 그래프 `plugins/topic-graph`
 
-우측 TOC 아래 GRAPH 패널(TOC와 함께 island에 다 안 들어가면 스크립트가 GRAPH를 숨긴다). 현재 노트의 최상위 주제를 폴더 클러스터로 그린 빌드 타임 SVG를 클라이언트 d3-force가 이어받고, 확대 칩이 같은 그래프의 큰 판을 `<dialog>`로 연다(DESIGN-SYSTEM §4.17).
+좌측 CATALOG 아래 GRAPH 패널(CATALOG와 함께 island에 다 안 들어가면 스크립트가 GRAPH를 숨긴다). 현재 노트의 최상위 주제를 폴더 클러스터로 그린 빌드 타임 SVG를 클라이언트 d3-force가 이어받고, 확대 칩이 같은 그래프의 큰 판을 `<dialog>`로 연다(DESIGN-SYSTEM §4.17).
 배치·라벨은 `src/core/`의 순수 함수(d3-force, 고정 틱)라 같은 원고면 같은 SVG가 나온다.
 
 - ⌘G 전역 그래프는 업스트림 `graph` 플러그인 몫이다. 사이드바 로컬 그래프만 topic-graph 스크립트가 지우고 `custom.scss`가 숨긴다.
   주의: 업스트림 graph를 끄면 ⌘G가 사라진다. `.graph`에 `display: none`을 걸면 안의 전역 모달까지 죽는다.
-- 주의: `folderTitles`는 `folder-listing`과 `topic-graph` 옵션 두 곳에 중복이다.
+- `folderTitles`는 `folder-listing`의 앵커 `&folderTitles` 하나를 `topic-graph`·`recent-notes-index`가 `*folderTitles`로 받는다.
 - 긴 TOC 접기(`tocFold.inline.ts` — TOC만으로 island를 넘으면 현재 h2 절의 h3만 펼침)도 이 플러그인 스크립트다.
 - 빌드 경고 `[topic-graph]`: 별칭 리다이렉트 슬러그가 노트 파일명과 겹친다. `markdownLinkResolution: shortest`가 노트 대신
   루트의 별칭 페이지를 골라 `[[파일명]]` 링크가 Backlinks에서 빠진다(2026-10-24 볼트 별칭 정리로 0건). 경고만 내고 빌드는 통과한다.
-- 모바일 Backlinks는 YAML이 아니라 `quartz.ts`가 content 페이지 afterBody(시리즈 페이저 뒤)에 `MobileOnly`로 하나 더 넣는다.
-  주의: 그 layout을 반영하려고 `PageTypeDispatcher`를 갈아 끼운다 — `loadQuartzConfig`가 만든 디스패처는 layout 사본을 쥐고 있다.
+- Backlinks는 업스트림 그대로 글 끝(afterBody, 시리즈 페이저 뒤)에 모든 폭으로 둔다. 행의 폴더 경로는 `note-specs`의
+  `backlinkPaths.inline.ts`가 클라이언트에서 달고, 개수·2열 그리드는 `custom.scss` §7이다. SPECS(`note-specs`)는 제목 아래 메타 한 줄이다.
+
+### 집중 모드 `plugins/focus-mode`
+
+상단 바 토글(⌘\)이 `<html focus-mode>`를 달면 `custom.scss` §8.6이 양쪽 패널을 걷고 본문 단을 `zoom: 1.125`로 키운다. 우측 TOC 자리엔
+스크립트가 만든 레일(눈금 → 펼침 패널)이 들어가고, 현재 절은 업스트림 TOC의 `in-view`를 그대로 받는다(DESIGN-SYSTEM §4.18). 노트 페이지·데스크톱(1200px 초과)만.
+주의: 좌측 단을 `display: none`으로 빼지 말 것 — `.center`가 좌측 열로 빨려 들어간다. `visibility: hidden` + 그리드 열 교체로 숨긴다.
+업스트림 `reader-mode`는 꺼 둔다(패널 투명도 + hover 복원 — AA 위반).
 
 주의: **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
 9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의
@@ -158,7 +167,7 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
 7. **대비는 코드블럭 배경 기준으로 잰다.** 페이지 배경으로 재면 어긋난다.
 8. **콜아웃 형태는 Obsidian 규격을 유지한다.** 아이콘·둥근 모서리·좌측 바를 걷어내는
    "인쇄 조판" 안은 시도 후 되돌렸다. 우리가 정의하는 건 **색이지 형태가 아니다.**
-9. **패널 라벨 5종(SPECS/CATALOG/TOC/Backlinks/Graph)은 한 규칙으로 통일한다.**
+9. **패널 라벨 4종(CATALOG/TOC/Backlinks/Graph)은 한 규칙으로 통일한다.**
    패널별로 색·조판을 나누면 라벨이 콘텐츠보다 시끄러워진다 — 시도 후 되돌림.
 10. **좌우 여백의 단일 소스는 `.page`다.** 폭 계산에 `vw`를 쓰지 말 것 — 세로
     스크롤바 폭을 포함해 좌우가 어긋난다.

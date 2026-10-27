@@ -26,6 +26,7 @@
 - h1만 자간 −0.02em. Hahmlet은 조이면 한글 자소가 붙는다.
 - UI 문구는 영문 전용(`locale: en-US`). 원고·히어로 설명문만 한국어.
 - `h1~h6`·`p`·`li`는 `word-break: keep-all` — 한글을 어절 단위로 끊는다.
+- 본문 16px, 문단·본문 목록 `li` 행간 1.9(같은 값). 콜아웃 본문도 1rem(행간은 콜아웃 1.75).
 - 주의: `theme.typography`와 `fonts` 플러그인 옵션 **두 곳을 항상 같게** (후자가 최종 결정).
   예외는 body의 Inter 하나 — Google 슬롯이 하나뿐이라 `custom.scss`의 `@font-face`(jsDelivr 고정 버전)로 싣는다.
 
@@ -121,6 +122,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
   - 아이콘 16px, 슬롯 높이 = 제목 한 줄(`1.45em`), 마스크를 1px 내린다(한글 잉크 중심 보정). 아이콘↔제목 오차 ±0.2px.
   - 제목·목록 글자가 같은 세로선(아이콘 16 + 간격 8 = 24px)에서 시작한다. 문단·코드블록은 아이콘 열부터.
   - 제목 Hahmlet 700 0.92rem / 패딩 상하 12px 대칭. 제목만 있거나 접히면 구분선 없음.
+  - 본문 글자는 문단과 같은 1rem. 아이콘 정렬(`--cal-indent` 24px·`--cal-lh`)은 제목 기준이라 본문 크기와 무관하다.
 - 주의: 제목 `p`·`.callout-title-inner`는 레이어 안 규칙이 서체·굵기를 직접 잡는다 — `font: inherit`를 빼면 Noto 600으로 돌아간다.
 - 주의: 접힘 규칙은 레이어 안이라 비-레이어 패딩에 진다. `custom.scss`에서 패딩·보더를 다시 0으로 줘야 빈 띠가 안 남는다.
 - 주의: 대비는 페이지 배경이 아니라 **콜아웃 틴트 배경 기준**으로 잰다.
@@ -200,21 +202,24 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
   - 카드 + 비율 바(구판)는 홈 색인의 카드판일 뿐이라 기각. 점 지도(노트 = 점)는 히어로 그림과 역할이 겹쳐 기각, 시리즈 허브는 홈 Featured·Recent와 겹쳐 기각.
   - 점프 칩 hover(accent 16%) 위의 `--gray` 숫자는 4.1이라 hover 동안 `--darkgray`로 바꾼다.
 
-### 4.7 노트 상세 3패널
+### 4.7 노트 상세 — 메타 줄 · 3단 · 글 끝
 
-**역할**: 좌측 = 이 음반은 무엇인가(SPECS → Backlinks → CATALOG) / 본문 / 우측 = 어디를 읽나(TOC → GRAPH).
+**역할**: 제목 아래 = 이 음반은 무엇인가(메타 줄) / 좌측 = 이웃(CATALOG → GRAPH) / 본문 / 우측 = 어디를 읽나(TOC만) / 글 끝 = 누가 여기를 가리키나(Backlinks).
+
+- **본문 단 상한 42rem(672px)**: 노트 페이지(메타 줄이 있는 `.center`)만 가운데 단 안에서 가운데 정렬. 헤더(breadcrumb·제목·메타·시리즈 상자)·본문·글 끝 블록이 같은 단이고 코드블록·표·이미지·anim·image-layouts도 그 안이다. 홈·폴더·태그·archive·topics는 상한 없음.
 
 | 패널                             | 핵심                                                          |
 | -------------------------------- | ------------------------------------------------------------- |
-| SPECS (`plugins/note-specs`)     | 작성·개정·수정·읽는 시간·토픽(§4.11). 데스크톱 전용          |
-| Backlinks                        | 좌측, `0 0 auto`, `max-height: 9rem`. 모바일(800px 미만)에선 본문 뒤 시리즈 페이저와 댓글 사이에 같은 패널이 대신 나온다(`quartz.ts`, 블록 간격 3rem). 백링크가 없으면 렌더하지 않는다 |
+| SPECS (`plugins/note-specs`)     | 제목 아래 메타 한 줄(모든 폭): `Created … · Revised … · Updated … · N min read · N readers · #태그`(§4.11). Mono 0.75rem `--gray`, 태그만 `--secondary` 링크. 폴더 경로를 되풀이하는 태그(`isFolderMirrorTag`)는 뺀다. 독자 수는 `/api/stats`를 클라이언트가 채우고 자리(`min-width` 13ch)를 미리 잡아 뒤 항목이 밀리지 않으며, 실패하면 구분자째 숨는다. 구분자 `·`는 CSS가 다음 항목 앞에 단다 |
+| Backlinks                        | 글 끝(시리즈 페이저 뒤·댓글 앞, 모든 폭). 위 괘선 + 라벨 `Backlinks` + 개수(Mono `--gray`, CSS 카운터). 행 = 제목 링크(Hahmlet 0.875rem `--secondary`) + 폴더 경로(Mono 0.6875rem `--gray`, `note-specs`의 `backlinkPaths.inline.ts`가 단다). 2열 그리드, 모바일 1열. 백링크가 없으면 렌더하지 않는다 |
 | CATALOG (`plugins/note-catalog`) | 전체 파일 트리 폐기, **형제 노트 중 현재 ±2편 창**(최대 5행, 처음·끝에선 반대쪽으로 채움, 시리즈는 편 순). 창 밖이 있으면 `All N notes →`로 폴더 페이지(하위 전체 색인)에 보낸다. 높이가 고정이라 스크롤·하한 규칙이 없다 |
 | TOC                              | 라벨 "TOC". 데스크톱 island 안에선 `0 0 auto` — **목록 안 스크롤 없음**. TOC만으로 island를 넘으면 현재 h2 절의 h3만 펼친다(§4.15) |
-| GRAPH (`plugins/topic-graph`)    | 주제 그래프(§4.17). 우측 TOC 아래, `0 0 auto`, 펼친 채로. 데스크톱·태블릿 전용 |
+| GRAPH (`plugins/topic-graph`)    | 주제 그래프(§4.17). 좌측 CATALOG 아래, `0 0 auto`, 펼친 채로. 데스크톱·태블릿 전용 |
 
-- **패널 라벨 5종은 한 규칙**(Hahmlet 700 / 1rem / `--darkgray`). 패널별로 나누면 라벨이 콘텐츠보다 시끄러워진다.
-- **패널 항목도 한 규칙**(Hahmlet / 0.8rem / `--gray`). 셋(CATALOG·TOC·Backlinks) 다 "다른 곳으로 가는 링크"라 같은 물건이다.
-- 1200px 미만에선 우측 패널이 본문 아래로 내려온다 — 태블릿은 TOC·GRAPH 가로 등분. 모바일(800px 미만)은 SPECS·CATALOG·GRAPH를 숨기고 Backlinks만 본문 뒤로 옮긴다.
+- **패널 라벨 4종은 한 규칙**(CATALOG·TOC·Backlinks·GRAPH — Hahmlet 700 / 1rem / `--darkgray`). 패널별로 나누면 라벨이 콘텐츠보다 시끄러워진다. 메타 줄엔 라벨이 없다.
+- **사이드 패널 항목도 한 규칙**(Hahmlet / 0.8rem / `--gray`, CATALOG·TOC). Backlinks는 글 끝 목록이라 제목을 `--secondary` 링크로 둔다.
+- 태블릿(800~1200px): 좌측 단(CATALOG·GRAPH, 단 높이 넘치면 단이 스크롤)은 그대로, 우측 TOC는 숨고 본문 아래 우측 행은 비어 높이 0. 모바일(800px 미만)은 CATALOG·GRAPH·TOC를 숨기고 메타 줄·Backlinks는 본문 흐름에 그대로 있다.
+- 주의: 좌측 단을 `display: none`으로 빼면 `.center`(grid-area 없음, 자동 배치)가 첫 빈 칸인 좌측 열(320px)로 빨려 들어간다 — 단을 빼려면 grid 열 정의도 함께 바꿀 것(홈 §10.6이 그렇게 한다).
 - 기각: 사이드바 Related 목록(`plugins/related-notes`, 비활성). Backlinks와 역할이 겹친다 — 점수 로직(`score.ts`)은 플러그인에 남겨 둔다.
 - **색은 "지금 여기"에만.** CATALOG 현재 노트·TOC 현재 절·그래프 현재 노트만 `--secondary`.
 - 주의: `min-height: 0`을 빼면 flex 값을 뭘 주든 줄지 않는다.
@@ -232,7 +237,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 
 **역할**: 사이트 전체의 목적지(`Home · Topics · Archive`)와 홈 한 화면.
 
-- 상단 바: 로고 `HAEJUN RECORDS`(Anton) → 탭 `Home · Topics · Archive`(Hahmlet, 현재 페이지 `--secondary` + 실선 밑줄 `aria-current="page"`, 노트·폴더·태그 페이지는 소속 갈래 Topics를 `--secondary` + 점선 밑줄 `aria-current="true"`로 조상 표시) → 소셜 아이콘 GitHub·LinkedIn(오른쪽 정렬, hover 칩) → 검색 `Search` + `⌘K` 배지 → 테마 토글.
+- 상단 바: 로고 `HAEJUN RECORDS`(Anton) → 탭 `Home · Topics · Archive`(Hahmlet, 현재 페이지 `--secondary` + 실선 밑줄 `aria-current="page"`, 노트·폴더·태그 페이지는 소속 갈래 Topics를 `--secondary` + 점선 밑줄 `aria-current="true"`로 조상 표시) → 소셜 아이콘 GitHub·LinkedIn(오른쪽 정렬, hover 칩) → 검색 `Search` + `⌘K` 배지 → 집중 모드 토글(노트 페이지·데스크톱만, §4.18) → 테마 토글.
   - 검색 라벨은 `custom.scss` 의사 요소다(검색은 코어 마크업). 접근성 이름은 `aria-label`.
   - `⌘K` 배지는 `(hover: none)`에서 숨긴다.
   - 모바일: 1행 로고 + 아이콘 + 테마 토글(`4rem`) / 2행 탭(`2.75rem`). 행 높이 고정(CLS), 터치 타깃 44px.
@@ -253,10 +258,11 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
   - 첫 진입 연출(세션당 1회, 감속 모션이면 생략): 헤드라인 좌→우 sweep 1.4s, 이름·설명·링크·색소폰이 12px 올라오며 페이드(지연 0.12~0.36s).
   - 기각: 노트 선반(24권 2단 책등 + 노트 카드 + hover 칩) — 색소폰을 되살리며 걷어냈다. 100권 카탈로그 선반(번호·칸막이 탭·`+N ARCHIVE`)도 같은 이유로 쓰지 않는다 — 그림이 콘텐츠보다 시끄러웠다.
 - 섹션 라벨(Featured / Recent Notes / Topics): Hahmlet 700 1.15rem `--secondary`, 아래 1px 괘선. 우측 링크 `Archive →`는 Hahmlet 600 0.9rem. 각 플러그인 scss에 같은 값으로 둔다.
-- Featured: `01~04` 번호 + 제목 + 요약 1줄 + `토픽 · N min`. 첫 항목만 크게(제목 `clamp(1.35rem, 3vw, 1.75rem)` 900, 요약 2줄). 행 얼룩·hover는 표와 같다(§4.3).
-  - 지정 수단은 `quartz.config.yaml`의 `slugs` 배열 하나 — 쓴 순서 = 번호, 부족분은 토픽 라운드로빈. Recent Notes에 나온 노트는 지정·자동 채움 모두에서 뺀다.
+- Featured: 라벨 뒤 부제 `editor's picks`(Archive `Popular · last 30 days`와 같은 h2 부제 문법 — Mono 0.72rem 400 `--gray`). `01~04` 번호 + 제목 + 요약 1줄 + `토픽 · N min`, 시리즈 편이면 `토픽 · 시리즈 · N편 · N min`(N편 = 그 시리즈 발행 편 수, Topics 시리즈 행과 같은 어휘). 첫 항목만 크게(제목 `clamp(1.35rem, 3vw, 1.75rem)` 900, 요약 2줄). 행 얼룩·hover는 표와 같다(§4.3).
+  - 지정 수단은 `quartz.config.yaml`의 `slugs` 배열 하나 — 쓴 순서 = 번호, 부족분은 토픽 라운드로빈. 직접 지정한 노트는 Recent Notes와 겹쳐도 싣고, Recent에 나온 노트는 자동 채움에서만 뺀다. 별도 시리즈 섹션은 두지 않는다(§4.6 시리즈 허브 기각과 같은 이유).
   - 주의: 미해결·중복·초과 슬러그는 빌드 로그 경고로 찍힌다. 조용히 무시되지 않는다.
-- Recent Notes: 5행, `날짜(Mono YYYY-MM-DD) | 제목 + 요약 1줄 | 토픽 표시명`. 정렬 키는 `getListDate`(§4.11), 개정이 더 최근이면 제목 뒤 `Revised` 라벨. 같은 날짜·같은 2단계 폴더 3편 이상은 한 줄로 묶는다(`Docker · 5 notes`, 링크는 그 폴더).
+- Recent Notes: 5행, `날짜(Mono YYYY-MM-DD) | 제목 + 요약 1줄 | 토픽 표시명`. 정렬 키는 `getListDate`(§4.11), 개정이 더 최근이면 제목 뒤 `Revised` 라벨. 같은 날짜·같은 2단계 폴더 3편 이상은 한 줄로 묶는다(링크는 그 폴더).
+  - 묶음 라벨: 구성원 전원이 한 시리즈면 제목 = 시리즈 표시명, 부제 = `시리즈 · N편 — 1편 Docker의 기본 개념부터`(Topics 시리즈 행 어휘, 편 순 첫 편 — 서문 제목이 시리즈명과 같으면 다음 편). 아니면(섞인 묶음 포함) 제목 = 폴더 표시명 + `N notes`(부모가 토픽 루트가 아니면 `Python › Basics · 3 notes`), 부제 = 앞 2편 + `+N more`. 전원 개정이면 묶음에도 `Revised`.
   - Featured의 Recent 제외 집합과 Recent 표는 **같은 함수**(`plugins/_shared/notes.ts`의 `buildRecentRows`)로 만든다.
 - Topics: 토픽명 + 1단 폴더 표시명 부제(런타임, §4.6) + 노트 수, 행 얼룩.
 - Archive: 연도 라벨(Mono 0.95rem 700 `--gray`) 아래 같은 레코드 행. 맨 위 `Popular · last 30 days` 섹션은 `/api/stats`(Pages Function, GoatCounter 프록시)의 `top`을 클라이언트가 채운다 — 빌드 데이터의 노트 슬러그 맵(제목·링크, `isListedNote`)으로 걸러 홈·태그·폴더·옛 URL을 버리고 상위 5편만, 행은 `순위 01(Mono) │ 제목 │ N readers`(GoatCounter는 방문자 수라 "views" 아님, 1이면 `1 reader`). 색은 연도 라벨·메타와 같은 `--gray`뿐. 섹션은 `hidden`으로 구워 JS 없음·API 실패·매칭 0편이면 제목째 안 보이고 자리도 없다. 600px 이하에선 순위 열이 좁아지고 수는 유지. SPA `nav`마다 다시 채우고 `addCleanup`으로 fetch를 중단한다.
@@ -275,14 +281,14 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 ```
 
 - 거터 `2rem`은 **사이드바 내부 패딩과 같은 값**이다. 새 상수를 만들지 않는다.
-- 뷰포트 1564px가 경계 — 아래는 거터 32px 고정, 위로는 남는 폭이 그대로 여백. 본문은 최대 850px.
+- 뷰포트 1564px가 경계 — 아래는 거터 32px 고정, 위로는 남는 폭이 그대로 여백. 가운데 단은 최대 850px, 노트 본문 단은 그 안에서 42rem(§4.7).
 - topbar는 폭을 `.page`에서 받고 배경·구분선만 `::before`로 번진다. 로고와 본문 시작점이 자동으로 맞는다.
 - 주의: 폭 계산에 `vw`를 쓰지 말 것 — 세로 스크롤바 폭을 포함해 좌우가 어긋난다.
 - 주의: `::before`의 `-100vmax` 블리드는 **`body`의 `overflow-x: clip`**이 자른다. `html`에 걸면 viewport로 전파돼 무효다.
 
 ### 4.11 날짜 · 읽는 시간
 
-**역할**: 노트의 시간 정보를 사이트 전체에서 같은 값·같은 형식으로 낸다. 구현은 `plugins/_shared/noteMeta.ts` 하나(SPECS·Archive·홈이 함께 쓴다).
+**역할**: 노트의 시간 정보를 사이트 전체에서 같은 값·같은 형식으로 낸다. 구현은 `plugins/_shared/noteMeta.ts` 하나(메타 줄 SPECS·Archive·홈이 함께 쓴다).
 
 | 이름      | 출처                                                         | 표시 조건                        |
 | --------- | ------------------------------------------------------------ | -------------------------------- |
@@ -294,8 +300,8 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - 형식은 `YYYY-MM-DD`, KST 기준(`formatYmd`). 빌드 머신 시간대와 무관하다.
 - **목록 날짜 `getListDate` = `posted` → `created`** (Recent Notes · Featured · Notes 목적지 · 폴더 페이지 — 표시와 정렬 둘 다). Archive는 작성일로 묶고 개정일(`posted`)을 보조 표기한다.
 - **Prev/Next는 `created` 순**이다. 읽는 순서가 목적인데, `posted`는 개정 때 오늘로 덮어써져 개정한 글이 시리즈 맨 뒤로 밀리기 때문이다.
-- 주의: `updated`(note-properties가 `modified`로 매핑)는 작업마다 바뀌므로 정렬에 쓰지 않는다. `modified`는 SPECS `Updated`·content-meta 날짜와 tag 페이지 정렬(`defaultDateType`)에만 남아 있다. folder 페이지는 `getListDate` 정렬 위에서 시리즈 편만 다시 모은다(§4.13).
-- 주의: content-meta(모바일 메타 줄)는 외부 플러그인이라 날짜 형식을 locale에 맡긴다. 읽는 시간은 같은 알고리즘이라 숫자가 같다.
+- 주의: `updated`(note-properties가 `modified`로 매핑)는 작업마다 바뀌므로 정렬에 쓰지 않는다. `modified`는 SPECS `Updated`와 tag 페이지 정렬(`defaultDateType`)에만 남아 있다. folder 페이지는 `getListDate` 정렬 위에서 시리즈 편만 다시 모은다(§4.13).
+- 업스트림 content-meta·tag-list는 꺼 두었다 — 메타 줄이 모든 폭에서 대신한다.
 
 ### 4.12 모션
 
@@ -319,7 +325,7 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - 폴더 목록(`plugins/folder-listing`)과 CATALOG는 기존 정렬을 유지하되, 같은 시리즈 편을 **그 시리즈가 기존 정렬에서 처음 나오는 자리**에 `series_index` 오름차순으로 모은다(`_shared/series.ts`의 `groupBySeries`). 비시리즈 노트의 상대 순서는 그대로다.
 - 편 번호는 사이트 전체에서 `N편` 하나다 — CATALOG·폴더 목록·SeriesBox(위치·인접 링크·목록)·시리즈 페이저·로드맵 카드와 선수 칩·홈 노트 카드(`시리즈 N편`). 문자열은 `_shared/series.ts`의 `episodeLabel` 한 곳에서 만든다. 0편은 `서문` — 번호가 아니라 로드맵·개요 편의 역할을 이름으로 드러낸다(`0편`은 기각). 트랙 번호식 `N.`은 원고 제목의 번호 접두사(`1. `)와 겹쳐 읽히고, `N편`은 좁은 사이드바에서도 단위가 붙어 번호만 떠돌지 않는다. 번호는 실제 `series_index`(공백 2·4·6 그대로)라 분수 `N/M`은 쓰지 않는다(공백이 있으면 `6/3`이 된다). 숫자는 어디서나 tabular. 원고 title에는 번호를 넣지 않는다.
 - `N편`은 색이 아니라 무게로 구분한다: 폴더 목록은 날짜 열 자리의 **번호 열**(600 `--darkgray` tabular, Featured 번호 열 문법), CATALOG는 제목 앞 인라인으로 링크 색을 따르고 숫자 폭만 고정. 모션 없음.
-- 시리즈 묶음의 렌더 지점은 `FolderListing.tsx`의 `SeriesRun` 하나다. 시리즈뿐인 섹션은 **펼친 그룹** — 헤더 행(`시리즈 · N편` Mono `--gray` │ 시리즈명 Hahmlet 700 `--dark` │ `N편부터 읽기 →` · `로드맵`, 하단선만 `--border-strong`) + 트랙 행(`N편 │ 제목 + 요약 │ 날짜`, 날짜는 끝 열). 비시리즈 노트가 섞이면 **접힌 행**(`<details>`의 summary가 노트 행과 같은 높이·얼룩·hover, `시리즈 · N편 │ 시리즈명 │ ⌄`). tag 페이지와 Archive·Recent(시간축 목록)는 묶지 않는다.
+- 시리즈 묶음의 렌더 지점은 `FolderListing.tsx`의 `SeriesRun` 하나다. 시리즈뿐인 섹션은 **펼친 그룹** — 헤더 행(`시리즈 · N편` Mono `--gray` │ 시리즈명 Hahmlet 700 `--dark` │ `N편부터 읽기 →` · `로드맵`, 하단선만 `--border-strong`) + 트랙 행(`N편 │ 제목 + 요약 │ 날짜`, 날짜는 끝 열). 비시리즈 노트가 섞이면 **접힌 행**(`<details>`의 summary가 노트 행과 같은 높이·얼룩·hover, `시리즈 · N편 │ 시리즈명 │ ⌄`). tag 페이지와 Archive·Recent(시간축 목록)는 시리즈로 묶지 않는다 — Recent의 날짜·폴더 묶음이 한 시리즈 편뿐이면 라벨만 시리즈 어휘를 쓴다(§4.9).
 - 접힌 행의 링크(`N편부터 읽기 →`·`로드맵`)는 summary 밖, **펼친 안쪽 마지막 줄**이다 — summary 안 링크는 스크린리더에서 버튼 자식으로 묻힌다. 펼친 편 행은 제목 열 x에서 시작하는 1px `--lightgray` 괘선 안에 놓인다. 모션은 화살표 회전(`--dur-base`)뿐.
 
 - AA 예외: 카드·칩 호버 강조 중 관련 없는 카드를 `opacity: .38`로 흐리는 것은 호버 동안만의 일시 상태라 AA 4.5에서 뺀다. 평상시 카드는 AA를 지킨다(`plugins/series-roadmap`).
@@ -338,16 +344,15 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 
 **역할**: 데스크톱(1200px 초과 — 1200은 tablet 그리드) 사이드바 컬럼을 독립 스크롤 영역으로 보이게 한다. 패널이 하나도 없는 사이드바(폴더·태그·archive·topics)엔 그리지 않는다. 구현은 `custom.scss` §8.5.
 
-- 컬럼당 1개(좌 SPECS+Backlinks+CATALOG / 우 TOC+GRAPH). 패널마다 씌우지 않는다(§4.7). 패널별 카드 실험(1440×900, CSS 주입) 결과 테두리가 좌 3·우 2개로 늘고 세로 15~35px를 더 쓰며 우측 넘침이 46 → 58px로 커져 기각.
+- 컬럼당 1개(좌 CATALOG+GRAPH / 우 TOC). 패널마다 씌우지 않는다(§4.7). 패널별 카드 실험(1440×900, CSS 주입) 결과 테두리가 좌 3·우 2개로 늘고 세로 15~35px를 더 쓰며 우측 넘침이 46 → 58px로 커져 기각.
 - 보더 `--island-border`(= `--lightgray`, 고대비 설정에선 `--gray`) + 반경 `--radius-m`(코드 창과 같은 10px), **그림자 없음**.
 - 면 `--island-bg` "눌린 크림" = 라이트 `--light` + `--lightgray` 30%(`#f1eee7`) / 다크 `--light` + black 25%(`#0a0f18`). 페이지보다 한 톤 **낮은** 면이라 밝기 위계가 본문 > 패널이고, 두 모드 모두 같은 방향(아래로)이다. 페이지와 1.06 / 1.04 — 장식 수준.
 - 대비(island 위): `--gray` **4.95** / 5.55, `--darkgray` 9.40 / 11.42, `--secondary` 5.81 / 8.33. 주의: 라이트 여유 0.45 — 면을 더 낮추거나 패널 행에 hover 배경을 넣지 말 것(얼룩 10%면 4.29).
 - 기각: 같은 종이(면 없음 — 긴 TOC 스크롤 때 본문과 층 구분이 없다), 판지(lightgray 55%·black 40% — 베이지 덩어리로 읽히고 라이트 `--gray` 4.71), 띄운 면(white 50%·4% — 패널이 본문보다 밝아 시선이 사이드로 샌다)과 그 완화(white 20%·1.5% — 위계가 그대로).
-- 본문 폭 손실 0 — column-gap은 그대로, island를 컬럼 안쪽으로 1rem 들인다. 높이는 내용 크기. 우측이 상한을 넘으면(긴 TOC) **GRAPH를 숨긴다**(`topicGraph.inline.ts`가 로드·SPA 이동·리사이즈·폰트 로드·TOC 접기 때 재판정, ⌘G는 남음). TOC만으로도 넘치면 **h3를 접고 현재 h2 절의 h3만 펼친다**(`topic-graph`의 `tocFold.inline.ts` + `custom.scss`, 데스크톱만).
-  - 판정은 접기 전 TOC 높이(GRAPH 제외)로 로드·SPA 이동·리사이즈·폰트 로드·TOC 접기 때 다시 한다. 98편 중 1440×900 1편·1280×720 5편·1920×1080 0편이 접기 대상이고, 어느 절을 펼쳐도 넘침 0.
+- 본문 폭 손실 0 — column-gap은 그대로, island를 컬럼 안쪽으로 1rem 들인다. 높이는 내용 크기. 좌측이 상한을 넘으면 **GRAPH를 숨긴다**(`topicGraph.inline.ts`가 로드·SPA 이동·리사이즈·폰트 로드 때 재판정, ⌘G는 남음). 우측 TOC가 넘치면 **h3를 접고 현재 h2 절의 h3만 펼친다**(`topic-graph`의 `tocFold.inline.ts` + `custom.scss`, 데스크톱만).
+  - 판정은 접기 전 TOC 높이로 로드·SPA 이동·리사이즈·폰트 로드·TOC 접기 때 다시 한다. 98편 중 1440×900 1편·1280×720 5편·1920×1080 0편이 접기 대상이고, 어느 절을 펼쳐도 넘침 0.
   - 현재 절 = 제목이 화면 아래 끝을 넘어선 마지막 h2(업스트림 TOC `in-view`와 같은 기준). 활성 표시는 그대로 `--secondary`.
   - 접힌 h3는 화면에서만 숨긴다(클립) — 스크린리더엔 전부 남고, 키보드 포커스(`:focus-visible`)가 목록에 들어오면 전부 펼치고 island가 스크롤한다. 마우스 클릭은 펼치지 않는다.
-  - 접기 모드에선 GRAPH를 계속 숨긴다 — 펼친 절이 바뀔 때마다 그래프가 나타났다 사라지지 않게(어차피 TOC만으로 넘치는 노트라 숨던 그래프다).
   - 기각: TOC 목록 안 스크롤, GRAPH 바닥 고정(TOC가 그 뒤로 지나감), 활성 절 주변 창(h2 목록이 잘려 노트 전체 구조가 안 보인다), 잘림 하단 페이드 + 전체 목차 버튼(펼치면 다시 넘치고 패널에 컨트롤이 하나 는다).
 - 우측 island는 맨 위로 버튼 영역(4.75rem) 위에서 끝난다 — 1652px 미만에선 버튼과 가로로 겹치기 때문.
 - 본문·상단 바·푸터·beforeBody/afterBody는 평면. 기각: 전면 island(카드 3단 중첩·본문 폭 손실), 패널별 island, 다크 표면 상향, 그림자.
@@ -391,8 +396,29 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 - 판(인레이): 그래프는 island 위에 맨몸으로 두지 않고 **끼운 창**에 놓는다 — `--island-border` 1px + `--radius-s`, 면 `--graph-plate`(라이트 `--light`로 island보다 밝은 종이 / 다크 island에 black 35%로 더 깊게), 안쪽 그림자 + 아래 하이라이트로 파인 입체감, 가장자리 비네트(`--graph-plate-shade`, 라이트 6%·다크 28%). 토큰은 custom.scss, 라벨 헤일로(`--tg-halo`)도 판 색을 따른다. 확대 보기의 큰 판도 같다. 대비(판 위, 비네트 모서리 최악): 라이트 `--gray` 4.66(중앙 5.24)·`--dark` 13.9, 다크 `--gray` 5.73. 주의: 라이트 비네트를 6%보다 진하게 하면 모서리 `--gray` 라벨이 4.5 밑으로 내려간다.
 - 실측(98편, 두 판 각각): 진입 중 프레임 p95 16.8ms(1440×900, 노드 49개 판). 상시 라벨 296개(쪽당 최대 5), 라벨 겹침·노드 가림·잘림 0. 대비 라이트 / 다크 — island 위 `--gray` 4.95 / 5.55, 이웃 라벨 9.42 / 11.41, 현재 폴더 14.71 / 16.58, 툴팁 15.58 / 15.93. 확대 보기(`--light` 위) `--gray` 5.24 / 5.33, 이웃·노트 라벨 9.99 / 10.96, 현재 폴더 15.58 / 15.93.
 - ⌘G 전역 그래프는 업스트림 `graph`를 그대로 쓴다. 사이드바 로컬 그래프만 걷어 내고(`topicGraph.inline.ts`) 숨긴다(`custom.scss` §8). 주의: `.graph`에 `display: none` 금지 — 전역 모달이 그 안에 있다.
-- 우측 TOC 아래. 모바일(800px 미만)에선 숨는다. 패널 높이 311px(낮은 판은 viewBox 차만큼 약 57px 낮다). TOC와 합쳐 우측 island에 다 안 들어가면 숨는다 — 98편 중 1440×900에서 84편 표시·14편 숨김, 1280×720(낮은 판)에서 55편 표시·43편 숨김. 숨긴 뒤에도 TOC만으로 넘치는 노트(1편·5편)는 TOC가 h3를 접는다(§4.15).
+- 좌측 CATALOG 아래. 모바일(800px 미만)에선 숨는다. 패널 높이 311px(낮은 판은 viewBox 차만큼 약 57px 낮다). CATALOG와 합쳐 좌측 island에 다 안 들어가면 숨는다(데스크톱만, 표시·숨김 편수는 재실측 필요).
 - 기각: 노드 제목 상시 라벨(260px 폭에서 말줄임 다수), 연결 노드 대표 태그 라벨(개념 태그가 4종뿐이고 폴더명을 반복), 시리즈 앞뒤 Chitlins(시리즈 UI 블루와 두 부호), 방사형 트리·업스트림 로컬 그래프, TOC 목록 안 스크롤(그래프 자리를 내주려고 TOC를 줄이는 방식).
+
+### 4.18 집중 모드 — 패널을 걷고 본문만
+
+**역할**: 긴 글을 읽는 동안 이웃(좌측)·목차(우측) 패널을 치우고 본문을 키운다. 구현은 `plugins/focus-mode`(토글·레일·토스트) + `custom.scss` §8.6(레이아웃). 노트 페이지·데스크톱(1200px 초과)만 — 1200 이하에선 토글이 없고 저장된 상태도 레이아웃에 적용되지 않는다.
+
+- **상태**: 상단 바 토글(테마 토글과 같은 20px 선 아이콘, 3단 레이아웃 모양, hover 칩 `--surface-2`) 또는 `⌘\`/`Ctrl+\`. 켜짐 = 아이콘 `--secondary` + 칩 배경(칩 위 5.07 / 6.46), `aria-pressed`. 상태는 `localStorage`, 페인트 전에 `<html focus-mode>`로 적용해 SPA 이동·새로고침에도 깜빡임 없이 유지된다.
+  - 단축키는 `e.code === "Backslash"`(한국어 자판 ₩)로 본다. Shift·Alt 조합, 한글 조합 중, 입력란·contenteditable 포커스, 열린 `dialog`, 열린 검색에선 무시하고, 처리할 때만 기본 동작을 막는다.
+- **켜졌을 때**: 그리드가 `1fr | 756px | 1fr`, 좌측 단은 `visibility: hidden`(열 자리는 남고 화면·접근성 트리·Tab 순서에서 빠짐), 우측 island는 걷고 레일만 남는다. 본문 단(헤더·본문·글 끝 블록)은 `zoom: 1.125` — 글자 16 → 18px, 폭 672 → 756px로 **한 줄 글자 수가 그대로**다. 헤딩·메타 줄·코드·표·이미지가 함께 커진다. 진행바·맨 위로 버튼(fixed)은 확대하지 않는다. 상단 바·메타 줄·시리즈 상자·진행바·Backlinks·페이저는 그대로 보인다.
+  - 토글 직전 상단 바 아래 경계에 걸친 가장 안쪽 블록(헤딩·문단·목록 항목 등)의 화면 위치를 기억했다가 토글 뒤 같은 위치로 되돌린다 — 폭이 바뀌어도 읽던 줄이 화면에서 달아나지 않는다.
+  - 주의: 좌측 단을 `display: none`으로 빼면 `.center`가 좌측 열로 빨려 들어간다(§4.7). 숨김은 `visibility`, 폭은 그리드 열로 바꾼다.
+- **TOC 레일**(우측, 본문 오른쪽 끝 + 48px, 사이드바와 같은 sticky top). TOC 없는 노트엔 없다. 링크·현재 절은 업스트림 TOC를 옮겨 쓴다 — 레일 링크도 `data-for`를 달아 업스트림 스크립트가 `in-view`를 칠하고, 현재 절 = `in-view` 중 마지막(§4.15와 같은 기준)이다.
+  - 접힘: 캡션 `TOC`(JetBrains Mono 11px 500, 자간 .06em, `--gray`) + 헤딩마다 눈금(h2 16px · h3 10px 들여쓰기 6px, 높이 2px, `--gray`). 현재 절은 24px · 3px `--secondary` — 길이·두께·색 세 가지로 갈라 색만으로 구분하지 않는다. 절이 바뀌면 150ms 전환.
+  - 커서가 닿는 즉시 눈금·캡션이 `--darkgray`로 진해지고 눈금이 4px 길어진다. 300ms 머물면 펼치고, 나간 뒤 500ms 유예 후 닫힌다(고정이 아니면). 반응 범위는 레일 상자뿐이다.
+  - 클릭: 접힘·커서로 펼친 상태의 클릭은 이동하지 않고 **펼친 채 고정**, 고정 상태에서 제목 클릭 = 그 절로 이동 후 닫힘. Esc·바깥 클릭 = 닫힘. 키보드 포커스가 들어오면 지연 없이 펼치고(포커스 링 `--secondary`), 키보드 Enter는 바로 이동한다. 터치는 탭 토글.
+  - 펼침 패널: 같은 캡션 아래 눈금 + 제목 목록(Hahmlet 12.8px · h3 12px, `--gray`, hover·현재 절 `--secondary`, 현재 절 600). 면 `--light` · 보더 `--lightgray` · `--radius-m` · 그림자 `--code-shadow`, 폭 250px(좁은 데스크톱에선 페이지 거터까지). 긴 목차는 패널 안 최대 높이(맨 위로 버튼 위까지) + 스크롤 — 사이드바 TOC의 "목록 안 스크롤 없음"(§4.15)과 별개다.
+  - 레일 캡션은 패널 라벨이 아니다(규칙 9 예외) — 패널이 아니라 접힌 레일의 표식이라 패널 라벨 조판(Hahmlet 700 1rem)을 따르지 않는다.
+  - 접힌 레일의 제목은 화면에서만 숨긴다 — 링크 이름은 DOM·스크린리더에 남는다. `nav`는 캡션으로 이름 붙는다(`aria-labelledby`).
+- **토스트**: 켤 때마다, 그리고 켜진 상태로 세션 첫 노트에서 1회 `Panels hidden · ⌘\ to show`. 하단 가운데, `role="status"`, 2.5초, Mono 12px `--dark`, 면 `--light` + 보더 `--lightgray`(그래프 확대 창 문법) + `--code-shadow`. 끌 때는 없다.
+- 대비(페이지 `--light` 위, 라이트/다크): `--gray` 5.24/5.33(캡션·눈금·제목), `--darkgray` 9.99/10.96, `--secondary` 6.17/8.00, 토스트 `--dark` 15.58/15.93. 눈금은 그래픽 3:1, 텍스트는 4.5 기준 모두 통과.
+- 감속 모션: 전환·페이드는 §13이 즉시 끝낸다. 펼침 지연(300ms)·닫힘 유예(500ms)는 모션이 아니라 의도 판별이라 남긴다.
+- 기각: 업스트림 `reader-mode`(사이드 패널 `opacity: 0` + hover 때 복원) — 숨은 패널 위에 커서를 두는 습관(커서 주차)만으로 패널이 되살아나고, 페이드 중간값이 AA를 깬다. 투명도로 숨기는 안은 되살리지 말 것.
 
 ---
 

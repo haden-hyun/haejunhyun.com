@@ -1,4 +1,4 @@
-// Featured — 번호 + 제목 + "토픽 · N분" 목록. 홈 히어로 바로 아래 전폭.
+// Featured — 번호 + 제목 + 요약 + 메타 목록. 홈 히어로 바로 아래 전폭.
 // 주의: 섹션 라벨 규칙은 recent-notes-index·topic-grid와 같은 값으로 유지할 것.
 
 // RECENT NOTES(좌) + TOPICS(우)를 한 줄에 — 두 섹션은 beforeBody의 형제라 부모 그리드로 나란히 둔다.
@@ -53,6 +53,15 @@
   @media all and (max-width: 800px) {
     padding-bottom: 10px;
   }
+}
+
+// 라벨 옆 선정 기준 부제(`editor's picks`).
+.featured-label-sub {
+  margin-left: 0.5rem;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--gray);
 }
 
 .featured-tracks {

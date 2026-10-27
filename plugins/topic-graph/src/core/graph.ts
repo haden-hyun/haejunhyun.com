@@ -2,6 +2,7 @@
 // - buildTopicGraph: 현재 노트의 최상위 주제 안 주제·폴더·노트 노드와 구조·링크·시리즈 간선
 // - relations: 현재 노트 기준 링크·시리즈 이웃·형제·상위 폴더
 // - aliasCollisions: 노트 파일명과 겹치는 별칭 리다이렉트 슬러그(빌드 경고용)
+import { isFolderMirrorTag } from "../../../_shared/notes"
 
 export interface NoteInput {
   slug: string
@@ -42,12 +43,6 @@ export interface TopicGraphModel {
 
 const dirOf = (slug: string): string => slug.split("/").slice(0, -1).join("/")
 const folderId = (path: string): string => "f:" + path
-
-/** 태그 경로가 노트 폴더 경로와 같거나 그 접두면 폴더를 되풀이할 뿐이다. */
-function isFolderMirrorTag(slug: string, tag: string): boolean {
-  const dir = dirOf(slug)
-  return dir === tag || dir.startsWith(tag + "/")
-}
 
 /** 링크는 crawl-links의 단순화 슬러그다. 그대로 없으면 끝 경로가 하나로 맞는 노트로 푼다. */
 function resolveLink(link: string, slugs: Set<string>, all: string[]): string | undefined {

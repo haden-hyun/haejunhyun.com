@@ -13,10 +13,10 @@ interface Settings {
   seriesTitles: Record<string, string>
 }
 
-// 주의: 블로그 quartz.config.yaml의 seriesTitles와 같게 시작한다
+// 주의: 블로그 quartz.config.yaml의 &seriesTitles 앵커와 같게 시작한다
 const DEFAULTS: Settings = {
   seriesTitles: {
-    "deep-learning-basics": "딥러닝 기초 시리즈",
+    "deep-learning-basics": "딥러닝 기초",
     "obsidian-quartz-blog": "Obsidian과 Quartz로 블로그 만들기",
     "statistics-basics": "통계학 기초",
     "docker-basics": "Airflow를 위한 Docker 기초",
@@ -113,7 +113,7 @@ class TitlesTab extends PluginSettingTab {
     const titles = this.plugin.settings.seriesTitles
     containerEl.empty()
     containerEl.createEl("p", {
-      text: "시리즈 슬러그 → 로드맵 제목. 이름이 비어 있으면 슬러그를 쓴다. 블로그 quartz.config.yaml의 seriesTitles와 같게 둘 것.",
+      text: "시리즈 슬러그 → 로드맵 제목. 이름이 비어 있으면 슬러그를 쓴다. 블로그 quartz.config.yaml의 &seriesTitles 앵커와 같게 둘 것.",
     })
     for (const slug of Object.keys(titles)) {
       new Setting(containerEl)

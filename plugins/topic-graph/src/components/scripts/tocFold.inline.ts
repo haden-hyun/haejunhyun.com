@@ -32,17 +32,11 @@ function setup() {
     groups.forEach((g, i) => g.subs.forEach((li) => li.classList.toggle("toc-folded", i !== current)))
   }
 
-  // 접기 전 높이로 판정한다 — GRAPH는 잴 때만 빼 두고(긴 TOC면 어차피 숨는다) 같은 프레임 안에서 되돌린다.
+  // 접기 전 높이로 판정한다.
   const fit = () => {
     list.classList.remove("toc-fold")
-    let fold = false
-    if (window.matchMedia(DESKTOP).matches && !list.classList.contains("collapsed")) {
-      const graph = island.querySelector<HTMLElement>(".topic-graph")
-      const prev = graph?.style.display ?? ""
-      if (graph) graph.style.display = "none"
-      fold = island.scrollHeight > island.clientHeight + 1
-      if (graph) graph.style.display = prev
-    }
+    const fold =
+      window.matchMedia(DESKTOP).matches && !list.classList.contains("collapsed") && island.scrollHeight > island.clientHeight + 1
     list.classList.toggle("toc-fold", fold)
     // 주의: -1(현재 절 없음)과도 달라야 mark()가 접기 클래스를 새로 칠한다.
     current = -2

@@ -16,7 +16,7 @@ import { topicAnchor } from "../../../_shared/topics"
 import { episodeLabel } from "../../../_shared/series"
 
 export interface TopicsContentOptions {
-  /** 시리즈 키 → 표시명. 주의: folder-listing·series-box·series-pager·series-roadmap 옵션과 같게 둘 것. */
+  /** 시리즈 키 → 표시명. quartz.config.yaml의 `&seriesTitles` 앵커를 받는다. */
   seriesTitles: Record<string, string>
 }
 

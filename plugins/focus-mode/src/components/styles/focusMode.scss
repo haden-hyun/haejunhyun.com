@@ -1,0 +1,251 @@
+// 집중 모드 토글·TOC 레일·토스트. 페이지 레이아웃(사이드바·본문 확대)은 custom.scss §8.6.
+// - 데스크톱(1200px 초과)만 — 1200 이하에선 토글도 레일도 없다
+// - 감속 모션은 custom.scss §13이 전환을 즉시 끝낸다
+$desktop-up: "(min-width: 1201px)";
+
+// 상단 바 아이콘 버튼 — 20px 아이콘, hover·켜짐은 --surface-2 칩.
+.focus-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-s);
+  background: none;
+  color: var(--darkgray);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &:hover {
+    background-color: var(--surface-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 1px;
+  }
+
+  @media not all and #{$desktop-up} {
+    display: none;
+  }
+}
+
+:root[focus-mode] .focus-toggle {
+  color: var(--secondary);
+  background-color: var(--surface-2);
+}
+
+// 레일 — 접힘은 캡션 + 헤딩 눈금, 펼치면 같은 상자가 제목 목록 패널이 된다.
+.focus-rail {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  align-self: flex-start;
+  box-sizing: border-box;
+  max-height: calc(100vh - var(--topbar-h) - var(--island-inset) * 2 - 4.75rem);
+  overflow-y: auto;
+  padding: 12px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-m);
+  transition:
+    background-color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 30px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    margin: 0;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 12px;
+    padding: 0;
+    background: none;
+    color: var(--gray);
+    font-weight: 400;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+}
+
+// 주의: 패널 라벨(규칙 9)이 아니다 — 접힌 레일의 표식이라 패널 라벨 조판을 따르지 않는다.
+.focus-rail-caption {
+  font-family: var(--codeFont);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: var(--gray);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.focus-rail-tick {
+  flex-shrink: 0;
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--gray);
+  transition:
+    width var(--dur-fast) var(--ease),
+    height var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.focus-rail li:not(.depth-0) .focus-rail-tick {
+  width: 10px;
+  margin-left: 6px;
+}
+
+// 커서가 닿거나 펼친 동안 — 캡션·눈금이 한 단 진해지고 눈금이 4px 길어진다.
+@mixin lit {
+  .focus-rail-caption {
+    color: var(--darkgray);
+  }
+
+  .focus-rail-tick {
+    width: 20px;
+    background: var(--darkgray);
+  }
+
+  li:not(.depth-0) .focus-rail-tick {
+    width: 14px;
+  }
+}
+
+@media (hover: hover) {
+  .focus-rail:hover {
+    cursor: pointer;
+    @include lit;
+  }
+}
+
+.focus-rail.open {
+  @include lit;
+}
+
+// 현재 절 = in-view(제목이 화면 아래 끝을 넘어선 헤딩) 중 마지막 — 사이드바 TOC 활성 표시와 같은 기준.
+.focus-rail li:has(> a.in-view):not(:has(~ li > a.in-view)) {
+  .focus-rail-tick {
+    width: 24px;
+    height: 3px;
+    background: var(--secondary);
+  }
+
+  .focus-rail-label {
+    color: var(--secondary);
+    font-weight: 600;
+  }
+}
+
+.focus-rail-label {
+  font-family: var(--headerFont);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.focus-rail li:not(.depth-0) .focus-rail-label {
+  font-size: 0.75rem;
+}
+
+// 접힌 레일의 제목은 화면에서만 숨긴다 — 링크 이름은 스크린리더에 남는다.
+.focus-rail:not(.open) .focus-rail-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.focus-rail.open {
+  width: min(250px, 100% + var(--page-gutter) - 0.5rem);
+  padding: 16px 18px;
+  background: var(--light);
+  border-color: var(--lightgray);
+  box-shadow: var(--code-shadow);
+
+  ol {
+    gap: 8px;
+  }
+
+  a:hover .focus-rail-label {
+    color: var(--secondary);
+  }
+}
+
+@media #{$desktop-up} {
+  :root[focus-mode] .focus-rail {
+    display: flex;
+  }
+}
+
+// 토스트 — 하단 가운데.
+.focus-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-m);
+  background: var(--light);
+  box-shadow: var(--code-shadow);
+  color: var(--dark);
+  font-family: var(--codeFont);
+  font-size: 0.75rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity var(--dur-fast) var(--ease);
+
+  &.show {
+    opacity: 1;
+  }
+
+  kbd {
+    padding: 1px 6px;
+    border: 1px solid var(--gray);
+    border-radius: 5px;
+    font-family: inherit;
+  }
+}
+
+.focus-toast-sep {
+  color: var(--gray);
+}

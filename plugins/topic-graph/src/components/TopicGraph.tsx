@@ -1,4 +1,4 @@
-// 우측 TOC 아래 GRAPH 패널.
+// 좌측 CATALOG 아래 GRAPH 패널.
 // - 현재 노트의 최상위 주제 그래프를 판 넷(패널 tall/short, 확대 보기 land/port)으로 빌드 타임 SVG 렌더
 // - 확대 칩이 같은 그래프의 큰 판을 <dialog>로 연다, ⌘G 칩은 업스트림 전역 그래프를 연다
 // - 별칭 리다이렉트 슬러그와 노트 파일명 충돌을 빌드 경고로 낸다
@@ -24,7 +24,7 @@ type FileData = QuartzPluginData & Record<string, unknown>
 
 export interface TopicGraphOptions {
   title: string
-  /** 폴더 표시명 — folder-listing의 folderTitles와 같게 둘 것. */
+  /** 폴더 표시명. quartz.config.yaml의 `&folderTitles` 앵커를 받는다. */
   folderTitles: Record<string, string>
 }
 
@@ -248,7 +248,7 @@ export default ((userOpts?: Partial<TopicGraphOptions>) => {
   }
 
   TopicGraph.css = style
-  // 긴 TOC 접기도 우측 island 판정이라 여기 싣는다. 주의: 두 스크립트의 축약된 최상위 이름이 겹치므로 IIFE로 가둔다.
+  // 긴 TOC 접기(우측 island 판정)도 여기 싣는다. 주의: 두 스크립트의 축약된 최상위 이름이 겹치므로 IIFE로 가둔다.
   TopicGraph.afterDOMLoaded = script + ";\n(() => {\n" + tocFold + "\n})();"
   return TopicGraph
 }) satisfies QuartzComponentConstructor<Partial<TopicGraphOptions>>

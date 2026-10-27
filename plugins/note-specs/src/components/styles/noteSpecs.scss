@@ -1,48 +1,24 @@
-// 음반 슬리브 사양 표기 — 라벨/값 2열. 라벨은 회색 본문체, 값만 진하게.
+// 제목 아래 메타 한 줄 — Mono 12px --gray, 항목 사이 `·`.
 .note-specs {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+  margin: 0.6rem 0 0;
+  font-family: var(--codeFont);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
 
-  .note-specs-list {
-    margin: 0.5rem 0 0;
-    padding: 0.6rem 0;
-    border-block: 1px solid var(--lightgray);
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+  > span {
+    white-space: nowrap;
   }
 
-  .note-specs-row {
-    display: grid;
-    grid-template-columns: 4.6rem 1fr;
-    gap: 0.4rem;
-    align-items: baseline;
-  }
-
-  dt {
-    font-size: 0.75rem;
-    color: var(--gray);
-  }
-
-  dd {
-    margin: 0;
-    font-size: 0.8rem;
-    color: var(--dark);
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
-
-  .note-specs-date {
-    font-family: var(--codeFont);
-    font-size: 0.75rem;
-    font-variant-numeric: tabular-nums;
+  // 주의: 숨은 항목은 자기 구분자까지 함께 사라지도록 구분자를 다음 항목의 ::before로 단다.
+  > * + *::before {
+    content: "·";
+    margin-inline: 0.5em;
   }
 
   .note-specs-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.3rem;
+    white-space: normal;
 
     a {
       color: var(--secondary);
@@ -50,11 +26,17 @@
       &:hover {
         color: var(--tertiary);
       }
+
+      & + a {
+        margin-inline-start: 0.5em;
+      }
     }
   }
 
-  // 행 자리는 SSR로 잡아 두고 응답이 오면 페이드인 — 좌측 island가 밀리지 않는다. 주의: 값 숫자는 --dark(AA)
+  // 자리는 SSR로 잡아 두고 응답이 오면 페이드인 — 뒤 항목이 가로로 밀리지 않는다.
   .note-specs-readers {
+    display: inline-block;
+    min-width: 13ch;
     visibility: hidden;
     opacity: 0;
 
@@ -66,10 +48,6 @@
       visibility: visible;
       opacity: 1;
       transition: opacity 0.2s;
-    }
-
-    dd {
-      font-variant-numeric: tabular-nums;
     }
   }
 }

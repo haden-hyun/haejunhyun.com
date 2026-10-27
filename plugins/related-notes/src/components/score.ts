@@ -1,4 +1,5 @@
 // Related 순위 계산. 컴포넌트와 분리해 빌드 산출물 없이도 표로 검증할 수 있게 둔다.
+import { isFolderMirrorTag } from "../../../_shared/notes"
 
 export interface RelatedCandidate {
   slug: string
@@ -23,12 +24,6 @@ const TAG = 10
 export const MIN_SCORE = 10
 
 const dirOf = (slug: string): string => slug.split("/").slice(0, -1).join("/")
-
-/** 태그 경로가 노트의 폴더 경로와 같거나 그 접두면 폴더를 되풀이할 뿐이다(programming/python 노트의 programming/python). */
-export function isFolderMirrorTag(slug: string, tag: string): boolean {
-  const dir = dirOf(slug)
-  return dir === tag || dir.startsWith(tag + "/")
-}
 
 function commonDepth(a: string, b: string): number {
   const pa = a.split("/")
