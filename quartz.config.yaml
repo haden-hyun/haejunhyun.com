@@ -39,8 +39,8 @@ configuration:
     # 텍스트로 렌더되는 모든 값은 AA 4.5 이상을 유지할 것.
     colors:
       lightMode:
-        light: "#f7f5ef" # bg · 크림 인쇄지 (순백 대비 광량 91.3%)
-        lightgray: "#e4dfd4" # border
+        light: "#fcfbf7" # bg · 크림 인쇄지
+        lightgray: "#e6e2d8" # border
         gray: "#5f6773" # meta
         darkgray: "#323e4c" # body
         dark: "#141d28" # heading

@@ -146,7 +146,7 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   // h2만 액센트 블루 — 헤딩은 블록 단독, 링크는 인라인이라 같은 흐름에서 경쟁하지 않는다.
   h2 {
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.375rem;
     color: var(--secondary);
     padding-bottom: 0.35rem;
     border-bottom: 1.5px solid var(--lightgray);
@@ -157,7 +157,7 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
   // 주의: --darkgray는 본문 p와 같아 h3가 구분되지 않고, 남은 블루(tertiary)는 h2보다 진해 위계가 뒤집힌다.
   h3 {
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.1875rem;
     color: var(--dark);
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
@@ -165,8 +165,8 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 
   p {
     font-family: var(--bodyFont);
-    font-size: 1rem;
-    line-height: 1.9;
+    font-size: 1.0625rem;
+    line-height: 1.8;
     color: var(--darkgray);
     word-break: keep-all;
     overflow-wrap: break-word;
@@ -180,7 +180,7 @@ $pageMaxWidth: map.get($breakpoints, desktop) + 300px;
 
   // 본문 목록 행간 = 문단. 주의: base의 `li { line-height: 1.6rem }`이 남아 있어 article로 좁혀 덮는다.
   article li {
-    line-height: 1.9;
+    line-height: 1.8;
   }
 
   strong {
@@ -216,13 +216,17 @@ article mark {
 }
 
 // 본문 내부 링크만 하단선 (사이드바 링크 오염 방지)
+// 주의: 링크 색(1.62:1 vs 본문)만으로는 구분이 안 돼 밑줄을 비색 단서로 쓴다.
 article a {
   color: var(--secondary);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--dur-fast) var(--ease);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--secondary);
+  border-bottom: 0;
+  transition: text-decoration-thickness var(--dur-fast) var(--ease);
   &:hover {
-    border-bottom-color: var(--secondary);
+    text-decoration-thickness: 2px;
   }
 }
 
@@ -975,7 +979,10 @@ body {
     position: absolute;
     inset: 0 -100vmax;
     z-index: -1;
-    background-color: var(--light);
+    // 벨럼: 94% 미만이면 최악 배경에서 --gray가 AA 4.5 아래로 내려간다.
+    background-color: color-mix(in srgb, var(--light) 94%, transparent);
+    -webkit-backdrop-filter: saturate(1.2) blur(20px);
+    backdrop-filter: saturate(1.2) blur(20px);
     border-bottom: 1px solid var(--border);
   }
 
@@ -1239,6 +1246,74 @@ figure figcaption {
 
 .giscus {
   margin-top: 3rem;
+}
+
+// ── 12.5 Apple 정제: 포커스 · 눌림 · 등장 ──────────────────────────────────
+// 감속 곡선만 쓴다(오버슈트 없음). 모션은 §13이 감속 설정에서 즉시 끝낸다.
+:root {
+  --ease-settle: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-press: cubic-bezier(0.2, 0, 0, 1);
+}
+
+// 주의: `:where`라 명시도 0 — 플러그인의 행 인셋 링(−2px 등)이 그대로 이긴다.
+:where(a, button, summary, [role="link"], [role="button"]):focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+  transition: outline-offset var(--dur-fast) var(--ease-settle);
+  @starting-style {
+    outline-offset: 4px;
+  }
+}
+
+// 눌림 — 칩·CTA·원형 버튼만. 주의: 행(.fi-row 등)은 scale 금지(이미 얼룩 눌림이 있다).
+.hero-links a,
+.series-pager-link,
+.prev-next-nav a,
+#back-to-top,
+.focus-toggle,
+.topic-graph-btn {
+  &:active {
+    transform: scale(0.97);
+    transition-duration: 60ms;
+    transition-timing-function: var(--ease-press);
+  }
+}
+
+// 그래프 확대 창 — 컷 대신 8px 오르며 정착. 미지원 브라우저는 컷으로 폴백.
+.topic-graph-dialog {
+  opacity: 0;
+  transform: translateY(8px) scale(0.985);
+  transition:
+    opacity 180ms var(--ease-settle),
+    transform 260ms var(--ease-settle),
+    overlay 260ms allow-discrete,
+    display 260ms allow-discrete;
+
+  &[open] {
+    opacity: 1;
+    transform: none;
+    @starting-style {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+  }
+
+  &::backdrop {
+    transition: background-color 180ms var(--ease);
+  }
+
+  @media (max-width: 800px) {
+    transform: translateY(24px);
+  }
+}
+
+// 투명도 줄이기·고대비 설정에선 벨럼을 불투명으로 되돌린다.
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .topbar::before {
+    background-color: var(--light);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 // ── 13. 감속 모션 ──────────────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 /* 블로그 토큰을 블로그 quartz.config.yaml theme.colors 값으로 고정한다. .series-roadmap 안에서만 정의해 볼트 테마와 섞이지 않는다. */
 .series-roadmap {
-  --light: #f7f5ef;
-  --lightgray: #e4dfd4;
+  --light: #fcfbf7;
+  --lightgray: #e6e2d8;
   --gray: #5f6773;
   --darkgray: #323e4c;
   --dark: #141d28;

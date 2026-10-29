@@ -26,7 +26,7 @@
 - h1만 자간 −0.02em. Hahmlet은 조이면 한글 자소가 붙는다.
 - UI 문구는 영문 전용(`locale: en-US`). 원고·히어로 설명문만 한국어.
 - `h1~h6`·`p`·`li`는 `word-break: keep-all` — 한글을 어절 단위로 끊는다.
-- 본문 16px, 문단·본문 목록 `li` 행간 1.9(같은 값). 콜아웃 본문도 1rem(행간은 콜아웃 1.75).
+- 본문 17px, 문단·본문 목록 `li` 행간 1.8(같은 값). 헤딩 h1 28 / h2 22 / h3 19px. 콜아웃 본문은 1rem(행간은 콜아웃 1.75).
 - 주의: `theme.typography`와 `fonts` 플러그인 옵션 **두 곳을 항상 같게** (후자가 최종 결정).
   예외는 body의 Inter 하나 — Google 슬롯이 하나뿐이라 `custom.scss`의 `@font-face`(jsDelivr 고정 버전)로 싣는다.
 
@@ -54,8 +54,8 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 
 | 역할               | 라이트          | 다크            |
 | ------------------ | --------------- | --------------- |
-| bg `light`         | `#f7f5ef`       | `#0e1420`       |
-| border `lightgray` | `#e4dfd4`       | `#1e2836`       |
+| bg `light`         | `#fcfbf7`       | `#0e1420`       |
+| border `lightgray` | `#e6e2d8`       | `#1e2836`       |
 | meta `gray`        | `#5f6773` 5.27  | `#7f8b9c` 5.34  |
 | body `darkgray`    | `#323e4c` 9.99  | `#bcc9d9` 10.96 |
 | heading `dark`     | `#141d28` 15.58 | `#e9eff7` 15.93 |
@@ -84,7 +84,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 
 대등한 범주(군집·스레드·비교 대상)를 가르는 4색. Quartz 테마가 고정 키만 내보내므로 `quartz.config.yaml`이 아니라 anim.scss의 `:root` / `:root[saved-theme="dark"]`에 정의하고, `draw`에는 `colors.cat1~cat4`로 넘긴다. Obsidian 미리보기는 `obsidian/src/theme-map.css`에서 같은 값을 `.anim` / `.theme-dark .anim`에 고정한다.
 
-| 토큰   | 라이트    | 대비(바탕 `#f7f5ef`) | 다크      | 대비(바탕 `#0e1420`) |
+| 토큰   | 라이트    | 대비(바탕 `#fcfbf7`) | 다크      | 대비(바탕 `#0e1420`) |
 | ------ | --------- | -------------------- | --------- | -------------------- |
 | `cat1` | `#8e6012` | 5.03:1               | `#c68404` | 5.88:1               |
 | `cat2` | `#449f66` | 3.01:1               | `#167340` | 3.12:1               |
@@ -346,7 +346,7 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 
 - 컬럼당 1개(좌 CATALOG+GRAPH / 우 TOC). 패널마다 씌우지 않는다(§4.7). 패널별 카드 실험(1440×900, CSS 주입) 결과 테두리가 좌 3·우 2개로 늘고 세로 15~35px를 더 쓰며 우측 넘침이 46 → 58px로 커져 기각.
 - 보더 `--island-border`(= `--lightgray`, 고대비 설정에선 `--gray`) + 반경 `--radius-m`(코드 창과 같은 10px), **그림자 없음**.
-- 면 `--island-bg` "눌린 크림" = 라이트 `--light` + `--lightgray` 30%(`#f1eee7`) / 다크 `--light` + black 25%(`#0a0f18`). 페이지보다 한 톤 **낮은** 면이라 밝기 위계가 본문 > 패널이고, 두 모드 모두 같은 방향(아래로)이다. 페이지와 1.06 / 1.04 — 장식 수준.
+- 면 `--island-bg` "눌린 크림" = 라이트 `--light` + `--lightgray` 30%(`#f5f4ee`) / 다크 `--light` + black 25%(`#0a0f18`). 페이지보다 한 톤 **낮은** 면이라 밝기 위계가 본문 > 패널이고, 두 모드 모두 같은 방향(아래로)이다. 페이지와 1.06 / 1.04 — 장식 수준.
 - 대비(island 위): `--gray` **4.95** / 5.55, `--darkgray` 9.40 / 11.42, `--secondary` 5.81 / 8.33. 주의: 라이트 여유 0.45 — 면을 더 낮추거나 패널 행에 hover 배경을 넣지 말 것(얼룩 10%면 4.29).
 - 기각: 같은 종이(면 없음 — 긴 TOC 스크롤 때 본문과 층 구분이 없다), 판지(lightgray 55%·black 40% — 베이지 덩어리로 읽히고 라이트 `--gray` 4.71), 띄운 면(white 50%·4% — 패널이 본문보다 밝아 시선이 사이드로 샌다)과 그 완화(white 20%·1.5% — 위계가 그대로).
 - 본문 폭 손실 0 — column-gap은 그대로, island를 컬럼 안쪽으로 1rem 들인다. 높이는 내용 크기. 좌측이 상한을 넘으면 **GRAPH를 숨긴다**(`topicGraph.inline.ts`가 로드·SPA 이동·리사이즈·폰트 로드 때 재판정, ⌘G는 남음). 우측 TOC가 넘치면 **h3를 접고 현재 h2 절의 h3만 펼친다**(`topic-graph`의 `tocFold.inline.ts` + `custom.scss`, 데스크톱만).
@@ -475,8 +475,8 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 
 - [ ] **사이드바 유연폭** — 320px 고정이라 좁은 데스크톱에서 여백이 본문에서만 나온다. `minmax(260px, .5fr)`로 바꾸면 1440에서 본문 726 → 846px. 260px에서 패널 라벨 조판이 버티는지 미검증.
 - [ ] TOC sticky · Explorer sticky
-- [ ] 헤딩 스케일 재조정 (h1 32 / h2 24 / h3 19.2 / h4 17px)
-- [ ] 본문 16 → 17px
+- [x] 헤딩 스케일 재조정 (h1 28 / h2 22 / h3 19px — 2026-10-30 반영)
+- [x] 본문 16 → 17px
 - [ ] frontmatter `description` 보강 (요약 미보유 6건)
 - [ ] 모바일 실기기 검증
 
