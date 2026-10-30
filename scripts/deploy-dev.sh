@@ -3,6 +3,7 @@
 # deploy-dev.sh - Quartz 로컬 미리보기
 #   플러그인 설치 후 public 재빌드하고 개발 서버(--serve)를 띄워 브라우저를 자동으로 연다.
 #   서버는 Ctrl+C 로 멈추기 전까지 계속 실행된다(=Obsidian 명령도 계속 실행 상태).
+#   QUARTZ_DEV_TTL=<초> 를 주면 그 시간이 지난 뒤 서버를 스스로 종료한다(기본 0 = 무제한).
 #   상세 출력은 로그파일로 보내고, 실패할 때만 마지막 로그를 콘솔에 보여준다.
 #
 set -u
@@ -10,6 +11,8 @@ export PATH="$PATH:/opt/homebrew/bin"
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 LOG="/tmp/quartz-dev.log"
+TTL="${QUARTZ_DEV_TTL:-0}"
+TTL_MARK="/tmp/quartz-dev.ttl"
 
 cd "$REPO" || { echo "[ERROR] repo 경로 없음: $REPO"; exit 1; }
 
@@ -34,9 +37,23 @@ sleep 1  # 포트가 완전히 풀릴 때까지 잠깐 대기
   done
 ) &
 
+# TTL 워치독: 시간이 지나면 마커를 남기고 8080을 잡은 서버를 종료한다.
+rm -f "$TTL_MARK"
+if [ "$TTL" -gt 0 ] 2>/dev/null; then
+  ( sleep "$TTL"; touch "$TTL_MARK"; lsof -ti tcp:8080 | xargs kill 2>/dev/null ) &
+  WATCHDOG=$!
+  trap 'kill "$WATCHDOG" 2>/dev/null' EXIT
+  echo "[TTL] ${TTL}초 뒤 서버가 자동 종료됩니다."
+fi
+
 # --serve 는 정상일 땐 종료되지 않는다. 즉 여기서 exit 하면 무조건 오류다.
 npx quartz build --serve >> "$LOG" 2>&1
 status=$?
+
+if [ -f "$TTL_MARK" ]; then
+  echo "[TTL] ${TTL}초 경과로 개발 서버를 종료했습니다."
+  exit 0
+fi
 
 echo "[ERROR] 개발 서버 종료됨 (exit $status). 마지막 로그:"
 tail -n 15 "$LOG"
