@@ -170,11 +170,36 @@ body {
   --file-line-width: 672px;
 }
 
-/* 행간·링크 굵기는 노트 뷰에만 — body에 걸면 설정 창·모달까지 바뀐다 */
+/* 행간·본문 크기·링크 굵기는 노트 뷰에만 — body에 걸면 설정 창·모달까지 바뀐다. 사이트: 본문 17px / 행간 1.8.
+   주의: --font-text-size를 노트 뷰에 걸면 Obsidian 글꼴 크기 설정이 노트에선 이 값에 가려질 수 있다(볼트에서 확인) */
 .markdown-preview-view,
 .markdown-source-view {
-  --line-height-normal: 1.9;
+  --line-height-normal: 1.8;
+  --font-text-size: 17px;
   --link-weight: 600;
+}
+
+/* 제목 크기 — 사이트 h1 28 / h2 22 / h3 19px. 주의: px라 글꼴 크기 설정과 무관하게 사이트와 같은 절대 크기다 */
+body {
+  --h1-size: 28px;
+  --h2-size: 22px;
+  --h3-size: 19px;
+}
+
+/* 링크 밑줄 — 사이트 article a: 항상 1px 밑줄(offset .22em). hover 2px 전환은 범위 밖.
+   주의: --link-decoration* 변수를 Obsidian이 실제로 제공하는지는 앱 CSS를 못 봐 추정이다 — 아래 직접 규칙이 보강한다 */
+.theme-light,
+.theme-dark {
+  --link-decoration: underline;
+  --link-decoration-hover: underline;
+  --link-external-decoration: underline;
+  --link-external-decoration-hover: underline;
+}
+.markdown-rendered a.internal-link,
+.markdown-rendered a.external-link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
 }
 
 /* 인용문 — custom.scss blockquote:not(.callout). Obsidian 콜아웃은 blockquote가 아니라 :not이 필요 없다 */

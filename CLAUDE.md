@@ -13,7 +13,6 @@ Obsidian vault를 **Quartz v5**로 빌드해 Cloudflare로 서빙하는 개인 �
 | ------------------ | ------------------------------------------------------------------- |
 | `DESIGN-SYSTEM.md` | **디자인의 현재 상태와 기각 기록.** 색·서체를 건드리기 전 §5 필독      |
 | `README.md`        | 배포 구조                                                           |
-| `APPLE-DESIGN.md`  | `feat/apple-design` 진행 중 작업의 상태·남은 일. 작업이 끝나면 지운다 |
 
 이 둘이 전부다. 계획서·핸드오프·이력 문서를 새로 만들지 않는다 — 디자인은
 `DESIGN-SYSTEM.md` 한 곳에 현재 상태로만 적고, 경위는 git 히스토리가 갖는다.
@@ -133,6 +132,8 @@ npx quartz build
 cd public && python3 -m http.server 8899   # 빌드본을 띄우고 computed style을 실측
 ```
 
+주의: python `http.server`는 확장자 없는 URL(`/a/b`)을 `.html`로 풀지 못해 404를 준다. 그 상태로 SPA 이동(홈 → 노트)을 시험하면 코어가 404 본문을 받아들여 콘솔에 가짜 TypeError(`endsWith`, `querySelectorAll`)가 난다 — 사이트 결함이 아니다(Cloudflare Pages는 해석한다). SPA 이동은 `.html` 해석 서버나 `npx quartz build --serve`로 시험하고, python 서버로 잴 땐 브라우저 캐시를 끌 것(옛 HTML을 읽는다).
+
 SCSS에 규칙을 썼다고 적용된 게 아니다(§사실 확인 원칙). 색·크기·대비는
 브라우저 computed style로 확인한다. 주의: 탭이 백그라운드면 IntersectionObserver가
 안 돌아 TOC `in-view` 같은 게 "깨진 것처럼" 보인다 — 스크린샷으로 탭을 활성화한
@@ -205,7 +206,7 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
 ## 디자인 요약 (상세는 `DESIGN-SYSTEM.md`)
 
 - 컨셉: **Blue Note / 빈티지 음반 레이블.** 기술 포트폴리오가 아니라 아날로그 지식 아카이브.
-- 팔레트 "True Midnight" — 라이트 = 크림 인쇄지 `#f7f5ef` / 다크 = 잉크 네이비 `#0e1420`, accent H207.
+- 팔레트 "True Midnight" — 라이트 = 크림 인쇄지 `#fcfbf7` / 다크 = 잉크 네이비 `#0e1420`, accent H207.
 - **색의 세 축**: 공간(블루 `#1c5f95`, 링크·백링크·breadcrumb·CATALOG·h2) / 행위(브릭 `#b8442a`, CTA) /
   시간(Chitlins `#b03a7d`, 읽기 진행바만). TOC 활성 절·그래프 현재 노트는 "지금 여기"라 공간(블루)이다. 각 색이 답하는 질문이 달라 역할 침범이 없다.
 - 주의: 팔레트의 블루는 **2색 × 2모드**다(True Midnight/Deeper Cut = 라이트, Stage Light/Rim Light = 다크).
