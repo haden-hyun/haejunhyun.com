@@ -224,7 +224,6 @@
   word-break: keep-all;
 }
 
-// 요약+메타 덩어리 — 좁은 폭에선 래퍼 없이 body의 자식처럼 흐르고, 리드 타일(801px 이상)에서만 한 칼럼이 된다.
 .featured-side {
   display: contents;
 }

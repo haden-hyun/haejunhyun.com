@@ -8,8 +8,8 @@ import style from "./styles/focusMode.scss"
 import focusModeScript from "./scripts/focusMode.inline.ts"
 import { isRealNote } from "../../../_shared/notes"
 
-// 집중 모드 토글 — 노트 페이지에만. 상태·단축키·TOC 레일·툴팁 문구·토스트·첫 안내는 스크립트, 레이아웃은 custom.scss §8.6.
-// 주의: 툴팁은 버튼 자식이다 — custom.scss가 `> div:has(> .focus-toggle)`로 래퍼를 잡으므로 버튼을 한 겹 더 감싸지 말 것.
+// 집중 모드 토글 — 노트 페이지에만. 상태·단축키·레일·툴팁 문구·토스트·첫 안내는 스크립트, 레이아웃은 custom.scss §8.6.
+// 주의: custom.scss가 `> div:has(> .focus-toggle)`로 래퍼를 잡으므로 버튼을 한 겹 더 감싸지 말 것.
 
 const FocusMode: QuartzComponent = ({ fileData }: QuartzComponentProps) =>
   isRealNote(fileData.slug) ? (

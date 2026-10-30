@@ -52,7 +52,7 @@ $desktop-up: "(min-width: 1201px)";
   background-color: var(--surface-2);
 }
 
-// 툴팁 — 버튼 자식. 투명도 없이 visibility + 4px 이동만 쓴다(중간 상태가 AA와 충돌하지 않게).
+// 주의: 툴팁은 투명도 없이 visibility + 이동만 쓴다(AA 중간 상태 방지).
 .focus-tip {
   position: absolute;
   top: calc(100% + 8px);
@@ -110,21 +110,13 @@ $desktop-up: "(min-width: 1201px)";
   color: var(--darkgray);
 }
 
-.focus-toggle:focus-visible .focus-tip {
+.focus-toggle:focus-visible .focus-tip,
+.focus-toggle:hover .focus-tip {
   visibility: visible;
   transform: none;
   transition-delay: 0s;
 }
 
-@media (hover: hover) {
-  .focus-toggle:hover .focus-tip {
-    visibility: visible;
-    transform: none;
-    transition-delay: 0s;
-  }
-}
-
-// 최초 1회 안내 말풍선 — 토글 래퍼의 자식(스크립트가 붙인다). 래퍼가 앵커다.
 div:has(> .focus-toggle) {
   position: relative;
 }

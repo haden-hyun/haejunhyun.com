@@ -1,6 +1,5 @@
 // 집중 모드 — 상태는 localStorage, 페인트 전에 <html focus-mode>로 적용한다(레이아웃은 custom.scss §8.6).
 // - ⌘\ / Ctrl+\ 토글, 토글 전후 읽던 블록의 화면 위치 유지, 켤 때·세션 첫 노트에서 토스트
-// - 툴팁 문구는 상태를 따라 바뀌고, 처음 노트를 여는 날 토글 아래에 안내 말풍선을 한 번 띄운다
 // - 우측 TOC 자리는 레일: 접힘 = 눈금, 커서 300ms 머묾·키보드 포커스·클릭 = 펼침
 const KEY = "focus-mode"
 const DESKTOP = "(min-width: 1201px)"
@@ -45,7 +44,7 @@ function syncTip(on: boolean) {
   }
 }
 
-// 처음 노트를 여는 날 1회 — 표시하는 순간 본 것으로 친다. 6초·× 클릭·Esc·토글 중 먼저 오는 때 닫힌다.
+// 표시하는 순간 본 것으로 기록한다(재방문 시 다시 안 뜸).
 function showCoach(anchor: Element) {
   const host = anchor.parentElement
   if (!host || coachShown) return
