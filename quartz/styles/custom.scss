@@ -1307,9 +1307,31 @@ figure figcaption {
   }
 }
 
-// 투명도 줄이기·고대비 설정에선 벨럼을 불투명으로 되돌린다.
+// 스크롤 가장자리 — 맨 위에선 불투명·괘선 없음, 48px 내려가면 벨럼(94%)과 괘선. 미지원이면 위 상시 값이 남는다.
+// 주의: 94% 아래로 내리지 말 것(최악 배경에서 --gray가 AA를 잃는다).
+@keyframes topbar-edge {
+  from {
+    border-bottom-color: transparent;
+    background-color: var(--light);
+  }
+  to {
+    border-bottom-color: var(--border);
+    background-color: color-mix(in srgb, var(--light) 94%, transparent);
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .topbar::before {
+    animation: topbar-edge linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 48px;
+  }
+}
+
+// 투명도 줄이기·고대비 설정에선 벨럼을 불투명으로 되돌린다. 주의: 애니메이션이 배경을 덮으므로 함께 끈다.
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .topbar::before {
+    animation: none;
     background-color: var(--light);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -1327,5 +1349,19 @@ figure figcaption {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  // 주의: 위 규칙은 시간만 줄일 뿐 transform 값은 되돌리지 않는다 — 눌림 scale을 직접 끈다.
+  .hero-links a:active,
+  .series-pager-link:active,
+  .prev-next-nav a:active,
+  #back-to-top:active,
+  .focus-toggle:active,
+  .topic-graph-btn:active {
+    transform: none;
+  }
+
+  .topbar::before {
+    animation: none;
   }
 }

@@ -1,12 +1,13 @@
-// Featured — 번호 + 제목 + 요약 + 메타 목록. 홈 히어로 바로 아래 전폭.
+// Featured — 커버 띠(첫 항목) + 3단 칼럼. 모바일은 괘선 행. 홈 히어로 바로 아래 전폭.
 // 주의: 섹션 라벨 규칙은 recent-notes-index·topic-grid와 같은 값으로 유지할 것.
 
 // RECENT NOTES(좌) + TOPICS(우)를 한 줄에 — 두 섹션은 beforeBody의 형제라 부모 그리드로 나란히 둔다.
+// 데스크톱은 두 단을 같은 높이로 늘리고, 목록(.recent-rows·.topic-index)이 남는 높이를 행에 나눠 하단을 맞춘다.
 .page-header > .popover-hint:has(> .featured-section) {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
   column-gap: 56px;
-  align-items: start;
+  align-items: stretch;
 
   > * {
     grid-column: 1 / -1;
@@ -20,12 +21,30 @@
     grid-column: 2;
   }
 
+  > .recent-notes,
+  > .topic-grid-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  > .recent-notes > .recent-rows,
+  > .topic-grid-section > .topic-index {
+    flex: 1;
+    display: grid;
+  }
+
   @media all and (max-width: 800px) {
     grid-template-columns: minmax(0, 1fr);
 
     > .recent-notes,
     > .topic-grid-section {
       grid-column: 1;
+      display: block;
+    }
+
+    > .recent-notes > .recent-rows,
+    > .topic-grid-section > .topic-index {
+      display: block;
     }
   }
 }
@@ -64,39 +83,89 @@
   color: var(--gray);
 }
 
+// 모바일은 괘선 행, 801px 이상은 첫 항목 전폭 띠 + 나머지 3단.
+// 주의: 위 margin이 라벨 1px 괘선과 리드 2px 괘선이 겹쳐 이중선으로 보이는 것을 막는다.
 .featured-tracks {
   list-style: none;
-  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 22px 0 0;
   padding: 0;
 
   li {
+    display: flex;
     margin: 0;
+    border-top: 1px solid var(--lightgray);
+  }
+
+  li:last-child {
+    border-bottom: 1px solid var(--lightgray);
+  }
+
+  li.is-lead {
+    border-top: 2px solid var(--darkgray);
+  }
+
+  @media all and (min-width: 801px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    li {
+      border-top: 0;
+      border-bottom: 1px solid var(--lightgray);
+    }
+
+    li.is-lead {
+      grid-column: 1 / -1;
+      border-top: 2px solid var(--darkgray);
+    }
+
+    // 주의: 리드 1 + 칼럼 3(MAX_SLOTS=4)을 가정한다. 슬롯을 늘리면 5번째에 불필요한 border-left가 생긴다.
+    li:nth-child(n + 3) {
+      border-left: 1px solid var(--lightgray);
+    }
   }
 }
 
 .featured-row {
+  flex: 1;
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr);
-  gap: 12px;
-  align-items: baseline;
-  padding: 14px 10px;
-  border-bottom: 1px solid var(--lightgray);
+  column-gap: 12px;
+  align-content: start;
+  min-width: 0;
+  padding: 16px 10px;
   color: inherit;
   text-decoration: none;
   transition: background-color var(--dur-fast) var(--ease);
 
-  &:hover {
+  @media all and (min-width: 801px) {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 6px;
+    padding: 22px 24px;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: rgba(var(--accent-rgb), 0.06);
+    }
+
+    &:hover .featured-title {
+      color: var(--secondary);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+  }
+
+  &:active {
     background: rgba(var(--accent-rgb), 0.1);
+    transition-duration: 60ms;
+    transition-timing-function: var(--ease-press);
   }
 
-  &:hover .featured-title {
-    color: var(--secondary);
+  &:focus-visible {
+    outline-offset: -2px;
   }
-}
-
-// 얼룩말 — 표(tbody)와 같은 비율. hover가 뒤에 와야 이기므로 명시도를 맞춰 둔다.
-.featured-tracks > li:nth-child(even) > .featured-row:not(:hover) {
-  background: rgba(var(--accent-rgb), 0.035);
 }
 
 .featured-no {
@@ -104,6 +173,11 @@
   font-size: 12px;
   color: var(--gray);
   font-variant-numeric: tabular-nums;
+  padding-top: 0.35rem;
+
+  @media all and (min-width: 801px) {
+    padding-top: 0;
+  }
 }
 
 .featured-body {
@@ -116,45 +190,87 @@
   font-family: var(--headerFont);
   font-size: 1.06rem;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.5;
   color: var(--dark);
   word-break: keep-all;
 }
 
-// 요약 한 줄(첫 항목은 두 줄) — 넘치면 말줄임.
+// 요약 두 줄(첫 항목은 세 줄) — 넘치면 말줄임.
 .featured-desc {
   display: -webkit-box;
-  margin-top: 0.2rem;
-  max-width: 46em;
+  margin-top: 0.3rem;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   font-size: 0.92rem;
-  line-height: 1.6;
+  line-height: 1.75;
+
+  @media all and (min-width: 801px) {
+    -webkit-line-clamp: 2;
+  }
   color: var(--darkgray);
   word-break: keep-all;
 }
 
-// 첫 항목만 크게 — 기존 리드 크기(제목 1.35~1.75rem/900, 요약 0.97rem 두 줄).
+.featured-meta {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gray);
+}
+
+// 첫 항목 = 커버 띠. 801px 이상은 제목(좌 7) | 요약+메타(우 5).
 .is-lead > .featured-row {
-  padding-block: 1.25rem;
+  padding-block: 26px 24px;
 
   .featured-title {
-    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-size: clamp(1.5rem, 5.5vw, 1.75rem);
     font-weight: 900;
-    line-height: 1.3;
+    line-height: 1.4;
+    text-wrap: balance;
   }
 
   .featured-desc {
-    margin-top: 0.35rem;
     -webkit-line-clamp: 2;
-    font-size: 0.97rem;
-    line-height: 1.65;
-  }
-}
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.8;
 
-.featured-meta {
-  margin-top: 0.3rem;
-  font-size: 13px;
-  color: var(--gray);
+    @media all and (min-width: 801px) {
+      -webkit-line-clamp: 3;
+    }
+  }
+
+  @media all and (min-width: 801px) {
+    padding: 30px 10px 28px;
+
+    .featured-title {
+      font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+    }
+
+    .featured-body {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      column-gap: 40px;
+      align-items: end;
+    }
+
+    .featured-title {
+      grid-row: 1 / span 2;
+    }
+
+    .featured-desc {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: end;
+      margin-top: 0;
+    }
+
+    .featured-meta {
+      grid-column: 2;
+      grid-row: 2;
+      margin-top: 0;
+    }
+  }
 }

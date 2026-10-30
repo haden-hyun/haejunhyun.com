@@ -56,6 +56,11 @@ export default ((userOpts?: Partial<TopicGridOptions>) => {
                 </span>
                 <span class="topic-entry-leader" aria-hidden="true" />
                 <span class="topic-entry-count">{t.count}</span>
+                <span class="topic-entry-chev" aria-hidden="true">
+                  <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 2.5 9.5 7 5 11.5" />
+                  </svg>
+                </span>
               </a>
             </li>
           ))}

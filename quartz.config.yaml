@@ -328,7 +328,8 @@ plugins:
       priority: 11
   - source: ./plugins/home-hero
     enabled: true
-    # 홈 히어로(헤드라인·이름·설명·링크·메타 + 음표 색소폰). 홈 전용(컴포넌트 내부 slug 가드), priority 1 = 최상단.
+    # 홈 히어로(가운데 정렬: 헤드라인 글자마다 음표 + 기울어진 회전 색소폰 + 이름·설명·링크·메타). 홈 전용(컴포넌트 내부 slug 가드), priority 1 = 최상단.
+    # 주의: headline 글자 수(공백 제외)는 10이어야 악보를 그린다(plugins/home-hero/src/components/sax.ts HERO_NOTES). 아니면 제목만 렌더하고 빌드 경고.
     # 설명글은 summary-description의 fallbackDescriptions.index(홈 meta description)를 그대로 쓴다.
     options:
       headline: "Blue Notes."
@@ -344,13 +345,13 @@ plugins:
       priority: 1
   - source: ./plugins/featured-notes
     enabled: true
-    # Featured. 홈 전용, priority 2 = 히어로 아래 전폭. 번호 목록 4행.
+    # Featured. 홈 전용, priority 2 = 히어로 아래 전폭. 커버 띠 1 + 3단 칼럼.
     # slugs가 유일한 지정 수단이다 — 쓴 순서가 표시 순서(번호).
     # 직접 지정한 슬러그는 Recent Notes와 겹쳐도 싣는다. 부족분은 Recent에 없는 노트를 토픽 라운드로빈으로 채운다.
     # 못 찾았거나 중복·초과인 슬러그는 빌드 로그에 경고.
     # 주의: recentExcludeCount는 아래 recent-notes-index.limit과 같은 값으로 유지할 것.
     options:
-      recentExcludeCount: 5
+      recentExcludeCount: 6
       slugs:
         - tools/obsidian/quartz/build/obsidian-quartz-blog
         - finance-property/real-estate/address-pnu
@@ -518,7 +519,7 @@ plugins:
     # 홈 Recent Notes. priority 3 = Featured 아래, TOPICS와 2단. 같은 날짜·폴더 3편 이상은 한 행으로 묶인다.
     options:
       title: "Recent Notes"
-      limit: 5
+      limit: 6
       showTags: true
       linkToMore: "archive"
       linkToMoreLabel: "Archive →"
