@@ -23,6 +23,8 @@ export function heroClient(L) {
   const on = (t, ev, fn, opt) => { t.addEventListener(ev, fn, opt); cleanups.push(() => t.removeEventListener(ev, fn, opt)) }
   const cssNum = (name, fallback) => { const v = parseFloat(getComputedStyle(h1).getPropertyValue(name)); return Number.isFinite(v) ? v : fallback }
   const f1 = (x) => Math.round(x * 10) / 10
+  // 시간 토큰은 sass가 450ms를 0.45s로 바꿔 내보낼 수 있다 — 단위를 보고 ms로 읽는다
+  const cssMs = (name, fallback) => { const v = getComputedStyle(h1).getPropertyValue(name).trim(); const n = parseFloat(v); return !Number.isFinite(n) ? fallback : v.endsWith("ms") ? n : v.endsWith("s") ? n * 1000 : n }
 
   // ── 색소폰 ────────────────────────────────────────────────────────────
   const ctx = cv.getContext("2d")
@@ -118,7 +120,7 @@ export function heroClient(L) {
     const els = [...h1.querySelectorAll(".hl"), slot]
     if (els.length !== NOTES.length) return
     const R = els.map((e) => { const r = e.getBoundingClientRect(); return { l: r.left - tr.left, r: r.right - tr.left, c: (r.left + r.right) / 2 - tr.left } })
-    const s = cssNum("--s", 8), pad = cssNum("--pad", 9.5 * s), BASE = cssNum("--hero-base", 450), STEP = cssNum("--hero-step", 90)
+    const s = cssNum("--s", 8), pad = cssNum("--pad", 9.5 * s), BASE = cssMs("--hero-base", 450), STEP = cssMs("--hero-step", 90)
     const bare = tr.width < 560 // 좁은 화면은 음자리표·조표·박자표 없이 오선과 음표만
     const need = bare ? 0.9 * s : 10.75 * s
     const ctr = tr.width / 2
@@ -197,6 +199,7 @@ export function heroClient(L) {
   fontsReady.then(() => {
     if (!h1.isConnected) return
     readColors(); layout(); kick()
+    wrap.classList.add("hero-ready") // 악보 SVG는 h1 밖 래퍼에 있다 — 둘 다에 단다
     h1.classList.add("hero-ready") // 이 시점부터 CSS 연출이 시작한다. 악보·글자·색소폰이 같은 시계를 쓴다
     if (!reduce && !html.hasAttribute("data-hero-swept")) {
       const t = setTimeout(() => html.setAttribute("data-hero-swept", ""), 2400) // 끝난 뒤 크기 변경으로 악보를 다시 그려도 연출이 재시작하지 않게

@@ -44,7 +44,7 @@
 
     > .recent-notes > .recent-rows,
     > .topic-grid-section > .topic-index {
-      display: block;
+      display: grid;
     }
   }
 }
@@ -83,45 +83,57 @@
   color: var(--gray);
 }
 
-// 모바일은 괘선 행, 801px 이상은 첫 항목 전폭 띠 + 나머지 3단.
-// 주의: 위 margin이 라벨 1px 괘선과 리드 2px 괘선이 겹쳐 이중선으로 보이는 것을 막는다.
+// 입체감: 각 항목이 한 장씩 떠 있는 타일(island 면 + 1px 보더 + 아주 옅은 그림자). 위치를 옮기는 호버는 쓰지 않는다.
+// 주의: 타일 면 위에서도 --gray 메타가 눌림 상태까지 AA(라이트 4.73 / 다크 4.54)다 — 면을 더 진하게 하지 말 것(§3.1). 세 섹션 플러그인에 같은 값으로 둔다.
+@mixin tile {
+  background-color: color-mix(in srgb, var(--lightgray) 18%, var(--light));
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 1px 2px rgba(20, 29, 40, 0.07),
+    0 8px 18px -10px rgba(20, 29, 40, 0.14);
+
+  :root[saved-theme="dark"] & {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 8px 18px -10px rgba(0, 0, 0, 0.55);
+  }
+}
+
+// 모바일은 한 열 타일, 801px 이상은 첫 항목 전폭 + 나머지 3단 타일.
+// 주의: 위 margin이 라벨 1px 괘선과 첫 타일을 띄운다.
 .featured-tracks {
   list-style: none;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
   margin: 22px 0 0;
   padding: 0;
 
   li {
     display: flex;
     margin: 0;
-    border-top: 1px solid var(--lightgray);
-  }
-
-  li:last-child {
-    border-bottom: 1px solid var(--lightgray);
+    overflow: hidden;
+    @include tile;
   }
 
   li.is-lead {
     border-top: 2px solid var(--darkgray);
   }
 
+  @media (hover: hover) {
+    li:has(> .featured-row:hover) {
+      border-color: color-mix(in srgb, var(--secondary) 45%, var(--lightgray));
+    }
+  }
+
   @media all and (min-width: 801px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-
-    li {
-      border-top: 0;
-      border-bottom: 1px solid var(--lightgray);
-    }
+    gap: 14px;
 
     li.is-lead {
       grid-column: 1 / -1;
-      border-top: 2px solid var(--darkgray);
-    }
-
-    // 주의: 리드 1 + 칼럼 3(MAX_SLOTS=4)을 가정한다. 슬롯을 늘리면 5번째에 불필요한 border-left가 생긴다.
-    li:nth-child(n + 3) {
-      border-left: 1px solid var(--lightgray);
     }
   }
 }
@@ -133,7 +145,7 @@
   column-gap: 12px;
   align-content: start;
   min-width: 0;
-  padding: 16px 10px;
+  padding: 16px 16px;
   color: inherit;
   text-decoration: none;
   transition: background-color var(--dur-fast) var(--ease);
@@ -158,7 +170,7 @@
   }
 
   &:active {
-    background: rgba(var(--accent-rgb), 0.1);
+    background: rgba(var(--accent-rgb), 0.08);
     transition-duration: 60ms;
     transition-timing-function: var(--ease-press);
   }
@@ -243,7 +255,7 @@
   }
 
   @media all and (min-width: 801px) {
-    padding: 30px 10px 28px;
+    padding: 30px 28px 28px;
 
     .featured-title {
       font-size: clamp(1.75rem, 3.2vw, 2.25rem);

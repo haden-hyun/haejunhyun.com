@@ -79,7 +79,7 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 | **행위** 누르는 것     | `--accent-action` | `#b8442a` 5.20 | `#e87256` 6.12 | 현재 적용처 없음 — CTA가 생기면 이 색            |
 | **시간** 읽는 중       | `--accent-state`  | `#b03a7d` 5.41 | `#dd7ab0` 6.57 | 읽기 진행바                                     |
 
-- 본문 링크(`article a`)는 `--secondary` + 1px 밑줄(offset .22em, hover 2px). 링크 색은 본문(`--darkgray`)과 라이트 1.62:1 / 다크 1.37:1이라 색만으로는 구분되지 않아 밑줄을 비색 단서로 쓴다(WCAG 1.4.1). 호버는 색이 아니라 밑줄 두께만 바꾼다.
+- 본문 링크(`article a`)는 `--secondary` + 1px 밑줄(offset .22em, hover 2px). 링크 색은 본문(`--darkgray`)과 라이트 1.62:1 / 다크 1.37:1이라 색만으로는 구분되지 않아 밑줄을 비색 단서로 쓴다(WCAG 1.4.1). 호버는 색이 아니라 밑줄 두께만 바꾼다. 목록 행 링크(`.archive-page-row`)는 제외한다 — `article a`는 비-레이어라 플러그인의 `text-decoration: none`을 이겨 아카이브 98행 전부에 밑줄이 생겼던 버그가 있었다.
 - `bold`는 여전히 **색이 아니라 재질/무게**(`--dark`)로 구분한다. 인라인 코드·하이라이트는 예외 — §4.2.
 - 강도는 중요도에 비례하고 **빈도에 반비례**한다 — 본문에 흩뿌려지는 것에 축 색을 주지 않는다.
 
@@ -248,26 +248,26 @@ body 스택 맨 앞의 Inter가 `unicode-range`로 라틴만 그리고, 한글�
 - 홈은 `beforeBody` 한 열: 히어로 → Featured(전폭) → Recent Notes | Topics 2단(`1.8fr : 1fr`, 간격 56px, 800px 이하 1단) → 푸터. 배경은 노트와 같은 크림. 데스크톱에서는 두 단을 같은 높이로 늘려 하단을 맞춘다(아래 Topics).
 - 히어로: **가운데 정렬.** H1 "Blue Notes."(Hahmlet 900, `clamp(2.25rem, calc(50cqi / 4.3), 4.75rem)` — 컨테이너 단위라 `.page` 여백을 따르고 vw를 쓰지 않는다, 자간 −0.02em) → "Haejun Hyun"(Hahmlet 700 1.05rem, `--darkgray`) → 설명문 → 링크 칩 GitHub·LinkedIn → Mono 12px 메타 줄 `N notes · N topics · N visits · N today`. 이름·설명·링크·메타는 처음부터 보인다(진입 연출 없음).
   - 설명문은 `summary-description`의 `fallbackDescriptions.index`(홈 meta/og description)를 그대로 쓴다 — 문장이 한 곳에만 있다.
-  - 링크 칩: accent 8% 배경(hover 16%) + Hahmlet 700 `--secondary`, 높이 40px(모바일 44px). RSS 링크 없음.
+  - 링크 칩: **"행위" 축 색**(`--accent-action` 브릭, §3.2 — 누르는 것) 9% 배경(hover 14% + 글자를 `--dark` 쪽으로 35% 진하게) + Hahmlet 700, 높이 40px(모바일 44px). 대비: 라이트 4.58 / hover 6.50, 다크 5.52 / 7.15. 핑크(`--accent-state`)는 읽기 진행바 전용이라 쓰지 않는다. RSS 링크 없음.
   - 노트·토픽 수는 `allFiles` 런타임 집계, 방문은 `/api/stats`(Pages Function, 토큰은 Pages Secret `GOATCOUNTER_TOKEN`)의 `total`·`today`(GoatCounter 사이트 시간대 Asia/Seoul 기준 하루). 숫자 자리는 `min-width`로 폭 고정. 실패하면 total만 공개 카운터 `TOTAL.json`으로 채우고 today는 `-`.
   - **가운데 기준은 글자다.** 제목 글자의 가로 중심이 아래 줄들과 같은 축(오차 1.3px 이내, 폭 1400·860·390 실측)이고, 색소폰은 음수 오른쪽 여백으로 글자 폭 계산에서 빠져 오른쪽에 매달린다. 글자+색소폰 덩어리를 가운데로 잡으면 글자가 약 47px 왼쪽으로 밀려 아래 글자와 축이 어긋난다(기각).
   - **악보**: 제목 위에 오선(칸 간격 8px, 560px 미만 6.5px). 글자 9 + 마침표 + 색소폰 = **11음**, C단조 ii–V–i(Dm7♭5 → G7 → Cm7) `D F A♭ C │ B♮ G F D │ E♭ G C`, 4/4 두 마디(8분음표 10개 빔 + 점2분음표 1개). 높은음자리표 · 조표 ♭3개 · 4/4(C) · 마디선 · 끝 겹세로줄. 조표에 이미 있는 A♭·E♭에는 ♭을 또 붙이지 않고 조표 B♭을 되돌리는 B에만 ♮을 붙인다. 폭이 좁으면 음자리표·조표·박자표를 빼고 오선과 음표만 그린다(이때 A♭·E♭에 ♭을 음마다 붙이고 B는 제자리음). 음표 x는 글자 중심에 맞추고 오선은 페이지 중심에 대칭이다. 음 데이터는 `sax.ts`의 `HERO_NOTES` 한 곳이고, 제목 글자 수(공백 제외)가 그보다 하나 적지 않으면 악보 없이 제목만 렌더하고 빌드 경고를 낸다.
     - 농도: 오선 35% · 음표 45% · 음자리표·조표·박자표·마디선 40%. 투명도는 요소가 아니라 그룹에 줘서 기둥·빔·머리 겹침이 진해지지 않는다. 장식이라 AA 대상이 아니고 `aria-hidden`이다.
     - 글리프는 Noto Music 한 파일(OFL 1.1, Google Fonts 하위 집합: 음자리표 U+1D11E · ♭ · ♮ · 4/4 U+1D134, `display=block`). 음표 머리·기둥·빔·보조선은 SVG로 직접 그린다.
   - **색소폰**: 3D 점군 모델(`sax.ts` `buildSax`)을 **연주 자세 20°**(위쪽이 왼쪽으로)로 기울이고 악기 축으로 **9초에 한 바퀴** 돌려 하프톤 점(칸 약 1.9px, 점 크기가 명암)으로 그린다. 회전축이 악기 축이라 기울기가 늘 보인다(수직 축 회전은 뒷면에서 기울기가 반대로 뒤집혀 기각). 높이 = 줄 높이(1.1em × k), 보이는 중심을 대문자 높이 중심에 맞추고(오차 1px 이내), 각도마다 중심 표(48개)로 회전 중 위아래 흔들림(±6px)을 보정한다. 슬롯 크기·중심 표는 빌드가 계산해 레이아웃 이동이 없다. 점 색은 `--secondary`↔`--dark`(다크는 반전, `saved-theme`). 화면 밖·탭 숨김에서 rAF 정지, 30fps 상한, 감속 모션이면 정지 자세. 회전 중 메인 스레드 점유 약 4%(헤드리스 실측, 이전 음표 글자 색소폰 약 13%).
-  - **첫 진입 연출**(세션당 1회, 감속 모션이면 생략, 클릭하면 건너뜀, 약 1.6초): 오선이 그려지고 → 음자리표·조표·박자표 → 음표와 글자가 90ms 간격으로 짝지어(마지막 음과 함께 색소폰) → 끝 겹세로줄. **투명도 없이** 8px 이동과 visibility만 쓴다(AA 중간 상태 없음). JS가 악보를 만든 뒤(`.hero-ready`)에 시작하고, JS가 없거나 실패하면 처음부터 보이며 2.5초 뒤엔 무조건 보인다.
+  - **첫 진입 연출**(세션당 1회, 감속 모션이면 생략, 클릭하면 건너뜀, 약 1.6초): 오선이 그려지고 → 음자리표·조표·박자표 → 음표와 글자가 90ms 간격으로 짝지어(마지막 음과 함께 색소폰) → 끝 겹세로줄. **투명도 없이** 8px 이동과 visibility만 쓴다(AA 중간 상태 없음). JS가 악보를 만든 뒤(`.hero-ready` — 악보 SVG가 h1 밖이라 h1과 래퍼 `.hero-title` 둘 다에 단다)에 시작하고, 그 전에는 글자·색소폰·악보를 모두 숨기며(악보가 글자보다 먼저 보이지 않게), JS가 없거나 실패하면 처음부터 보이며 2.5초 뒤엔 무조건 보인다.
   - **접근성**: h1 이름은 `aria-label`("Blue Notes."), 글자·색소폰은 `aria-hidden`, 악보 SVG는 h1 밖 래퍼에 둔다(글자 span이 "B l u e"로 읽히거나 h1 텍스트에 음악 기호가 섞이지 않게).
   - 기각: 노트 선반(24권 2단 책등 + 노트 카드 + hover 칩), 100권 카탈로그 선반(번호·칸막이 탭·`+N ARCHIVE`) — 그림이 콘텐츠보다 시끄러웠다. 음표 글자로 그린 큰 색소폰(운지 키 = 토픽·드래그·빛 물결) — 줄 높이로 줄이면 뭉개지고 모바일에서 260px을 차지해 폐기. 커서 추적·가변 굵기 글자·패럴랙스 — 상시 모션 · 규칙 충돌.
 - 섹션 라벨(Featured / Recent Notes / Topics): Hahmlet 700 1.15rem `--secondary`, 아래 1px 괘선. 우측 링크 `Archive →`는 Hahmlet 600 0.9rem. 각 플러그인 scss에 같은 값으로 둔다.
-- Featured: 라벨 뒤 부제 `editor's picks`(Archive `Popular · last 30 days`와 같은 h2 부제 문법 — Mono 0.72rem 400 `--gray`). `01~04` 번호 + 제목 + 요약 + `토픽 · N min`, 시리즈 편이면 `토픽 · 시리즈 · N편 · N min`(N편 = 그 시리즈 발행 편 수, Topics 시리즈 행과 같은 어휘). **첫 항목은 커버 띠, 나머지 셋은 3단 칼럼**(801px 이상): 띠는 위 2px `--darkgray` 괘선(라벨 1px 괘선과 겹쳐 이중선이 되지 않게 22px 띄움) + 제목(좌 7, `clamp(1.75rem, 3.2vw, 2.25rem)` 900) | 요약 3줄 + 메타(우 5), 칼럼은 칸 사이 1px 머리카락 괘선. 박스는 쓰지 않는다 — 활자 조판이 정체성이고 HIG도 텍스트는 목록을 권한다. 800px 이하는 번호를 줄 앞에 둔 괘선 행(요약 1줄, 리드 2줄).
+- Featured: 라벨 뒤 부제 `editor's picks`(Archive `Popular · last 30 days`와 같은 h2 부제 문법 — Mono 0.72rem 400 `--gray`). `01~04` 번호 + 제목 + 요약 + `토픽 · N min`, 시리즈 편이면 `토픽 · 시리즈 · N편 · N min`(N편 = 그 시리즈 발행 편 수, Topics 시리즈 행과 같은 어휘). **첫 항목은 전폭 타일(커버 띠), 나머지 셋은 3단 타일**(801px 이상): 타일 = island 면(`--lightgray` 18% 섞음) + 1px `--lightgray` 보더 + 반경 10px + 아주 옅은 그림자(다크는 윗면 하이라이트·깊은 그림자). 리드 타일은 위 2px `--darkgray` 선(라벨 1px 괘선과 겹치지 않게 22px 띄움) + 제목(좌 7, `clamp(1.75rem, 3.2vw, 2.25rem)` 900) | 요약 3줄 + 메타(우 5). 800px 이하는 한 열 타일(번호를 줄 앞에, 요약 1줄, 리드 2줄). 평면 괘선 행이 세 섹션을 구분하지 못한다는 사용자 요청으로 입체 타일로 바꿨다 — §4.15의 "그림자 기각"은 본문·사이드바 island 얘기이고 홈 목록 타일은 예외다.
   - 행간: 제목 1.5(리드 1.4), 요약 1.75(리드 1.8), 메타 1.6 — 글자는 큰데 행간이 좁아 읽기 어렵던 것을 넓혔다(한글 헤드라인은 1.4 이상).
-  - 상태: hover 배경 accent **6%** + 제목 `--secondary` 밑줄(색만으로 구분하지 않는다), active 배경 10%(60ms, `--ease-press`), 포커스 링은 인셋(−2px). 줄무늬 없음. hover는 `(hover: hover)`에서만.
+  - 상태: hover 배경 accent **6%** + 제목 `--secondary` 밑줄(색만으로 구분하지 않는다), active 배경 8%(60ms, `--ease-press`) — 타일 면 위 `--gray` 메타가 눌림 상태까지 AA(라이트 4.73 / 다크 4.54)이려면 8%가 상한이다, 포커스 링은 인셋(−2px). 줄무늬 없음. hover는 `(hover: hover)`에서만.
   - 지정 수단은 `quartz.config.yaml`의 `slugs` 배열 하나 — 쓴 순서 = 번호, 부족분은 토픽 라운드로빈. 직접 지정한 노트는 Recent Notes와 겹쳐도 싣고, Recent에 나온 노트는 자동 채움에서만 뺀다. 별도 시리즈 섹션은 두지 않는다(§4.6 시리즈 허브 기각과 같은 이유).
   - 주의: 미해결·중복·초과 슬러그는 빌드 로그 경고로 찍힌다. 조용히 무시되지 않는다.
-- Recent Notes: 6행, 폭과 무관하게 한 덩어리 — `날짜(Mono YYYY-MM-DD) · 토픽 표시명` 캡션 → 제목(Hahmlet 700 1.125rem) → 요약 1줄. 줄무늬 없이 1px 괘선, 상태는 Featured와 같다(hover 6% + 제목 밑줄 / active 10%). `limit`과 `featured-notes.recentExcludeCount`는 같은 값(6)으로 둔다. 정렬 키는 `getListDate`(§4.11), 개정이 더 최근이면 제목 뒤 `Revised` 라벨. 같은 날짜·같은 2단계 폴더 3편 이상은 한 줄로 묶는다(링크는 그 폴더).
+- Recent Notes: 6행, 폭과 무관하게 한 덩어리 — `날짜(Mono YYYY-MM-DD) · 토픽 표시명` 캡션 → 제목(Hahmlet 700 1.125rem) → 요약 1줄. 타일(Featured와 같은 면·보더·그림자, 타일 간격 10px, 행 안쪽 18px), 줄무늬 없음. 상태는 Featured와 같다(hover 6% + 보더 `--secondary` 45% 혼합 + 제목 밑줄 / active 8%). `limit`과 `featured-notes.recentExcludeCount`는 같은 값(6)으로 둔다. 정렬 키는 `getListDate`(§4.11), 개정이 더 최근이면 제목 뒤 `Revised` 라벨. 같은 날짜·같은 2단계 폴더 3편 이상은 한 줄로 묶는다(링크는 그 폴더).
   - 묶음 라벨: 구성원 전원이 한 시리즈면 제목 = 시리즈 표시명, 부제 = `시리즈 · N편 — 1편 Docker의 기본 개념부터`(Topics 시리즈 행 어휘, 편 순 첫 편 — 서문 제목이 시리즈명과 같으면 다음 편). 아니면(섞인 묶음 포함) 제목 = 폴더 표시명 + `N notes`(부모가 토픽 루트가 아니면 `Python › Basics · 3 notes`), 부제 = 앞 2편 + `+N more`. 전원 개정이면 묶음에도 `Revised`.
   - Featured의 Recent 제외 집합과 Recent 표는 **같은 함수**(`plugins/_shared/notes.ts`의 `buildRecentRows`)로 만든다.
-- Topics: 토픽명 + 1단 폴더 표시명 부제(런타임, §4.6) + 점선 리더 + 노트 수 + 오른쪽 쉐브론(14px, `--gray`, hover `--secondary` — 하위로 들어가는 행의 이동 단서). 줄무늬 없이 1px 괘선, 행 최소 76px, 상태는 Featured와 같다. 데스크톱에서는 Recent와 같은 높이까지 행이 남는 높이를 나눠 갖는다(하단 오차 1px — 실측).
+- Topics: 토픽명 + 1단 폴더 표시명 부제(런타임, §4.6) + 점선 리더 + 노트 수 + 오른쪽 쉐브론(14px, `--gray`, hover `--secondary` — 하위로 들어가는 행의 이동 단서). 타일(같은 면·보더·그림자, 간격 10px), 줄무늬 없음, 행 최소 72px, 상태는 Featured와 같다. 데스크톱에서는 Recent와 같은 높이까지 행이 남는 높이를 나눠 갖는다(하단 오차 1px — 실측).
 - Archive: 연도 라벨(Mono 0.95rem 700 `--gray`) 아래 같은 레코드 행. 맨 위 `Popular · last 30 days` 섹션은 `/api/stats`(Pages Function, GoatCounter 프록시)의 `top`을 클라이언트가 채운다 — 빌드 데이터의 노트 슬러그 맵(제목·링크, `isListedNote`)으로 걸러 홈·태그·폴더·옛 URL을 버리고 상위 5편만, 행은 `순위 01(Mono) │ 제목 │ N readers`(GoatCounter는 방문자 수라 "views" 아님, 1이면 `1 reader`). 색은 연도 라벨·메타와 같은 `--gray`뿐. 섹션은 `hidden`으로 구워 JS 없음·API 실패·매칭 0편이면 제목째 안 보이고 자리도 없다. 600px 이하에선 순위 열이 좁아지고 수는 유지. SPA `nav`마다 다시 채우고 `addCleanup`으로 fetch를 중단한다.
 - 기각: `Notes` 탭(최신 노트 1편 바로가기 — 목적지가 아니고, 노트 위에선 링크 없는 span이 모든 노트에서 켜졌다. 전체 목록은 Archive가 맡는다). Archive → Notes 개명도 기각(히어로 `+N ARCHIVE`·홈 `Archive →`와 라벨이 갈라진다).
 - 댓글(giscus)은 노트에만. topics·archive·폴더·태그 가상 페이지는 `byPageType`의 `exclude: comments`.
@@ -319,7 +319,7 @@ width: min(100% - var(--page-gutter) * 2, $pageMaxWidth); // 거터 2rem(모바�
 
 - `transition: all` 금지 — 바뀌는 속성만 적는다.
 - 호버는 제목 밑줄(목록)이나 보더·색(카드)만. 위치를 옮기는 호버(패딩 이동·translate·scale)는 쓰지 않는다. 스크롤 리빌 없음.
-- 눌림(`:active`): 목록 행은 배경 틴트 10%(scale 없음), 칩·CTA·원형 버튼은 `scale(.97)`(`custom.scss` §12.5). 60ms, `--ease-press`. 감속 모션에서는 scale을 끈다(`custom.scss` §13 — 시간만 줄이면 transform이 남는다).
+- 눌림(`:active`): 홈 타일은 배경 틴트 8%, 표·폴더 행은 10%(scale 없음), 칩·CTA·원형 버튼은 `scale(.97)`(`custom.scss` §12.5). 60ms, `--ease-press`. 감속 모션에서는 scale을 끈다(`custom.scss` §13 — 시간만 줄이면 transform이 남는다).
 - 상단 바 scroll-edge(§4.9)는 스크롤이 값을 정하는 상태 표시이지 리빌이 아니다.
 - 새 움직임은 감속 곡선만, 이동 ≤8px, 진입 ≤260ms. 오버슈트·바운스·발광 금지. 페이지 전환 때 본문 페이드는 중간 opacity가 일시 상태라 AA와 충돌해 **쓰지 않는다**(허용하려면 §4.13 같은 예외 조항이 필요하다). 상단 바 벨럼은 §4.18의 "투명도로 숨기기 금지"와 무관하다(패널을 숨기는 용도가 아니다).
 - 포커스 링: 전역 `:where(:focus-visible)` 2px `--secondary` 링, 열릴 때 offset이 4px에서 2px로 정착한다(`custom.scss` §12.5). 그래프 확대 창은 8px 오르며 정착한다(opacity 180ms · transform 260ms, `@starting-style`, 미지원은 컷).

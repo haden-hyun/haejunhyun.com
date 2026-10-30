@@ -217,7 +217,8 @@ article mark {
 
 // 본문 내부 링크만 하단선 (사이드바 링크 오염 방지)
 // 주의: 링크 색(1.62:1 vs 본문)만으로는 구분이 안 돼 밑줄을 비색 단서로 쓴다.
-article a {
+// 주의: 목록 행 링크(.archive-page-row)는 밑줄을 쓰지 않는다 — 비-레이어라 플러그인의 text-decoration: none을 이겨 98행 전부에 밑줄이 생겼다.
+article a:not(.archive-page-row) {
   color: var(--secondary);
   text-decoration: underline;
   text-decoration-thickness: 1px;

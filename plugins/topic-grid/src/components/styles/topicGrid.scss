@@ -1,6 +1,24 @@
 // Topics — 이름 · 점선 리더 · 노트 수 · 쉐브론. 카드 없음. 홈에서 FEATURED 우측 단(배치는 featured-notes가 정한다).
 // 주의: 섹션 라벨 규칙은 recent-notes-index·featured-notes와 같은 값으로 유지할 것.
 
+// 입체감: 각 항목이 한 장씩 떠 있는 타일(island 면 + 1px 보더 + 아주 옅은 그림자). 위치를 옮기는 호버는 쓰지 않는다.
+// 주의: 타일 면 위에서도 --gray 메타가 눌림 상태까지 AA(라이트 4.73 / 다크 4.54)다 — 면을 더 진하게 하지 말 것(§3.1). 세 섹션 플러그인에 같은 값으로 둔다.
+@mixin tile {
+  background-color: color-mix(in srgb, var(--lightgray) 18%, var(--light));
+  border: 1px solid var(--lightgray);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 1px 2px rgba(20, 29, 40, 0.07),
+    0 8px 18px -10px rgba(20, 29, 40, 0.14);
+
+  :root[saved-theme="dark"] & {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 8px 18px -10px rgba(0, 0, 0, 0.55);
+  }
+}
+
 .topic-grid-section {
   margin: 0;
   padding: 0 0 80px;
@@ -30,17 +48,25 @@
   }
 }
 
-// 데스크톱은 남는 높이를 행이 나눠 갖는다 — 행 최소 76px, 하단은 옆 단 Recent와 맞는다(featured.scss).
+// 데스크톱은 남는 높이를 행이 나눠 갖는다 — 행 최소 72px, 하단은 옆 단 Recent와 맞는다(featured.scss).
 .topic-index {
   list-style: none;
-  grid-auto-rows: minmax(76px, auto);
+  grid-auto-rows: minmax(72px, auto);
+  gap: 10px;
   margin: 0;
-  padding: 0;
+  padding: 14px 0 0;
 
   li {
     display: flex;
     margin: 0;
-    border-bottom: 1px solid var(--lightgray);
+    overflow: hidden;
+    @include tile;
+  }
+
+  @media (hover: hover) {
+    li:has(> .topic-entry:hover) {
+      border-color: color-mix(in srgb, var(--secondary) 45%, var(--lightgray));
+    }
   }
 }
 
@@ -49,8 +75,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 10px;
-  min-height: 76px;
+  padding: 14px 18px;
+  min-height: 72px;
   box-sizing: border-box;
   color: inherit;
   text-decoration: none;
@@ -68,7 +94,7 @@
   }
 
   &:active {
-    background: rgba(var(--accent-rgb), 0.1);
+    background: rgba(var(--accent-rgb), 0.08);
     transition-duration: 60ms;
     transition-timing-function: var(--ease-press);
   }

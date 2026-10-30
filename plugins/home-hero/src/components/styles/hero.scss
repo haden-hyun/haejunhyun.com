@@ -183,8 +183,9 @@ $settle: var(--ease-settle, cubic-bezier(0.32, 0.72, 0, 1));
     padding: 0 16px;
     box-sizing: border-box;
     border-radius: 10px;
-    background: rgba(var(--accent-rgb), 0.08);
-    color: var(--secondary);
+    // 링크 칩 = 누르는 것이라 "행위" 축 색(브릭, §3.2). 대비는 칩 면 위에서 4.5 이상.
+    background: color-mix(in srgb, var(--accent-action) 9%, var(--light));
+    color: var(--accent-action);
     font-family: var(--headerFont);
     font-size: 0.95rem;
     font-weight: 700;
@@ -192,7 +193,8 @@ $settle: var(--ease-settle, cubic-bezier(0.32, 0.72, 0, 1));
     transition: background-color var(--dur-fast) var(--ease);
 
     &:hover {
-      background: rgba(var(--accent-rgb), 0.16);
+      background: color-mix(in srgb, var(--accent-action) 14%, var(--light));
+      color: color-mix(in srgb, var(--accent-action) 65%, var(--dark)); // hover 면이 진해져서 글자도 진하게 — 대비 4.5 유지
     }
 
     @media all and (max-width: 800px) {
@@ -242,7 +244,14 @@ $settle: var(--ease-settle, cubic-bezier(0.32, 0.72, 0, 1));
     }
   }
 
-  :root:not([data-hero-swept]) .hero-headline.hero-ready {
+  // 주의: 악보 SVG는 h1 밖(.hero-title)에 있어 h1의 .hero-ready로는 선택되지 않는다 — 래퍼에도 같은 클래스를 단다.
+  // 악보는 폰트 대기 중 먼저 그려지므로, 연출이 시작(.hero-ready)할 때까지 숨겨 글자보다 먼저 보이지 않게 한다.
+  :root[data-hero-js]:not([data-hero-swept]) .hero-title:not(.hero-ready) .hero-score {
+    visibility: hidden;
+    animation: hero-failsafe 0s 2.5s forwards;
+  }
+
+  :root:not([data-hero-swept]) .hero-title.hero-ready {
     .hero-score .ln {
       transform-box: fill-box;
       transform-origin: left;
@@ -254,7 +263,9 @@ $settle: var(--ease-settle, cubic-bezier(0.32, 0.72, 0, 1));
       animation: hero-score-in 240ms $settle both;
       animation-delay: var(--d);
     }
+  }
 
+  :root:not([data-hero-swept]) .hero-headline.hero-ready {
     .hl,
     .hero-sax canvas {
       animation: hero-pop-up 240ms $settle both;
