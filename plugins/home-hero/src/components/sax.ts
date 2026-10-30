@@ -1,16 +1,12 @@
-// 음표로 그린 색소폰 — 빌드 시 정지 자세 프리렌더(SVG)와 브라우저 캔버스가 같은 함수를 쓴다.
-// - buildSax: 3D 점군 모델 / rasterSax: 회전·투영·조명 래스터 / fitSax: 높이 맞춤 / composeSax: 프레임 글자 목록
-// - 운지 키 7개(♭ + HAEJUN)의 위치도 composeSax가 투영해 돌려준다
-// - 명암은 연속 음영(램버트+정반사+림·벨 속 어둠)을 SAX_CFG.ramp 8단으로 양자화한다: 단마다 글자(실제 잉크 면적순)와 잉크 세기가 하나씩
-// - 방향은 테마가 뒤집는다: 라이트 = 어두움이 조밀·진함, 다크 = 밝음이 조밀·진함. 정체성 표식: 광택 ✦✧, 벨 안 ♫, 벨 테 ◦
-// 주의: 함수들은 toString()으로 인라인 스크립트에 직렬화된다. 바깥 식별자·import를 참조하지 말 것(상수는 인자로).
+// 홈 히어로 색소폰 — 3D 점군 모델과 기울기·회전 투영.
+// - buildSax: 점군 / saxXf: 회전·기울기 투영 / saxExtent: 빌드 시 크기·중심 표 계산(레이아웃 이동 방지)
+// - 클라이언트 캔버스(하프톤 점)가 같은 buildSax·saxXf를 쓴다. 기울기 = 연주 자세(위쪽이 왼쪽으로), 회전축 = 악기 축(기울기가 늘 보인다)
+// 주의: buildSax·saxXf는 toString()으로 인라인 스크립트에 직렬화된다. 바깥 식별자·import를 참조하지 말 것(상수는 인자로).
 
 export interface SaxModel {
   pts: Float32Array
   bell: [number, number, number]
 }
-
-export const SAX_REST = { ay: -0.35, ax: -0.25 }
 
 export function buildSax(): SaxModel {
   const P: number[] = []
@@ -112,253 +108,96 @@ export function buildSax(): SaxModel {
   return { pts: Float32Array.from(P), bell: [e[0]!, e[1]! + 0.04, e[2]!] }
 }
 
-/** 래스터 결과. 셀마다 밝기(v, 비어 있으면 -1)·최전면 재질(m)·정반사(s). */
-export interface SaxRaster {
-  zb: Float32Array
-  br: Float32Array
-  sp: Float32Array
-  mt: Uint8Array
-  v: Float32Array
-  s: Float32Array
-  m: Uint8Array
-  proj: (x: number, y: number, z: number) => [number, number, number]
+export const SAX = {
+  tilt: (20 * Math.PI) / 180, // 연주 자세 20°(반시계)
+  ax: -0.25, // 살짝 고개 숙인 시점
+  rest: -0.35, // 정지·감속 모션 자세(yaw)
+  period: 9, // 한 바퀴(초)
+  cx0: 0.29,
+  cy0: 0.16,
+  cz0: -0.1,
+  steps: 48, // 각도별 중심 표 개수
 }
 
-/** 정지 자세 실루엣이 rows행을 꽉 채우는 배율과 격자 원점. */
-export interface SaxFit {
-  scl: number
-  cols: number
+/** 한 점(또는 법선)을 yaw → pitch → 화면 roll 순서로 돌린다. out = [x, y, depth]. */
+export function saxXf(
+  x: number, y: number, z: number,
+  ca: number, sa: number, cr: number, sr: number, cxA: number, sxA: number,
+  out: number[],
+) {
+  const x1 = x * ca + z * sa
+  const z1 = -x * sa + z * ca
+  const y2 = y * cxA - z1 * sxA
+  out[0] = x1 * cr - y2 * sr
+  out[1] = x1 * sr + y2 * cr
+  out[2] = y * sxA + z1 * cxA
+}
+
+export interface SaxExtent {
+  /** 슬롯 높이 = 1.1em × k, 폭 = 높이 × ar */
+  k: number
+  ar: number
+  /** 캔버스 전체 높이에 대응하는 모델 높이 */
+  h: number
+  /** 정지 자세의 보이는 중심 */
   cx: number
   cy: number
+  /** 각도별 보이는 중심 — 회전 중 위아래로 흔들리지 않게 캔버스 중심에 맞춘다 */
+  cxt: number[]
+  cyt: number[]
 }
 
-/** 칠할 글자 하나: x·y(px), 문자, 조밀도 단(0 성김 … 7 조밀 = 잉크 세기 단), 물결이 지나는 중인지. */
-export type SaxGlyph = [number, number, string, number, boolean]
-
-/** 그리기 상수(글자 모음 포함). 주의: 아래 함수들은 이 객체를 인자로만 받는다(인라인 직렬화). */
-export const SAX_CFG = {
-  cw: 4.6,
-  ch: 8.2,
-  rows: 41,
-  // 조밀도 순(렌더 잉크 면적, 7.5px): · .024 | ◦ .046 | ♩ .062 ♭ .075 | ♪ .092 ♮ .098 | ♯ .141 ♫ .153 | ♬ .175 | ✧ .224. ✦(.366)는 정반사 정점 전용
-  ramp: ["·", "◦", "♩♭", "♪♮", "♯♫", "♬♫", "♬", "♬✧"],
-  sparks: "✦✧",
-  rim: "◦",
-  bell: "♫",
-  // 음영 값 → 단 정규화 구간, 빛 물결이 올리는 양
-  lo: 0.06,
-  hi: 0.8,
-  gammaLight: 1.9, // 라이트는 밝은 면이 종이로 날아가지 않게 음영을 어두운 쪽으로 당긴다
-  gammaDark: 1.2,
-  lift: 0.14,
-  // 운지 키: 위 → 아래 7개, 키 i = 편수 순 i번째 토픽(맨 위는 ♭ 옥타브 키)
-  keyY: [0.78, 0.62, 0.46, 0.3, 0.14, -0.02, -0.18],
-  keyChars: ["♭", "H", "A", "E", "J", "U", "N"],
-  keyRing: true, // 키 둘레 1px 원 테두리
-}
-
-/** 회전·투영·램버트+정반사로 셀별 커버리지·밝기·최전면 재질·정반사를 굽는다. */
-export function rasterSax(
-  model: SaxModel,
-  buf: Partial<SaxRaster>,
-  C: number,
-  R: number,
-  cxp: number,
-  cyp: number,
-  ay: number,
-  ax: number,
-  scl: number,
-): SaxRaster {
-  const SX = 2
-  const SY = 3
-  const W = C * SX
-  const H = R * SY
-  if (!buf.zb || buf.zb.length !== W * H) {
-    buf.zb = new Float32Array(W * H)
-    buf.br = new Float32Array(W * H)
-    buf.sp = new Float32Array(W * H)
-    buf.mt = new Uint8Array(W * H)
-    buf.v = new Float32Array(C * R)
-    buf.s = new Float32Array(C * R)
-    buf.m = new Uint8Array(C * R)
-  }
-  const zb = buf.zb
-  const br = buf.br!
-  const sp = buf.sp!
-  const mt = buf.mt!
-  zb.fill(0)
+export function saxExtent(model: SaxModel): SaxExtent {
+  const { tilt, ax, rest, cx0, cy0, cz0, steps } = SAX
+  const cr = Math.cos(tilt), sr = Math.sin(tilt), cxA = Math.cos(ax), sxA = Math.sin(ax)
+  const o = [0, 0, 0]
   const P = model.pts
-  const cy = Math.cos(ay)
-  const sy = Math.sin(ay)
-  const cx = Math.cos(ax)
-  const sx = Math.sin(ax)
-  const L = [-0.62, 0.5, -0.6]
-  const hl = Math.hypot(L[0]!, L[1]!, L[2]! - 1)
-  const Hx = L[0]! / hl
-  const Hy = L[1]! / hl
-  const Hz = (L[2]! - 1) / hl
-  const proj = (x: number, y: number, z: number): [number, number, number] => {
-    x -= 0.12
-    y -= 0.24
-    const x1 = x * cy + z * sy
-    const z1 = -x * sy + z * cy
-    const y2 = y * cx - z1 * sx
-    const z2 = y * sx + z1 * cx
-    const d = 1 / (z2 + 4.2)
-    return [cxp + scl * 1.6667 * x1 * d, cyp - scl * y2 * d, d]
-  }
-  for (let i = 0; i < P.length; i += 7) {
-    const pr = proj(P[i]!, P[i + 1]!, P[i + 2]!)
-    let nx = P[i + 3]! * cy + P[i + 5]! * sy
-    let nz = -P[i + 3]! * sy + P[i + 5]! * cy
-    const ny = P[i + 4]! * cx - nz * sx
-    nz = P[i + 4]! * sx + nz * cx
-    const dl = nx * L[0]! + ny * L[1]! + nz * L[2]!
-    const wrap = Math.max(0, (dl + 0.15) / 1.15) // 부드러운 명암 경계
-    const lam = Math.max(0, dl)
-    const spec = Math.pow(Math.max(0, nx * Hx + ny * Hy + nz * Hz), 20)
-    const m = P[i + 6]!
-    const face = Math.min(1, Math.max(0, -nz) / 0.6)
-    const limb = 0.5 + 0.5 * face * face * (3 - 2 * face) // 가장자리로 갈수록 어두워져 관이 원통으로 읽힌다
-    let b = (0.07 + 0.8 * wrap + 0.5 * spec) * limb
-    if (nz > 0.05 && m !== 2) b *= 0.35
-    if (m === 2) {
-      const q = Math.min(1, Math.hypot(P[i]! - model.bell[0], P[i + 2]! - model.bell[2]) / 0.43)
-      b = 0.1 + 0.34 * q * Math.sqrt(q) // 벨 속은 깊을수록 어둡다
-    } else if (m === 3) b = 0.2 + 0.3 * lam
-    else if (m === 1 || m === 4) b = Math.min(1, b + 0.25)
-    const sc = Math.round(pr[0] * SX)
-    const sr = Math.round(pr[1] * SY)
-    for (let dy = 0; dy < 2; dy++) {
-      for (let dx = 0; dx < 2; dx++) {
-        const c = sc + dx
-        const r = sr + dy
-        if (c < 0 || c >= W || r < 0 || r >= H) continue
-        const k = r * W + c
-        if (pr[2] > zb[k]!) {
-          zb[k] = pr[2]
-          br[k] = b > 1 ? 1 : b
-          sp[k] = nz > 0.05 ? 0 : spec
-          mt[k] = m
-        }
-      }
+  const bbox = (a: number) => {
+    const ca = Math.cos(a), sa = Math.sin(a)
+    let mnx = 1e9, mxx = -1e9, mny = 1e9, mxy = -1e9
+    for (let i = 0; i < P.length / 7; i += 7) { // 7점마다 샘플(속도) — 슬롯의 1.03배 여유가 오차를 덮는다
+      const q = i * 7
+      saxXf(P[q]! - cx0, P[q + 1]! - cy0, P[q + 2]! - cz0, ca, sa, cr, sr, cxA, sxA, o)
+      if (o[0]! < mnx) mnx = o[0]!
+      if (o[0]! > mxx) mxx = o[0]!
+      if (o[1]! < mny) mny = o[1]!
+      if (o[1]! > mxy) mxy = o[1]!
     }
+    return [mnx, mxx, mny, mxy] as const
   }
-  const v = buf.v!
-  const s = buf.s!
-  const mm = buf.m!
-  for (let r = 0; r < R; r++) {
-    for (let c = 0; c < C; c++) {
-      let n = 0
-      let tot = 0
-      let fd = 0
-      let fm = 0
-      let fs = 0
-      for (let a = 0; a < SY; a++) {
-        for (let b2 = 0; b2 < SX; b2++) {
-          const k = (r * SY + a) * W + c * SX + b2
-          if (zb[k]! > 0) {
-            n++
-            tot += br[k]!
-            if (zb[k]! > fd) {
-              fd = zb[k]!
-              fm = mt[k]!
-              fs = sp[k]!
-            }
-          }
-        }
-      }
-      const on = n / (SX * SY) >= 0.34
-      v[r * C + c] = on ? (tot / n) * (0.78 + 0.22 * Math.min(1, n / (SX * SY))) : -1 // 부분 커버 칸은 한 단 어둡게
-      mm[r * C + c] = fm
-      s[r * C + c] = fs
-    }
+  const cxt: number[] = [], cyt: number[] = []
+  let umny = 1e9, umxy = -1e9, hx = 0, hy = 0
+  for (let k = 0; k < steps; k++) {
+    const b = bbox((k / steps) * Math.PI * 2)
+    cxt.push(+((b[0] + b[1]) / 2).toFixed(4))
+    cyt.push(+((b[2] + b[3]) / 2).toFixed(4))
+    umny = Math.min(umny, b[2]); umxy = Math.max(umxy, b[3])
+    hx = Math.max(hx, (b[1] - b[0]) / 2); hy = Math.max(hy, (b[3] - b[2]) / 2)
   }
-  buf.proj = proj
-  return buf as SaxRaster
+  const r = bbox(rest)
+  const uh = (umxy - umny) * 1.03
+  return {
+    k: +((2 * hy * 1.03) / uh).toFixed(4),
+    ar: +(hx / hy).toFixed(4),
+    h: +(2 * hy * 1.03).toFixed(4),
+    cx: +((r[0] + r[1]) / 2).toFixed(4),
+    cy: +((r[2] + r[3]) / 2).toFixed(4),
+    cxt, cyt,
+  }
 }
 
-/** 정지 자세 실루엣이 정확히 rows행을 채우는 배율·열 수·원점을 찾는다. */
-export function fitSax(model: SaxModel, raster: typeof rasterSax, rest: { ay: number; ax: number }, rows: number): SaxFit {
-  const bb = (scl: number) => {
-    const b = raster(model, {}, 140, 90, 70, 45, rest.ay, rest.ax, scl)
-    let c0 = 1e9
-    let c1 = -1
-    let r0 = 1e9
-    let r1 = -1
-    for (let r = 0; r < 90; r++) {
-      for (let c = 0; c < 140; c++) {
-        if (b.v[r * 140 + c]! >= 0) {
-          c0 = Math.min(c0, c)
-          c1 = Math.max(c1, c)
-          r0 = Math.min(r0, r)
-          r1 = Math.max(r1, r)
-        }
-      }
-    }
-    return { c0, c1, r0, r1 }
-  }
-  let b = bb(74)
-  let scl = (74 * rows) / (b.r1 - b.r0 + 1)
-  b = bb(scl)
-  for (let i = 0; i < 6 && b.r1 - b.r0 + 1 !== rows; i++) {
-    const h = b.r1 - b.r0 + 1
-    scl *= (rows / h) * (h < rows ? 1.004 : 0.998)
-    b = bb(scl)
-  }
-  return { scl, cols: b.c1 - b.c0 + 3, cx: 70 - b.c0 + 1, cy: 45 - b.r0 }
-}
-
-/**
- * 한 프레임의 글자 목록. 음영 값을 ramp 단으로 양자화하고, 단이 글자와 잉크 세기를 함께 정한다.
- * dark면 밝은 쪽이 조밀, 아니면 어두운 쪽이 조밀. 벨 안 ♫·벨 테 ◦·정반사 ✦✧는 글자만 고정하고 세기는 음영을 따른다.
- */
-export function composeSax(
-  model: SaxModel,
-  raster: typeof rasterSax,
-  buf: Partial<SaxRaster>,
-  fit: SaxFit,
-  cfg: typeof SAX_CFG,
-  ay: number,
-  ax: number,
-  sweepAt: (x: number) => number,
-  dark: boolean,
-): { glyphs: SaxGlyph[]; keys: [number, number][] } {
-  const C = fit.cols
-  const R = cfg.rows
-  const N = cfg.ramp.length
-  const ras = raster(model, buf, C, R, fit.cx, fit.cy, ay, ax, fit.scl)
-  const bell = ras.proj(model.bell[0], model.bell[1], model.bell[2])
-  const on = (c: number, r: number) => c >= 0 && r >= 0 && c < C && r < R && ras.v[r * C + c]! >= 0
-  const glyphs: SaxGlyph[] = []
-  for (let r = 0; r < R; r++) {
-    for (let c = 0; c < C; c++) {
-      const i = r * C + c
-      const v = ras.v[i]!
-      if (v < 0) continue
-      const x = (c + 0.5) * cfg.cw
-      const y = (r + 0.5) * cfg.ch
-      const m = ras.m[i]!
-      const lit = sweepAt(x) > 0.45
-      let sh = Math.pow(Math.min(1, Math.max(0, (v - cfg.lo) / (cfg.hi - cfg.lo))), dark ? cfg.gammaDark : cfg.gammaLight)
-      if (lit) sh = Math.min(1, sh + cfg.lift)
-      const q = Math.min(N - 1, Math.floor(sh * N))
-      const k = dark ? q : N - 1 - q
-      let ch: string
-      if (m === 2 || (m === 1 && r < bell[1] - 0.5)) ch = cfg.bell
-      else if (ras.s[i]! > 0.6) ch = cfg.sparks[(c + r) % 2]!
-      else if (m === 1 && !(on(c - 1, r) && on(c + 1, r) && on(c, r - 1) && on(c, r + 1))) ch = cfg.rim
-      else {
-        const g = cfg.ramp[k]!
-        ch = g[(c + r) % g.length]!
-      }
-      glyphs.push([x, y, ch, k, lit])
-    }
-  }
-  const keys = cfg.keyY.map((y): [number, number] => {
-    const r0 = 0.07 + 0.075 * ((0.95 - y) / 1.5)
-    const p = ras.proj(0, y, -(r0 + 0.02))
-    return [p[0] * cfg.cw, p[1] * cfg.ch]
-  })
-  return { glyphs, keys }
-}
+/** 제목 글자 10개 + 색소폰 1개 = 11음. [글자, 음이름, 변화음(-1=♭), 높은음자리표 옥타브, 리듬(e=8분, dh=점2분)]
+ *  C단조 ii–V–i: Dm7♭5(D F A♭ C) → G7(B♮ G F D) → Cm7(E♭ G C). 4/4 두 마디. */
+export const HERO_NOTES: [string, string, number, number, string][] = [
+  ["B", "D", 0, 4, "e"],
+  ["l", "F", 0, 4, "e"],
+  ["u", "A", -1, 4, "e"],
+  ["e", "C", 0, 5, "e"],
+  ["N", "B", 0, 4, "e"],
+  ["o", "G", 0, 4, "e"],
+  ["t", "F", 0, 4, "e"],
+  ["e", "D", 0, 4, "e"],
+  ["s", "E", -1, 4, "e"],
+  [".", "G", 0, 4, "e"],
+  ["sax", "C", 0, 5, "dh"],
+]

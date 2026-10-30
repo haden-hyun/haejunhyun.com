@@ -1,40 +1,142 @@
-// 홈 히어로 — 텍스트 | 음표 색소폰(운지 키 = 토픽) 2열(900px 미만은 색소폰 → 텍스트 적층), 첫 진입 연출.
-// 주의: 색은 테마 변수만 참조한다. 단일 소스는 quartz.config.yaml.
+// 홈 히어로 — 가운데 정렬. 제목 글자마다 음표 하나(오선·음표는 client.ts가 SVG로), 글자 오른쪽에 기울어진 회전 색소폰.
+// 주의: 색은 테마 변수만 참조한다. 단일 소스는 quartz.config.yaml. 연출은 투명도를 쓰지 않는다(AA 중간 상태 금지).
 
-$ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+$settle: var(--ease-settle, cubic-bezier(0.32, 0.72, 0, 1));
 
 .home-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "text sax";
-  align-items: center;
-  gap: 24px 56px;
-  padding: 48px 0 64px;
+  container-type: inline-size;
+  padding: 40px 0 64px;
+  text-align: center;
 
   @media all and (max-width: 899px) {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "sax" "text";
-    gap: 18px;
-    padding: 12px 0 40px;
+    padding: 8px 0 40px;
   }
 }
 
-.hero-text {
-  grid-area: text;
-  align-self: center;
-  min-width: 0;
+.hero-title {
+  position: relative;
 }
 
+// --s = 오선 칸 간격. 위에 오선 영역(--pad = 9.5칸)을 비워 둔다 — 레이아웃 이동 없이 SSR에서 자리가 잡힌다.
 .hero-headline {
+  --s: 8px;
+  --pad: calc(9.5 * var(--s));
+  --hero-base: 450ms;
+  --hero-step: 90ms;
+  position: relative;
   margin: 0;
-  padding: 0;
+  padding: var(--pad) 0 0;
   border: none;
   font-family: var(--headerFont);
   font-weight: 900;
-  font-size: clamp(2.5rem, 6vw, 3.75rem);
+  // 가운데 기준 오른쪽에 글자 절반(약 2.95em) + 색소폰·간격(약 1.25em)이 들어가야 한다 → 절반 폭 ÷ 4.3. vw 대신 컨테이너 단위(좌우 여백 단일 소스 .page).
+  font-size: clamp(2.25rem, calc(50cqi / 4.3), 4.75rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--dark);
+  white-space: nowrap;
+
+  @container (max-width: 559px) {
+    --s: 6.5px;
+  }
+}
+
+.hl {
+  display: inline-block;
+}
+
+// 글자 기준선 측정용 점(크기 0)
+.hero-bl {
+  display: inline-block;
+  width: 0;
+  height: 0;
+}
+
+// 색소폰 슬롯: 크기는 빌드가 계산한 --sax-k·--sax-ar. 음수 오른쪽 여백으로 글자 폭 계산에서 빼, 글자만 가운데에 놓고 색소폰은 오른쪽에 매달린다.
+.hero-sax {
+  position: relative;
+  display: inline-block;
+  width: calc(1.1em * var(--sax-k) * var(--sax-ar));
+  height: calc(1.1em * var(--sax-k));
+  margin-block: calc(0.55em * (1 - var(--sax-k)));
+  margin-left: 0.3em;
+  margin-right: calc(-1 * (0.3em + 1.1em * var(--sax-k) * var(--sax-ar)));
+  vertical-align: -0.2em;
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// 악보 — 장식이라 AA 대상이 아니다. 농도: 오선 35% · 음표 45% · 음자리표·조표·박자표·마디선 40%.
+// 투명도는 요소가 아니라 그룹(.ng, .fb)에 줘서 기둥·빔·머리가 겹치는 곳이 진해지지 않는다.
+.hero-score {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+
+  text {
+    font-family: "Noto Music", serif;
+    fill: var(--dark);
+  }
+
+  .ln {
+    stroke: var(--gray);
+    stroke-width: 1;
+    opacity: 0.35;
+  }
+
+  .ng {
+    opacity: 0.45;
+  }
+
+  .clef,
+  .ks,
+  .bar,
+  .fb {
+    opacity: 0.4;
+  }
+
+  .fb .bar {
+    opacity: 1;
+  }
+
+  .hd,
+  .bm,
+  .dot,
+  .acc {
+    fill: var(--secondary);
+  }
+
+  .hv {
+    fill: var(--light);
+    stroke: var(--secondary);
+    stroke-width: 1.6;
+  }
+
+  .stem {
+    stroke: var(--secondary);
+    stroke-width: 1.3;
+  }
+
+  .led {
+    stroke: var(--dark);
+    stroke-width: 1.1;
+  }
+
+  .bar {
+    stroke: var(--dark);
+    stroke-width: 1;
+  }
+
+  .barT {
+    stroke: var(--dark);
+    stroke-width: 3;
+  }
 }
 
 .hero-author {
@@ -51,7 +153,7 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 .hero-description {
-  margin: 26px 0 0;
+  margin: 22px auto 0;
   max-width: 29em;
   font-family: var(--headerFont);
   font-size: 17px;
@@ -60,7 +162,7 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   word-break: keep-all;
 
   @media all and (max-width: 800px) {
-    margin-top: 20px;
+    margin-top: 18px;
     font-size: 16px;
     line-height: 1.8;
   }
@@ -70,8 +172,9 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  margin: 26px 0 0;
+  margin: 24px 0 0;
 
   a {
     display: inline-flex;
@@ -127,214 +230,78 @@ $ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
   text-align: right;
 }
 
-// 음표로 그린 색소폰 — 정지 자세 SVG(라이트·다크 두 장)를 먼저 보이고, 캔버스가 그려지면(.is-live) 갈아 끼운다.
-// 잉크 8단(--s0 성김 … --s7 조밀) = 성김 끝 → --secondary → --dark 사이를 보간. 주의: 모든 단이 배경 대비 4.5 이상이어야 한다.
-.hero-sax {
-  --sa: color-mix(in srgb, var(--secondary) 90%, var(--light));
-  --s0: var(--sa);
-  --s1: color-mix(in srgb, var(--secondary) 28.6%, var(--sa));
-  --s2: color-mix(in srgb, var(--secondary) 57.1%, var(--sa));
-  --s3: color-mix(in srgb, var(--secondary) 85.7%, var(--sa));
-  --s4: color-mix(in srgb, var(--dark) 14.3%, var(--secondary));
-  --s5: color-mix(in srgb, var(--dark) 42.9%, var(--secondary));
-  --s6: color-mix(in srgb, var(--dark) 71.4%, var(--secondary));
-  --s7: var(--dark);
-  --tk: var(--secondary);
-  --tp: var(--dark);
-  grid-area: sax;
-  position: relative;
-  justify-self: end;
-  width: var(--sax-w);
-  height: var(--box-h);
-  touch-action: pan-y;
-
-  @media all and (max-width: 899px) {
-    justify-self: center;
-    width: calc(260px * var(--sax-ar));
-    height: 260px;
-  }
-}
-
-:root[saved-theme="dark"] .hero-sax {
-  --sa: color-mix(in srgb, var(--secondary) 76%, var(--light));
-}
-
-.hero-sax-pre,
-.hero-sax-cv,
-.hero-keys {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: auto;
-  aspect-ratio: var(--sax-ar);
-}
-
-.hero-sax-pre {
-  overflow: visible;
-  font-family: "Noto Music", "Noto Sans Symbols 2", sans-serif;
-  font-size: 7.5px;
-  text-anchor: middle;
-  dominant-baseline: central;
-
-  @for $k from 0 through 7 {
-    .s#{$k} {
-      fill: var(--s#{$k});
+// 첫 진입 연출 — 세션당 1회(data-hero-swept), 모션 감소 설정이면 생략. 투명도 없이 8px 이동 + visibility만 쓴다.
+// 순서: 오선이 그려지고 → 음자리표·조표·박자표 → 음표와 글자가 짝으로(마지막 음과 함께 색소폰) → 끝 겹세로줄. 약 1.6초.
+@media (prefers-reduced-motion: no-preference) {
+  // JS가 악보를 만들기 전(.hero-ready 전)에는 숨겨 둔다. JS가 없으면(data-hero-js 없음) 처음부터 보이고, 2.5초 뒤엔 무조건 보인다(실패 안전장치).
+  :root[data-hero-js]:not([data-hero-swept]) .hero-headline:not(.hero-ready) {
+    .hl,
+    .hero-sax canvas {
+      visibility: hidden;
+      animation: hero-failsafe 0s 2.5s forwards;
     }
   }
-  .k {
-    font: 500 8px Inter, var(--bodyFont);
-    fill: var(--tk);
-  }
-  .k.is-music {
-    font-family: "Noto Music", sans-serif;
-    font-size: 9px;
-  }
-  .kr {
-    fill: none;
-    stroke: var(--tk);
-    stroke-width: 1px;
-  }
-  .k.is-pressed {
-    fill: var(--tp);
-  }
-  .kr.is-pressed {
-    stroke: var(--tp);
-  }
 
-  &.on-dark {
-    display: none;
-  }
+  :root:not([data-hero-swept]) .hero-headline.hero-ready {
+    .hero-score .ln {
+      transform-box: fill-box;
+      transform-origin: left;
+      animation: hero-staff 500ms $settle both;
+      animation-delay: calc(var(--k) * 50ms);
+    }
 
-  .is-live & {
+    .hero-score .pop {
+      animation: hero-score-in 240ms $settle both;
+      animation-delay: var(--d);
+    }
+
+    .hl,
+    .hero-sax canvas {
+      animation: hero-pop-up 240ms $settle both;
+      animation-delay: calc(var(--hero-base) + var(--i) * var(--hero-step));
+    }
+  }
+}
+
+@keyframes hero-staff {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes hero-pop-up {
+  0% {
+    transform: translateY(8px);
     visibility: hidden;
   }
-}
-
-:root[saved-theme="dark"] .hero-sax-pre {
-  &.on-light {
-    display: none;
-  }
-  &.on-dark {
-    display: block;
-  }
-}
-
-.hero-sax-cv {
-  cursor: grab;
-  visibility: hidden;
-
-  .is-live & {
+  1% {
     visibility: visible;
   }
-
-  .is-dragging & {
-    cursor: grabbing;
-  }
-}
-
-.hero-keys {
-  pointer-events: none;
-}
-
-.hero-key {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  margin: -11px 0 0 -11px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  cursor: help;
-  pointer-events: auto;
-
-  &:focus-visible {
-    outline: 2px solid var(--secondary);
-    outline-offset: 1px;
-  }
-}
-
-// 토픽 툴팁 — 키 오른쪽에 뜬다. 위치는 스크립트가 잡는다.
-.hero-keytip {
-  position: absolute;
-  z-index: 3;
-  transform: translate(18px, -50%);
-  padding: 3px 8px;
-  font: 500 12px var(--bodyFont);
-  white-space: nowrap;
-  color: var(--darkgray);
-  background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: 6px;
-  pointer-events: none;
-
-  b {
-    color: var(--dark);
-  }
-}
-
-// 캔버스가 테마 색을 읽어 가는 견본(화면에 보이지 않음)
-.hero-tone {
-  display: none;
-
-  @for $k from 0 through 7 {
-    &.s#{$k} {
-      color: var(--s#{$k});
-    }
-  }
-  &.tk {
-    color: var(--tk);
-  }
-  &.tp {
-    color: var(--tp);
-  }
-}
-
-// 첫 진입 연출 — 세션당 1회(data-hero-swept), 모션 감소 설정이면 생략.
-@media (prefers-reduced-motion: no-preference) {
-  :root:not([data-hero-swept]) {
-    .hero-headline {
-      background-image: linear-gradient(90deg, currentColor 0 50%, transparent 50% 100%);
-      background-size: 200% 100%;
-      background-position: 100% 0;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: hero-sweep 1.4s $ease 0.15s forwards;
-    }
-
-    .hero-rise {
-      animation: hero-rise var(--dur-slow, 900ms) $ease both;
-    }
-
-    .hero-rise-1 {
-      animation-delay: 0.12s;
-    }
-
-    .hero-rise-2 {
-      animation-delay: 0.24s;
-    }
-
-    .hero-rise-3 {
-      animation-delay: 0.36s;
-    }
-  }
-}
-
-@keyframes hero-sweep {
-  to {
-    background-position: 0 0;
-  }
-}
-
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
+  100% {
     transform: none;
+    visibility: visible;
+  }
+}
+
+@keyframes hero-score-in {
+  0% {
+    transform: translateY(-8px);
+    visibility: hidden;
+  }
+  1% {
+    visibility: visible;
+  }
+  100% {
+    transform: none;
+    visibility: visible;
+  }
+}
+
+@keyframes hero-failsafe {
+  to {
+    visibility: visible;
   }
 }
