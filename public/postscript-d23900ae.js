@@ -1,5 +1,5 @@
 await Promise.all([
-  import("./static/scripts/script-0-703c3265.js"),
+  import("./static/scripts/script-0-02945941.js"),
   import("./static/scripts/script-1-f7c52b6a.js"),
   import("./static/scripts/script-2-1fa5db96.js"),
   import("./static/scripts/script-3-0e41d61b.js"),

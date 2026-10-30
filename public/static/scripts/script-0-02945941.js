@@ -135,6 +135,11 @@ const heroClient = (function heroClient(L2) {
     return Number.isFinite(v2) ? v2 : fallback;
   };
   const f1 = (x2) => Math.round(x2 * 10) / 10;
+  const cssMs = (name, fallback) => {
+    const v2 = getComputedStyle(h1).getPropertyValue(name).trim();
+    const n2 = parseFloat(v2);
+    return !Number.isFinite(n2) ? fallback : v2.endsWith("ms") ? n2 : v2.endsWith("s") ? n2 * 1e3 : n2;
+  };
   const ctx = cv.getContext("2d");
   let ROWS = 44, W = 0, H2 = 0, GW = 0, depth = null, shade = null;
   let ay = SAX2.rest, speed = reduce ? 0 : TAU / SAX2.period;
@@ -260,7 +265,7 @@ const heroClient = (function heroClient(L2) {
       const r2 = e2.getBoundingClientRect();
       return { l: r2.left - tr.left, r: r2.right - tr.left, c: (r2.left + r2.right) / 2 - tr.left };
     });
-    const s2 = cssNum("--s", 8), pad = cssNum("--pad", 9.5 * s2), BASE = cssNum("--hero-base", 450), STEP = cssNum("--hero-step", 90);
+    const s2 = cssNum("--s", 8), pad = cssNum("--pad", 9.5 * s2), BASE = cssMs("--hero-base", 450), STEP = cssMs("--hero-step", 90);
     const bare = tr.width < 560;
     const need = bare ? 0.9 * s2 : 10.75 * s2;
     const ctr = tr.width / 2;
@@ -368,6 +373,7 @@ const heroClient = (function heroClient(L2) {
     readColors();
     layout();
     kick();
+    wrap.classList.add("hero-ready");
     h1.classList.add("hero-ready");
     if (!reduce && !html.hasAttribute("data-hero-swept")) {
       const t2 = setTimeout(() => html.setAttribute("data-hero-swept", ""), 2400);
