@@ -156,8 +156,10 @@ export default ((userOpts?: Partial<FeaturedNotesOptions>) => {
                   <span class="featured-no">{pad(i + 1)}</span>
                   <span class="featured-body">
                     <span class="featured-title">{titleOf(item)}</span>
-                    {desc && <span class="featured-desc">{desc}</span>}
-                    <span class="featured-meta">{meta}</span>
+                    <span class="featured-side">
+                      {desc && <span class="featured-desc">{desc}</span>}
+                      <span class="featured-meta">{meta}</span>
+                    </span>
                   </span>
                 </a>
               </li>

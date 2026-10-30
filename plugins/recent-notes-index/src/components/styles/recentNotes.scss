@@ -143,17 +143,18 @@
   }
 }
 
+// 시간 축 색(--accent-state) 10% 면 + 글자는 --dark 쪽으로 섞어 AA(라이트 6.4 / 다크 7.1)를 확보한다.
 .recent-revised {
   display: inline-block;
   margin-left: 8px;
-  padding: 0 5px;
-  border: 1px solid var(--lightgray);
+  padding: 0 6px;
   border-radius: 4px;
+  background: color-mix(in srgb, var(--accent-state) 10%, transparent);
   font-size: 11px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0;
   line-height: 1.6;
-  color: var(--gray);
+  color: color-mix(in srgb, var(--accent-state) 70%, var(--dark));
   vertical-align: 2px;
 }
 

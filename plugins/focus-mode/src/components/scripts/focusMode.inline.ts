@@ -1,11 +1,13 @@
 // 집중 모드 — 상태는 localStorage, 페인트 전에 <html focus-mode>로 적용한다(레이아웃은 custom.scss §8.6).
 // - ⌘\ / Ctrl+\ 토글, 토글 전후 읽던 블록의 화면 위치 유지, 켤 때·세션 첫 노트에서 토스트
+// - 툴팁 문구는 상태를 따라 바뀌고, 처음 노트를 여는 날 토글 아래에 안내 말풍선을 한 번 띄운다
 // - 우측 TOC 자리는 레일: 접힘 = 눈금, 커서 300ms 머묾·키보드 포커스·클릭 = 펼침
 const KEY = "focus-mode"
 const DESKTOP = "(min-width: 1201px)"
 const BLOCKS = ".center > article :is(h1, h2, h3, h4, h5, h6, p, li, pre, blockquote, table, figure)"
+const COACH_KEY = "focus-coach"
 const TOAST =
-  '<span>Panels hidden</span><span class="focus-toast-sep" aria-hidden="true">·</span><span><kbd>⌘\\</kbd> to show</span>'
+  '<span>패널 숨김</span><span class="focus-toast-sep" aria-hidden="true">·</span><span><kbd>⌘\\</kbd> 로 복원</span>'
 const root = document.documentElement
 
 const safe = <T,>(fn: () => T) => {
@@ -19,6 +21,8 @@ const safe = <T,>(fn: () => T) => {
 root.toggleAttribute("focus-mode", safe(() => localStorage.getItem(KEY)) === "on")
 
 let toastTimer = 0
+let closeCoach = () => {}
+let coachShown = false
 let seen = false
 let closeRail = () => {}
 
@@ -32,6 +36,38 @@ function toastBox() {
     document.body.append(el)
   }
   return el
+}
+
+function syncTip(on: boolean) {
+  for (const t of document.querySelectorAll(".focus-tip")) {
+    t.querySelector(".focus-tip-title")!.textContent = on ? "집중 모드 끄기" : "집중 모드 켜기"
+    t.querySelector(".focus-tip-desc")!.textContent = on ? "패널 복원 · 본문 원래 폭" : "패널 숨김 · 본문 확대"
+  }
+}
+
+// 처음 노트를 여는 날 1회 — 표시하는 순간 본 것으로 친다. 6초·× 클릭·Esc·토글 중 먼저 오는 때 닫힌다.
+function showCoach(anchor: Element) {
+  const host = anchor.parentElement
+  if (!host || coachShown) return
+  coachShown = true
+  const el = document.createElement("div")
+  el.className = "focus-coach"
+  el.innerHTML =
+    '<div><b>긴 글은 집중 모드로</b><span>패널 숨김 · 본문 확대 · <kbd>⌘\\</kbd></span></div>' +
+    '<button type="button" class="focus-coach-close" aria-label="안내 닫기">×</button>'
+  host.append(el)
+  safe(() => localStorage.setItem(COACH_KEY, "1"))
+  const timer = window.setTimeout(() => closeCoach(), 6000)
+  const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeCoach()
+  closeCoach = () => {
+    clearTimeout(timer)
+    document.removeEventListener("keydown", onKey)
+    el.remove()
+    closeCoach = () => {}
+  }
+  el.querySelector("button")!.addEventListener("click", () => closeCoach())
+  document.addEventListener("keydown", onKey)
+  window.addCleanup(() => closeCoach())
 }
 
 function toast(show: boolean) {
@@ -68,6 +104,8 @@ function setFocus(on: boolean) {
   safe(() => localStorage.setItem(KEY, on ? "on" : "off"))
   for (const b of document.querySelectorAll(".focus-toggle")) b.setAttribute("aria-pressed", String(on))
   closeRail()
+  closeCoach()
+  syncTip(on)
   if (at) window.scrollBy({ top: at.el.getBoundingClientRect().top - at.top, behavior: "instant" })
   toast(on)
 }
@@ -162,6 +200,7 @@ document.addEventListener("nav", () => {
     window.addCleanup(() => b.removeEventListener("click", toggle))
   }
 
+  syncTip(on)
   document.querySelector(".focus-rail")?.remove()
   buildRail()
   toastBox()
@@ -182,4 +221,6 @@ document.addEventListener("nav", () => {
   seen = true
   safe(() => sessionStorage.setItem(KEY, "seen"))
   if (first && on && matchMedia(DESKTOP).matches) toast(true)
+
+  if (!on && matchMedia(DESKTOP).matches && safe(() => localStorage.getItem(COACH_KEY)) === null) showCoach(buttons[0]!)
 })

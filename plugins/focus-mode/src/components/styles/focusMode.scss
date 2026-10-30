@@ -5,6 +5,7 @@ $desktop-up: "(min-width: 1201px)";
 
 // 상단 바 아이콘 버튼 — 20px 아이콘, hover·켜짐은 --surface-2 칩.
 .focus-toggle {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -49,6 +50,148 @@ $desktop-up: "(min-width: 1201px)";
 :root[focus-mode] .focus-toggle {
   color: var(--secondary);
   background-color: var(--surface-2);
+}
+
+// 툴팁 — 버튼 자식. 투명도 없이 visibility + 4px 이동만 쓴다(중간 상태가 AA와 충돌하지 않게).
+.focus-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: -4px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  max-width: 15rem;
+  padding: 9px 12px;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-m);
+  background: var(--light);
+  box-shadow: var(--code-shadow);
+  text-align: left;
+  pointer-events: none;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    transform var(--dur-fast) var(--ease),
+    visibility 0s linear var(--dur-fast);
+}
+
+.focus-tip-title {
+  font-family: var(--headerFont);
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--dark);
+}
+
+.focus-tip-desc {
+  font-family: var(--bodyFont);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--gray);
+}
+
+.focus-tip-keys {
+  margin-top: 4px;
+}
+
+.focus-tip kbd,
+.focus-coach kbd {
+  padding: 0 6px;
+  border: 1px solid var(--lightgray);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  font-family: var(--codeFont);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--darkgray);
+}
+
+.focus-toggle:focus-visible .focus-tip {
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+
+@media (hover: hover) {
+  .focus-toggle:hover .focus-tip {
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+}
+
+// 최초 1회 안내 말풍선 — 토글 래퍼의 자식(스크립트가 붙인다). 래퍼가 앵커다.
+div:has(> .focus-toggle) {
+  position: relative;
+}
+
+.focus-coach {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: -8px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  max-width: 18rem;
+  padding: 10px 8px 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--secondary) 45%, var(--lightgray));
+  border-radius: var(--radius-m);
+  background: var(--light);
+  box-shadow: var(--code-shadow);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 16px;
+    width: 10px;
+    height: 10px;
+    background: var(--light);
+    border-top: 1px solid color-mix(in srgb, var(--secondary) 45%, var(--lightgray));
+    border-left: 1px solid color-mix(in srgb, var(--secondary) 45%, var(--lightgray));
+    transform: rotate(45deg);
+  }
+
+  b {
+    display: block;
+    font-family: var(--headerFont);
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--dark);
+  }
+
+  span {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--gray);
+  }
+}
+
+.focus-coach-close {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-s);
+  background: none;
+  color: var(--gray);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--surface-2);
+    color: var(--dark);
+  }
 }
 
 // 레일 — 접힘은 캡션 + 헤딩 눈금, 펼치면 같은 상자가 제목 목록 패널이 된다.
