@@ -1,4 +1,4 @@
-# haejunhyun.com
+# blog
 
 Obsidian vault를 **Quartz v5**로 빌드해 **Cloudflare**로 서빙하는 개인 블로그.
 

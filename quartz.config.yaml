@@ -433,7 +433,7 @@ plugins:
     options:
       provider: giscus
       options:
-        repo: haden-hyun/haejunhyun.com
+        repo: haden-hyun/blog
         repoId: R_kgDONbw-1g
         category: Announcements
         categoryId: DIC_kwDONbw-1s4Cky-B
@@ -492,7 +492,7 @@ plugins:
     options:
       links:
         - name: GitHub
-          url: https://github.com/haden-hyun/haejunhyun.com
+          url: https://github.com/haden-hyun/blog
           icon:
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438
             9.8 8.207
