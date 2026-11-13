@@ -2,7 +2,7 @@
 
 Obsidian vault를 **Quartz v5**로 빌드해 **Cloudflare**로 서빙하는 개인 블로그.
 
-- 사이트: https://haejunhyun.com
+- 사이트: https://blog.haejunhyun.com
 - 브랜치: `v5` (작업·프로덕션 겸용 — Cloudflare가 이 브랜치만 배포)
 - 원고: Obsidian vault(`00-Blog/content`) — 이 저장소의 `content/`는 그 **심볼릭 링크**
 

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Obsidian vault를 **Quartz v5**로 빌드해 Cloudflare로 서빙하는 개인 블로그(haejunhyun.com).
+Obsidian vault를 **Quartz v5**로 빌드해 Cloudflare로 서빙하는 개인 블로그(blog.haejunhyun.com).
 작업·프로덕션 브랜치 모두 `v5` (Cloudflare가 이 브랜치만 배포한다).
 
 **한국어로 응답한다.**

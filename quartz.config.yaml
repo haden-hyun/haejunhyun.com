@@ -5,9 +5,12 @@ configuration:
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
-  # 방문 집계는 goatcounter-tracking 플러그인 하나만 쓴다.
+  # 방문 통계 위젯은 goatcounter-tracking, 분석은 아래 analytics(GA4)가 맡는다.
   locale: en-US
-  baseUrl: haejunhyun.com
+  baseUrl: blog.haejunhyun.com
+  analytics:
+    provider: google
+    tagId: G-ZD2XQEZQDY
   ignorePatterns:
     - private
     - templates
@@ -436,6 +439,7 @@ plugins:
         repo: haden-hyun/blog
         repoId: R_kgDONbw-1g
         category: Announcements
+        mapping: pathname
         categoryId: DIC_kwDONbw-1s4Cky-B
     layout:
       position: afterBody
