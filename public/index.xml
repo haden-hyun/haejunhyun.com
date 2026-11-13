@@ -2,69 +2,69 @@
 <rss version="2.0">
     <channel>
       <title>HAEJUN RECORDS</title>
-      <link>https://haejunhyun.com</link>
+      <link>https://blog.haejunhyun.com</link>
       <description>Last 10 notes on HAEJUN RECORDS</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
     <title>Algorithm</title>
-    <link>https://haejunhyun.com/computer-science/algorithm/</link>
-    <guid>https://haejunhyun.com/computer-science/algorithm/</guid>
+    <link>https://blog.haejunhyun.com/computer-science/algorithm/</link>
+    <guid>https://blog.haejunhyun.com/computer-science/algorithm/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item><item>
     <title>Computer Science</title>
-    <link>https://haejunhyun.com/computer-science/</link>
-    <guid>https://haejunhyun.com/computer-science/</guid>
+    <link>https://blog.haejunhyun.com/computer-science/</link>
+    <guid>https://blog.haejunhyun.com/computer-science/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item><item>
     <title>Data Structure</title>
-    <link>https://haejunhyun.com/computer-science/data-structure/</link>
-    <guid>https://haejunhyun.com/computer-science/data-structure/</guid>
+    <link>https://blog.haejunhyun.com/computer-science/data-structure/</link>
+    <guid>https://blog.haejunhyun.com/computer-science/data-structure/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item><item>
     <title>Network</title>
-    <link>https://haejunhyun.com/computer-science/network/</link>
-    <guid>https://haejunhyun.com/computer-science/network/</guid>
+    <link>https://blog.haejunhyun.com/computer-science/network/</link>
+    <guid>https://blog.haejunhyun.com/computer-science/network/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item><item>
     <title>Airflow</title>
-    <link>https://haejunhyun.com/data-engineering/airflow/</link>
-    <guid>https://haejunhyun.com/data-engineering/airflow/</guid>
+    <link>https://blog.haejunhyun.com/data-engineering/airflow/</link>
+    <guid>https://blog.haejunhyun.com/data-engineering/airflow/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item><item>
     <title>Data Engineering</title>
-    <link>https://haejunhyun.com/data-engineering/</link>
-    <guid>https://haejunhyun.com/data-engineering/</guid>
+    <link>https://blog.haejunhyun.com/data-engineering/</link>
+    <guid>https://blog.haejunhyun.com/data-engineering/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item><item>
     <title>Getting Started</title>
-    <link>https://haejunhyun.com/data-engineering/airflow/getting-started/</link>
-    <guid>https://haejunhyun.com/data-engineering/airflow/getting-started/</guid>
+    <link>https://blog.haejunhyun.com/data-engineering/airflow/getting-started/</link>
+    <guid>https://blog.haejunhyun.com/data-engineering/airflow/getting-started/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item><item>
     <title>PythonOperator</title>
-    <link>https://haejunhyun.com/data-engineering/airflow/python-operator/</link>
-    <guid>https://haejunhyun.com/data-engineering/airflow/python-operator/</guid>
+    <link>https://blog.haejunhyun.com/data-engineering/airflow/python-operator/</link>
+    <guid>https://blog.haejunhyun.com/data-engineering/airflow/python-operator/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item><item>
     <title>Git</title>
-    <link>https://haejunhyun.com/data-engineering/git/</link>
-    <guid>https://haejunhyun.com/data-engineering/git/</guid>
+    <link>https://blog.haejunhyun.com/data-engineering/git/</link>
+    <guid>https://blog.haejunhyun.com/data-engineering/git/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item><item>
     <title>Airflow</title>
-    <link>https://haejunhyun.com/data-engineering/infra/airflow/</link>
-    <guid>https://haejunhyun.com/data-engineering/infra/airflow/</guid>
+    <link>https://blog.haejunhyun.com/data-engineering/infra/airflow/</link>
+    <guid>https://blog.haejunhyun.com/data-engineering/infra/airflow/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Fri, 30 Oct 2026 15:25:57 GMT</pubDate>
+    <pubDate>Fri, 13 Nov 2026 13:59:38 GMT</pubDate>
   </item>
     </channel>
   </rss>
