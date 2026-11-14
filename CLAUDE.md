@@ -95,7 +95,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 - `folderTitles`는 `folder-listing`의 앵커 `&folderTitles` 하나를 `topic-graph`·`recent-notes-index`가 `*folderTitles`로 받는다.
 - 긴 TOC 접기(`tocFold.inline.ts` — TOC만으로 island를 넘으면 현재 h2 절의 h3만 펼침)도 이 플러그인 스크립트다.
 - 빌드 경고 `[topic-graph]`: 별칭 리다이렉트 슬러그가 노트 파일명과 겹친다. `markdownLinkResolution: shortest`가 노트 대신
-  루트의 별칭 페이지를 골라 `[[파일명]]` 링크가 Backlinks에서 빠진다(2026-10-24 볼트 별칭 정리로 0건). 경고만 내고 빌드는 통과한다.
+  루트의 별칭 페이지를 골라 `[[파일명]]` 링크가 Backlinks에서 빠진다. 경고만 내고 빌드는 통과한다.
 - Backlinks는 업스트림 그대로 글 끝(afterBody, 시리즈 페이저 뒤)에 모든 폭으로 둔다. 행의 폴더 경로는 `note-specs`의
   `backlinkPaths.inline.ts`가 클라이언트에서 달고, 개수·2열 그리드는 `custom.scss` §7이다. SPECS(`note-specs`)는 제목 아래 메타 한 줄이다.
 
@@ -107,11 +107,9 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 토글 툴팁(꺼짐/켜짐 문구)과 최초 1회 말풍선(`localStorage` `focus-coach`)도 이 플러그인 몫이다(DESIGN-SYSTEM §4.18).
 업스트림 `reader-mode`는 꺼 둔다(패널 투명도 + hover 복원 — AA 위반).
 
-주의: **`quartz.lock.json`의 `resolved`가 다른 저장소를 가리킬 수 있다.** 로컬 플러그인
-9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의
-코드를 쓰고 있었다(2026-08-06 발견·교정). `plugin install`은 락파일을 따르므로 링크를
-지워도 되살아난다 — **락파일을 먼저 고칠 것.** 증상은 "고쳤는데 안 바뀐다"이다.
-저장소 폴더를 옮길 땐 락파일의 로컬 플러그인 10종 `resolved` 절대경로(현재 `/Users/haejun/blog`)를 먼저 바꾸고 `.quartz/`를 지워 `plugin install`로 다시 만든다.
+주의: **`quartz.lock.json`의 로컬 플러그인 `resolved`는 이 저장소의 절대경로(현재 `/Users/haejun/blog`)여야 한다.** `plugin install`은 락파일을 따르므로
+링크만 지워도 되살아난다 — **락파일을 먼저 고칠 것.** 다른 저장소를 가리키면 소스를 고쳐도 빌드는 남의 코드를 쓴다. 증상은 "고쳤는데 안 바뀐다"이다.
+저장소 폴더를 옮길 땐 락파일의 로컬 플러그인 10종 `resolved`를 먼저 바꾸고 `.quartz/`를 지워 `plugin install`로 다시 만든다.
 절대경로는 볼트의 `.claude/commands/quartz-*.md`·`.claude/skills`와 Obsidian 쉘 명령 플러그인에도 박혀 있다.
 
 ### `custom.scss`는 비-레이어라 항상 이긴다
@@ -126,7 +124,7 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 ---
 
-## 빌드 ✅ (2026-08-05 기준 동작)
+## 빌드
 
 ```bash
 npx quartz plugin install   # .quartz/ 생성 (gitignore된 생성 디렉터리)
@@ -183,9 +181,9 @@ python  # WCAG 대비 계산, HTMLParser 태그 균형, YAML 파싱
    토큰 타입을 안 붙여서, 폴백을 Shiki에 맡기면 변수명이 통제 밖으로 나간다.
 7. **대비는 코드블럭 배경 기준으로 잰다.** 페이지 배경으로 재면 어긋난다.
 8. **콜아웃 형태는 Obsidian 규격을 유지한다.** 아이콘·둥근 모서리·좌측 바를 걷어내는
-   "인쇄 조판" 안은 시도 후 되돌렸다. 우리가 정의하는 건 **색이지 형태가 아니다.**
+   "인쇄 조판" 안은 쓰지 않는다. 우리가 정의하는 건 **색이지 형태가 아니다.**
 9. **패널 라벨 4종(CATALOG/TOC/Backlinks/Graph)은 한 규칙으로 통일한다.**
-   패널별로 색·조판을 나누면 라벨이 콘텐츠보다 시끄러워진다 — 시도 후 되돌림.
+   패널별로 색·조판을 나누면 라벨이 콘텐츠보다 시끄러워진다.
 10. **좌우 여백의 단일 소스는 `.page`다.** 폭 계산에 `vw`를 쓰지 말 것 — 세로
     스크롤바 폭을 포함해 좌우가 어긋난다.
 
