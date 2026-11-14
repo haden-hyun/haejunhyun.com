@@ -39,6 +39,18 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 
 `public/`을 갱신하지 않으면 **아무리 소스를 고쳐도 라이브에 반영되지 않는다.**
 
+### 도메인·분석·검색엔진
+
+- 사이트 주소는 `blog.haejunhyun.com`(`baseUrl`). Pages 프로젝트 이름은 `haejunhyun`(pages.dev 주소는 `blog-1wb`). GitHub 저장소는 `haden-hyun/blog`.
+- `haejunhyun.com`·`www`는 Cloudflare Redirect Rule `legacy-domain-to-blog`가 같은 경로·쿼리로 blog에 301 한다. **최소 2027-11까지 유지**(지우면 외부 링크·색인이 끊긴다).
+  호스트는 정확 일치 2개만 — 와일드카드를 쓰면 `airflow`·`asset-*`·`monthly-letters` 같은 다른 서브도메인이 딸려 간다. 옛 Page Rule(`www`→apex)은 중단 상태이며 삭제해도 된다.
+- 포트폴리오를 apex/`www`에 올릴 땐 별도 저장소·Pages 프로젝트로 두고, 두 도메인을 그쪽으로 옮긴 뒤 301 조건을 "경로가 포트폴리오 접두사가 아님"으로 좁힌다. GoatCounter 사이트는 따로 만든다.
+- 분석은 GA4(`configuration.analytics`, Quartz가 SPA `nav`마다 `page_view`를 직접 보낸다)와 GoatCounter(`goatcounter-tracking` — 홈 통계 위젯·`/api/stats`의 출처)를 병행한다.
+  주의: GA 스트림의 "브라우저 기록 이벤트 기반 페이지 변경"을 켜면 SPA 이동이 이중 집계된다. 켜 두지 말 것.
+- 댓글 giscus는 `mapping: pathname`이다(`url`이면 도메인 변경 시 댓글이 끊긴다).
+- 검색엔진 소유 확인: Search Console은 도메인 속성(Cloudflare DNS의 TXT 유지), 네이버는 `goatcounter-tracking`의 `headMeta` 메타 태그다.
+- 주의: Pages 배포가 `Failed to publish your Function`으로 실패하면 Cloudflare Workers API 장애일 수 있다(상태 페이지 확인). 이미 끝난 배포는 취소가 안 되고 Retry만 된다.
+
 ### 로컬 플러그인은 `dist/`가 커밋 대상
 
 `plugins/*` 26종(`_shared` 제외). 각각 독립 npm 패키지다.
@@ -99,6 +111,8 @@ Obsidian vault(`~/Documents/obsidian/00-Blog/content`)를 가리킨다. 이 저�
 9종이 `haejunhyun-v5-test`의 절대경로로 고정돼 있어, 이 저장소를 고쳐도 빌드는 남의
 코드를 쓰고 있었다(2026-08-06 발견·교정). `plugin install`은 락파일을 따르므로 링크를
 지워도 되살아난다 — **락파일을 먼저 고칠 것.** 증상은 "고쳤는데 안 바뀐다"이다.
+저장소 폴더를 옮길 땐 락파일의 로컬 플러그인 10종 `resolved` 절대경로(현재 `/Users/haejun/blog`)를 먼저 바꾸고 `.quartz/`를 지워 `plugin install`로 다시 만든다.
+절대경로는 볼트의 `.claude/commands/quartz-*.md`·`.claude/skills`와 Obsidian 쉘 명령 플러그인에도 박혀 있다.
 
 ### `custom.scss`는 비-레이어라 항상 이긴다
 
