@@ -606,6 +606,9 @@ plugins:
     options:
       site: haejunhyun
       scriptSrc: //gc.zgo.at/count.js
+      headMeta:
+        - name: naver-site-verification
+          content: c5ef535c6a784d20ef6c00cf958c0809f52f3809
     order: 90
   - source: ./plugins/footer
     enabled: true

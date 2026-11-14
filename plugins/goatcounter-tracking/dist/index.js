@@ -6,7 +6,7 @@ var w = [];
 function k(l2, u2, t2) {
   var i2, r2, o2, e2 = {};
   for (o2 in u2) "key" == o2 ? i2 = u2[o2] : "ref" == o2 ? r2 = u2[o2] : e2[o2] = u2[o2];
-  if (arguments.length > 2 && (e2.children = arguments.length > 3 ? n.call(arguments, 2) : t2), "function" == typeof l2) ;
+  if (arguments.length > 2 && (e2.children = arguments.length > 3 ? n.call(arguments, 2) : t2), "function" == typeof l2 && null != l2.defaultProps) for (o2 in l2.defaultProps) void 0 === e2[o2] && (e2[o2] = l2.defaultProps[o2]);
   return x(l2, e2, i2, r2, null);
 }
 function x(n2, t2, i2, r2, o2) {
@@ -25,7 +25,8 @@ n = w.slice, l = { __e: function(n2, l2, u2, t2) {
 // src/index.ts
 var defaultOptions = {
   site: "haejunhyun",
-  scriptSrc: "//gc.zgo.at/count.js"
+  scriptSrc: "//gc.zgo.at/count.js",
+  headMeta: []
 };
 var GoatcounterTracking = (userOpts) => {
   const opts = { ...defaultOptions, ...userOpts };
@@ -43,7 +44,8 @@ var GoatcounterTracking = (userOpts) => {
             "data-goatcounter": `https://${opts.site}.goatcounter.com/count`,
             async: true,
             src: opts.scriptSrc
-          })
+          }),
+          ...opts.headMeta.map((m2) => k("meta", { name: m2.name, content: m2.content }))
         ]
       };
     }
